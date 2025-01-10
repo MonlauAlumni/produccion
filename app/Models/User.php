@@ -15,9 +15,12 @@ class User extends Model
     // Indica qué campos son asignables en masa (Mass Assignment)
     protected $fillable = [
         'name',
+        'last_name_1',
+        'last_name_2',
         'email',
         'password',
         'role',
+        'training_area',
         'profile_picture'
     ];
 
