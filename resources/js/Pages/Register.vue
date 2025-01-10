@@ -10,7 +10,6 @@
       <input type="password" v-model="form.password" placeholder="Password" required />
       <input type="password" v-model="form.password_confirmation" placeholder="Confirm Password" required />
 
-      <!-- Selector para el rol -->
       <select v-model="form.role" required>
         <option value="" disabled>Select Role</option>
         <option value="admin">Admin</option>
@@ -21,7 +20,6 @@
         <option value="guest">Guest</option>
       </select>
 
-      <!-- Selector para el área de formación -->
       <select v-model="form.training_area" required>
         <option value="" disabled>Select Training Area</option>
         <option value="Informatica">Informática</option>
@@ -29,7 +27,14 @@
         <option value="Automocion">Automoción</option>
       </select>
 
-      <button type="submit">Register</button>
+      <button type="submit" :disabled="form.processing">Register</button>
+
+      <!-- Mostrar errores -->
+      <div v-if="form.errors" class="errors">
+        <ul>
+          <li v-for="(message, field) in form.errors" :key="field">{{ message }}</li>
+        </ul>
+      </div>
     </form>
   </div>
 </template>
