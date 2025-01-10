@@ -4,13 +4,13 @@
             <a href="/" class="text-white text-2xl font-bold">Alumni</a>
             <ul class="flex">
                 <li class="ml-6">
-                    <a href="/" class="text-white">Home</a>
+                    <Link href="/" class="text-white">Home</Link>
                 </li>
                 <li class="ml-6">
-                    <a href="/register" class="text-white">Register</a>
+                    <Link href="/register" class="text-white">Register</Link>
                 </li>
                 <li class="ml-6">
-                    <a href="/login" class="text-white">Login</a>
+                    <Link href="/login" class="text-white">Login</Link>
                 </li>
             </ul>
         </div>
@@ -18,5 +18,5 @@
 </template>
 
 <script setup>
-
+import { Link } from '@inertiajs/inertia-vue3';
 </script>
