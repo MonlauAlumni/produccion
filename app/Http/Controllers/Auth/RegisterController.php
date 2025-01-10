@@ -19,22 +19,27 @@ class RegisterController extends Controller
     // Manejar el envío del formulario de registro
     public function store(Request $request)
     {
+      
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name_1' => 'required|string|max:255',
             'last_name_2' => 'nullable|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|in:admin,teacher,tutor,student,company,guest',
+            'training_area' => 'required|in:Informatica,Marketing,Automocion',
         ]);
 
         User::create([
-            'first_name' => $request->input('first_name'),
-            'last_name_1' => $request->input('last_name_1'),
-            'last_name_2' => $request->input('last_name_2'),
-            'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password')),
+            'first_name' => $request->first_name,
+            'last_name_1' => $request->last_name_1,
+            'last_name_2' => $request->last_name_2,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+            'training_area' => $request->training_area,
         ]);
-
-        return redirect()->route('dashboard')->with('success', 'User registered successfully!');
+  
+        return redirect()->route('/')->with('success', 'User registered successfully!');
     }
 }
