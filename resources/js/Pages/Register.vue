@@ -30,7 +30,16 @@
         </select>
 
         <button type="submit" :disabled="form.processing">Register</button>
+      <button type="submit" :disabled="form.processing">Register</button>
 
+<<<<<<< Updated upstream
+=======
+      <!-- Botón para registro con GitHub -->
+      <button type="button" @click="registerWithGitHub" class="github-button">
+        Register with GitHub
+      </button>
+
+>>>>>>> Stashed changes
         <!-- Mostrar errores -->
         <div v-if="form.errors" class="errors">
           <ul>
