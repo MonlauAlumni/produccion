@@ -29,6 +29,11 @@
 
       <button type="submit" :disabled="form.processing">Register</button>
 
+      <!-- Botón para registro con GitHub -->
+      <button type="button" @click="registerWithGitHub" class="github-button">
+        Register with GitHub
+      </button>
+
       <!-- Mostrar errores -->
       <div v-if="form.errors" class="errors">
         <ul>
@@ -59,10 +64,30 @@ export default {
       form.post('/register');
     }
 
+    function registerWithGitHub() {
+      window.location.href = '/github/redirect';
+    }
+
     return {
       form,
       submit,
+      registerWithGitHub,
     };
   },
 };
 </script>
+
+<style>
+.github-button {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.github-button:hover {
+  background-color: #444;
+}
+</style>
