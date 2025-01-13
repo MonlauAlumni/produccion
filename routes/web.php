@@ -13,3 +13,4 @@ Route::get('/register', [RegisterController::class, 'create'])->name('register')
 
 // Ruta para manejar el envío del formulario de registro
 Route::post('/register', [RegisterController::class, 'store']);
+

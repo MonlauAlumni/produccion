@@ -1,15 +1,19 @@
 import { createApp, h } from 'vue';
-import { createInertiaApp } from '@inertiajs/inertia-vue3';
-
-const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
-
+import { createInertiaApp } from '@inertiajs/vue3';
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import '../css/app.css';
+ 
 createInertiaApp({
-  id: 'app',
-  resolve: name => {
-    // Importar explícitamente las páginas
-    return import(`./Pages/${name}.vue`);
-  },
-  setup({ el, App, props }) {
-    return createApp({ render: () => h(App, props) }).mount(el);
+  resolve: name =>
+    resolvePageComponent(
+      `./Pages/${name}.vue`,
+      import.meta.glob('./Pages/**/*.vue')
+    ),
+  setup({ el, App, props, plugin }) {
+    createApp({ render: () => h(App, props) })
+      .use(plugin)
+      .mount(el);
   },
 });
+ 
+ 
