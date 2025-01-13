@@ -1,14 +1,15 @@
 <template>
-    <div class="bg-black">
-      <h1>Bienvenido a la página de inicio</h1>
-      <p>¡Esto es un ejemplo de Vue con Inertia!</p>
+  <div class="h-screen">
+    <Navbar />
+    <div class="flex flex-col justify-center items-center p-4 gap-4">
+      <HomeContainer />
+      <HomeContainer />
     </div>
+  </div>
+
 </template>
 
-<script>
-export default {
-  props: {
-   
-  }
-}
+<script setup>
+import Navbar from '../Components/Navbar.vue';
+import HomeContainer from '../Components/HomeContainer.vue';
 </script>
