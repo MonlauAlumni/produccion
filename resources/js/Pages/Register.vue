@@ -1,5 +1,5 @@
 <template>
-  <div>
+  
     <Navbar />
     <div>
       <h1>Register</h1>
@@ -30,27 +30,19 @@
         </select>
 
         <button type="submit" :disabled="form.processing">Register</button>
-      <button type="submit" :disabled="form.processing">Register</button>
 
-<<<<<<< Updated upstream
-=======
       <!-- Botón para registro con GitHub -->
       <button type="button" @click="registerWithGitHub" class="github-button">
         Register with GitHub
       </button>
 
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-        <!-- Mostrar errores -->
-        <div v-if="form.errors" class="errors">
-          <ul>
-            <li v-for="(message, field) in form.errors" :key="field">{{ message }}</li>
-          </ul>
-        </div>
-      </form>
-    </div>
+      <!-- Mostrar errores -->
+      <div v-if="form.errors" class="errors">
+        <ul>
+          <li v-for="(message, field) in form.errors" :key="field">{{ message }}</li>
+        </ul>
+      </div>
+    </form>
   </div>
 </template>
 
@@ -78,10 +70,30 @@ export default {
       form.post('/register');
     }
 
+    function registerWithGitHub() {
+      window.location.href = '/github/redirect';
+    }
+
     return {
       form,
       submit,
+      registerWithGitHub,
     };
   },
 };
 </script>
+
+<style>
+.github-button {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.github-button:hover {
+  background-color: #444;
+}
+</style>
