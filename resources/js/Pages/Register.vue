@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import Navbar from './Navbar.vue';
+import Navbar from '../Components/Navbar.vue';
 import { useForm } from '@inertiajs/vue3';
 
 export default {
