@@ -7,10 +7,6 @@
 
 </template>
 
-<script>
+<script setup>
 import Navbar from './Navbar.vue';
-
-export default {
-  props: {}
-}
 </script>
