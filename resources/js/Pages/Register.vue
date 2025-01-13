@@ -39,6 +39,9 @@
         Register with GitHub
       </button>
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         <!-- Mostrar errores -->
         <div v-if="form.errors" class="errors">
