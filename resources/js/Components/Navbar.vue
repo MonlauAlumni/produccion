@@ -1,5 +1,5 @@
 <template>
-    <nav class="bg-blue-600 p-4">
+    <nav class="bg-blue-800 p-4">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex gap-4 items-center">
                 <img src="/public/images/logo.png" alt="Alumni" class="w-16 h-16">
@@ -7,13 +7,10 @@
             </div>
             <ul class="flex">
                 <li class="ml-6">
-                    <a href="/" class="text-white">Home</a>
+                    <a href="/login" class="text-white text-lg font-semibold">Iniciar Sesión</a>
                 </li>
                 <li class="ml-6">
-                    <a href="/register" class="text-white">Register</a>
-                </li>
-                <li class="ml-6">
-                    <a href="/login" class="text-white">Login</a>
+                    <a href="/register" class="text-white text-lg p-2 border-solid border-2 border-white rounded-3xl font-semibold">Registrarse</a>
                 </li>
             </ul>
         </div>
