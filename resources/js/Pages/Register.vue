@@ -53,32 +53,29 @@
         <input type="password" v-model="form.password_confirmation" placeholder="Confirm Password" class="flex-grow w-full border-none outline-none bg-transparent placeholder-gray-400" required />
       </div>
 
-      <!-- Rol -->
-      <div class="flex gap-2 border-2 border-black p-2 rounded-3xl my-3">
-        <select v-model="form.role" class="flex-grow w-full border-none outline-none bg-transparent text-gray-600" required>
-          <option value="" disabled>Select Role</option>
-          <option value="admin">Admin</option>
-          <option value="teacher">Teacher</option>
-          <option value="tutor">Tutor</option>
-          <option value="student">Student</option>
-          <option value="company">Company</option>
-          <option value="guest">Guest</option>
-        </select>
-      </div>
-
       <!-- Área de formación -->
       <div class="flex gap-2 border-2 border-black p-2 rounded-3xl my-3">
         <select v-model="form.training_area" class="flex-grow w-full border-none outline-none bg-transparent text-gray-600" required>
-          <option value="" disabled>Select Training Area</option>
+          <option value="" disabled>Área formativa</option>
           <option value="Informatica">Informática</option>
           <option value="Marketing">Marketing</option>
           <option value="Automocion">Automoción</option>
         </select>
       </div>
 
+      <div class="flex justify-between">
+        <div class="flex items-center gap-2">
+          <input type="checkbox" name="privacy_policy" id="privacy_policy" required class="border-2 border-black rounded-full">
+          <p>He leído y acepto la <a href="" class="text-blue-700 underline hover:text-blue-500 transition">Política de privacidad</a></p>
+        </div>
+        <div>
+          <p>¿Ya tienes cuenta? <a href="/login" class="text-blue-700 underline hover:text-blue-500 transition">Inicia sesión</a></p>
+        </div>
+      </div>
+
       <!-- Botón registro con GitHub -->
-      <button type="button" @click="registerWithGitHub" class="flex items-center gap-2 px-5 py-2 bg-gray-800 text-white rounded-3xl my-2 hover:bg-gray-700 transition">
-        <img src="/public/images/github-mark-white.png" alt="" class="w-10 h-10">Register with GitHub
+      <button type="button" @click="registerWithGitHub" class="flex w-[30%] text-center justify-evenly items-center gap-2 px-5 py-2 bg-gray-800 text-white rounded-3xl my-2 hover:bg-gray-700 transition">
+        <img src="/public/images/github-mark-white.png" alt="" class="w-8 h-8">Register with GitHub
       </button>
 
       <!-- Botón registro -->
