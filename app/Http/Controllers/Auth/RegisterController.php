@@ -31,7 +31,7 @@ class RegisterController extends Controller
             'role' => 'required|in:admin,teacher,tutor,student,company,guest',
             'training_area' => 'required|in:Informatica,Marketing,Automocion',
         ]);
-       
+     
         User::create([
             'name' => $request->first_name,
             'last_name_1' => $request->last_name_1,
