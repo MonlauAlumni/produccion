@@ -1,9 +1,9 @@
 <template>
-    <div class="w-[50%] h-[300px] bg-gray-300 rounded-3xl p-4">
+    <div class="w-[50%] h-[300px] bg-gray-200 rounded-3xl p-4">
         <div class="flex justify-between">
             <div class="flex items-center gap-4">
                 <img src="https://placehold.co/80x80" alt="logo" class="rounded-full">
-                <a href="">Nombre empresa</a>
+                <a href="" class="">Nombre empresa</a>
             </div>
             <div>
                 <p class="text-sm text-gray-600">Publicada hace x tiempo</p>
