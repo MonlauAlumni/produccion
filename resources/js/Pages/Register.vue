@@ -35,6 +35,9 @@
       <button type="button" @click="registerWithGitHub" class="github-button">
         Register with GitHub
       </button>
+      <button type="button" @click="registerWithGoogle" class="border border-gray-300 rounded-md p-2">
+        Register with Google
+      </button>
 
       <!-- Mostrar errores -->
       <div v-if="form.errors" class="errors">
@@ -73,11 +76,15 @@ export default {
     function registerWithGitHub() {
       window.location.href = '/github/redirect';
     }
+    function registerWithGoogle() {
+      window.location.href = '/google/redirect';
+    }
 
     return {
       form,
       submit,
       registerWithGitHub,
+      registerWithGoogle
     };
   },
 };
