@@ -8,7 +8,7 @@ use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
     return Inertia::render('Home'); 
-});
+})->name('home');   
 
 Route::get('/complete-profile', [ProfileController::class, 'show'])->name('complete-profile');
 Route::post('/complete-profile', [ProfileController::class, 'store']);
