@@ -43,6 +43,6 @@ class RegisterController extends Controller
             'training_area' => $request->training_area,
         ]);
   
-        return redirect()->route('/')->with('success', 'User registered successfully!');
+        return redirect()->route('home')->with('success', 'User registered successfully!');
     }
 }
