@@ -17,5 +17,8 @@ Route::post('/complete-profile', [ProfileController::class, 'store']);
 Route::get('/register', [RegisterController::class, 'create'])->name('register');
 Route::post('/register', [RegisterController::class, 'store']);
 
+<<<<<<< HEAD
 Route::get('github/redirect', [SocialLoginController::class, 'github_redirect'])->name('github.redirect');
 Route::get('github/callback', [SocialLoginController::class, 'github_callback'])->name('github.callback');
+=======
+>>>>>>> Ponga
