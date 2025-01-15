@@ -1,28 +1,27 @@
 <?php
-
+ 
 namespace App\Http\Controllers\Auth;
-
+ 
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-
+ 
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
-
+ 
 class RegisterController extends Controller
 {
-  
-
-
+ 
+ 
+ 
     public function create()
     {
         return Inertia::render('Register');
     }
-
+ 
     // Manejar el envío del formulario de registro
     public function store(Request $request)
     {
-      
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name_1' => 'required|string|max:255',
@@ -32,7 +31,7 @@ class RegisterController extends Controller
             'role' => 'required|in:admin,teacher,tutor,student,company,guest',
             'training_area' => 'required|in:Informatica,Marketing,Automocion',
         ]);
-       
+     
         User::create([
             'name' => $request->first_name,
             'last_name_1' => $request->last_name_1,
@@ -43,6 +42,6 @@ class RegisterController extends Controller
             'training_area' => $request->training_area,
         ]);
   
-        return redirect()->route('home')->with('success', 'User registered successfully!');
+        return redirect('/')->with('success', 'Perfil completado con éxito. ¡Por favor, inicia sesión!');
     }
 }

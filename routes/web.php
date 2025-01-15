@@ -9,7 +9,7 @@ use App\Http\Controllers\Auth\LoginController;
 
 Route::get('/', function () {
     return Inertia::render('Home'); 
-})->name('home');
+})->name('home');   
 
 Route::get('/complete-profile', [ProfileController::class, 'show'])->name('complete-profile');
 Route::post('/complete-profile', [ProfileController::class, 'store']);
@@ -23,3 +23,6 @@ Route::post('/login', [LoginController::class, 'store']);
 
 Route::get('github/redirect', [SocialLoginController::class, 'github_redirect'])->name('github.redirect');
 Route::get('github/callback', [SocialLoginController::class, 'github_callback'])->name('github.callback');
+
+Route::get('google/redirect', [SocialLoginController::class, 'redirectToGoogle'])->name('google.redirect');
+Route::get('google/callback', [SocialLoginController::class, 'handleGoogleCallback'])->name('google.callback');

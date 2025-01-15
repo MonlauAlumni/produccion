@@ -83,6 +83,9 @@
         class="w-full rounded-3xl px-5 py-2 bg-blue-800 text-white text-lg font-semibold hover:bg-blue-600 transition my-2">
         Registrarse
       </button>
+      <button type="button" @click="registerWithGoogle" class="border border-gray-300 rounded-md p-2">
+        Register with Google
+      </button>
 
       <!-- Mostrar errores -->
       <div v-if="form.errors" class="mt-4 text-red-500">
@@ -121,11 +124,15 @@ export default {
     function registerWithGitHub() {
       window.location.href = '/github/redirect';
     }
+    function registerWithGoogle() {
+      window.location.href = '/google/redirect';
+    }
 
     return {
       form,
       submit,
       registerWithGitHub,
+      registerWithGoogle
     };
   },
 };
