@@ -81,17 +81,21 @@
         </div>
       </div>
 
-      <!-- Botón registro con GitHub -->
+      <div class="flex justify-between">
+        <!-- Botón registro con GitHub -->
       <button type="button" @click="registerWithGitHub" class="flex w-[30%] text-center justify-evenly items-center gap-2 px-5 py-2 bg-gray-800 text-white rounded-3xl my-2 hover:bg-gray-700 transition">
-        <img src="/public/images/github-mark-white.png" alt="" class="w-8 h-8">Register with GitHub
+        <img src="/public/images/github-mark-white.png" alt="Github" class="w-8 h-8">Registrarse con GitHub
       </button>
+
+      <!-- Botón registro con Google -->
+      <button type="button" @click="registerWithGoogle" class="flex w-[30%] text-center border-solid border-2 border-black justify-evenly items-center gap-2 px-5 py-2 bg-white rounded-3xl my-2 hover:bg-gray-200 transition">
+        <img src="/public/images/logoGoogle.png" alt="Google" class="w-8 h-8">Registrarse con Google
+      </button>
+      </div>
 
       <!-- Botón registro -->
       <button type="submit" :disabled="form.processing" class="w-full rounded-3xl px-5 py-2 bg-blue-800 text-white text-lg font-semibold hover:bg-blue-600 transition my-2">
         Registrarse
-      </button>
-      <button type="button" @click="registerWithGoogle" class="border border-gray-300 rounded-md p-2">
-        Register with Google
       </button>
 
       <!-- Mostrar errores -->
