@@ -6,7 +6,6 @@
       <HomeContainer />
     </div>
   </div>
-
 </template>
 
 <script setup>
