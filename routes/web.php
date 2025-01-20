@@ -7,9 +7,16 @@ use App\Http\Controllers\Auth\SocialLoginController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\LoginController;
 
+
 Route::get('/', function () {
     return Inertia::render('Home'); 
 })->name('home');   
+
+Route::group(['middleware' => ['role:admin']], function () {
+    Route::get('/admin/dashboard', function () {
+        return Inertia::render('Admin');
+    })->name('admin.dashboard');
+});
 
 Route::get('/complete-profile', [ProfileController::class, 'show'])->name('complete-profile');
 Route::post('/complete-profile', [ProfileController::class, 'store']);
@@ -26,3 +33,6 @@ Route::get('github/callback', [SocialLoginController::class, 'github_callback'])
 
 Route::get('google/redirect', [SocialLoginController::class, 'redirectToGoogle'])->name('google.redirect');
 Route::get('google/callback', [SocialLoginController::class, 'handleGoogleCallback'])->name('google.callback');
+
+Route::get('/redirect', [SocialLoginController::class, 'redirectToMicrosoft'])->name('microsoft.redirect');
+Route::get('/callback', [SocialLoginController::class, 'handleMicrosoftCallback'])->name('microsoft.callback');

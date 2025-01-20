@@ -16,9 +16,11 @@ class ProfileController extends Controller
         // Obtener los usuarios de Google y GitHub desde la sesión
         $googleUser = Session::get('google_user');
         $githubUser = Session::get('github_user');
+        $microsoftUser = Session::get('microsoft_user');
        
         // Determinar qué fuente de datos usar
-        $user = $googleUser ?? $githubUser;
+        $user = $googleUser ?? $githubUser ?? $microsoftUser;
+
     
         // Si se encuentra un usuario (ya sea de Google o GitHub)
         if ($user) {
@@ -46,6 +48,7 @@ class ProfileController extends Controller
         // Obtener los datos de la sesión de Google o GitHub
         $githubUser = Session::get('github_user');
         $googleUser = Session::get('google_user');
+        $microsoftUser = Session::get('microsoft_user');
 
         if ($githubUser) {
             $user = User::create([
@@ -72,10 +75,24 @@ class ProfileController extends Controller
                 'training_area' => $request->input('training_area'),
             ]);
         }
+        elseif($microsoftUser) {
+            $user = User::create([
+                'email' => $microsoftUser['email'],
+                'microsoft_id' => $microsoftUser['microsoft_id'],
+                'password' => $microsoftUser['password'],
+                'role' => $microsoftUser['role'],
+                'name' => $request->input('name'),
+                'last_name_1' => $request->input('last_name_1'),
+                'last_name_2' => $request->input('last_name_2'),
+                'training_area' => $request->input('training_area'),
+            ]);
+
+        }
 
         // Limpiar los datos de la sesión
         Session::forget('github_user');
         Session::forget('google_user');
+        Session::forget('microsoft_user');
 
         return redirect('/')->with('success', 'Perfil completado con éxito. ¡Por favor, inicia sesión!');
     }

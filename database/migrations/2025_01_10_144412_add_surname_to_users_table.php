@@ -20,7 +20,7 @@ class AddSurnameToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
            
-            $table->dropColumn(['first_name', 'last_name_1', 'last_name_2', 'training_area']);
+            $table->dropColumn(['last_name_1', 'last_name_2', 'training_area']);
         });
     }
 }

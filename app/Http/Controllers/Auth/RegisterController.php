@@ -32,15 +32,15 @@ class RegisterController extends Controller
             'training_area' => 'required|in:Informatica,Marketing,Automocion',
         ]);
      
-        User::create([
+        $user = User::create([
             'name' => $request->first_name,
             'last_name_1' => $request->last_name_1,
             'last_name_2' => $request->last_name_2,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
             'training_area' => $request->training_area,
         ]);
+        $user->assignRole($request->role);
   
         return redirect('/')->with('success', 'Perfil completado con éxito. ¡Por favor, inicia sesión!');
     }

@@ -11,13 +11,52 @@ use Illuminate\Support\Facades\Session;
 
 class SocialLoginController extends Controller
 {
-    
+    public function redirectToMicrosoft(){
+
+        return Socialite::driver('microsoft')->redirect();
+
+    }
       public function redirectToGoogle()
       {
           return Socialite::driver('google')->redirect();
       }
-  
-      // Respuesta de Google
+
+      public function handleMicrosoftCallback(){
+        $microsoftUser = Socialite::driver('microsoft')->user();
+        $accessToken = $microsoftUser->token;
+
+        $client = new \GuzzleHttp\Client();
+        $response = $client->get('https://graph.microsoft.com/v1.0/me/memberOf', [
+            'headers' => [
+                'Authorization' => "Bearer $accessToken",
+                'Accept' => 'application/json'
+            ],
+        ]);
+        $groups = json_decode($response->getBody(), true);
+        $groupNames = [];
+
+        foreach ($groups['value'] as $group){
+            if(isset($group['displayName'])) {
+                $groupNames[] = $group['displayName'];
+            }
+
+        }
+         //dd($groupNames);
+        //dd($microsoftUser);
+        $user = User::where('microsoft_id', $microsoftUser->getId())->first();
+        if (!$user) {
+            Session::put('microsoft_user', [
+                'email' => $microsoftUser->getEmail(),
+                'microsoft_id' => $microsoftUser->getId(),
+                'password' => bcrypt(Str::random(16)),
+                'role' => 'student',
+            ]);
+        }
+       
+        return redirect('/complete-profile');
+      }
+     
+     
       public function handleGoogleCallback()
       {
           try {
