@@ -10,34 +10,34 @@ use Illuminate\Support\Facades\Session;
 
 class ProfileController extends Controller
 {
-    // Mostrar el formulario de completar perfil
+   
     public function show()
     {
-        // Obtener los usuarios de Google y GitHub desde la sesión
+   
         $googleUser = Session::get('google_user');
         $githubUser = Session::get('github_user');
         $microsoftUser = Session::get('microsoft_user');
        
-        // Determinar qué fuente de datos usar
+      
         $user = $googleUser ?? $githubUser ?? $microsoftUser;
 
     
-        // Si se encuentra un usuario (ya sea de Google o GitHub)
+      
         if ($user) {
             return inertia('CompleteProfile', [
                 'email' => $user['email'],
             ]);
         }
     
-        // Si no se encontró el usuario, redirigir al inicio
+        
         return redirect('/');
     }
     
 
-    // Guardar los datos del perfil
+   
     public function store(Request $request)
     {
-        // Validar los datos del formulario
+ 
         $request->validate([
             'name' => 'required|string|max:255',
             'last_name_1' => 'required|string|max:255',
@@ -45,7 +45,7 @@ class ProfileController extends Controller
             'training_area' => 'required|in:Informatica,Marketing,Automocion',
         ]);
 
-        // Obtener los datos de la sesión de Google o GitHub
+      
         $githubUser = Session::get('github_user');
         $googleUser = Session::get('google_user');
         $microsoftUser = Session::get('microsoft_user');
