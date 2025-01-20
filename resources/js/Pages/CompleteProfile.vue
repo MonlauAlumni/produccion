@@ -36,6 +36,7 @@
       const form = useForm({
         name: '',
         last_name_1: '',
+        last_name_2: '',
         training_area: '',
       });
   

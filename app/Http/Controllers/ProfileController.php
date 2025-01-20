@@ -56,7 +56,7 @@ class ProfileController extends Controller
                 'github_id' => $githubUser['github_id'],
                 'google_id' => null,
                 'password' => $githubUser['password'],
-                'role' => $githubUser['role'],
+           
                 'name' => $request->input('name'),
                 'last_name_1' => $request->input('last_name_1'),
                 'last_name_2' => $request->input('last_name_2'),
@@ -66,9 +66,7 @@ class ProfileController extends Controller
             $user = User::create([
                 'email' => $googleUser['email'],
                 'google_id' => $googleUser['google_id'],
-                'github_id' => null,
                 'password' => $googleUser['password'],
-                'role' => $googleUser['role'],
                 'name' => $request->input('name'),
                 'last_name_1' => $request->input('last_name_1'),
                 'last_name_2' => $request->input('last_name_2'),
@@ -80,7 +78,6 @@ class ProfileController extends Controller
                 'email' => $microsoftUser['email'],
                 'microsoft_id' => $microsoftUser['microsoft_id'],
                 'password' => $microsoftUser['password'],
-                'role' => $microsoftUser['role'],
                 'name' => $request->input('name'),
                 'last_name_1' => $request->input('last_name_1'),
                 'last_name_2' => $request->input('last_name_2'),
@@ -88,6 +85,7 @@ class ProfileController extends Controller
             ]);
 
         }
+        $user->assignRole('alumno');
 
         // Limpiar los datos de la sesión
         Session::forget('github_user');

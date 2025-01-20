@@ -125,7 +125,6 @@ export default {
       email: '',
       password: '',
       password_confirmation: '',
-      role: '',
       training_area: '',
     });
     const showPassword = ref('password');
