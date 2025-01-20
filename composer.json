@@ -12,7 +12,10 @@
         "laravel/jetstream": "^5.3",
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.16",
-        "laravel/tinker": "^2.9"
+        "laravel/tinker": "^2.9",
+        "socialiteproviders/microsoft": "^4.6",
+        "socialiteproviders/zoho": "^4.1",
+        "spatie/laravel-permission": "^6.10"
     },
     "require-dev": {
         "bennett-treptow/laravel-migration-generator": "^4.4",

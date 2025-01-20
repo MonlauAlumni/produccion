@@ -58,11 +58,12 @@
         <select v-model="form.role" class="flex-grow w-full border-none outline-none bg-transparent text-gray-600" required>
           <option value="" disabled>Select Role</option>
           <option value="admin">Admin</option>
-          <option value="teacher">Teacher</option>
-          <option value="tutor">Tutor</option>
-          <option value="student">Student</option>
-          <option value="company">Company</option>
-          <option value="guest">Guest</option>
+
+       
+          <option value="alumno">Alumno</option>
+          <option value="empresa">Empresa</option>
+          <option value="exalumno">Exalumno</option>
+         
         </select>
       </div>
 
