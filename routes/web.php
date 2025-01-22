@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SocialLoginController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterCompanyController;
 
 
 Route::get('/', function () {
@@ -21,6 +22,8 @@ Route::group(['middleware' => ['role:admin']], function () {
 Route::get('/complete-profile', [ProfileController::class, 'show'])->name('complete-profile');
 Route::post('/complete-profile', [ProfileController::class, 'store']);
 
+Route::get('/register-company', [RegisterCompanyController::class, 'create'])->name('register-company');
+Route::post('/register-company', [RegisterCompanyController::class, 'store']);
 
 Route::get('/register', [RegisterController::class, 'create'])->name('register');
 Route::post('/register', [RegisterController::class, 'store']);
