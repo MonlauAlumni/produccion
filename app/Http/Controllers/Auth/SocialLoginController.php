@@ -41,7 +41,7 @@ class SocialLoginController extends Controller
             }
 
         }
-         //dd($groupNames);
+        //dd($groupNames);
         //dd($microsoftUser);
         $user = User::where('microsoft_id', $microsoftUser->getId())->first();
         if (!$user) {

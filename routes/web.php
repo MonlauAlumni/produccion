@@ -21,7 +21,9 @@ Route::group(['middleware' => ['role:admin']], function () {
 Route::get('/complete-profile', [ProfileController::class, 'show'])->name('complete-profile');
 Route::post('/complete-profile', [ProfileController::class, 'store']);
 
-
+Route::get('/register-company', function () {
+    return Inertia::render('CompanyRegister');
+})->name('register-company');
 Route::get('/register', [RegisterController::class, 'create'])->name('register');
 Route::post('/register', [RegisterController::class, 'store']);
 
