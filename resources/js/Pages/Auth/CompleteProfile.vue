@@ -1,5 +1,6 @@
 <template>
     <div>
+      <Navbar />
       <h1>Complete Your Profile</h1>
       <form @submit.prevent="submitForm">
         <div>
@@ -29,6 +30,7 @@
   </template>
   
   <script>
+  import Navbar from '../../Components/Navbar.vue';
   import { useForm } from '@inertiajs/vue3';
   
   export default {
