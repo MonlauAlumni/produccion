@@ -20,22 +20,22 @@ class RegisterCompanyController extends Controller
 
     public function store(Request $request)
     {
+      //  dd($request->all());
         
-        // Validación de datos
-        // $request->validate([
-        //     // Datos del Alumno
-        //     'name' => 'required|string|max:255',
-        //     'last_name_1' => 'required|string|max:255',
-        //     'last_name_2' => 'nullable|string|max:255',
-        //     'email' => 'required|email|unique:users,email',
-        //     'password' => 'required|string|min:6|confirmed',
+        $validatedData = $request->validate([
+            // Datos del Alumno
+            'name' => 'required|string|max:255',
+            'last_name_1' => 'required|string|max:255',
+            'last_name_2' => 'nullable|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
 
-        //     // Datos de la Empresa
-        //     'company_name' => 'required|string|max:255',
-        //     'company_phone' => 'required|string|max:15',
-        //     'fiscal_id' => 'required|string|max:255|unique:companies,fiscal_id',
-        //     'description' => 'nullable|string',
-        // ]);
+            // Datos de la Empresa
+            'company_name' => 'required|string|max:255',
+           'company_phone' => 'required|regex:/^[0-9]{7,15}$/',
+            'fiscal_id' => 'required|string|max:255|unique:companies,fiscal_id',
+            'description' => 'nullable|string',
+        ]);
 
         // //Registro del Alumno (Usuario)
         try {

@@ -33,6 +33,7 @@
                                 class="p-2 w-full outline-none"
                                 required
                             />
+                         
                         </div>
 
                         <div
@@ -180,6 +181,7 @@
                                 class="p-2 w-full outline-none"
                                 required
                             />
+                         
                         </div>
                         <div
                             class="w-1/2 flex items-center p-1 px-3 border border-gray-600 rounded-lg"
@@ -307,6 +309,7 @@ export default {
                 fiscal_id: form.fiscal_id,
                 description: form.description,
             });
+            
         };
 
         return {
