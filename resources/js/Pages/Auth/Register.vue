@@ -1,5 +1,6 @@
 <template>
   <Navbar />
+  
   <div class="container mx-auto w-1/2 mt-8">
     <h2 class="text-5xl">Registro de cuenta</h2>
     <p class="mt-4 text-lg text-gray-500">Complete todos los campos para confirmar el registro</p>
@@ -106,9 +107,12 @@
       </div>
     </form>
   </div>
+
 </template>
 
 <script>
+import ButtonRegister from '../../Components/ButtonRegister.vue';
+
 import Navbar from '../../Components/Navbar.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -116,6 +120,7 @@ import { ref } from 'vue';
 export default {
   components: {
     Navbar,
+  
   },
   setup() {
     const form = useForm({

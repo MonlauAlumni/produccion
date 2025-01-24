@@ -17,125 +17,65 @@
             <form @submit.prevent="nextStep">
                 <div class="grid grid-cols-1 gap-2 mb-6">
                     <div class="flex flex-row gap-4">
-                        <div
-                            class="w-1/2 flex items-center p-1 px-3 border border-gray-600 rounded-lg"
-                        >
-                            <span
-                                class="material-symbols-outlined text-gray-800 mr-2"
-                            >
-                                person
-                            </span>
-                            <input
-                                type="text"
-                                id="name"
-                                v-model="form.name"
-                                placeholder="Introduce tu nombre"
-                                class="p-2 w-full outline-none"
-                                required
-                            />
-                         
-                        </div>
-
-                        <div
-                            class="w-1/2 flex items-center p-1 px-3 border border-gray-600 rounded-lg"
-                        >
-                            <span
-                                class="material-symbols-outlined text-gray-800 mr-2"
-                            >
-                                person
-                            </span>
-                            <input
-                                type="text"
-                                id="last_name_1"
-                                v-model="form.last_name_1"
-                                placeholder="Introduce tu primer apellido"
-                                class="p-2 w-full outline-none"
-                                required
-                            />
-                        </div>
+                        <InputWithIcon
+                            v-model="form.name"
+                            icon="person"
+                            placeholder="Introduce tu nombre"
+                            id="name"
+                            required
+                        />
+                        <InputWithIcon
+                            v-model="form.last_name_1"
+                            icon="person"
+                            placeholder="Introduce tu primer apellido"
+                            id="last_name_1"
+                            required
+                        />
                     </div>
                     <div class="flex flex-row gap-4">
-                        <div
-                            class="w-1/2 flex items-center p-1 px-3 border border-gray-600 rounded-lg"
-                        >
-                            <span
-                                class="material-symbols-outlined text-gray-800 mr-2"
-                            >
-                                person
-                            </span>
-                            <input
-                                type="text"
-                                id="last_name_2"
-                                v-model="form.last_name_2"
-                                placeholder="Introduce tu segundo apellido"
-                                class="p-2 w-full outline-none"
-                            />
-                        </div>
-
-                        <div
-                            class="w-1/2 flex items-center p-1 px-3 border border-gray-600 rounded-lg"
-                        >
-                            <span
-                                class="material-symbols-outlined text-gray-800 mr-2"
-                            >
-                                <span class="material-symbols-outlined">
-                                    alternate_email
-                                </span>
-                            </span>
-                            <input
-                                type="email"
-                                id="email"
-                                v-model="form.email"
-                                placeholder="Introduce tu correo electrónico"
-                                class="p-2 w-full outline-none"
-                                required
-                            />
-                        </div>
-                    </div>
-                    <div
-                        class="flex items-center p-1 px-3 border border-gray-600 rounded-lg"
-                    >
-                        <span
-                            class="material-symbols-outlined text-gray-800 mr-2"
-                        >
-                            lock
-                        </span>
-                        <input
-                            type="password"
-                            id="password"
-                            v-model="form.password"
-                            placeholder="Crea una contraseña"
-                            class="p-2 w-full outline-none"
+                        <InputWithIcon
+                            v-model="form.last_name_2"
+                            icon="person"
+                            placeholder="Introduce tu segundo apellido"
+                            id="last_name_2"
+                        />
+                        <InputWithIcon
+                            v-model="form.email"
+                            icon="alternate_email"
+                            placeholder="Introduce tu correo"
+                            id="email"
+                            type="email"
                             required
                         />
                     </div>
-
-                    <div
-                        class="flex items-center p-1 px-3 border border-gray-600 rounded-lg"
-                    >
-                        <span
-                            class="material-symbols-outlined text-gray-800 mr-2"
-                        >
-                            lock
-                        </span>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            v-model="form.confirmPassword"
-                            placeholder="Confirma tu contraseña"
-                            class="p-2 w-full outline-none"
-                            required
-                        />
-                    </div>
+                    <InputWithIcon
+                        v-model="form.password"
+                        icon="lock"
+                        placeholder="Crea una contraseña"
+                        id="password"
+                        type="password"
+                        required
+                        class="w-full"
+                    />
+                    <InputWithIcon
+                        v-model="form.confirmPassword"
+                        icon="lock"
+                        placeholder="Confirma tu contraseña"
+                        id="confirmPassword"
+                        type="password"
+                        required
+                        class="w-full"
+                    />
                 </div>
 
                 <!-- Botón para pasar a la siguiente sección -->
-                <button
-                    type="submit"
-                    class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
-                >
-                    Siguiente
-                </button>
+                <SubmitButton label="Siguiente" />
+                <div class="flex justify-end mt-4">
+                    <span>
+                        ¿Ya tienes cuenta?
+                        <a href="/login" class="text-blue-600">Inicia sesión</a>
+                    </span>
+                </div>
             </form>
         </div>
 
@@ -146,60 +86,32 @@
             </h2>
             <form @submit.prevent="submitForm">
                 <div class="grid grid-cols-1 gap-2 mb-6">
+                    <InputWithIcon
+                        v-model="form.company_name"
+                        icon="domain"
+                        placeholder="Nombre de la Empresa"
+                        id="company_name"
+                        required
+                        class="w-full"
+                    />
                     <div class="flex flex-row gap-4">
-                        <div
-                            class="w-full flex items-center p-1 px-3 border border-gray-600 rounded-lg"
-                        >
-                            <span
-                                class="material-symbols-outlined text-gray-800 mr-2"
-                            >
-                                domain
-                            </span>
-                            <input
-                                type="text"
-                                id="company_name"
-                                placeholder="Nombre de la Empresa"
-                                v-model="form.company_name"
-                                class="p-2 w-full outline-none"
-                                required
-                            />
-                        </div>
+                        <InputWithIcon
+                            v-model="form.company_phone"
+                            icon="call"
+                            placeholder="Teléfono de Contacto"
+                            id="company_phone"
+                            type="tel"
+                            required
+                        />
+                        <InputWithIcon
+                            v-model="form.fiscal_id"
+                            icon="badge"
+                            placeholder="Identificación Fiscal"
+                            id="fiscal_id"
+                            required
+                        />
                     </div>
-                    <div class="flex flex-row gap-4">
-                        <div
-                            class="w-1/2 flex items-center p-1 px-3 border border-gray-600 rounded-lg"
-                        >
-                            <span
-                                class="material-symbols-outlined text-gray-800 mr-2"
-                            >
-                                call
-                            </span>
-                            <input
-                                type="tel"
-                                placeholder="Teléfono de Contacto"
-                                v-model="form.company_phone"
-                                class="p-2 w-full outline-none"
-                                required
-                            />
-                         
-                        </div>
-                        <div
-                            class="w-1/2 flex items-center p-1 px-3 border border-gray-600 rounded-lg"
-                        >
-                            <span
-                                class="material-symbols-outlined text-gray-800 mr-2"
-                            >
-                                badge
-                            </span>
-                            <input
-                                type="text"
-                                placeholder="Identificación Fiscal"
-                                v-model="form.fiscal_id"
-                                class="p-2 w-full outline-none"
-                                required
-                            />
-                        </div>
-                    </div>
+                    
                     <div
                         class="flex items-start p-3 border border-gray-600 rounded-lg"
                         style="height: auto"
@@ -231,12 +143,8 @@
                         >
                     </label>
                 </div>
-                <button
-                    type="submit"
-                    class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
-                >
-                    Registrar
-                </button>
+
+                <SubmitButton label="Registrar" />
             </form>
         </div>
     </div>
@@ -244,12 +152,16 @@
 
 <script>
 import Navbar from "../../Components/Navbar.vue";
+import SubmitButton from "../../Components/SubmitButton.vue";
+import InputWithIcon from "../../Components/InputWithIcon.vue";
 import { useForm } from "@inertiajs/vue3";
 import { ref } from "vue";
 
 export default {
     components: {
         Navbar,
+        SubmitButton,
+        InputWithIcon,
     },
     setup() {
         // Inicializa el formulario usando useForm
@@ -265,8 +177,6 @@ export default {
             fiscal_id: "",
             description: "",
         });
-
-       
 
         const privacyPolicy = ref(false);
 
@@ -309,7 +219,6 @@ export default {
                 fiscal_id: form.fiscal_id,
                 description: form.description,
             });
-            
         };
 
         return {
