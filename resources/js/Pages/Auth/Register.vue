@@ -109,13 +109,9 @@
 </template>
 
 <script>
-<<<<<<< HEAD:resources/js/Pages/Register.vue
-import Navbar from '../Components/Navbar.vue';
-import { ref } from 'vue';
-=======
 import Navbar from '../../Components/Navbar.vue';
->>>>>>> 586437ca753fd1ebff9daa4af9bcb38cf21ae63b:resources/js/Pages/Auth/Register.vue
 import { useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 export default {
   components: {

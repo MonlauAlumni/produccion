@@ -1,6 +1,14 @@
 <template>
     <Navbar />
-    <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <div class="max-w-2xl mx-auto p-6 ">
+        <div>
+            <h1 class="text-4xl font-semibold text-gray-800 mb-4">
+                Registro de Empresa
+            </h1>
+            <p class="text-gray-600">
+                Complete todos los campos para confirmar el registro y publicar ofertas
+            </p>
+        </div>
         <div v-if="currentStep === 1" class="mb-8">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">
                 Datos del Usuario
@@ -16,6 +24,7 @@
                         <input
                             type="text"
                             id="name"
+                            placeholder="Introduce tu nombre"
                             v-model="form.name"
                             class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
                             required
@@ -32,6 +41,7 @@
                             type="text"
                             id="last_name_1"
                             v-model="form.last_name_1"
+                            placeholder="Introduce tu apellido"
                             class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
                             required
                         />
@@ -47,6 +57,7 @@
                             type="text"
                             id="last_name_2"
                             v-model="form.last_name_2"
+                            placeholder="Introduce tu segundo apellido"
                             class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
                         />
                     </div>
@@ -61,6 +72,7 @@
                             type="email"
                             id="email"
                             v-model="form.email"
+                            placeholder="Introduce tu correo electrónico"
                             class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
                             required
                         />
@@ -76,6 +88,7 @@
                             type="password"
                             id="password"
                             v-model="form.password"
+                            placeholder="Crea una contraseña"
                             class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
                             required
                         />
@@ -91,84 +104,74 @@
                             type="password"
                             id="confirmPassword"
                             v-model="form.confirmPassword"
+                            placeholder="Repite la contraseña"
                             class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
                             required
                         />
                     </div>
                 </div>
 
-                <!-- Botón para pasar a la siguiente sección -->
+            
                 <button
                     type="submit"
                     class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
                 >
-                    Siguiente: Datos de la Empresa
+                    Siguiente
                 </button>
             </form>
         </div>
 
-        <!-- Sección de Datos de la Empresa -->
+       
         <div v-if="currentStep === 2" class="company-info">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">
                 Datos de la Empresa
             </h2>
             <form @submit.prevent="submitForm">
-                <div class="grid grid-cols-1 gap-6 mb-6">
+                <div class="grid grid-cols-1 gap-4 mb-6">
                     <div>
-                        <label
-                            for="company_name"
-                            class="block text-sm font-medium text-gray-700"
-                            >Nombre de la Empresa</label
-                        >
+                        
                         <input
                             type="text"
                             id="company_name"
                             v-model="companyInfo.company_name"
+                            placeholder="Introduce el nombre de la empresa"
                             class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
                             required
                         />
                     </div>
-
-                    <div>
-                        <label
-                            for="company_phone"
-                            class="block text-sm font-medium text-gray-700"
-                            >Teléfono de Contacto</label
-                        >
+                    <div class="flex flex-row w-full justify-between gap-x-3">
+                    <div class="w-1/2">
+                       
                         <input
                             type="tel"
                             id="company_phone"
                             v-model="companyInfo.company_phone"
+                            placeholder="Introduce el teléfono de contacto"
                             class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
                             required
                         />
+                 
                     </div>
-
-                    <div>
-                        <label
-                            for="fiscal_id"
-                            class="block text-sm font-medium text-gray-700"
-                            >Identificación Fiscal</label
-                        >
+                    <div class="w-1/2">
+            
                         <input
                             type="text"
                             id="fiscal_id"
                             v-model="companyInfo.fiscal_id"
+                            placeholder="Introduce la identificación fiscal"
                             class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
                             required
                         />
+                    
                     </div>
-
+                </div>
                     <div>
-                        <label
-                            for="description"
-                            class="block text-sm font-medium text-gray-700"
-                            >Descripción de la Empresa</label
-                        >
+                       
                         <textarea
                             id="description"
                             v-model="companyInfo.description"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
+                            placeholder="Introduce una descripción de la empresa"
+                            class="mt-2 p-3 h-full w-full border border-gray-300 rounded-lg"
                         ></textarea>
                     </div>
                 </div>
@@ -176,7 +179,7 @@
                 <!-- Botón de registro -->
                 <button
                     type="submit"
-                    class="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
+                    class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
                 >
                     Registrar Empresa
                 </button>

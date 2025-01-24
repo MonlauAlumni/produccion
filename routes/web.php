@@ -9,9 +9,13 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterCompanyController;
 
 
-Route::get('/', function () {
+Route::get('/home', function () {
+    
     return Inertia::render('Home'); 
 })->name('home');   
+Route::get('/', function () {
+    return Inertia::render('LandingPage');
+})->name('home');
 
 Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/admin/dashboard', function () {
