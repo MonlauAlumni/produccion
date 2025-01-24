@@ -56,6 +56,7 @@
                         type="password"
                         required
                         class="w-full"
+                        toggleVisibility
                     />
                     <InputWithIcon
                         v-model="form.confirmPassword"
@@ -65,6 +66,7 @@
                         type="password"
                         required
                         class="w-full"
+                        toggleVisibility
                     />
                 </div>
 
