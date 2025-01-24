@@ -1,97 +1,128 @@
 <template>
     <Navbar />
-    <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-        <div v-if="currentStep === 1" class="mb-8">
+    <div class="max-w-2xl mx-auto p-8 mt-5 bg-white">
+        <div>
+            <h1 class="text-5xl font-semibold text-gray-800 mb-6">
+                Registro de Empresa
+            </h1>
+            <h2 class="text-lg text-gray-500">
+                Complete todos los campos para confirmar el registro y publicar
+                ofertas
+            </h2>
+        </div>
+        <div v-if="currentStep === 1" class="mb-8 mt-5">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">
-                Datos del Usuario
+                Datos de acceso a Alumni
             </h2>
             <form @submit.prevent="nextStep">
-                <div class="grid grid-cols-1 gap-6 mb-6">
-                    <div>
-                        <label
-                            for="name"
-                            class="block text-sm font-medium text-gray-700"
-                            >Nombre</label
+                <div class="grid grid-cols-1 gap-2 mb-6">
+                    <div class="flex flex-row gap-4">
+                        <div
+                            class="w-1/2 flex items-center p-1 px-3 border border-gray-600 rounded-lg"
                         >
-                        <input
-                            type="text"
-                            id="name"
-                            v-model="form.name"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
-                            required
-                        />
-                    </div>
+                            <span
+                                class="material-symbols-outlined text-gray-800 mr-2"
+                            >
+                                person
+                            </span>
+                            <input
+                                type="text"
+                                id="name"
+                                v-model="form.name"
+                                placeholder="Introduce tu nombre"
+                                class="p-2 w-full outline-none"
+                                required
+                            />
+                        </div>
 
-                    <div>
-                        <label
-                            for="last_name_1"
-                            class="block text-sm font-medium text-gray-700"
-                            >Primer Apellido</label
+                        <div
+                            class="w-1/2 flex items-center p-1 px-3 border border-gray-600 rounded-lg"
                         >
-                        <input
-                            type="text"
-                            id="last_name_1"
-                            v-model="form.last_name_1"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
-                            required
-                        />
+                            <span
+                                class="material-symbols-outlined text-gray-800 mr-2"
+                            >
+                                person
+                            </span>
+                            <input
+                                type="text"
+                                id="last_name_1"
+                                v-model="form.last_name_1"
+                                placeholder="Introduce tu primer apellido"
+                                class="p-2 w-full outline-none"
+                                required
+                            />
+                        </div>
                     </div>
-
-                    <div>
-                        <label
-                            for="last_name_2"
-                            class="block text-sm font-medium text-gray-700"
-                            >Segundo Apellido</label
+                    <div class="flex flex-row gap-4">
+                        <div
+                            class="w-1/2 flex items-center p-1 px-3 border border-gray-600 rounded-lg"
                         >
-                        <input
-                            type="text"
-                            id="last_name_2"
-                            v-model="form.last_name_2"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
-                        />
+                            <span
+                                class="material-symbols-outlined text-gray-800 mr-2"
+                            >
+                                person
+                            </span>
+                            <input
+                                type="text"
+                                id="last_name_2"
+                                v-model="form.last_name_2"
+                                placeholder="Introduce tu segundo apellido"
+                                class="p-2 w-full outline-none"
+                            />
+                        </div>
+
+                        <div
+                            class="w-1/2 flex items-center p-1 px-3 border border-gray-600 rounded-lg"
+                        >
+                            <span
+                                class="material-symbols-outlined text-gray-800 mr-2"
+                            >
+                                <span class="material-symbols-outlined">
+                                    alternate_email
+                                </span>
+                            </span>
+                            <input
+                                type="email"
+                                id="email"
+                                v-model="form.email"
+                                placeholder="Introduce tu correo electrónico"
+                                class="p-2 w-full outline-none"
+                                required
+                            />
+                        </div>
                     </div>
-
-                    <div>
-                        <label
-                            for="email"
-                            class="block text-sm font-medium text-gray-700"
-                            >Correo Electrónico</label
+                    <div
+                        class="flex items-center p-1 px-3 border border-gray-600 rounded-lg"
+                    >
+                        <span
+                            class="material-symbols-outlined text-gray-800 mr-2"
                         >
-                        <input
-                            type="email"
-                            id="email"
-                            v-model="form.email"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label
-                            for="password"
-                            class="block text-sm font-medium text-gray-700"
-                            >Contraseña</label
-                        >
+                            lock
+                        </span>
                         <input
                             type="password"
                             id="password"
                             v-model="form.password"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
+                            placeholder="Crea una contraseña"
+                            class="p-2 w-full outline-none"
                             required
                         />
                     </div>
 
-                    <div>
-                        <label
-                            for="confirmPassword"
-                            class="block text-sm font-medium text-gray-700"
-                            >Repetir Contraseña</label
+                    <div
+                        class="flex items-center p-1 px-3 border border-gray-600 rounded-lg"
+                    >
+                        <span
+                            class="material-symbols-outlined text-gray-800 mr-2"
                         >
+                            lock
+                        </span>
                         <input
                             type="password"
                             id="confirmPassword"
                             v-model="form.confirmPassword"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
+                            placeholder="Confirma tu contraseña"
+                            class="p-2 w-full outline-none"
                             required
                         />
                     </div>
@@ -102,83 +133,107 @@
                     type="submit"
                     class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
                 >
-                    Siguiente: Datos de la Empresa
+                    Siguiente
                 </button>
             </form>
         </div>
 
         <!-- Sección de Datos de la Empresa -->
-        <div v-if="currentStep === 2" class="company-info">
+        <div v-if="currentStep === 2" class="mb-6 mt-5">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">
                 Datos de la Empresa
             </h2>
             <form @submit.prevent="submitForm">
-                <div class="grid grid-cols-1 gap-6 mb-6">
-                    <div>
-                        <label
-                            for="company_name"
-                            class="block text-sm font-medium text-gray-700"
-                            >Nombre de la Empresa</label
+                <div class="grid grid-cols-1 gap-2 mb-6">
+                    <div class="flex flex-row gap-4">
+                        <div
+                            class="w-full flex items-center p-1 px-3 border border-gray-600 rounded-lg"
                         >
-                        <input
-                            type="text"
-                            id="company_name"
-                            v-model="companyInfo.company_name"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
-                            required
-                        />
+                            <span
+                                class="material-symbols-outlined text-gray-800 mr-2"
+                            >
+                                domain
+                            </span>
+                            <input
+                                type="text"
+                                id="company_name"
+                                placeholder="Nombre de la Empresa"
+                                v-model="form.company_name"
+                                class="p-2 w-full outline-none"
+                                required
+                            />
+                        </div>
                     </div>
-
-                    <div>
-                        <label
-                            for="company_phone"
-                            class="block text-sm font-medium text-gray-700"
-                            >Teléfono de Contacto</label
+                    <div class="flex flex-row gap-4">
+                        <div
+                            class="w-1/2 flex items-center p-1 px-3 border border-gray-600 rounded-lg"
                         >
-                        <input
-                            type="tel"
-                            id="company_phone"
-                            v-model="companyInfo.company_phone"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
-                            required
-                        />
+                            <span
+                                class="material-symbols-outlined text-gray-800 mr-2"
+                            >
+                                call
+                            </span>
+                            <input
+                                type="tel"
+                                placeholder="Teléfono de Contacto"
+                                v-model="form.company_phone"
+                                class="p-2 w-full outline-none"
+                                required
+                            />
+                        </div>
+                        <div
+                            class="w-1/2 flex items-center p-1 px-3 border border-gray-600 rounded-lg"
+                        >
+                            <span
+                                class="material-symbols-outlined text-gray-800 mr-2"
+                            >
+                                badge
+                            </span>
+                            <input
+                                type="text"
+                                placeholder="Identificación Fiscal"
+                                v-model="form.fiscal_id"
+                                class="p-2 w-full outline-none"
+                                required
+                            />
+                        </div>
                     </div>
-
-                    <div>
-                        <label
-                            for="fiscal_id"
-                            class="block text-sm font-medium text-gray-700"
-                            >Identificación Fiscal</label
+                    <div
+                        class="flex items-start p-3 border border-gray-600 rounded-lg"
+                        style="height: auto"
+                    >
+                        <span
+                            class="material-symbols-outlined text-gray-800 mr-2 mt-1"
                         >
-                        <input
-                            type="text"
-                            id="fiscal_id"
-                            v-model="companyInfo.fiscal_id"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label
-                            for="description"
-                            class="block text-sm font-medium text-gray-700"
-                            >Descripción de la Empresa</label
-                        >
+                            description
+                        </span>
                         <textarea
-                            id="description"
-                            v-model="companyInfo.description"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
+                            placeholder="Descripción de la Empresa"
+                            v-model="form.description"
+                            class="px-2 py-1 w-full outline-none resize-none"
+                            style="min-height: 100px"
                         ></textarea>
                     </div>
                 </div>
-
-                <!-- Botón de registro -->
+                <div class="flex items-center px-1 mb-4">
+                    <input
+                        type="checkbox"
+                        id="privacyPolicy"
+                        v-model="privacyPolicy"
+                        class="form-checkbox h-5 w-5 rounded-full text-blue-600"
+                    />
+                    <label for="privacyPolicy" class="ml-2 text-gray-900">
+                        He leído y acepto la
+                        <strong class="underline cursor-pointer"
+                            >Política de Privacidad</strong
+                        >
+                    </label>
+                </div>
                 <button
                     type="submit"
-                    class="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
+                    class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
                 >
-                    Registrar Empresa
+                    Registrar
                 </button>
             </form>
         </div>
@@ -188,66 +243,79 @@
 <script>
 import Navbar from "../../Components/Navbar.vue";
 import { useForm } from "@inertiajs/vue3";
+import { ref } from "vue";
+
 export default {
     components: {
         Navbar,
     },
-    data() {
-        return {
-            currentStep: 1, // Para controlar la sección actual
-            form: {
-                name: "", // Cambiado de firstName a name
-                last_name_1: "", // Cambiado de lastName a last_name_1
-                last_name_2: "", // Cambiado de secondLastName a last_name_2
-                email: "",
-                password: "",
-                confirmPassword: "",
-            },
-            companyInfo: {
-                company_name: "", // Cambiado de companyName a companyName
-                company_phone: "", // Cambiado de companyPhone a companyPhone
-                fiscal_id: "", // Cambiado de fiscalId a fiscalId
-                description: "",
-            },
-        };
-    },
-    methods: {
-        nextStep() {
-            if (this.validateStudentInfo()) {
-                this.currentStep = 2; // Cambiar a la sección de empresa
+    setup() {
+        // Inicializa el formulario usando useForm
+        const form = useForm({
+            name: "",
+            last_name_1: "",
+            last_name_2: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+            company_name: "",
+            company_phone: "",
+            fiscal_id: "",
+            description: "",
+        });
+
+       
+
+        const privacyPolicy = ref(false);
+
+        const currentStep = ref(1); // Para controlar la sección actual
+
+        const nextStep = () => {
+            if (validateStudentInfo()) {
+                currentStep.value = 2; // Cambiar a la sección de empresa
             } else {
                 alert("Por favor, complete todos los campos correctamente.");
             }
-        },
-        validateStudentInfo() {
+        };
+
+        const validateStudentInfo = () => {
             return (
-                this.form.name &&
-                this.form.last_name_1 &&
-                this.form.email &&
-                this.form.password === this.form.confirmPassword
+                form.name &&
+                form.last_name_1 &&
+                form.email &&
+                form.password === form.confirmPassword
             );
-        },
-        submitForm() {
-            Inertia.post("/register-company", {
-                name: this.form.name, // Para el nombre del usuario
-                last_name_1: this.form.last_name_1,
-                last_name_2: this.form.last_name_2,
-                email: this.form.email,
-                password: this.form.password,
-                confirmPassword: this.form.confirmPassword,
-                company_name: this.companyInfo.company_name, // Usamos company_name
-                company_phone: this.companyInfo.company_phone,
-                fiscal_id: this.companyInfo.fiscal_id,
-                description: this.companyInfo.description,
+        };
+
+        const submitForm = () => {
+            if (!privacyPolicy.value) {
+                alert(
+                    "Debes aceptar la política de privacidad para continuar."
+                );
+                return;
+            }
+
+            form.post("/register-company", {
+                name: form.name,
+                last_name_1: form.last_name_1,
+                last_name_2: form.last_name_2,
+                email: form.email,
+                password: form.password,
+                confirmPassword: form.confirmPassword,
+                company_name: form.company_name,
+                company_phone: form.company_phone,
+                fiscal_id: form.fiscal_id,
+                description: form.description,
             });
-        },
+        };
+
+        return {
+            form,
+            privacyPolicy,
+            currentStep,
+            nextStep,
+            submitForm,
+        };
     },
 };
 </script>
-
-<style scoped>
-.company-register {
-    max-width: 600px;
-    margin: auto;
-}
-</style>

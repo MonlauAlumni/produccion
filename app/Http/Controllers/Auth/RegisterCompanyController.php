@@ -20,52 +20,52 @@ class RegisterCompanyController extends Controller
 
     public function store(Request $request)
     {
+        
+        // Validación de datos
+        // $request->validate([
+        //     // Datos del Alumno
+        //     'name' => 'required|string|max:255',
+        //     'last_name_1' => 'required|string|max:255',
+        //     'last_name_2' => 'nullable|string|max:255',
+        //     'email' => 'required|email|unique:users,email',
+        //     'password' => 'required|string|min:6|confirmed',
 
-        // // Validación de datos
-        $request->validate([
-            // Datos del Alumno
-            'name' => 'required|string|max:255',
-            'last_name_1' => 'required|string|max:255',
-            'last_name_2' => 'nullable|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
-
-            // Datos de la Empresa
-            'company_name' => 'required|string|max:255',
-            'compny_phone' => 'required|string|max:15',
-            'fiscal_id' => 'required|string|max:255|unique:companies,fiscal_id',
-            'description' => 'nullable|string',
-        ]);
+        //     // Datos de la Empresa
+        //     'company_name' => 'required|string|max:255',
+        //     'company_phone' => 'required|string|max:15',
+        //     'fiscal_id' => 'required|string|max:255|unique:companies,fiscal_id',
+        //     'description' => 'nullable|string',
+        // ]);
 
         // //Registro del Alumno (Usuario)
         try {
         $user = User::create([
-            'name' => $request->firstName,
-            'last_name_1' => $request->lastName,
-            'last_name_2' => $request->secondLastName,
+            'name' => $request->name,
+            'last_name_1' => $request->last_name_1,
+            'last_name_2' => $request->last_name_2,
             'email' => $request->email,
             'password' => Hash::make($request->password), // Encriptamos la contraseña
-            'training_area' => 'Informatica', // Área de formación
+            'training_area' => 'Informatica',
         ]);
-        $user->assignRole('empresa'); // Asignamos el rol de Alumno
-
+        $user->assignRole('empresa'); 
+       
         // Registro de la Empresa
         $company = Company::create([
-            'user_id' => $user->id, // Relacionamos la empresa con el alumno (usuario)
+            'user_id' => $user->id,
             'company_name' => $request->company_name,
             'company_phone' => $request->company_phone,
-            'fiscal_id' => $request->fiscalId,
+            'fiscal_id' => $request->fiscal_id,
             'description' => $request->description,
         ]);
 
 
-        Auth::login($user); // El usuario se loguea automáticamente
+        Auth::login($user);
 
-        // Redirigir a la página deseada, por ejemplo, al dashboard
+
         return redirect('/')->with('success', 'Perfil completado con éxito. ¡Bienvenido!');
 
     } catch (\Exception $e) {
-        // Si ocurre un error, respondemos con un mensaje de error
+        dd($e);
         return back()->with('error', 'Ocurrió un error, intenta nuevamente.');
     }
 
