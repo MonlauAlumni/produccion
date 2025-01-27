@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+
 use Inertia\Inertia;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
@@ -24,13 +25,13 @@ class ProfileController extends Controller
     
       
         if ($user) {
-            return inertia('CompleteProfile', [
+            return inertia('Auth/CompleteProfile', [
                 'email' => $user['email'],
             ]);
         }
     
         
-        return redirect('/');
+    
     }
     
 
@@ -85,7 +86,7 @@ class ProfileController extends Controller
             ]);
 
         }
-        $user->assignRole('alumno');
+        $user->assignRole('alumne');
 
         // Limpiar los datos de la sesión
         Session::forget('github_user');

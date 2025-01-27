@@ -1,188 +1,153 @@
 <template>
     <Navbar />
-    <div class="max-w-2xl mx-auto p-6 ">
+    <div class="max-w-2xl mx-auto mt-[5%] p-8 bg-white">
         <div>
-            <h1 class="text-4xl font-semibold text-gray-800 mb-4">
+            <h1 class="text-5xl font-semibold text-gray-800 mb-6">
                 Registro de Empresa
             </h1>
-            <p class="text-gray-600">
-                Complete todos los campos para confirmar el registro y publicar ofertas
-            </p>
+            <h2 class="text-lg text-gray-500">
+                Complete todos los campos para confirmar el registro y publicar
+                ofertas
+            </h2>
         </div>
-        <div v-if="currentStep === 1" class="mb-8">
+        <div v-if="currentStep === 1" class="mb-8 mt-5">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">
-                Datos del Usuario
+                Datos de acceso a Alumni
             </h2>
             <form @submit.prevent="nextStep">
-                <div class="grid grid-cols-1 gap-6 mb-6">
-                    <div>
-                        <label
-                            for="name"
-                            class="block text-sm font-medium text-gray-700"
-                            >Nombre</label
-                        >
-                        <input
-                            type="text"
-                            id="name"
-                            placeholder="Introduce tu nombre"
+                <div class="grid grid-cols-1 gap-2 mb-6">
+                    <div class="flex flex-row gap-2">
+                        <InputWithIcon
                             v-model="form.name"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
+                            icon="person"
+                            placeholder="Introduce tu nombre"
+                            id="name"
                             required
                         />
-                    </div>
-
-                    <div>
-                        <label
-                            for="last_name_1"
-                            class="block text-sm font-medium text-gray-700"
-                            >Primer Apellido</label
-                        >
-                        <input
-                            type="text"
-                            id="last_name_1"
+                        <InputWithIcon
                             v-model="form.last_name_1"
-                            placeholder="Introduce tu apellido"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
+                            icon="person"
+                            placeholder="Introduce tu primer apellido"
+                            id="last_name_1"
                             required
                         />
                     </div>
-
-                    <div>
-                        <label
-                            for="last_name_2"
-                            class="block text-sm font-medium text-gray-700"
-                            >Segundo Apellido</label
-                        >
-                        <input
-                            type="text"
-                            id="last_name_2"
+                    <div class="flex flex-row gap-2">
+                        <InputWithIcon
                             v-model="form.last_name_2"
+                            icon="person"
                             placeholder="Introduce tu segundo apellido"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
+                            id="last_name_2"
                         />
-                    </div>
-
-                    <div>
-                        <label
-                            for="email"
-                            class="block text-sm font-medium text-gray-700"
-                            >Correo Electrónico</label
-                        >
-                        <input
-                            type="email"
-                            id="email"
+                        <InputWithIcon
                             v-model="form.email"
-                            placeholder="Introduce tu correo electrónico"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
+                            icon="alternate_email"
+                            placeholder="Introduce tu correo empresarial"
+                            id="email"
+                            type="email"
                             required
                         />
                     </div>
-
-                    <div>
-                        <label
-                            for="password"
-                            class="block text-sm font-medium text-gray-700"
-                            >Contraseña</label
-                        >
-                        <input
-                            type="password"
-                            id="password"
-                            v-model="form.password"
-                            placeholder="Crea una contraseña"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label
-                            for="confirmPassword"
-                            class="block text-sm font-medium text-gray-700"
-                            >Repetir Contraseña</label
-                        >
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            v-model="form.confirmPassword"
-                            placeholder="Repite la contraseña"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
-                            required
-                        />
-                    </div>
+                    <InputWithIcon
+                        v-model="form.password"
+                        icon="lock"
+                        placeholder="Crea una contraseña"
+                        id="password"
+                        type="password"
+                        required
+                        class="w-full"
+                        toggleVisibility
+                    />
+                    <InputWithIcon
+                        v-model="form.confirmPassword"
+                        icon="lock"
+                        placeholder="Confirma tu contraseña"
+                        id="confirmPassword"
+                        type="password"
+                        required
+                        class="w-full"
+                        toggleVisibility
+                    />
                 </div>
 
-            
-                <button
-                    type="submit"
-                    class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
-                >
-                    Siguiente
-                </button>
+                <!-- Botón para pasar a la siguiente sección -->
+                <SubmitButton label="Siguiente" />
+                <div class="flex justify-end mt-4">
+                    <span>
+                        ¿Ya tienes cuenta?
+                        <a href="/login" class="text-blue-600">Inicia sesión</a>
+                    </span>
+                </div>
             </form>
         </div>
 
-       
-        <div v-if="currentStep === 2" class="company-info">
+        <!-- Sección de Datos de la Empresa -->
+        <div v-if="currentStep === 2" class="mb-6 mt-5">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">
                 Datos de la Empresa
             </h2>
             <form @submit.prevent="submitForm">
-                <div class="grid grid-cols-1 gap-4 mb-6">
-                    <div>
-                        
-                        <input
-                            type="text"
-                            id="company_name"
-                            v-model="companyInfo.company_name"
-                            placeholder="Introduce el nombre de la empresa"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
-                            required
-                        />
-                    </div>
-                    <div class="flex flex-row w-full justify-between gap-x-3">
-                    <div class="w-1/2">
-                       
-                        <input
-                            type="tel"
+                <div class="grid grid-cols-1 gap-2 mb-6">
+                    <InputWithIcon
+                        v-model="form.company_name"
+                        icon="domain"
+                        placeholder="Nombre de la Empresa"
+                        id="company_name"
+                        required
+                        class="w-full"
+                    />
+                    <div class="flex flex-row gap-4">
+                        <InputWithIcon
+                            v-model="form.company_phone"
+                            icon="call"
+                            placeholder="Teléfono de Contacto"
                             id="company_phone"
-                            v-model="companyInfo.company_phone"
-                            placeholder="Introduce el teléfono de contacto"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
+                            type="tel"
                             required
                         />
-                 
-                    </div>
-                    <div class="w-1/2">
-            
-                        <input
-                            type="text"
+                        <InputWithIcon
+                            v-model="form.fiscal_id"
+                            icon="badge"
+                            placeholder="Identificación Fiscal"
                             id="fiscal_id"
-                            v-model="companyInfo.fiscal_id"
-                            placeholder="Introduce la identificación fiscal"
-                            class="mt-2 p-3 w-full border border-gray-300 rounded-lg"
                             required
                         />
                     
                     </div>
-                </div>
-                    <div>
-                       
+                    
+                    <div
+                        class="flex items-start p-3 border border-gray-600 rounded-lg"
+                        style="height: auto"
+                    >
+                        <span
+                            class="material-symbols-outlined text-gray-800 mr-2 mt-1"
+                        >
+                            description
+                        </span>
                         <textarea
-                            id="description"
-                            v-model="companyInfo.description"
-                            placeholder="Introduce una descripción de la empresa"
-                            class="mt-2 p-3 h-full w-full border border-gray-300 rounded-lg"
+                            placeholder="Descripción de la Empresa"
+                            v-model="form.description"
+                            class="px-2 py-1 w-full outline-none resize-none"
+                            style="min-height: 100px"
                         ></textarea>
                     </div>
                 </div>
+                <div class="flex items-center px-1 mb-4">
+                    <input
+                        type="checkbox"
+                        id="privacyPolicy"
+                        v-model="privacyPolicy"
+                        class="form-checkbox h-5 w-5 rounded-full text-blue-600"
+                    />
+                    <label for="privacyPolicy" class="ml-2 text-gray-900">
+                        He leído y acepto la
+                        <strong class="underline cursor-pointer"
+                            >Política de Privacidad</strong
+                        >
+                    </label>
+                </div>
 
-                <!-- Botón de registro -->
-                <button
-                    type="submit"
-                    class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
-                >
-                    Registrar Empresa
-                </button>
+                <SubmitButton label="Registrar" />
             </form>
         </div>
     </div>
@@ -190,67 +155,82 @@
 
 <script>
 import Navbar from "../../Components/Navbar.vue";
+import SubmitButton from "../../Components/SubmitButton.vue";
+import InputWithIcon from "../../Components/InputWithIcon.vue";
 import { useForm } from "@inertiajs/vue3";
+import { ref } from "vue";
+
 export default {
     components: {
         Navbar,
+        SubmitButton,
+        InputWithIcon,
     },
-    data() {
-        return {
-            currentStep: 1, // Para controlar la sección actual
-            form: {
-                name: "", // Cambiado de firstName a name
-                last_name_1: "", // Cambiado de lastName a last_name_1
-                last_name_2: "", // Cambiado de secondLastName a last_name_2
-                email: "",
-                password: "",
-                confirmPassword: "",
-            },
-            companyInfo: {
-                company_name: "", // Cambiado de companyName a companyName
-                company_phone: "", // Cambiado de companyPhone a companyPhone
-                fiscal_id: "", // Cambiado de fiscalId a fiscalId
-                description: "",
-            },
-        };
-    },
-    methods: {
-        nextStep() {
-            if (this.validateStudentInfo()) {
-                this.currentStep = 2; // Cambiar a la sección de empresa
+    setup() {
+        
+        const form = useForm({
+            name: "",
+            last_name_1: "",
+            last_name_2: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+            company_name: "",
+            company_phone: "",
+            fiscal_id: "",
+            description: "",
+        });
+
+        const privacyPolicy = ref(false);
+
+        const currentStep = ref(1); // Para controlar la sección actual
+
+        const nextStep = () => {
+            if (validateStudentInfo()) {
+                currentStep.value = 2; // Cambiar a la sección de empresa
             } else {
                 alert("Por favor, complete todos los campos correctamente.");
             }
-        },
-        validateStudentInfo() {
+        };
+
+        const validateStudentInfo = () => {
             return (
-                this.form.name &&
-                this.form.last_name_1 &&
-                this.form.email &&
-                this.form.password === this.form.confirmPassword
+                form.name &&
+                form.last_name_1 &&
+                form.email &&
+                form.password === form.confirmPassword
             );
-        },
-        submitForm() {
-            Inertia.post("/register-company", {
-                name: this.form.name, // Para el nombre del usuario
-                last_name_1: this.form.last_name_1,
-                last_name_2: this.form.last_name_2,
-                email: this.form.email,
-                password: this.form.password,
-                confirmPassword: this.form.confirmPassword,
-                company_name: this.companyInfo.company_name, // Usamos company_name
-                company_phone: this.companyInfo.company_phone,
-                fiscal_id: this.companyInfo.fiscal_id,
-                description: this.companyInfo.description,
+        };
+
+        const submitForm = () => {
+            if (!privacyPolicy.value) {
+                alert(
+                    "Debes aceptar la política de privacidad para continuar."
+                );
+                return;
+            }
+
+            form.post("/register-company", {
+                name: form.name,
+                last_name_1: form.last_name_1,
+                last_name_2: form.last_name_2,
+                email: form.email,
+                password: form.password,
+                confirmPassword: form.confirmPassword,
+                company_name: form.company_name,
+                company_phone: form.company_phone,
+                fiscal_id: form.fiscal_id,
+                description: form.description,
             });
-        },
+        };
+
+        return {
+            form,
+            privacyPolicy,
+            currentStep,
+            nextStep,
+            submitForm,
+        };
     },
 };
 </script>
-
-<style scoped>
-.company-register {
-    max-width: 600px;
-    margin: auto;
-}
-</style>

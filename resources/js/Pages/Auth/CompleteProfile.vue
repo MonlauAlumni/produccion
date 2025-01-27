@@ -1,39 +1,84 @@
 <template>
     <div>
       <Navbar />
-      <h1>Complete Your Profile</h1>
-      <form @submit.prevent="submitForm">
+      <div class="max-w-2xl mx-auto mt-[8%] p-8  bg-white">
         <div>
-          <label for="name">Name:</label>
-          <input type="text" v-model="form.name" required />
+                <h1 class="text-5xl font-semibold text-gray-800 mb-6">
+                    Complete Your Profile
+                </h1>
+                <h2 class="text-lg text-gray-500">
+                  Complete all fields to confirm your registration
+                </h2>
+            </div>
+        
+        <form @submit.prevent="submitForm">
+    
+        <div class="grid grid-cols-1 mt-4 gap-2 mb-6">
+          <div class="flex flex-row gap-4">
+          <InputWithIcon
+            v-model="form.name"
+            icon="person"
+            placeholder="Enter your name"
+            id="name"
+            required
+            class="w-full"
+          />
+          
+          </div>  
+          <div class="flex flex-row gap-4">
+            <InputWithIcon
+            v-model="form.last_name_1"
+            icon="person"
+            placeholder="Enter your first last name"
+            id="last_name_1"
+            required />
+          <InputWithIcon
+            v-model="form.last_name_2"
+            icon="person"
+            placeholder="Enter your second last name"
+            id="last_name_2" /> 
+          </div>
+            
+
+          <div class="flex items-center h-12 p-1 px-3 border border-gray-600 rounded-lg relative">
+  <span class="material-symbols-outlined text-gray-800 mr-2">
+    school
+  </span>
+  <select
+    v-model="form.training_area"
+    class="flex-grow h-full border-none outline-none bg-transparent text-gray-600"
+    required
+  >
+    <option value="" disabled>Área formativa</option>
+    <option value="Informatica">Informática</option>
+    <option value="Marketing">Marketing</option>
+    <option value="Automocion">Automoción</option>
+  </select>
+</div>
+
+
+
+          <SubmitButton class="" label="Complete Profile" />
         </div>
-        <div>
-          <label for="last_name_1">First Last Name:</label>
-          <input type="text" v-model="form.last_name_1" required />
-        </div>
-        <div>
-          <label for="last_name_2">Second Last Name:</label>
-          <input type="text" v-model="form.last_name_2"  />
-        </div>
-        <div>
-          <label for="training_area">Training Area:</label>
-          <select v-model="form.training_area" required>
-            <option value="">Select your area</option>
-            <option value="Informatica">Informática</option>
-            <option value="Marketing">Marketing</option>
-            <option value="Automocion">Automoción</option>
-          </select>
-        </div>
-        <button type="submit">Complete Profile</button>
-      </form>
+        </form>
+      </div>
+      
     </div>
   </template>
   
   <script>
   import Navbar from '../../Components/Navbar.vue';
   import { useForm } from '@inertiajs/vue3';
-  
+  import InputWithIcon from '../../Components/InputWithIcon.vue';
+  import SubmitButton from '../../Components/SubmitButton.vue';
+  import OAuthButton from '../../Components/OAuthButton.vue';
+
   export default {
+    components: {
+      Navbar,
+      InputWithIcon,
+      SubmitButton,
+    },
     setup() {
       const form = useForm({
         name: '',

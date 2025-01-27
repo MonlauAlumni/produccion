@@ -11,9 +11,7 @@ use Inertia\Inertia;
  
 class RegisterController extends Controller
 {
- 
- 
- 
+    
     public function create()
     {
         return Inertia::render('Auth/Register');
@@ -40,7 +38,7 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
             'training_area' => $request->training_area,
         ]);
-        $user->assignRole('alumno');
+        $user->assignRole('alumne');
   
         return redirect('/')->with('success', 'Perfil completado con éxito. ¡Por favor, inicia sesión!');
     }
