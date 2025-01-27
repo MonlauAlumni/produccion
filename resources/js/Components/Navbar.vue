@@ -6,10 +6,10 @@
                 <a href="/" class="text-white text-3xl font-bold">Alumni</a>
             </div>
             <ul class="flex">
-                <li class="ml-6">
+                <li v-if="!$page.props.auth.user" class="ml-6">
                     <a href="/login" class="text-white text-lg font-semibold">Iniciar Sesión</a>
                 </li>
-                <li class="ml-6">
+                <li v-if="!$page.props.auth.user" class="ml-6">
                     <a href="/register" class="text-white text-lg p-2 border-solid border-2 border-white rounded-3xl font-semibold">Registrarse</a>
                 </li>
             </ul>
