@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Session;
 class SocialLoginController extends Controller
 {
     public function redirectToMicrosoft(){
-
         return Socialite::driver('microsoft')->redirect();
 
     }
@@ -52,6 +51,12 @@ class SocialLoginController extends Controller
                 'role' => 'student',
             ]);
         }
+
+        else {
+            Auth::login($user);
+            return redirect('/home');
+        }
+        
        
         return redirect('/complete-profile');
       }
@@ -60,7 +65,6 @@ class SocialLoginController extends Controller
       public function handleGoogleCallback()
       {
           try {
-            
               $googleUser = Socialite::driver('google')->user();
       
               if (!$googleUser->getEmail()) {
@@ -104,7 +108,9 @@ class SocialLoginController extends Controller
      */
     public function github_callback()
 {
-    $githubUser = Socialite::driver('github')->user();
+    
+    $githubUser = Socialite::driver('github')->stateless()->user();
+    
   
    
     $user = User::where('github_id', $githubUser->getId())->first();
@@ -119,6 +125,12 @@ class SocialLoginController extends Controller
           
         ]);
     }
+
+    else {
+        Auth::login($user);
+        return redirect('/home');
+    }
+
     return redirect('/complete-profile');
 }
 
