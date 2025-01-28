@@ -6,6 +6,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\Profile;
+use App\Models\Education;   
+use App\Models\WorkExperience;
+use App\Models\Skill;
 
 class User extends Authenticatable
 {
@@ -27,4 +31,23 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
+
+    // Relación con Education (uno a muchos)
+    public function educations()
+    {
+        return $this->hasMany(Education::class);
+    }
+
+    // Relación con WorkExperience (uno a muchos)
+    public function workExperiences()
+    {
+        return $this->hasMany(WorkExperience::class);
+    }
+
+  
 }
