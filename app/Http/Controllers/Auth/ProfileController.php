@@ -29,6 +29,7 @@ class ProfileController extends Controller
                 'email' => $user['email'],
             ]);
         }
+        
     
         
     
