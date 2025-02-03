@@ -1,23 +1,23 @@
 <template>
     <section class="hero relative bg-cover bg-center text-white text-center">
-        <div class="carousel absolute inset-y-0 inset-x-0 w-full h-full">
+        <div class="carousel absolute bottom-0 inset-x-0 w-full h-full">
             <div class="carousel-inner relative w-full h-full overflow-hidden">
-                <div class="carousel-item absolute opacity-0 transition-opacity duration-1000 ease-linear" v-for="(image, index) in images" :key="index">
+                <div class="carousel-item absolute opacity-0 transition-opacity duration-2000 ease-linear" v-for="(image, index) in images" :key="index">
                     <img :src="image" class="w-full h-full object-cover">
                 </div>
-                <div class="absolute inset-0 bg-black opacity-50"></div>
+                <div class="absolute inset-0 bg-black opacity-85 backdrop-blur-sm"></div>
             </div>
         </div>
-        <header class="absolute inset-y-0 inset-x-0 flex flex-col items-center justify-center">
-            <h1 class="text-4xl font-bold">Mi Landing Page</h1>
-            <p class="mt-4 text-lg">Un breve mensaje de bienvenida</p>
-            <button class="mt-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Comenzar</button>
+        <header class="absolute inset-0 flex flex-col items-center justify-center">
+            <h1 class="text-4xl font-bold">¡Bienvenido a Alumni!</h1>
+            <p class="mt-4 text-lg">Encuentra ofertas de trabajo y conecta con tus compañeros</p>
+            <button @click="scrollToShowcase" class="mt-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Descubre más</button>
         </header>
     </section>
 </template>
 
 <script setup>
-import { ref, onMounted, defineProps, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, defineProps } from 'vue';
 
 const props = defineProps({
     images: {
@@ -41,9 +41,16 @@ const next = () => {
     showImage(currentIndex.value);
 };
 
+const scrollToShowcase = () => {
+    const showcaseSection = document.querySelector('.page-showcase');
+    if (showcaseSection) {
+        showcaseSection.scrollIntoView({ behavior: 'smooth' });
+    }
+};
+
 onMounted(() => {
     showImage(currentIndex.value);
-    intervalId = setInterval(next, 3000); // Change image every 3 seconds
+    intervalId = setInterval(next, 3000);
 });
 
 onUnmounted(() => {
@@ -57,7 +64,7 @@ onUnmounted(() => {
 }
 
 .carousel {
-    @apply absolute inset-y-0 inset-x-0 w-full h-full;
+    @apply absolute w-full h-full;
 }
 
 .carousel-inner {
@@ -68,4 +75,3 @@ onUnmounted(() => {
     @apply absolute w-full h-full transition-opacity duration-1000 ease-linear;
 }
 </style>
-
