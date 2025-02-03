@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class WorkExperience extends Model
 {
+    protected $table = 'experiences';
     protected $fillable = [
         'user_id',
         'job_title',

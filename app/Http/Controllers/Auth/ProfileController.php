@@ -7,39 +7,55 @@ use App\Http\Controllers\Controller;
 
 use Inertia\Inertia;
 use App\Models\User;
+
 use Illuminate\Support\Facades\Session;
 
 class ProfileController extends Controller
 {
-   
+
+    public function profile($slang)
+{
+    $user = User::all()->first(function ($user) use ($slang) {
+        return $user->slang === $slang;
+    });
+
+    if (!$user) {
+        abort(404);
+    }
+
+    return Inertia::render('Auth/Profile', [
+        'user' => $user,
+        'profile' => $user->profile,
+        'workExperiences' => $user->workExperiences,
+        'educations' => $user->educations,
+      
+        
+    ]);
+}
+
     public function show()
     {
-   
+
         $googleUser = Session::get('google_user');
         $githubUser = Session::get('github_user');
         $microsoftUser = Session::get('microsoft_user');
-       
-      
+
+
         $user = $googleUser ?? $githubUser ?? $microsoftUser;
 
-    
-      
+
+
         if ($user) {
             return inertia('Auth/CompleteProfile', [
                 'email' => $user['email'],
             ]);
         }
-        
-    
-        
-    
     }
-    
 
-   
+
     public function store(Request $request)
     {
- 
+
         $request->validate([
             'name' => 'required|string|max:255',
             'last_name_1' => 'required|string|max:255',
@@ -47,7 +63,7 @@ class ProfileController extends Controller
             'training_area' => 'required|in:Informatica,Marketing,Automocion',
         ]);
 
-      
+
         $githubUser = Session::get('github_user');
         $googleUser = Session::get('google_user');
         $microsoftUser = Session::get('microsoft_user');
@@ -58,7 +74,7 @@ class ProfileController extends Controller
                 'github_id' => $githubUser['github_id'],
                 'google_id' => null,
                 'password' => $githubUser['password'],
-           
+
                 'name' => $request->input('name'),
                 'last_name_1' => $request->input('last_name_1'),
                 'last_name_2' => $request->input('last_name_2'),
@@ -74,8 +90,7 @@ class ProfileController extends Controller
                 'last_name_2' => $request->input('last_name_2'),
                 'training_area' => $request->input('training_area'),
             ]);
-        }
-        elseif($microsoftUser) {
+        } elseif ($microsoftUser) {
             $user = User::create([
                 'email' => $microsoftUser['email'],
                 'microsoft_id' => $microsoftUser['microsoft_id'],
@@ -85,7 +100,6 @@ class ProfileController extends Controller
                 'last_name_2' => $request->input('last_name_2'),
                 'training_area' => $request->input('training_area'),
             ]);
-
         }
         $user->assignRole('alumne');
 

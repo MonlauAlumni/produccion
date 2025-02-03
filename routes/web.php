@@ -28,7 +28,7 @@ Route::group(['middleware' => ['role:admin']], function () {
 });
 
 Route::middleware('auth')->group(function() {
-
+    Route::get('/perfil/{slang}', [ProfileController::class, 'profile'])->name('perfil.show');
     Route::middleware(isAdministrator::class)->prefix('admin')->group(function() {
         Route::get('/dashboard', function () {
            dd('admin');
