@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Session;
 class SocialLoginController extends Controller
 {
     public function redirectToMicrosoft(){
-
         return Socialite::driver('microsoft')->redirect();
 
     }
@@ -41,7 +40,7 @@ class SocialLoginController extends Controller
             }
 
         }
-         //dd($groupNames);
+        //dd($groupNames);
         //dd($microsoftUser);
         $user = User::where('microsoft_id', $microsoftUser->getId())->first();
         if (!$user) {
@@ -52,6 +51,12 @@ class SocialLoginController extends Controller
                 'role' => 'student',
             ]);
         }
+
+        else {
+            Auth::login($user);
+            return redirect('/home');
+        }
+        
        
         return redirect('/complete-profile');
       }
@@ -60,27 +65,26 @@ class SocialLoginController extends Controller
       public function handleGoogleCallback()
       {
           try {
-              // Obtener los datos del usuario de Google
               $googleUser = Socialite::driver('google')->user();
       
               if (!$googleUser->getEmail()) {
                   throw new \Exception('No se pudo obtener el correo electrónico del usuario.');
               }
       
-              // Buscar si el usuario ya existe
+              
               $user = User::where('email', $googleUser->getEmail())->first();
-             
+              
               if (!$user) {
-                  // Si el usuario no existe, guardamos los datos en la sesión
+                  
                   Session::put('google_user', [
                       'email' => $googleUser->getEmail(),
                       'google_id' => $googleUser->getId(),
                       'password' => bcrypt(Str::random(16)),
-                      'role' => 'student',
+                      
                   ]);
               }
       
-              // Redirigir al formulario de completar perfil
+             
               return redirect('/complete-profile');
           } catch (\Exception $e) {
               return redirect('/login')->with('error', 'Error al iniciar sesión con Google: ' . $e->getMessage());
@@ -104,7 +108,9 @@ class SocialLoginController extends Controller
      */
     public function github_callback()
 {
-    $githubUser = Socialite::driver('github')->user();
+    
+    $githubUser = Socialite::driver('github')->stateless()->user();
+    
   
    
     $user = User::where('github_id', $githubUser->getId())->first();
@@ -116,9 +122,15 @@ class SocialLoginController extends Controller
             'email' => $githubUser->getEmail(),
             'github_id' => $githubUser->getId(),
             'password' => bcrypt(Str::random(16)),
-            'role' => 'student',
+          
         ]);
     }
+
+    else {
+        Auth::login($user);
+        return redirect('/home');
+    }
+
     return redirect('/complete-profile');
 }
 

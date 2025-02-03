@@ -3,18 +3,39 @@
         <div class="flex justify-between">
             <div class="flex items-center gap-4">
                 <img src="https://placehold.co/80x80" alt="logo" class="rounded-full">
-                <a href="" class="">Nombre empresa</a>
+                <a href="" class="">{{ name }}</a>
             </div>
             <div>
-                <p class="text-sm text-gray-600">Publicada hace x tiempo</p>
+                <p class="text-sm text-gray-600">Publicada hace {{ postTime }} </p>
             </div>
         </div>
         <div class="gap-4 flex flex-col">
-            <h2 class="text-3xl pt-4">Lorem Ipsum</h2>
-            <p class="text-gray-600">Lorem ipsum dolor sit amet. Sed voluptas quis in rerum beatae ut nihil aspernatur ad deleniti velit ut autem repellendus. Et pariatur quos hic sunt nobis et atque sunt. At deleniti nihil sit minima illo non perspiciatis laudantium vel similique suscipit ut cupiditate obcaecati qui harum quaerat! Id corporis rerum in corrupti delectus et perspiciatis consequatur ea distinctio alias.</p>
+            <h2 class="text-3xl pt-4">{{ postTitle }}</h2>
+            <p class="text-gray-600">{{ postExtract }}</p>
         </div>
     </div>
 </template>
 
-<script setup>
+<script>
+export default {
+    name: "HomeContainer",
+    props: {
+        name: {
+            type: String,
+            default: "Empresa", 
+        },
+        postTime: {
+            type: String,
+            default: "1 día", 
+        },
+        postTitle: {
+            type: String,
+            default: "Título de la publicación", 
+        },
+        postExtract: {
+            type: String,
+            default: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.", 
+        },
+    },
+};
 </script>

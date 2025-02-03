@@ -2,15 +2,17 @@
     <nav class="bg-blue-800 p-4">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex gap-4 items-center">
-                <img src="/public/images/logo.png" alt="Alumni" class="w-16 h-16">
-                <a href="/" class="text-white text-3xl font-bold">Alumni</a>
+                <a href="/" class="text-white text-3xl font-bold flex items-center gap-4"> 
+                    <img href="/" src="/public/images/logo.png" alt="Alumni" class="w-17 h-16">
+                    Alumni</a>
             </div>
             <ul class="flex">
-                <li class="ml-6">
+                <li v-if="!$page.props.auth.user" class="ml-6">
                     <a href="/login" class="text-white text-lg font-semibold">Iniciar Sesión</a>
                 </li>
-                <li class="ml-6">
-                    <a href="/register" class="text-white text-lg p-2 border-solid border-2 border-white rounded-3xl font-semibold">Registrarse</a>
+                <li v-if="!$page.props.auth.user" class="ml-6">
+                    <a href="/register"
+                        class="text-white text-lg p-2 border-solid border-2 border-white rounded-3xl font-semibold">Registrarse</a>
                 </li>
             </ul>
         </div>

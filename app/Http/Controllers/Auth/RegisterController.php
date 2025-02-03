@@ -11,24 +11,22 @@ use Inertia\Inertia;
  
 class RegisterController extends Controller
 {
- 
- 
- 
+    
     public function create()
     {
-        return Inertia::render('Register');
+        return Inertia::render('Auth/Register');
     }
  
-    // Manejar el envío del formulario de registro
+   
     public function store(Request $request)
     {
+
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name_1' => 'required|string|max:255',
             'last_name_2' => 'nullable|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:admin,teacher,tutor,student,company,guest',
             'training_area' => 'required|in:Informatica,Marketing,Automocion',
         ]);
      
@@ -40,7 +38,7 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
             'training_area' => $request->training_area,
         ]);
-        $user->assignRole($request->role);
+        $user->assignRole('alumne');
   
         return redirect('/')->with('success', 'Perfil completado con éxito. ¡Por favor, inicia sesión!');
     }
