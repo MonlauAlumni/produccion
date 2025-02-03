@@ -15,7 +15,6 @@
       class="p-2 w-full outline-none"
     />
 
-    <!-- Icono de visibilidad, solo si toggleVisibility es true -->
     <span
       v-if="toggleVisibility"
       @click="toggleVisibilityfn"

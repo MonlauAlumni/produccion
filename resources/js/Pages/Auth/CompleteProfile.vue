@@ -55,9 +55,6 @@
     <option value="Automocion">Automoción</option>
   </select>
 </div>
-
-
-
           <SubmitButton class="" label="Complete Profile" />
         </div>
         </form>
@@ -71,7 +68,6 @@
   import { useForm } from '@inertiajs/vue3';
   import InputWithIcon from '../../Components/InputWithIcon.vue';
   import SubmitButton from '../../Components/SubmitButton.vue';
-  import OAuthButton from '../../Components/OAuthButton.vue';
 
   export default {
     components: {
