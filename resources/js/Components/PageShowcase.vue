@@ -1,12 +1,12 @@
 <template>
     <section v-for="(section, index) in sections" :key="index" class="page-showcase relative bg-cover bg-center text-black text-center py-16 bg-gray-100">
-        <div :class="['container mx-auto max-w-4xl flex items-center', imageAlignment(index)]">
+        <div :class="['container mx-auto max-w-4xl flex items-center gap-4', imageAlignment(index)]">
             <div :class="['w-1/2', imageAlignment(index) === 'flex-row-reverse' ? 'order-2' : 'order-1']">
                 <img :src="section.image" :alt="section.title" class="w-full h-[32rem] object-cover mb-4"> <!-- Adjusted height -->
             </div>
             <div class="w-1/2 px-4">
                 <h2 class="text-3xl font-bold mb-4">{{ section.title }}</h2>
-                <p class="text-lg">{{ section.description }}</p>
+                <p class="text-lg text-justify">{{ section.description }}</p>
             </div>
         </div>
     </section>

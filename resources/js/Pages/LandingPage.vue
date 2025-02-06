@@ -1,7 +1,7 @@
 <template>
     <nav
       class="fixed top-0 z-50 p-4 w-full flex justify-between items-center transition-all duration-300"
-      :class="isScrolled ? 'bg-black/80' : 'bg-transparent'"
+      :class="isScrolled ? 'bg-blue-800/80' : 'bg-transparent'"
     >
       <div class="flex gap-4 items-center">
         <a href="/" class="text-white text-3xl font-bold flex items-center gap-4">
