@@ -48,7 +48,7 @@ const props = defineProps({
           <div>
             <button @click="props.openEditModal" v-if="isSameUser"
               class="cursor-pointer text-blue-500 hover:text-blue-600">
-              Editar Perfil
+              <i class='bx bx-pencil'></i>
             </button>
           </div>
 

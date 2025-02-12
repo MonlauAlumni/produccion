@@ -63,7 +63,7 @@ defineExpose({ openModal })
       <div class="bg-blue-600 px-6 py-4 flex justify-between items-center">
         <h2 class="text-xl font-semibold text-white">Editar Perfil</h2>
         <button @click="closeModal" class="text-white hover:text-blue-200 transition-colors">
-          <box-icon name="x" type="solid"></box-icon>
+          <i class='bx bx-x'></i>
         </button>
       </div>
    
@@ -85,18 +85,7 @@ defineExpose({ openModal })
             <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
             <textarea v-model="form.description" id="descripcion" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
           </div>
-          <div class="space-y-2">
-            <label for="puesto" class="block text-sm font-medium text-gray-700">Puesto de Trabajo</label>
-            <input v-model="form.puesto" id="puesto" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-          </div>
-          <div class="space-y-2">
-            <label for="formacion" class="block text-sm font-medium text-gray-700">Formación Académica</label>
-            <input v-model="form.formacion" id="formacion" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-          </div>
-          <div class="space-y-2">
-            <label for="licencias" class="block text-sm font-medium text-gray-700">Licencias</label>
-            <input v-model="form.licencias" id="licencias" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-          </div>
+          
           <div class="flex justify-end space-x-3 mt-6">
             <button @click="closeModal" type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 cursor-pointer focus:ring-gray-500">
               Cancelar

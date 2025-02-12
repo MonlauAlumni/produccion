@@ -5,16 +5,8 @@
       class="w-full flex justify-between items-center py-3 px-4 bg-white text-[#193CB8] transition-all duration-300 ease-in-out rounded-lg  hover:bg-[#193CB8] hover:text-white shadow-sm border border-gray-200 cursor-pointer"
     >
       <h2 class="text-xl font-bold">{{ title  }}</h2>
-      <svg
-        :class="{ 'transform rotate-180': isExpanded }"
-        class="w-6 h-6 transition-transform duration-300 ease-in-out"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-      </svg>
+      <i class="bx bx-chevron-down" :class="{ 'transform rotate-180': isExpanded }"></i>
+
     </button>
     <transition
       enter-active-class="transition-all duration-300 ease-out"

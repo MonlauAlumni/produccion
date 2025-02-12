@@ -3,6 +3,8 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { Inertia } from '@inertiajs/inertia';
 import 'boxicons';
+import 'boxicons/css/boxicons.min.css'
+
 
 import '../css/app.css';
  

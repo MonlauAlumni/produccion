@@ -142,8 +142,8 @@ class ProfileController extends Controller
         $user->profile->update([
             'description' => $request->input('description'),
         ]);
-
-
+        
+      
         
     }
 }
