@@ -15,6 +15,7 @@ const props = defineProps({
   workExperiences: Array,
   skills: Array,
   isSameUser: Boolean,
+  slang: String,
 });
 
 const editModal = ref(null);
@@ -24,6 +25,7 @@ const openEditModal = () => {
     editModal.value.openModal();
   }
 };
+
 
 
 </script>
@@ -38,10 +40,14 @@ const openEditModal = () => {
               <ExperienceSection
       title="Experiencia Laboral"
       :items="workExperiences"
+      :slang="slang"
     />
     <ExperienceSection
       title="Formación Académica"
       :items="educations"
+      :user="user"
+      :slang="slang"
+      
     />
     <EditModal :user="user" :profile="profile" ref="editModal" />
           </div>

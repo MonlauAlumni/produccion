@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Profile;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -26,13 +26,14 @@ class ProfileController extends Controller
     $authUser = Auth::user();
    
     $isSameUser = $authUser && $authUser->id === $user->id;
-
+  
     return Inertia::render('Auth/Profile', [
         'user' => $user,
         'profile' => $user->profile,
         'workExperiences' => $user->workExperiences,
         'educations' => $user->educations,
         'isSameUser' => $isSameUser,
+        'slang' => $slang,
       
         
     ]);

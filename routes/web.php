@@ -4,9 +4,10 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SocialLoginController;
-use App\Http\Controllers\Auth\ProfileController;
+use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterCompanyController;
+use App\Http\Controllers\Profile\ExperienceController;
 use App\Http\Middleware\IsAdministrator;
 use App\Http\Middleware\IsCompany;
 use App\Http\Middleware\IsStudent;
@@ -31,6 +32,8 @@ Route::group(['middleware' => ['role:admin']], function () {
 Route::middleware('auth')->group(function() {
     Route::get('/perfil/{slang}', [ProfileController::class, 'profile'])->name('perfil.show');
     Route::put('/perfil/{slang}', [ProfileController::class, 'update'])->name('perfil.update');
+    Route::post('/perfil/{slug}/experiencia', [ExperienceController::class, 'store'])->name('perfil.experience.store');
+
    
     Route::middleware(isAdministrator::class)->prefix('admin')->group(function() {
         Route::get('/dashboard', function () {

@@ -9,11 +9,11 @@ class WorkExperience extends Model
     protected $table = 'experiences';
     protected $fillable = [
         'user_id',
-        'job_title',
         'company_name',
+        'position',
         'start_date',
         'end_date',
-        'responsibilities',
+        'description',
     ];
 
     // Relación con User (inversa, uno a muchos)
