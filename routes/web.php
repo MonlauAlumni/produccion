@@ -32,7 +32,9 @@ Route::group(['middleware' => ['role:admin']], function () {
 Route::middleware('auth')->group(function() {
     Route::get('/perfil/{slang}', [ProfileController::class, 'profile'])->name('perfil.show');
     Route::put('/perfil/{slang}', [ProfileController::class, 'update'])->name('perfil.update');
-    Route::post('/perfil/{slug}/experiencia', [ExperienceController::class, 'store'])->name('perfil.experience.store');
+    Route::post('/perfil/{slug}/experiencia', [ExperienceController::class, 'storeWork'])->name('perfil.experience.store');
+    Route::post('/perfil/{slang}/educacion', [ExperienceController::class, 'storeEducation'])->name('educacion.store');
+
 
    
     Route::middleware(isAdministrator::class)->prefix('admin')->group(function() {

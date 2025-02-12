@@ -6,6 +6,7 @@ const props = defineProps({
   title: String,
   user: Object,
   slang: String,
+  type: String,
 });
 const isExperienceModalOpen = ref(false);
 
@@ -69,6 +70,7 @@ const addExperience = () => {
   <ExperienceModal 
     :isOpen="isExperienceModalOpen" 
     :slang="slang"
+    :type="type"
     @close="isExperienceModalOpen = false" 
     @save="handleSaveExperience" 
   />
