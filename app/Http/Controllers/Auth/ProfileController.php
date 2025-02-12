@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 use Inertia\Inertia;
 use App\Models\User;
@@ -22,12 +23,16 @@ class ProfileController extends Controller
     if (!$user) {
         abort(404);
     }
+    $authUser = Auth::user();
+   
+    $isSameUser = $authUser && $authUser->id === $user->id;
 
     return Inertia::render('Auth/Profile', [
         'user' => $user,
         'profile' => $user->profile,
         'workExperiences' => $user->workExperiences,
         'educations' => $user->educations,
+        'isSameUser' => $isSameUser,
       
         
     ]);
@@ -55,7 +60,7 @@ class ProfileController extends Controller
 
     public function store(Request $request)
     {
-
+        
         $request->validate([
             'name' => 'required|string|max:255',
             'last_name_1' => 'required|string|max:255',
@@ -109,5 +114,36 @@ class ProfileController extends Controller
         Session::forget('microsoft_user');
 
         return redirect('/')->with('success', 'Perfil completado con éxito. ¡Por favor, inicia sesión!');
+    }
+
+
+
+    public function update(Request $request)
+    {
+  
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'last_name_1' => 'required|string|max:255',
+            'last_name_2' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:255',
+        ]);
+    
+       
+        $user = auth()->user(); 
+     
+  
+        // Actualizar el perfil
+        $user->update([
+            'name' => $request->input('name'),
+            'last_name_1' => $request->input('last_name_1'),
+            'last_name_2' => $request->input('last_name_2'),
+        ]);
+        
+        $user->profile->update([
+            'description' => $request->input('description'),
+        ]);
+
+
+        
     }
 }

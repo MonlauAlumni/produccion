@@ -26,9 +26,12 @@ Route::group(['middleware' => ['role:admin']], function () {
         return Inertia::render('Admin');
     })->name('admin.dashboard');
 });
+   
 
 Route::middleware('auth')->group(function() {
     Route::get('/perfil/{slang}', [ProfileController::class, 'profile'])->name('perfil.show');
+    Route::put('/perfil/{slang}', [ProfileController::class, 'update'])->name('perfil.update');
+   
     Route::middleware(isAdministrator::class)->prefix('admin')->group(function() {
         Route::get('/dashboard', function () {
            dd('admin');
