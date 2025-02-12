@@ -15,7 +15,7 @@ Route::get('/home', function () {
 })->name('home');
 Route::get('/', function () {
     return Inertia::render('LandingPage');
-})->name('home');
+});
 
 Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/admin/dashboard', function () {
