@@ -1,3 +1,62 @@
+<script>
+import ButtonRegister from '../../Components/ButtonRegister.vue';
+
+import Navbar from '../../Components/Navbar.vue';
+import { useForm } from '@inertiajs/vue3';
+import InputWithIcon from '../../Components/InputWithIcon.vue';
+import { ref } from 'vue';
+import SubmitButton from '../../Components/SubmitButton.vue';
+import OAuthButton from '../../Components/OAuthButton.vue';
+
+
+
+
+export default {
+  components: {
+    Navbar,
+    InputWithIcon,
+    SubmitButton,
+    OAuthButton,
+
+  },
+  setup() {
+    const form = useForm({
+      first_name: '',
+      last_name_1: '',
+      last_name_2: '',
+      email: '',
+      password: '',
+      password_confirmation: '',
+      training_area: '',
+    });
+    const showPassword = ref('password');
+    const showPasswordConfirm = ref('password');
+
+    function submit() {
+      form.post('/register');
+    }
+
+   
+
+    function togglePasswordVisibility(field) {
+      if (field === 'password') {
+        showPassword.value = showPassword.value === 'password' ? 'text' : 'password';
+      } else if (field === 'passwordConfirm') {
+        showPasswordConfirm.value = showPasswordConfirm.value === 'password' ? 'text' : 'password';
+      }
+    }
+
+    return {
+      form,
+      submit,
+      showPassword,
+      showPasswordConfirm,
+      togglePasswordVisibility,
+    };
+  },
+};
+</script>
+
 <template>
   <Navbar />
   
@@ -131,61 +190,3 @@
 
 </template>
 
-<script>
-import ButtonRegister from '../../Components/ButtonRegister.vue';
-
-import Navbar from '../../Components/Navbar.vue';
-import { useForm } from '@inertiajs/vue3';
-import InputWithIcon from '../../Components/InputWithIcon.vue';
-import { ref } from 'vue';
-import SubmitButton from '../../Components/SubmitButton.vue';
-import OAuthButton from '../../Components/OAuthButton.vue';
-
-
-
-
-export default {
-  components: {
-    Navbar,
-    InputWithIcon,
-    SubmitButton,
-    OAuthButton,
-
-  },
-  setup() {
-    const form = useForm({
-      first_name: '',
-      last_name_1: '',
-      last_name_2: '',
-      email: '',
-      password: '',
-      password_confirmation: '',
-      training_area: '',
-    });
-    const showPassword = ref('password');
-    const showPasswordConfirm = ref('password');
-
-    function submit() {
-      form.post('/register');
-    }
-
-   
-
-    function togglePasswordVisibility(field) {
-      if (field === 'password') {
-        showPassword.value = showPassword.value === 'password' ? 'text' : 'password';
-      } else if (field === 'passwordConfirm') {
-        showPasswordConfirm.value = showPasswordConfirm.value === 'password' ? 'text' : 'password';
-      }
-    }
-
-    return {
-      form,
-      submit,
-      showPassword,
-      showPasswordConfirm,
-      togglePasswordVisibility,
-    };
-  },
-};
-</script>

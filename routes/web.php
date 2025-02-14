@@ -4,9 +4,14 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SocialLoginController;
-use App\Http\Controllers\Auth\ProfileController;
+use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterCompanyController;
+use App\Http\Controllers\Profile\ExperienceController;
+use App\Http\Middleware\IsAdministrator;
+use App\Http\Middleware\IsCompany;
+use App\Http\Middleware\IsStudent;
+use Illuminate\Support\Facades\Auth;    
 
 
 Route::get('/home', function () {
@@ -22,8 +27,33 @@ Route::group(['middleware' => ['role:admin']], function () {
         return Inertia::render('Admin');
     })->name('admin.dashboard');
 });
+   
+
+Route::middleware('auth')->group(function() {
+    Route::get('/perfil/{slang}', [ProfileController::class, 'profile'])->name('perfil.show');
+    Route::put('/perfil/{slang}', [ProfileController::class, 'update'])->name('perfil.update');
+    Route::post('/perfil/{slug}/experiencia', [ExperienceController::class, 'storeWork'])->name('perfil.experience.store');
+    Route::post('/perfil/{slang}/educacion', [ExperienceController::class, 'storeEducation'])->name('educacion.store');
 
 
+   
+    Route::middleware(isAdministrator::class)->prefix('admin')->group(function() {
+        Route::get('/dashboard', function () {
+           dd('admin');
+        })->name('admin.dashboard');
+    });
+    Route::middleware(isCompany::class)->prefix('company')->group(function() {
+        Route::get('/dashboard', function () {
+            dd('company');
+        })->name('company.dashboard');
+    });
+    Route::middleware(isStudent::class)->prefix('user')->group(function() {
+        Route::get('/dashboard', function () {
+            dd('user');
+        })->name('user.dashboard');
+    });
+
+});
 
 Route::middleware(['guest'])->group(function () {
     Route::get('/complete-profile', [ProfileController::class, 'show'])->name('complete-profile');
@@ -45,4 +75,9 @@ Route::middleware(['guest'])->group(function () {
 
     Route::get('/redirect', [SocialLoginController::class, 'redirectToMicrosoft'])->name('microsoft.redirect');
     Route::get('/callback', [SocialLoginController::class, 'handleMicrosoftCallback'])->name('microsoft.callback');
+});
+
+Route::get('logout' , function() {
+    Auth::logout(); 
+    return redirect('/login'); 
 });
