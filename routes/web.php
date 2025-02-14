@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\SocialLoginController;
 use App\Http\Controllers\Auth\ProfileController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterCompanyController;
+use App\Http\Controllers\Auth\AdminController;
 
 
 Route::get('/home', function () {
@@ -18,10 +19,9 @@ Route::get('/', function () {
 });
 
 Route::group(['middleware' => ['role:admin']], function () {
-    Route::get('/admin/dashboard', function () {
-        return Inertia::render('Admin');
-    })->name('admin.dashboard');
+    Route::get('/admin/dashboard', [AdminController::class, 'show'])->name('admin.dashboard');
 });
+
 
 
 
