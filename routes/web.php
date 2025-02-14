@@ -7,7 +7,7 @@ use App\Http\Controllers\Auth\SocialLoginController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterCompanyController;
-use App\Http\Controllers\Auth\AdminController;
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Profile\ExperienceController;
 use App\Http\Middleware\IsAdministrator;
 use App\Http\Middleware\IsCompany;

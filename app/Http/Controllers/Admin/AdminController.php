@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -9,7 +9,7 @@ use App\Models\User;
 class AdminController extends Controller
 {
     public function show(){
-        return Inertia::render('Auth/Admin', [
+        return Inertia::render('Admin/Layouts/AdminLayout', [
             'user' => auth()->user()
         ]);
     }
