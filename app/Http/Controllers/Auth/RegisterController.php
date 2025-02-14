@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
  
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
@@ -38,6 +39,7 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
             'training_area' => $request->training_area,
         ]);
+        Auth::login($user);
         $user->assignRole('alumne');
   
         return redirect('/')->with('success', 'Perfil completado con éxito. ¡Por favor, inicia sesión!');

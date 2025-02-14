@@ -11,6 +11,7 @@ const emit = defineEmits(['update:sidebar']);
 
 const sidebarState = ref(props.sidebar);
 const overlay = ref(null);
+const sidebarRef = ref(null);
 
 watch(() => props.sidebar, (newValue) => {
     sidebarState.value = newValue;
@@ -21,11 +22,20 @@ function toggleSidebar() {
     emit('update:sidebar', sidebarState.value);
 }
 
+function closeSidebar(event) {
+    if (sidebarRef.value && !sidebarRef.value.contains(event.target)) {
+        sidebarState.value = false;
+        emit('update:sidebar', false);
+    }
+}
+
 watch(sidebarState, (newValue) => {
     if (newValue) {
         document.body.classList.add('overflow-hidden');
+        document.addEventListener('click', closeSidebar);
     } else {
         document.body.classList.remove('overflow-hidden');
+        document.removeEventListener('click', closeSidebar);
     }
 });
 
@@ -39,6 +49,7 @@ onUnmounted(() => {
     if (overlay.value && overlay.value.parentNode) {
         overlay.value.parentNode.removeChild(overlay.value);
     }
+    document.removeEventListener('click', closeSidebar);
 });
 
 watch(sidebarState, (newValue) => {
@@ -61,14 +72,16 @@ watch(sidebarState, (newValue) => {
             </a>
         </div>
         <box-icon name='menu' color="#2563EB" size="md" class="hover:cursor-pointer"
-            @click="toggleSidebar"></box-icon>
+            @click.stop="toggleSidebar"></box-icon>
     </nav>
 
     <div class="w-full">
         <transition name="slide">
             <div v-if="sidebarState"
+                ref="sidebarRef"
                 class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 transition-transform duration-300 ease-in-out transform overflow-y-auto"
-                :class="{ 'translate-x-0': sidebarState, 'translate-x-full': !sidebarState }">
+                :class="{ 'translate-x-0': sidebarState, 'translate-x-full': !sidebarState }"
+                @click.stop>
                 <div class="p-4 flex justify-between items-center border-b border-blue-600">
                     <div class="flex gap-4 items-center">
                         <a href="/admin/dashboard" class="text-blue-600 text-xl font-bold flex items-center gap-4">
@@ -77,19 +90,9 @@ watch(sidebarState, (newValue) => {
                         </a>
                     </div>
                     <box-icon name='x' color="#2563EB" size="md" class="hover:cursor-pointer"
-                        @click="toggleSidebar"></box-icon>
+                        @click.stop="toggleSidebar"></box-icon>
                 </div>
-                <div class="p-4">
-                    <div
-                        class="text-white bg-blue-600 py-2 px-4 rounded-full flex items-center gap-2 border-2 border-blue-800 text-sm font-semibold hover:cursor-pointer hover:bg-blue-800 transition duration-300">
-                        <box-icon name='user' color="white" type="solid"></box-icon>
-                        {{ user.name.toUpperCase() }}
-                        {{ user.last_name_1.toUpperCase() }}
-                        <!-- {{ user.last_name_2 ? user.last_name_2.toUpperCase() : '' }} -->
-                    </div>
-                </div>
-
-                <div class="p-4">
+                 <div class="p-4">
                     <h3 class="text-gray-600 text-lg font-semibold">Panel de control</h3>
                     <ul class="space-y-3 mt-3">
                         <li>
@@ -104,6 +107,13 @@ watch(sidebarState, (newValue) => {
                                 class="flex items-center gap-4 text-gray-600 hover:text-blue-600 transition duration-300">
                                 <box-icon name='user' color="#2563EB" size="md"></box-icon>
                                 Usuarios
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/admin/companies"
+                                class="flex items-center gap-4 text-gray-600 hover:text-blue-600 transition duration-300">
+                                <box-icon name='briefcase' color="#2563EB" size="md"></box-icon>
+                                Empresas
                             </a>
                         </li>
                         <li>
@@ -128,29 +138,17 @@ watch(sidebarState, (newValue) => {
                             </a>
                         </li>
                         <li>
-                            <a href="/admin/positions"
+                            <a href="/admin/notifications"
                                 class="flex items-center gap-4 text-gray-600 hover:text-blue-600 transition duration-300">
-                                <box-icon name='briefcase' color="#2563EB" size="md"></box-icon>
-                                Cargos
+                                <box-icon name='bell' color="#2563EB" size="md"></box-icon>
+                                Notificaciones
                             </a>
                         </li>
-                        <li>
-                            <a href="/admin/areas"
-                                class="flex items-center gap-4 text-gray-600 hover:text-blue-600 transition duration-300">
-                                <box-icon name='building' color="#2563EB" size="md"></box-icon>
-                                Áreas
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/admin/graduates"
-                                class="flex items-center gap-4 text-gray-600 hover:text-blue-600 transition duration-300">
-                                <box-icon name='graduation-cap' color="#2563EB" size="md"></box-icon>
-                                Egresados
-                            </a>
-                        </li>
+
+
+    
                     </ul>
                 </div>
-                
             </div>
         </transition>
 
