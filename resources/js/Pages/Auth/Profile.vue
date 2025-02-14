@@ -27,7 +27,6 @@ const openEditModal = () => {
 };
 
 
-
 </script>
 
 <template>
@@ -37,8 +36,8 @@ const openEditModal = () => {
       <div class="flex flex-col space-y-6 w-full max-w-3xl">
         <ProfileHeader :user="user" :isSameUser="isSameUser" :profile="profile" :openEditModal="openEditModal" />
         <AboutSection :profile="profile" />
-        <ExperienceSection title="Experiencia Laboral" :items="workExperiences" :slang="slang" :type="'work'" />
-        <ExperienceSection title="Formación Académica" :items="educations" :user="user" :slang="slang"
+        <ExperienceSection title="Experiencia Laboral" :isSameUser="isSameUser" :items="workExperiences" :slang="slang" :type="'work'" />
+        <ExperienceSection title="Formación Académica" :isSameUser="isSameUser" :items="educations" :user="user" :slang="slang"
           :type="'education'" />
         <EditModal :user="user" :profile="profile" ref="editModal" />
       </div>

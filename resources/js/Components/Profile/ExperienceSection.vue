@@ -7,7 +7,11 @@ const props = defineProps({
   user: Object,
   slang: String,
   type: String,
+  isSameUser: Boolean
 });
+
+
+
 const isExperienceModalOpen = ref(false);
 
 const handleSaveExperience = (experienceData) => {
@@ -35,7 +39,7 @@ const addExperience = () => {
       class="w-full flex justify-between items-center py-3 px-4 bg-white text-[#193CB8] transition-all duration-300 ease-in-out rounded-lg  hover:bg-[#193CB8] hover:text-white shadow-sm border border-gray-200 cursor-pointer">
       <h2 class="text-xl font-bold">{{ title }}</h2>
       <div class="space-x-5 flex">
-        <button @click="isExperienceModalOpen = true" class="cursor-pointer z-10">
+        <button v-if="isSameUser" @click="isExperienceModalOpen = true" class="cursor-pointer z-10">
           <i class="bx bx-plus relative group text-xl">
             <span class="absolute inset-0 w-8 h-8 rounded-full  opacity-0 group-hover:opacity-100 transition"></span>
           </i></button>
