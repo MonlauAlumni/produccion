@@ -9,7 +9,7 @@ use App\Models\User;
 class AdminController extends Controller
 {
     public function show(){
-        return Inertia::render('Admin/Layouts/AdminLayout', [
+        return Inertia::render('Admin/AdminHome', [
             'user' => auth()->user()
         ]);
     }

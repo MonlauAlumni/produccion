@@ -42,6 +42,6 @@ class RegisterController extends Controller
         Auth::login($user);
         $user->assignRole('alumne');
   
-        return redirect('/')->with('success', 'Perfil completado con éxito. ¡Por favor, inicia sesión!');
+        return redirect('/home')->with('success', 'Perfil completado con éxito. ¡Por favor, inicia sesión!');
     }
 }
