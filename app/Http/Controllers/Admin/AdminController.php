@@ -8,9 +8,19 @@ use Inertia\Inertia;
 use App\Models\User;
 class AdminController extends Controller
 {
-    public function show(){
-        return Inertia::render('Admin/AdminHome', [
-            'user' => auth()->user()
-        ]);
+    public function show($page)
+    {
+        switch ($page) {
+            case 'dashboard':
+                return Inertia::render('Admin/AdminHome', [
+                    'user' => auth()->user()
+                ]);
+
+            case 'users':
+                return Inertia::render('Admin/AdminUsers', [
+                    'users' => User::all()
+                ]);
+        }
     }
+
 }

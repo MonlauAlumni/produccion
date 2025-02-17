@@ -5,7 +5,7 @@ import AdminLayout from './Layouts/AdminLayout.vue';
 <template>
     <AdminLayout>
         <div class="h-full">
-            
+            <h1 class="text-blue-600 text-xl">Usuarios</h1>
         </div>
     </AdminLayout>
 </template>
