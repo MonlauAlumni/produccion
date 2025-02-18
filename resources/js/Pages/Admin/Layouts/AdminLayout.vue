@@ -5,6 +5,7 @@ import 'boxicons';
 const props = defineProps({
     user: Object,
     sidebar: Boolean,
+    title: String,
 });
 
 const emit = defineEmits(['update:sidebar']);
@@ -41,7 +42,7 @@ watch(sidebarState, (newValue) => {
 
 onMounted(() => {
     overlay.value = document.createElement('div');
-    overlay.value.classList.add('fixed', 'inset-0', 'bg-black', 'opacity-0', 'transition-opacity', 'duration-300', 'ease-in-out', 'pointer-events-none');
+    overlay.value.classList.add('fixed', 'inset-0', 'bg-black', 'opacity-0', 'transition-opacity', 'duration-300', 'ease-in-out', 'pointer-events-none', 'z-49');
     document.body.appendChild(overlay.value);
 });
 
@@ -64,7 +65,7 @@ watch(sidebarState, (newValue) => {
 </script>
 
 <template>
-    <nav class="p-4 flex justify-between items-center border-b border-blue-600">
+    <nav class="p-4 flex justify-between items-center border-b border-blue-600 sticky top-0 bg-white/80 z-20">
         <div class="flex gap-4 items-center">
             <a href="/admin/dashboard" class="text-blue-600 text-3xl font-bold flex items-center gap-4">
                 <img src="/public/images/logo.png" alt="Alumni" class="w-17 h-16">
@@ -77,11 +78,9 @@ watch(sidebarState, (newValue) => {
 
     <div class="w-full">
         <transition name="slide">
-            <div v-if="sidebarState"
-                ref="sidebarRef"
-                class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 transition-transform duration-300 ease-in-out transform overflow-y-auto"
-                :class="{ 'translate-x-0': sidebarState, 'translate-x-full': !sidebarState }"
-                @click.stop>
+            <div v-if="sidebarState" ref="sidebarRef"
+                class="fixed top-0 right-0 h-full bg-white shadow-lg z-50 transition-transform duration-300 ease-in-out transform overflow-y-auto w-full sm:w-64"
+                :class="{ 'translate-x-0': sidebarState, 'translate-x-full': !sidebarState }" @click.stop>
                 <div class="p-4 flex justify-between items-center border-b border-blue-600">
                     <div class="flex gap-4 items-center">
                         <a href="/admin/dashboard" class="text-blue-600 text-xl font-bold flex items-center gap-4">
@@ -92,7 +91,7 @@ watch(sidebarState, (newValue) => {
                     <box-icon name='x' color="#2563EB" size="md" class="hover:cursor-pointer"
                         @click.stop="toggleSidebar"></box-icon>
                 </div>
-                 <div class="p-4">
+                <div class="p-4">
                     <h3 class="text-gray-600 text-lg font-semibold">Panel de control</h3>
                     <ul class="space-y-3 mt-3">
                         <li>
@@ -146,13 +145,15 @@ watch(sidebarState, (newValue) => {
                         </li>
 
 
-    
+
                     </ul>
                 </div>
             </div>
         </transition>
-
-        <slot></slot>
+        <div class="p-4">
+            <h1 class="text-2xl text-blue-600 font-bold">{{ props.title }}</h1>
+            <slot></slot>
+        </div>
     </div>
 </template>
 

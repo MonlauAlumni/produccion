@@ -26,8 +26,6 @@ Route::get('/', function () {
 Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/admin/{page}', [AdminController::class, 'show'])->name('admin.page');
 });
-
-
    
 
 Route::middleware('auth')->group(function() {
