@@ -45,6 +45,11 @@ function clearFilters() {
     };
     searchUsers();
 }
+
+function singleUser(id) {
+    router.get(`/admin/user/${id}`);
+}
+
 </script>
 
 <template>
@@ -118,12 +123,13 @@ function clearFilters() {
                     </div>
                 </td>
             </tr>
-            <tr v-else v-for="user in $page.props.users" :key="user.id" class="border-b border-gray-300">
+            <tr v-else v-for="user in $page.props.users" :key="user.id" class="border-b border-gray-300 hover:bg-gray-200 transition duration-300">
                 <td class="py-2 px-4 text-blue-600 font-bold">{{ user.id }}</td>
                 <td class="py-2 px-4">{{ user.name }} {{ user.last_name_1 }} {{ user.last_name_2 ?? '' }}</td>
                 <td class="py-2 px-4">{{ user.email }}</td>
                 <td class="py-2 px-4 flex items-center space-x-2">
-                    <button class="text-blue-600 hover:text-blue-900 cursor-pointer">
+                    <button class="text-blue-600 hover:text-blue-900 cursor-pointer"
+                    @click="singleUser(user.id)">
                         <box-icon name='edit' color='#3b82f6' size='sm'></box-icon>
                     </button>
                     <button class="text-red-600 hover:text-red-900 cursor-pointer">

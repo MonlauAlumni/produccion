@@ -51,13 +51,25 @@ class AdminController extends Controller
                     'filters' => $request->all(),
                 ]);
 
+
             case 'companies':
                 return Inertia::render('Admin/AdminCompanies', [
                     'companies' => Company::all()
                 ]);
+
+                
             default:
                 abort(404);
         }
     }
+
+    public function singleUser($id)
+{
+    $user = User::with('roles')->findOrFail($id);
+    return Inertia::render('Admin/AdminSingleUser', [
+        'user' => $user
+    ]);
+}
+
 
 }
