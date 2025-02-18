@@ -1,7 +1,7 @@
 <template>
   <button
     :class="[ 
-      'flex items-center justify-center px-4 py-2 rounded-md transition-colors duration-300 w-full',
+      'flex items-center justify-center px-4 py-2 rounded-md transition-colors duration-300 w-full cursor-pointer',
       providerClasses[provider]
     ]"
     @click="redirectToAuthProvider"
