@@ -5,11 +5,15 @@ import { router } from '@inertiajs/vue3'
 const isOpen = ref(false)
 const props = defineProps({
   user: Object,
-  profile: Object
+  profile: Object,
+  isCompany: Boolean
 })
 
 
 const createSlang = (user) => {
+  if(props.isCompany === true) {
+    return props.profile.slang
+  }
   const { name, last_name_1, last_name_2 } = user
   let slang = `${name}-${last_name_1}`
   if (last_name_2) slang += `-${last_name_2}`
@@ -22,7 +26,7 @@ const newSlang = ref(oldSlang.value)
 const form = ref({})
 
 watchEffect(() => {
-
+if(props.isCompany === false) {
   form.value = {
     name: props.user.name || '',
     last_name_1: props.user.last_name_1 || '',
@@ -30,6 +34,15 @@ watchEffect(() => {
     description: props.profile?.description || '',
   
   }
+} else if(props.isCompany === true) {
+  form.value = {
+    name: props.profile.company_name || '',
+    description: props.profile?.description || '',
+    
+   
+  }
+
+}
  
   
 })
@@ -73,14 +86,19 @@ defineExpose({ openModal })
             <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
             <input v-model="form.name" id="nombre" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
           </div>
-          <div class="space-y-2">
+
+          <!-- Condicional para mostrar los apellidos solo si no es empresa -->
+          <div v-if="!isCompany" class="space-y-2">
             <label for="apellido1" class="block text-sm font-medium text-gray-700">Primer Apellido</label>
             <input v-model="form.last_name_1" id="apellido1" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
           </div>
-          <div class="space-y-2">
+
+          <div v-if="!isCompany" class="space-y-2">
             <label for="apellido2" class="block text-sm font-medium text-gray-700">Segundo Apellido</label>
             <input v-model="form.last_name_2" id="apellido2" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
           </div>
+
+          <!-- Descripción (siempre visible) -->
           <div class="space-y-2">
             <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
             <textarea v-model="form.description" id="descripcion" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
@@ -99,5 +117,6 @@ defineExpose({ openModal })
     </div>
   </div>
 </template>
+
   
  

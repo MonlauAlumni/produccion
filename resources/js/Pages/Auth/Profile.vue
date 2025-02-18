@@ -33,7 +33,7 @@ const openEditModal = () => {
   <div class="min-h-screen bg-gray-50 flex flex-col">
     <NavBar />
     <main class="flex flex-col items-center justify-center  py-6">
-      <div class="flex flex-col space-y-6 w-full max-w-3xl">
+      <div class="flex flex-col space-y-6 w-full max-w-4xl">
         <ProfileHeader :user="user" :isSameUser="isSameUser" :profile="profile" :openEditModal="openEditModal" />
         <AboutSection :profile="profile" />
         <ExperienceSection title="Experiencia Laboral" :isSameUser="isSameUser" :items="workExperiences" :slang="slang" :type="'work'" />

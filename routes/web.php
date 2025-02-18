@@ -8,7 +8,10 @@ use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterCompanyController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Profile\ExperienceController;
+use App\Http\Controllers\JobOffers\JobOfferController;
+use App\Http\Controllers\JobOffers\JobApplicationController;
 use App\Http\Middleware\IsAdministrator;
 use App\Http\Middleware\IsCompany;
 use App\Http\Middleware\IsStudent;
@@ -36,23 +39,19 @@ Route::middleware('auth')->group(function() {
     Route::post('/perfil/{slug}/experiencia', [ExperienceController::class, 'storeWork'])->name('perfil.experience.store');
     Route::post('/perfil/{slang}/educacion', [ExperienceController::class, 'storeEducation'])->name('educacion.store');
 
+    Route::get('/empresa/{slang}', [CompanyController::class, 'show'])->name('empresa.show');
+    Route::post('/empresa/{slang}/update-logo', [CompanyController::class, 'updateLogo'])->name('empresa.updateLogo');
+    
+    Route::get('/job-offers/{id}', [JobOfferController::class, 'show'])->name('job-offers.show');
 
-   
-    // Route::middleware(isAdministrator::class)->prefix('admin')->group(function() {
-    //     Route::get('/dashboard', function () {
-    //        dd('admin');
-    //     })->name('admin.dashboard');
-    // });
-    // Route::middleware(isCompany::class)->prefix('company')->group(function() {
-    //     Route::get('/dashboard', function () {
-    //         dd('company');
-    //     })->name('company.dashboard');
-    // });
-    // Route::middleware(isStudent::class)->prefix('user')->group(function() {
-    //     Route::get('/dashboard', function () {
-    //         dd('user');
-    //     })->name('user.dashboard');
-    // });
+    Route::middleware(isCompany::class)->group(function() {
+        Route::get('/job-offers/create', [JobOfferController::class, 'create'])->name('job-offers.create'); 
+        Route::post('/job-offers', [JobOfferController::class, 'store'])->name('job-offers.store'); 
+
+    });
+    
+
+  
 
 });
 
