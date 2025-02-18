@@ -168,7 +168,6 @@ export default {
      
 
       <div class="flex justify-between mb-3 gap-x-2">
-
        <OAuthButton provider="github" text="GitHub" />
        <OAuthButton provider="google" text="Google" />
        <OAuthButton provider="microsoft" text="Microsoft" />
