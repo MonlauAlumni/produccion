@@ -29,8 +29,7 @@
                 class="w-full"
                 type="password"
                 required
-                :toggleVisibility="showPassword"
-                @click="togglePasswordVisibility"
+                toggleVisibility
                 />
             </div>
             <div class="flex justify-between mb-3 gap-x-2">

@@ -1,25 +1,18 @@
 <template>
+  <div class="relative h-screen flex">
     <Navbar />
-    <section >
-        <header>
-            <h1>Mi Landing Page</h1>
-            <p>Un breve mensaje de bienvenida</p>
-            <button>Comenzar</button>
+    <div class="flex-1 flex flex-col mt-24">
+      <section class="flex-1 flex flex-col items-center justify-center">
+        <header class="text-center">
+          <h1 class="text-3xl font-bold">Mi Landing Page</h1>
+          <p class="mt-2 text-gray-600">Un breve mensaje de bienvenida</p>
+          <button class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Comenzar</button>
         </header>
-    </section>
+      </section>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import Navbar from '../Components/Navbar.vue';
-import HomeContainer from '../Components/HomeContainer.vue';
 </script>
-
-<style scoped>
-.landing-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-}
-</style>
