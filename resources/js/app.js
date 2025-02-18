@@ -4,7 +4,8 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { Inertia } from '@inertiajs/inertia';
 
 import '../css/app.css';
- 
+
+
 window.Inertia = Inertia;
 
 createInertiaApp({
