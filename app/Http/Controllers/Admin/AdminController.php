@@ -18,18 +18,19 @@ class AdminController extends Controller
                 ]);
 
             case 'users':
-                $query = User::select(['id', 'name', 'email', 'training_area'])
+                $query = User::select(['id', 'name', 'last_name_1', 'last_name_2','email', 'training_area'])
                     ->when($request->filled('id'), function ($query) use ($request) {
                         $query->where('id', $request->id);
                     })
                     ->when($request->filled('name'), function ($query) use ($request) {
-                        $query->where('name', 'like', '%' . $request->name . '%');
+                        $name = strtolower($request->name);
+                        $query->whereRaw('LOWER(CONCAT(name, " ", last_name_1, " ", last_name_2)) like ?', ["%{$name}%"]);
                     })
                     ->when($request->filled('email'), function ($query) use ($request) {
                         $query->where('email', 'like', '%' . $request->email . '%');
                     })
                     ->when($request->filled('area'), function ($query) use ($request) {
-                        $query->where('training_area', 'like', '%' . $request->training_area . '%');
+                        $query->where('training_area', 'like', '%' . $request->area . '%');
                     })
                     ->when($request->filled('role'), function ($query) use ($request) {
                         $query->whereHas('roles', function ($q) use ($request) {

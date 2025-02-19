@@ -13,6 +13,8 @@ const emit = defineEmits(['update:sidebar']);
 const sidebarState = ref(props.sidebar);
 const overlay = ref(null);
 const sidebarRef = ref(null);
+const headerRef = ref(null);
+const isScrolled = ref(false);
 
 watch(() => props.sidebar, (newValue) => {
     sidebarState.value = newValue;
@@ -40,10 +42,16 @@ watch(sidebarState, (newValue) => {
     }
 });
 
+function handleScroll() {
+    isScrolled.value = window.scrollY > 0;
+}
+
 onMounted(() => {
     overlay.value = document.createElement('div');
     overlay.value.classList.add('fixed', 'inset-0', 'bg-black', 'opacity-0', 'transition-opacity', 'duration-300', 'ease-in-out', 'pointer-events-none', 'z-49');
     document.body.appendChild(overlay.value);
+
+    window.addEventListener('scroll', handleScroll);
 });
 
 onUnmounted(() => {
@@ -51,6 +59,7 @@ onUnmounted(() => {
         overlay.value.parentNode.removeChild(overlay.value);
     }
     document.removeEventListener('click', closeSidebar);
+    window.removeEventListener('scroll', handleScroll);
 });
 
 watch(sidebarState, (newValue) => {
@@ -65,14 +74,19 @@ watch(sidebarState, (newValue) => {
 </script>
 
 <template>
-    <nav class="p-4 flex justify-between items-center border-b border-blue-600 sticky top-0 bg-white/80 z-20">
+<nav ref="headerRef" 
+         class="p-4 flex justify-between items-center border-b border-blue-600 sticky top-0 bg-white z-20 transition-all duration-300"
+         :class="{ 'py-2': isScrolled }">
         <div class="flex gap-4 items-center">
-            <a href="/admin/dashboard" class="text-blue-600 text-3xl font-bold flex items-center gap-4">
-                <img src="/public/images/logo.png" alt="Alumni" class="w-17 h-16">
+            <a href="/admin/dashboard" class="text-blue-600 font-bold flex items-center gap-4 transition-all duration-300"
+               :class="{ 'text-3xl': !isScrolled, 'text-2xl': isScrolled }">
+                <img src="/public/images/logo.png" alt="Alumni" 
+                     class="transition-all duration-300"
+                     :class="{ 'w-17 h-16': !isScrolled, 'w-8 h-8': isScrolled }">
                 Alumni
             </a>
         </div>
-        <box-icon name='menu' color="#2563EB" size="md" class="hover:cursor-pointer"
+        <box-icon name='menu' color="#2563EB" :size="isScrolled ? 'sm' : 'md'" class="hover:cursor-pointer transition-all duration-300"
             @click.stop="toggleSidebar"></box-icon>
     </nav>
 
