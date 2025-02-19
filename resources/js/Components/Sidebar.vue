@@ -64,10 +64,10 @@ export default {
         return {
             isOpen: false,
             menuItems: [
-                { text: 'Inicio' },
+                { text: 'Inicio', route: '/home' },
                 { text: 'Social' },
                 { text: 'Notificaciones' },
-                { text: 'Mis Ofertas' },
+                { text: 'Mis Ofertas', route: '/ofertas' },
                 { text: 'Empresas' },
                 { text: 'Alumnos' },
                 { text: 'Configuración' }

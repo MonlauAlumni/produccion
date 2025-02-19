@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Profile;
+use App\Models\Company;
 use App\Models\Educations;   
 use App\Models\WorkExperience;
 use App\Models\Skill;
@@ -45,6 +46,11 @@ class User extends Authenticatable
     public function workExperiences()
     {
         return $this->hasMany(WorkExperience::class);
+    }
+
+    public function company()
+    {
+        return $this->hasOne(Company::class);
     }
 
     public function getSlangAttribute()
