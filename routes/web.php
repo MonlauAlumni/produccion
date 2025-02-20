@@ -25,7 +25,9 @@ Route::get('/', function () {
 
 Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/admin/{page}', [AdminController::class, 'show'])->name('admin.page');
-    Route::get('/admin/user/{id}/edit', [AdminController::class, 'singleUser'])->name('admin.user');
+    Route::get('/admin/user/{id}', [AdminController::class, 'singleUser'])->name('admin.user');
+    Route::put('/admin/user/{id}', [AdminController::class, 'updateUser'])->name('admin.user.update');
+    Route::delete('/admin/user/{id}', [AdminController::class, 'deleteUser'])->name('admin.user.delete');
 });
    
 

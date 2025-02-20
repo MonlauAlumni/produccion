@@ -4,6 +4,7 @@ import { router, usePage } from '@inertiajs/vue3';
 import AdminLayout from './Layouts/AdminLayout.vue';
 import InputWithIcon from '@/Components/InputWithIcon.vue';
 import Table from '@/Components/Admin/Table.vue';
+import BaseModal from '@/Components/Admin/BaseModal.vue';
 
 const page = usePage();
 
@@ -173,10 +174,10 @@ const modalBlockUser = ref(false);
                     <button class="text-blue-600 hover:text-blue-900 cursor-pointer" @click="singleUser(user.id)">
                         <box-icon name='edit' color='#3b82f6' size='sm'></box-icon>
                     </button>
-                    <button class="text-red-600 hover:text-red-900 cursor-pointer">
+                    <button class="text-red-600 hover:text-red-900 cursor-pointer" @click="modalDeleteUser = true">
                         <box-icon name='trash-alt' color='#ef4444' size='sm'></box-icon>
                     </button>
-                    <button class="text-gray-600 hover:text-gray-900 cursor-pointer">
+                    <button class="text-gray-600 hover:text-gray-900 cursor-pointer" @click="modalBlockUser = true">
                         <box-icon name='block' color='#6b7280' size='sm'></box-icon>
                     </button>
                 </td>
@@ -193,6 +194,18 @@ const modalBlockUser = ref(false);
                 {{ pageNum }}
             </button>
         </div>
+
+        <BaseModal :show="modalDeleteUser" title="Eliminar Usuario"
+            message="¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer."
+            icon="trash-alt" iconColor="#ef4444" iconBgClass="bg-red-100" confirmText="Eliminar"
+            confirmButtonClass="bg-red-600 text-white hover:bg-red-700" @close="modalDeleteUser = false"
+            @confirm="deleteUser" />
+
+        <BaseModal :show="modalBlockUser" title="Bloquear Usuario"
+            message="¿Estás seguro de que deseas bloquear este usuario? Podrá ser desbloqueado más tarde." icon="block"
+            iconColor="#6b7280" iconBgClass="bg-gray-300" confirmText="Bloquear"
+            confirmButtonClass="bg-gray-600 text-white hover:bg-gray-700" @close="modalBlockUser = false"
+            @confirm="blockUser" />
     </AdminLayout>
 </template>
 

@@ -65,12 +65,27 @@ class AdminController extends Controller
     }
 
     public function singleUser($id)
-{
-    $user = User::with('roles')->findOrFail($id);
-    return Inertia::render('Admin/AdminSingleUser', [
-        'user' => $user
-    ]);
-}
+    {
+        $user = User::with('roles')->findOrFail($id);
+        return Inertia::render('Admin/AdminSingleUser', [
+            'user' => $user
+        ]);
+    }
 
+    public function updateUser(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'last_name_1' => 'required|string|max:255',
+            'last_name_2' => 'nullable|string|max:255',
+            'email' => "required|email|unique:users,email,{$id}",
+            'training_area' => 'required|string|max:255',
+        ]);
 
+        $user->update($validated);
+
+        return redirect()->back()->with('success', 'Usuario actualizado correctamente.');
+    }
 }
