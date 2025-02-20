@@ -31,7 +31,7 @@ function searchUsers() {
 function changePage(pageNumber) {
     router.get('/admin/users', { ...filters.value, page: pageNumber }, {
         preserveState: true,
-        preserveScroll: true,
+        preserveScroll: false,
     });
 }
 
@@ -166,8 +166,6 @@ const modalBlockUser = ref(false);
             </tr>
             <tr v-else v-for="user in $page.props.users" :key="user.id"
                 class="border-b border-gray-300 hover:bg-gray-200 transition duration-300">
-                {{ console.log(user) }}
-
                 <td class="py-2 px-4 text-blue-600 font-bold">{{ user.id }}</td>
                 <td class="py-2 px-4">{{ user.name }} {{ user.last_name_1 }} {{ user.last_name_2 ?? '' }}</td>
                 <td class="py-2 px-4">{{ user.email }}</td>

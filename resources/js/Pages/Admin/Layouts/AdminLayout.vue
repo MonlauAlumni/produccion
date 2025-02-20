@@ -75,7 +75,7 @@ watch(sidebarState, (newValue) => {
 
 <template>
 <nav ref="headerRef" 
-         class="p-4 flex justify-between items-center border-b border-blue-600 sticky top-0 bg-white z-20 transition-all duration-300"
+         class="p-4 flex justify-between items-center border-b border-blue-600 sticky top-0 bg-white/80 z-20 transition-all duration-300"
          :class="{ 'py-2': isScrolled }">
         <div class="flex gap-4 items-center">
             <a href="/admin/dashboard" class="text-blue-600 font-bold flex items-center gap-4 transition-all duration-300"
@@ -164,7 +164,7 @@ watch(sidebarState, (newValue) => {
                 </div>
             </div>
         </transition>
-        <div class="p-4">
+        <div class="p-4 min-h-screen">
             <h1 class="text-2xl text-blue-600 font-bold">{{ props.title }}</h1>
             <slot></slot>
         </div>
