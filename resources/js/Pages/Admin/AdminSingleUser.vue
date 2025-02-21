@@ -22,12 +22,13 @@ const formUser = ref({
 });
 
 function updateUser(event) {
-    router.put(`/admin/user/${props.user.id}`, formUser.value)
-        .then(() => {
-            router.push('/admin/users');
-        }).catch(error => {
-            console.log(error);
-        });
+    event.preventDefault();
+    router.put(`/admin/user/${props.user.id}`, formUser.value, {
+        preserveState: true,
+        preserveScroll: true,
+    }).catch(error => {
+        console.error(error);
+    });
 }
 </script>
 <template>
