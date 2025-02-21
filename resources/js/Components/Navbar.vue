@@ -1,5 +1,5 @@
 <template>
-    <nav class="bg-blue-800 p-4 fixed top-0 left-0 w-full shadow-lg z-50">
+    <nav class="bg-blue-800 p-4 sticky top-0 left-0 w-full shadow-lg z-50">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex gap-4 items-center">
                 <a href="/" class="text-white text-3xl font-bold flex items-center gap-4"> 
