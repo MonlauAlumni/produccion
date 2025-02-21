@@ -22,14 +22,19 @@ const formUser = ref({
 });
 
 function updateUser(event) {
-    event.preventDefault();
-    router.put(`/admin/user/${props.user.id}`, formUser.value);
+    router.put(`/admin/user/${props.user.id}`, formUser.value)
+        .then(() => {
+            router.push('/admin/users');
+        }).catch(error => {
+            console.log(error);
+        });
 }
 </script>
 <template>
     <AdminLayout title="Editar usuario">
         <div class="h-full p-6">
-            <form @submit="updateUser" class="bg-white p-6 rounded shadow space-y-6">
+            <box-icon name='arrow-back' color="#2563EB" class="cursor-pointer" size="md"></box-icon>
+            <form @submit="updateUser" class="bg-white p-6 rounded shadow space-y-6 mt-2">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-gray-700 font-bold mb-1" for="name">Nombre</label>
@@ -42,22 +47,22 @@ function updateUser(event) {
                         />
                     </div>
                     <div>
-                        <label class="block text-gray-700 font-bold mb-1" for="last_name_1">Apellido Paterno</label>
+                        <label class="block text-gray-700 font-bold mb-1" for="last_name_1">Primer apellido</label>
                         <InputWithIcon
                             v-model="formUser.last_name_1"
                             type="text"
                             icon="badge"
-                            placeholder="Apellido Paterno"
+                            placeholder="Primer apellido"
                             class="w-full"
                         />
                     </div>
                     <div>
-                        <label class="block text-gray-700 font-bold mb-1" for="last_name_2">Apellido Materno</label>
+                        <label class="block text-gray-700 font-bold mb-1" for="last_name_2">Segundo apellido</label>
                         <InputWithIcon
                             v-model="formUser.last_name_2"
                             type="text"
                             icon="badge"
-                            placeholder="Apellido Materno"
+                            placeholder="Segundo apellido"
                             class="w-full"
                         />
                     </div>
@@ -87,7 +92,7 @@ function updateUser(event) {
                     </div>
                 </div>
                 <div>
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
+                    <button type="submit" class="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
                         Guardar cambios
                     </button>
                 </div>
