@@ -3,7 +3,7 @@ name: Sync Preproduccion to Produccion
 on:
   push:
     branches:
-      - main
+      - master
     # O puedes usar cualquier otra rama en 'preproduccion' que desees.
 
 jobs:
