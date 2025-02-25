@@ -22,7 +22,7 @@ jobs:
           git config --global user.name "GitHub Actions"
           git remote add produccion https://x-access-token:${{ secrets.PROD_GIT_TOKEN }}@github.com/MonlauAlumni/produccion.git
 
-          git fetch origin || echo "No se pudo hacer fetch de produccion"
+          git fetch produccion || echo "No se pudo hacer fetch de produccion"
 
       - name: Verificar configuración de Git (Debug)
         run: |
@@ -31,6 +31,13 @@ jobs:
 
       - name: Merge master (pre) → main (prod)
         run: |
-          git checkout -b main produccion/main || git checkout main
+          # Aseguramos que la rama 'main' exista antes de hacer checkout
+          git fetch produccion
+          if git show-ref --verify --quiet refs/remotes/produccion/main; then
+            git checkout main
+          else
+            echo "La rama 'main' no existe en el repositorio de producción"
+            exit 1
+          fi
           git merge origin/master --no-edit || echo "Error al hacer merge"
           git push produccion main || echo "Error al hacer push"
