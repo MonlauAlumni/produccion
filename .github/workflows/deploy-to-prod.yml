@@ -3,21 +3,15 @@ name: Deploy to Production
 on:
   push:
     branches:
-      - master
+      - master  
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Limpiar espacio de trabajo
-        run: |
-          rm -rf *
-
-      - name: Checkout código de manera superficial
+      - name: Checkout código
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
 
       - name: Configurar SSH
         run: |
@@ -44,6 +38,10 @@ jobs:
           git checkout main
           git merge origin/master --no-ff --no-edit --allow-unrelated-histories || echo "Error al hacer merge"
 
-      - name: Push a producción (Forzado)
+      - name: Configurar el búfer de Git
         run: |
-          git push --force-with-lease produccion main || echo "Error al hacer push"
+          git config --global http.postBuffer 524288000
+
+      - name: Push forzado a producción
+        run: |
+          git push --force produccion main || echo "Error al hacer push"
