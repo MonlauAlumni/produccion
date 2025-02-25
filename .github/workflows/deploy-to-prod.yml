@@ -13,37 +13,22 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v3
 
+      - name: Configurar SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
       - name: Configurar acceso a repo de producción
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          git remote add produccion https://x-access-token:${{ secrets.PROD_GIT_TOKEN }}@github.com/MonlauAlumni/produccion.git
-
-      - name: Verificar configuración de Git (Debug)
-        run: |
-          git config --list
-          git remote -v
-
-      - name: Fetch y checkout a la rama de producción (main)
-        run: |
+          git remote add produccion git@github.com:MonlauAlumni/produccion.git
           git fetch produccion
-          if git show-ref --verify --quiet refs/remotes/produccion/main; then
-            git checkout main
-          else
-            echo "La rama 'main' no existe en el repositorio de producción"
-            exit 1
-          fi
-          
-      - name: Traer cambios de preproducción (master)
-        run: |
-          git fetch origin master
-          git merge origin/master --no-ff --no-edit || echo "Error al hacer merge"
 
-      - name: Verificar si hay cambios antes de hacer push
+      - name: Merge master (pre) → main (prod)
         run: |
-          if [ "$(git status --porcelain)" ]; then
-            echo "Hay cambios que se van a hacer push"
-            git push produccion main || echo "Error al hacer push"
-          else
-            echo "No hay cambios para hacer push"
-          fi
+          git checkout main
+          git merge origin/master --no-ff --no-edit || echo "Error al hacer merge"
+          git push produccion main || echo "Error al hacer push"
