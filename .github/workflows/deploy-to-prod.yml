@@ -3,60 +3,38 @@ name: Deploy to Production
 on:
   push:
     branches:
-      - master  
+      - master  # Se activa cuando haya un push a la rama master (preproducción)
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # El trabajo se ejecutará en un entorno de Ubuntu
 
     steps:
       - name: Checkout código
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3  # Se hace un checkout del código del repositorio
 
       - name: Configurar SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa  # Importa la clave privada SSH desde los secrets
+          chmod 600 ~/.ssh/id_rsa  # Cambia los permisos de la clave privada
+          ssh-keyscan github.com >> ~/.ssh/known_hosts  # Añade GitHub a los hosts conocidos para evitar advertencias SSH
 
-      - name: Debug SSH
+      - name: Verificar conexión SSH
         run: |
-          ls -la ~/.ssh
-          ssh -T git@github.com || echo "Error de autenticación SSH"
+          ls -la ~/.ssh  # Lista los archivos en .ssh para ver si la clave está configurada correctamente
+          ssh -T git@github.com || echo "Error de autenticación SSH"  # Verifica la conexión SSH
 
       - name: Configurar acceso a repo de producción
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git remote remove produccion || echo "No se encontró remoto 'produccion'"
-          git remote add produccion git@github.com:MonlauAlumni/produccion.git
-          git fetch produccion || echo "Error al hacer fetch del repo de producción"
+          git config --global user.email "actions@github.com"  # Configura el correo para GitHub Actions
+          git config --global user.name "GitHub Actions"  # Configura el nombre para GitHub Actions
+          git remote set-url origin git@github.com:MonlauAlumni/produccion.git  # Configura el remoto 'origin' para apuntar al repo de producción
+          git fetch origin  # Obtiene los cambios más recientes de todas las ramas
 
-      - name: Deshabilitar compresión de Git
+      - name: Merge master (preproducción) → main (producción)
         run: |
-          git config --global core.compression 0
+          git checkout main  # Se asegura de estar en la rama 'main' de producción
+          git merge origin/master --no-ff --no-edit --allow-unrelated-histories  # Realiza el merge de master a main
+          git push origin main  # Realiza el push a la rama main de producción
 
-      - name: Verificar y limpiar objetos Git
-        run: |
-          git fsck --full || echo "No se encontraron problemas"
-
-      - name: Clonación parcial (con --depth 1) y fetch completo
-        run: |
-          git fetch --depth=1 produccion
-          git fetch --unshallow produccion || echo "Error al hacer fetch del repositorio completo"
-
-      - name: Resetear main (prod) a master (pre) (OPCIÓN LIMPIA)
-        run: |
-          git fetch produccion
-          git checkout main
-          git reset --hard origin/master
-          git push produccion main --force-with-lease
-
-      # Alternativa con merge (si prefieres mantener historial)
-      # - name: Merge master (pre) → main (prod)
-      #   run: |
-      #     git fetch produccion
-      #     git checkout main
-      #     git merge origin/master --no-ff --no-edit --allow-unrelated-histories || echo "Error al hacer merge"
-      #     git push produccion main || echo "Error al hacer push"
