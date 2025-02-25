@@ -10,8 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout código
+      - name: Limpiar espacio de trabajo
+        run: |
+          rm -rf *
+
+      - name: Checkout código de manera superficial
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
 
       - name: Configurar SSH
         run: |
