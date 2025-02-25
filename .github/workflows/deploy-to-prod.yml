@@ -16,19 +16,34 @@ jobs:
       - name: Configurar SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Debug SSH
+        run: |
+          ls -la ~/.ssh
+          ssh -T git@github.com || echo "Error de autenticación SSH"
 
       - name: Configurar acceso a repo de producción
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
           git remote add produccion git@github.com:MonlauAlumni/produccion.git
-          git fetch produccion
+          git fetch produccion || echo "Error al hacer fetch del repo de producción"
 
       - name: Merge master (pre) → main (prod)
         run: |
-          git checkout main
+          git fetch origin  # Asegura que origin/master está actualizado
+          git fetch produccion  # Asegura que produccion/main está actualizado
+          
+          # Si la rama 'main' existe en producción, hacer checkout
+          if git show-ref --verify --quiet refs/remotes/produccion/main; then
+            git checkout main
+          else
+            echo "⚠️ La rama 'main' no existe en el repo de producción. Saliendo..."
+            exit 1
+          fi
+
           git merge origin/master --no-ff --no-edit || echo "Error al hacer merge"
           git push produccion main || echo "Error al hacer push"
