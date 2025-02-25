@@ -13,10 +13,6 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v3
 
-      - name: Limpiar caché de Git
-        run: |
-          rm -rf .git
-
       - name: Configurar SSH
         run: |
           mkdir -p ~/.ssh
@@ -35,6 +31,7 @@ jobs:
           git config --global user.name "GitHub Actions"
           git remote remove produccion || echo "No se encontró remoto 'produccion'"
           git remote add produccion git@github.com:MonlauAlumni/produccion.git
+          git fetch produccion || echo "Error al hacer fetch del repo de producción"
 
       - name: Deshabilitar compresión de Git
         run: |
