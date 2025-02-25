@@ -13,25 +13,19 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v3
 
-      - name: Verificar token
-        run: echo "${{ secrets.PROD_GIT_TOKEN }}"
-
       - name: Configurar acceso a repo de producción
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
           git remote add produccion https://x-access-token:${{ secrets.PROD_GIT_TOKEN }}@github.com/MonlauAlumni/produccion.git
 
-          git fetch produccion || echo "No se pudo hacer fetch de produccion"
-
       - name: Verificar configuración de Git (Debug)
         run: |
           git config --list
           git remote -v
 
-      - name: Merge master (pre) → main (prod)
+      - name: Fetch y checkout a la rama de producción (main)
         run: |
-          # Aseguramos que la rama 'main' exista antes de hacer checkout
           git fetch produccion
           if git show-ref --verify --quiet refs/remotes/produccion/main; then
             git checkout main
@@ -39,5 +33,17 @@ jobs:
             echo "La rama 'main' no existe en el repositorio de producción"
             exit 1
           fi
-          git merge origin/master --no-edit || echo "Error al hacer merge"
-          git push produccion main || echo "Error al hacer push"
+          
+      - name: Traer cambios de preproducción (master)
+        run: |
+          git fetch origin master
+          git merge origin/master --no-ff --no-edit || echo "Error al hacer merge"
+
+      - name: Verificar si hay cambios antes de hacer push
+        run: |
+          if [ "$(git status --porcelain)" ]; then
+            echo "Hay cambios que se van a hacer push"
+            git push produccion main || echo "Error al hacer push"
+          else
+            echo "No hay cambios para hacer push"
+          fi
