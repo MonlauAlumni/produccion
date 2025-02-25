@@ -31,25 +31,23 @@ jobs:
           git config --global user.name "GitHub Actions"
           git remote remove produccion || echo "No se encontró remoto 'produccion'"
           git remote add produccion git@github.com:MonlauAlumni/produccion.git
-          git fetch produccion || echo "Error al hacer fetch del repo de producción"
 
+      - name: Deshabilitar compresión de Git
+        run: |
+          git config --global core.compression 0
 
-      - name: Asegurarse de que master está actualizado
+      - name: Clonación parcial (con --depth 1) y fetch completo
         run: |
-          git fetch origin
-          git checkout master
-          git pull origin master
-      - name: Actualizar el índice de Git
-        run: |
-          git gc --prune=now  # Limpiar los objetos no utilizados
-          git fsck --full  # Comprobar la integridad del repositorio
+          git fetch --depth=1 produccion
+          git fetch --unshallow produccion || echo "Error al hacer fetch del repositorio completo"
+
       - name: Resetear main (prod) a master (pre) (OPCIÓN LIMPIA)
         run: |
           git fetch produccion
           git checkout main
-          git reset --hard origin/master  # Esto reemplaza todo el contenido de main por el de master
-          git push produccion main --force  # Usa --force para sobrescribir en el remoto
-
+          git reset --hard origin/master
+          git push produccion main --force-with-lease
+          
       # Alternativa con merge (si prefieres mantener historial)
       # - name: Merge master (pre) → main (prod)
       #   run: |
