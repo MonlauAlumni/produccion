@@ -13,15 +13,24 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v3
 
+      - name: Verificar token
+        run: echo "${{ secrets.PROD_GIT_TOKEN }}
+
       - name: Configurar acceso a repo de producción
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          git remote add production https://x-access-token:${{ secrets.PROD_GIT_TOKEN }}@github.com/MonlauAlumni/produccion.git
-          git fetch produccion
+          git remote add produccion https://x-access-token:${{ secrets.PROD_GIT_TOKEN }}@github.com/MonlauAlumni/produccion.git
+
+          git fetch origin || echo "No se pudo hacer fetch de produccion"
+
+      - name: Verificar configuración de Git (Debug)
+        run: |
+          git config --list
+          git remote -v
 
       - name: Merge master (pre) → main (prod)
         run: |
-          git checkout main
-          git merge origin/master --no-edit
-          git push production main
+          git checkout -b main produccion/main || git checkout main
+          git merge origin/master --no-edit || echo "Error al hacer merge"
+          git push produccion main || echo "Error al hacer push"
