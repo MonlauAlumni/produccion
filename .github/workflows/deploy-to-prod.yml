@@ -13,6 +13,10 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v3
 
+      - name: Limpiar caché de Git
+        run: |
+          rm -rf .git
+
       - name: Configurar SSH
         run: |
           mkdir -p ~/.ssh
@@ -36,6 +40,10 @@ jobs:
         run: |
           git config --global core.compression 0
 
+      - name: Verificar y limpiar objetos Git
+        run: |
+          git fsck --full || echo "No se encontraron problemas"
+
       - name: Clonación parcial (con --depth 1) y fetch completo
         run: |
           git fetch --depth=1 produccion
@@ -47,7 +55,7 @@ jobs:
           git checkout main
           git reset --hard origin/master
           git push produccion main --force-with-lease
-          
+
       # Alternativa con merge (si prefieres mantener historial)
       # - name: Merge master (pre) → main (prod)
       #   run: |
