@@ -41,7 +41,6 @@ jobs:
       - name: Configurar el búfer de Git
         run: |
           git config --global http.postBuffer 524288000
-
       - name: Push forzado a producción
         run: |
           git push --force produccion main || echo "Error al hacer push"
