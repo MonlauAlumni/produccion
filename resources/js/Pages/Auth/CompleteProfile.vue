@@ -4,10 +4,10 @@
       <div class="max-w-2xl mx-auto mt-[8%] p-8  bg-white">
         <div>
                 <h1 class="text-5xl font-semibold text-gray-800 mb-6">
-                    Complete Your Profile
+                    Completa Tu Perfil
                 </h1>
                 <h2 class="text-lg text-gray-500">
-                  Complete all fields to confirm your registration
+                  Complete todos los campos para confirmar su registro
                 </h2>
             </div>
         
@@ -18,7 +18,7 @@
           <InputWithIcon
             v-model="form.name"
             icon="person"
-            placeholder="Enter your name"
+            placeholder="Introduce tu nombre"
             id="name"
             required
             class="w-full"
@@ -29,13 +29,13 @@
             <InputWithIcon
             v-model="form.last_name_1"
             icon="person"
-            placeholder="Enter your first last name"
+            placeholder="Introduce tu primer apellido"
             id="last_name_1"
             required />
           <InputWithIcon
             v-model="form.last_name_2"
             icon="person"
-            placeholder="Enter your second last name"
+            placeholder="Introduce tu segundo apellido"
             id="last_name_2" /> 
           </div>
             
@@ -55,10 +55,7 @@
     <option value="Automocion">Automoción</option>
   </select>
 </div>
-
-
-
-          <SubmitButton class="" label="Complete Profile" />
+          <SubmitButton class="" label="Completar Perfil" />
         </div>
         </form>
       </div>
@@ -71,7 +68,6 @@
   import { useForm } from '@inertiajs/vue3';
   import InputWithIcon from '../../Components/InputWithIcon.vue';
   import SubmitButton from '../../Components/SubmitButton.vue';
-  import OAuthButton from '../../Components/OAuthButton.vue';
 
   export default {
     components: {
