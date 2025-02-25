@@ -1,20 +1,61 @@
-name: Sync Preproduccion to Produccion
+name: Deploy to Production
 
 on:
   push:
     branches:
-      - master
-    # O puedes usar cualquier otra rama en 'preproduccion' que desees.
+      - master  # Aquí indicas que el flujo se activará al hacer push a la rama 'master' de 'preproduccion'
 
 jobs:
-  sync:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Preproduccion repository
-      uses: actions/checkout@v3
+      # Paso 1: Checkout del código desde el repositorio de preproduccion
+      - name: Checkout código
+        uses: actions/checkout@v3
 
-    - name: Push to Produccion
-      run: |
-        git remote add produccion git@github.com:MonlauAlumni/produccion.git
-        git push --force produccion main
+      # Paso 2: Configuración de SSH para autenticación con GitHub
+      - name: Configurar SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      # Paso 3: Verificación de autenticación SSH
+      - name: Debug SSH
+        run: |
+          ls -la ~/.ssh
+          ssh -T git@github.com || echo "Error de autenticación SSH"
+
+      # Paso 4: Configuración de acceso al repositorio de producción
+      - name: Configurar acceso a repo de producción
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git remote add produccion git@github.com:MonlauAlumni/produccion.git
+          git fetch produccion || echo "Error al hacer fetch del repo de producción"
+
+      # Paso 5: Cambiar a la rama 'main' de 'produccion' (si no existe, la crea)
+      - name: Cambiar a la rama 'main' de produccion
+        run: |
+          git fetch produccion
+          git checkout -B main produccion/main || echo "No se pudo cambiar a la rama main en produccion"
+
+      # Paso 6: Hacer el merge de la rama 'master' de 'preproduccion' en 'main' de 'produccion'
+      - name: Merge master (pre) → main (prod)
+        run: |
+          git fetch origin
+          git checkout master  # Cambiar a master de preproduccion
+          git pull origin master  # Asegúrate de tener la última versión de master
+          git merge origin/master --no-ff --no-edit --allow-unrelated-histories || echo "Error al hacer merge"
+
+      # Paso 7: Configurar el búfer de Git para grandes archivos
+      - name: Configurar el búfer de Git
+        run: |
+          git config --global http.postBuffer 524288000
+
+      # Paso 8: Hacer un push forzado a producción
+      - name: Push forzado a producción
+        run: |
+          git push --force produccion main || echo "Error al hacer push"
