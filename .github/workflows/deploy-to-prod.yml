@@ -3,38 +3,34 @@ name: Deploy to Production
 on:
   push:
     branches:
-      - master  
+      - main  # El evento se activa al hacer un push a la rama 'main'
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Usamos Ubuntu como entorno de ejecución
 
     steps:
-      - name: Checkout código
-        uses: actions/checkout@v3
+    # Paso 1: Configuración del repositorio
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Configurar SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
+    # Paso 2: Configuración de SSH (si es necesario)
+    - name: Set up SSH key for Git
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-      - name: Debug SSH
-        run: |
-          ls -la ~/.ssh
-          ssh -T git@github.com || echo "Error de autenticación SSH"
+    # Paso 3: Hacer fetch y merge (si es necesario)
+    - name: Fetch and merge changes
+      run: |
+        git fetch origin
+        git checkout main
+        git merge origin/main || echo "No merge required" # Si no hay conflicto, sigue adelante
 
-      - name: Configurar acceso a repo de producción
-        run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git remote add produccion git@github.com:MonlauAlumni/produccion.git
-          git fetch produccion || echo "Error al hacer fetch del repo de producción"
-
-      - name: Merge master (pre) → main (prod)
-        run: |
-          git fetch produccion
-          git checkout main
-          git merge origin/master --no-ff --no-edit --allow-unrelated-histories || echo "Error al hacer merge"
-          git push produccion main || echo "Error al hacer push"
+    # Paso 4: Hacer push a producción
+    - name: Push to production
+      run: |
+        git remote add produccion git@github.com:MonlauAlumni/produccion.git
+        git push produccion main
