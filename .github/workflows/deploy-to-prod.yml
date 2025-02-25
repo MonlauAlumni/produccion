@@ -40,4 +40,4 @@ jobs:
 
       - name: Push a producción (Forzado)
         run: |
-          git push --force produccion main || echo "Error al hacer push"
+          git push --force-with-lease produccion main || echo "Error al hacer push"
