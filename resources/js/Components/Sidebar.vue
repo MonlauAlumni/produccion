@@ -1,83 +1,158 @@
 <template>
     <div>
-        <!-- Botón de menú en móviles y tablets -->
-        <button @click="toggleSidebar" class="md:hidden fixed top-30 left-5 z-50 bg-gray-800 text-white p-2 rounded-md">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" d="M4 5h16v2H4V5zm0 6h16v2H4v-2zm0 6h16v2H4v-2z" clip-rule="evenodd"></path>
-            </svg>
-        </button>
-
-        <!-- Fondo oscuro al abrir el menú -->
-        <div v-if="isOpen" @click="toggleSidebar" class="fixed inset-0 bg-black/60 md:hidden z-40"></div>
-
-        <!-- Sidebar -->
-        <aside :class="['h-screen w-64 p-4 flex flex-col fixed top-0 left-0 transition-transform bg-white z-50',
-                        isOpen ? 'translate-x-0' : '-translate-x-full', 'md:translate-x-0 md:top-24']">
-            <!-- Botón de cerrar en móviles -->
-            <button @click="toggleSidebar" class="md:hidden absolute top-4 right-4 bg-red-500 text-white p-1 rounded-full">
-                ✕
-            </button>
-
-            <!-- Perfil de usuario -->
-            <div class="rounded-3xl p-4 flex items-center space-x-3 border-2 border-gray-300">
-                <div class="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">
-                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-sm font-semibold">{{ username }}</p>
-                    <p class="text-xs text-gray-600">@{{ usertag }}</p>
-                </div>
+      <!-- Mobile menu button -->
+      <button @click="toggleSidebar" class="md:hidden fixed top-4 left-4 z-50 bg-[#193CB8] text-white p-2 rounded-md shadow-md">
+        <i class='bx bx-menu text-xl'></i>
+      </button>
+  
+      <!-- Overlay for mobile -->
+      <div v-if="isOpen" @click="toggleSidebar" class="fixed inset-0 bg-black/50 md:hidden z-40 backdrop-blur-sm"></div>
+  
+      <!-- Sidebar -->
+      <aside :class="[
+        'h-screen w-64 flex flex-col fixed top-0 left-0 transition-all duration-300 bg-white z-50 shadow-lg border-r border-gray-100',
+        isOpen ? 'translate-x-0' : '-translate-x-full', 
+        'md:translate-x-0 md:top-0'
+      ]">
+        
+  
+        <!-- User profile -->
+        <div class="p-4 border-b border-gray-100">
+          <div class="flex items-center space-x-3 mb-3">
+            <div class="relative">
+              <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
+                <i class='bx bxs-user text-xl'></i>
+              </div>
+              <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white"></div>
             </div>
-
-            <div class="mt-6 border-2 border-gray-300 rounded-3xl p-4 flex flex-col space-y-4">
-                <!-- Menú de navegación -->
-                <nav>
-                    <ul class="space-y-4">
-                        <li v-for="item in menuItems" :key="item.text">
-                            <a href="#" class="block px-4 py-2 text-gray-700 border border-transparent hover:border-gray-300 rounded-3xl transition-all">
-                                {{ item.text }}
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-
-                <!-- Botón Post -->
-                <div class="mt-2 flex justify-center">
-                    <button class="bg-blue-600 text-white px-6 py-2 shadow-md hover:bg-blue-800 cursor-pointer w-full rounded-3xl transition-all">
-                        Post
-                    </button>
-                </div>
+            <div>
+              <p class="font-semibold text-gray-800">{{ username }}</p>
+              <p class="text-xs text-gray-500 flex items-center">
+                <i class='bx bxs-circle text-green-500 text-[8px] mr-1'></i> Online
+              </p>
             </div>
-        </aside>
+          </div>
+          
+         
+        </div>
+  
+        <div class="flex-1 overflow-y-auto">
+          <!-- Top navigation section -->
+          <div class="p-4">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">Principal</p>
+            <nav>
+              <ul class="space-y-1">
+                <li v-for="item in topMenuItems" :key="item.text">
+                  <a 
+                    href="#" 
+                    :class="[
+                      'flex items-center px-3 py-2.5 rounded-md transition-all relative',
+                      item.active 
+                        ? 'bg-blue-50 text-[#193CB8] font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-[#193CB8] before:rounded-r-md' 
+                        : 'text-gray-700 hover:bg-gray-50'
+                    ]"
+                  >
+                    <i :class="['bx text-xl mr-3', item.icon]"></i>
+                    <span>{{ item.text }}</span>
+                    <span v-if="item.badge" class="ml-auto bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+                      {{ item.badge }}
+                    </span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+  
+          <!-- Middle section -->
+          <div class="p-4 border-t border-gray-100">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">Comunidad</p>
+            <nav>
+              <ul class="space-y-1">
+                <li v-for="item in middleMenuItems" :key="item.text">
+                  <a 
+                    href="#" 
+                    :class="[
+                      'flex items-center px-3 py-2.5 rounded-md transition-all relative',
+                      item.active 
+                        ? 'bg-blue-50 text-[#193CB8] font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-[#193CB8] before:rounded-r-md' 
+                        : 'text-gray-700 hover:bg-gray-50'
+                    ]"
+                  >
+                    <i :class="['bx text-xl mr-3', item.icon]"></i>
+                    <span>{{ item.text }}</span>
+                    <span v-if="item.badge" class="ml-auto bg-[#193CB8] text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+                      {{ item.badge }}
+                    </span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+  
+        <!-- Post button -->
+        <div class="p-4 border-t border-gray-100">
+          <button class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] text-white w-full py-3 rounded-md shadow-md hover:from-[#1535a3] hover:to-[#193CB8] transition-all flex items-center justify-center">
+            <i class='bx bx-plus-circle mr-2'></i>
+            <span>Crear Post</span>
+          </button>
+        </div>
+  
+        <!-- Bottom section -->
+        <div class="p-4 border-t border-gray-100">
+          <ul class="space-y-1">
+            <li v-for="item in bottomMenuItems" :key="item.text">
+              <a 
+                href="#" 
+                class="flex items-center px-3 py-2.5 text-gray-700 rounded-md transition-all hover:bg-gray-50"
+              >
+                <i :class="['bx text-xl mr-3', item.icon]"></i>
+                <span>{{ item.text }}</span>
+              </a>
+            </li>
+          </ul>
+          
+     
+        </div>
+      </aside>
     </div>
-</template>
-
-<script>
-export default {
+  </template>
+  
+  <script>
+  export default {
     props: {
-        username: { type: String, required: true },
-        usertag: { type: String, required: true }
+      username: { type: String, default: 'Usuario Alumni' },
+      usertag: { type: String, default: 'alumni@example.com' }
     },
     data() {
-        return {
-            isOpen: false,
-            menuItems: [
-                { text: 'Inicio' },
-                { text: 'Social' },
-                { text: 'Notificaciones' },
-                { text: 'Mis Ofertas' },
-                { text: 'Empresas' },
-                { text: 'Alumnos' },
-                { text: 'Configuración' }
-            ]
-        };
+      return {
+        isOpen: false,
+        darkMode: false,
+        topMenuItems: [
+          { text: 'Inicio', icon: 'bx-home', active: true },
+          { text: 'Notificaciones', icon: 'bx-bell', badge: '5' },
+          { text: 'Mensajes', icon: 'bx-envelope', badge: '2' },
+          { text: 'Calendario', icon: 'bx-calendar' },
+        ],
+        middleMenuItems: [
+          { text: 'Social', icon: 'bx-group' },
+          { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo' },
+          { text: 'Empresas', icon: 'bx-buildings' },
+      
+        ],
+        bottomMenuItems: [
+          { text: 'Ayuda', icon: 'bx-help-circle' },
+          { text: 'Configuración', icon: 'bx-cog' },
+          { text: 'Cerrar sesión', icon: 'bx-log-out' }
+        ]
+      };
     },
     methods: {
-        toggleSidebar() {
-            this.isOpen = !this.isOpen;
-        }
+      toggleSidebar() {
+        this.isOpen = !this.isOpen;
+      },
+     
     }
-};
-</script>
+  };
+  </script>
+  
