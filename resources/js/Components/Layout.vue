@@ -1,19 +1,26 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex flex-col">
-    <!-- Navbar (Header arriba) -->
-    <Navbar :auth="auth" />
+  <div class="min-h-screen">
+    <!-- Navbar arriba (posición fija) -->
+    <header class="h-16 w-full fixed top-0 left-0 bg-white border-b border-gray-100 z-10">
+      <Navbar :auth="auth" />
+    </header>
 
-    <div class="flex flex-1">
-      <!-- Sidebar (Izquierda, debajo del Navbar) -->
-      <Sidebar :username="auth?.user?.name || 'Usuario Alumni'" class="hidden md:block md:w-64" />
+      <!-- Contenedor principal con margen superior para evitar que el navbar lo cubra -->
+    <div class="flex flex-grow mt-16">
+      <!-- Sidebar a la izquierda -->
+      <aside :class="sidebar ? 'block' : 'hidden'" class="w-64 bg-white border-r border-gray-100 md:block">
+        <Sidebar :username="auth?.user?.name || 'Usuario Alumni'" />
+      </aside>
 
-      <!-- Main Content -->
-      <main class="flex-1 p-6 bg-gray-50">
-        <slot></slot>
+      <!-- Contenido principal -->
+      <main class="flex-grow p-4 overflow-auto">
+        <slot />
       </main>
     </div>
   </div>
 </template>
+
+
 
   
   <script>
@@ -27,10 +34,15 @@
       Sidebar
     },
     props: {
-      auth: {
-        type: Object,
-        default: () => ({ user: null })
-      }
+      pageTitle: String,
+      header: {
+        type: Boolean,
+        default: true
+      },
+      sidebar: {
+        type: Boolean,
+        default: true
+      },
     }
   };
   </script>

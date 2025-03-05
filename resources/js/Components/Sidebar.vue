@@ -65,7 +65,7 @@
   
           <!-- Middle section -->
           <div class="p-4 border-t border-gray-100">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">Comunidad</p>
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">Social</p>
             <nav>
               <ul class="space-y-1">
                 <li v-for="item in middleMenuItems" :key="item.text">
@@ -135,7 +135,7 @@
           { text: 'Calendario', icon: 'bx-calendar' },
         ],
         middleMenuItems: [
-          { text: 'Social', icon: 'bx-group' },
+          { text: 'Alumni Connect', icon: 'bx-group' },
           { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo' },
           { text: 'Empresas', icon: 'bx-buildings' },
       
