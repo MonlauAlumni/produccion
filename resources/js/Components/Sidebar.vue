@@ -1,3 +1,40 @@
+<script>
+  export default {
+    props: {
+      username: { type: String, default: 'Usuario Alumni' },
+      usertag: { type: String, default: 'alumni@example.com' }
+    },
+    data() {
+      return {
+        isOpen: false,
+        darkMode: false,
+        topMenuItems: [
+          { text: 'Inicio', icon: 'bx-home', active: true , route: 'home'},
+          { text: 'Notificaciones', icon: 'bx-bell', badge: '5', route: 'notificaciones' },
+          { text: 'Mensajes', icon: 'bx-envelope', badge: '2', route: 'mensajes' },
+          { text: 'Calendario', icon: 'bx-calendar', route: 'calendario' },
+        ],
+        middleMenuItems: [
+          { text: 'Alumni Connect', icon: 'bx-group', route: 'connect' },
+          { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo', route: 'mis-ofertas' },
+          { text: 'Empresas', icon: 'bx-buildings', route: 'empresas' },
+      
+        ],
+        bottomMenuItems: [
+          { text: 'Ayuda', icon: 'bx-help-circle', route: 'ayuda' },
+          { text: 'Configuración', icon: 'bx-cog', route: 'configuracion' },
+          { text: 'Cerrar sesión', icon: 'bx-log-out', route: 'logout' },
+        ]
+      };
+    },
+    methods: {
+      toggleSidebar() {
+        this.isOpen = !this.isOpen;
+      },
+     
+    }
+  };
+  </script>
 <template>
     <div>
       <!-- Mobile menu button -->
@@ -43,8 +80,8 @@
             <nav>
               <ul class="space-y-1">
                 <li v-for="item in topMenuItems" :key="item.text">
-                  <a 
-                    href="#" 
+                  <Link 
+                  :href="item.route" 
                     :class="[
                       'flex items-center px-3 py-2.5 rounded-md transition-all relative',
                       item.active 
@@ -57,7 +94,7 @@
                     <span v-if="item.badge" class="ml-auto bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
                       {{ item.badge }}
                     </span>
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </nav>
@@ -70,7 +107,7 @@
               <ul class="space-y-1">
                 <li v-for="item in middleMenuItems" :key="item.text">
                   <a 
-                    href="#" 
+                  :href="item.route" 
                     :class="[
                       'flex items-center px-3 py-2.5 rounded-md transition-all relative',
                       item.active 
@@ -103,7 +140,7 @@
           <ul class="space-y-1">
             <li v-for="item in bottomMenuItems" :key="item.text">
               <a 
-                href="#" 
+                :href="item.route" 
                 class="flex items-center px-3 py-2.5 text-gray-700 rounded-md transition-all hover:bg-gray-50"
               >
                 <i :class="['bx text-xl mr-3', item.icon]"></i>
@@ -118,41 +155,5 @@
     </div>
   </template>
   
-  <script>
-  export default {
-    props: {
-      username: { type: String, default: 'Usuario Alumni' },
-      usertag: { type: String, default: 'alumni@example.com' }
-    },
-    data() {
-      return {
-        isOpen: false,
-        darkMode: false,
-        topMenuItems: [
-          { text: 'Inicio', icon: 'bx-home', active: true },
-          { text: 'Notificaciones', icon: 'bx-bell', badge: '5' },
-          { text: 'Mensajes', icon: 'bx-envelope', badge: '2' },
-          { text: 'Calendario', icon: 'bx-calendar' },
-        ],
-        middleMenuItems: [
-          { text: 'Alumni Connect', icon: 'bx-group' },
-          { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo' },
-          { text: 'Empresas', icon: 'bx-buildings' },
-      
-        ],
-        bottomMenuItems: [
-          { text: 'Ayuda', icon: 'bx-help-circle' },
-          { text: 'Configuración', icon: 'bx-cog' },
-          { text: 'Cerrar sesión', icon: 'bx-log-out' }
-        ]
-      };
-    },
-    methods: {
-      toggleSidebar() {
-        this.isOpen = !this.isOpen;
-      },
-     
-    }
-  };
-  </script>
+
   

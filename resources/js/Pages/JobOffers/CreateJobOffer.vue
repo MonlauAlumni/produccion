@@ -1,3 +1,30 @@
+<script>
+  export default {
+    data() {
+      return {
+        form: {
+          title: '',
+          description: '',
+          minExperience: '',
+          vacancies: '',
+          workMode: '',
+          salary: '',
+          tags: '',
+          file: null
+        }
+      };
+    },
+    methods: {
+      submit() {
+        this.$inertia.post('/job-offers', this.form);
+      }
+    }
+  };
+  </script>
+  
+  <style scoped>
+  /* Estilos adicionales si son necesarios */
+  </style>
 <template>
     <div class="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg">
       <h1 class="text-2xl font-bold mb-6">Crear Nueva Oferta</h1>
@@ -60,30 +87,3 @@
     </div>
   </template>
   
-  <script>
-  export default {
-    data() {
-      return {
-        form: {
-          title: '',
-          description: '',
-          minExperience: '',
-          vacancies: '',
-          workMode: '',
-          salary: '',
-          tags: '',
-          file: null
-        }
-      };
-    },
-    methods: {
-      submit() {
-        this.$inertia.post('/job-offers', this.form);
-      }
-    }
-  };
-  </script>
-  
-  <style scoped>
-  /* Estilos adicionales si son necesarios */
-  </style>

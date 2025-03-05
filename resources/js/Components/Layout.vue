@@ -1,24 +1,30 @@
 <template>
   <div class="min-h-screen">
-    <!-- Navbar arriba (posición fija) -->
-    <header class="h-16 w-full fixed top-0 left-0 bg-white border-b border-gray-100 z-10">
+    <!-- Navbar fijo arriba -->
+    <header class="h-16 w-full fixed top-0 left-0 bg-gradient-to-r from-[#193CB8] to-[#2748c6] z-50">
       <Navbar :auth="auth" />
     </header>
 
-      <!-- Contenedor principal con margen superior para evitar que el navbar lo cubra -->
-    <div class="flex flex-grow mt-16">
-      <!-- Sidebar a la izquierda -->
-      <aside :class="sidebar ? 'block' : 'hidden'" class="w-64 bg-white border-r border-gray-100 md:block">
+    <!-- Contenedor con Sidebar y Main -->
+    <div class="flex">
+      <!-- Sidebar, empieza justo después del navbar -->
+      <aside 
+        :class="[
+          'w-64 fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white border-r border-gray-100 z-40 transition-transform',
+          sidebar ? 'translate-x-0' : '-translate-x-full',
+          'md:translate-x-0' 
+        ]">
         <Sidebar :username="auth?.user?.name || 'Usuario Alumni'" />
       </aside>
 
       <!-- Contenido principal -->
-      <main class="flex-grow p-4 overflow-auto">
+      <main class="flex-grow p-4 ml-0 md:ml-64 mt-16">
         <slot />
       </main>
     </div>
   </div>
 </template>
+
 
 
 
