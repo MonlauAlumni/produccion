@@ -1,3 +1,39 @@
+<script>
+  import { usePage } from '@inertiajs/vue3';
+
+  const { user } = usePage().props || {};
+
+  export default {
+    
+    data() {
+      return {
+        isOpen: false,
+        darkMode: false,
+        topMenuItems: [
+          { text: 'Inicio', icon: 'bx-home', active: true },
+          { text: 'Notificaciones', icon: 'bx-bell', badge: '5' },
+          { text: 'Mensajes', icon: 'bx-envelope', badge: '2' },
+          { text: 'Calendario', icon: 'bx-calendar' },
+        ],
+        middleMenuItems: [
+          { text: 'Alumni connect', icon: 'bx-group' },
+          { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo' },
+          { text: 'Empresas', icon: 'bx-buildings' },
+        ],
+        bottomMenuItems: [
+        
+          { text: 'Configuración', icon: 'bx-cog' },
+          { text: 'Cerrar sesión', icon: 'bx-log-out' }
+        ]
+      };
+    },
+    methods: {
+      toggleSidebar() {
+        this.isOpen = !this.isOpen;
+      },
+    }
+  };
+  </script>
 <template>
   <div>
     <!-- Mobile menu button -->
@@ -24,7 +60,7 @@
             <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white"></div>
           </div>
           <div>
-            <p class="font-semibold text-gray-800">{{ username }}</p>
+            <p class="font-semibold text-gray-800">{{ user?.name || 'Usuario' }}</p>
             <p class="text-xs text-gray-500 flex items-center">
               <i class='bx bxs-circle text-green-500 text-[8px] mr-1'></i> Online
             </p>
@@ -112,38 +148,3 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    username: { type: String, default: 'Usuario Alumni' },
-    usertag: { type: String, default: 'alumni@example.com' }
-  },
-  data() {
-    return {
-      isOpen: false,
-      darkMode: false,
-      topMenuItems: [
-        { text: 'Inicio', icon: 'bx-home', active: true },
-        { text: 'Notificaciones', icon: 'bx-bell', badge: '5' },
-        { text: 'Mensajes', icon: 'bx-envelope', badge: '2' },
-        { text: 'Calendario', icon: 'bx-calendar' },
-      ],
-      middleMenuItems: [
-        { text: 'Alumni connect', icon: 'bx-group' },
-        { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo' },
-        { text: 'Empresas', icon: 'bx-buildings' },
-      ],
-      bottomMenuItems: [
-      
-        { text: 'Configuración', icon: 'bx-cog' },
-        { text: 'Cerrar sesión', icon: 'bx-log-out' }
-      ]
-    };
-  },
-  methods: {
-    toggleSidebar() {
-      this.isOpen = !this.isOpen;
-    },
-  }
-};
-</script>
