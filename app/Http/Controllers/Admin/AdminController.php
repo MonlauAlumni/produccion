@@ -86,6 +86,6 @@ class AdminController extends Controller
 
         $user->update($validated);
 
-        return redirect()->back()->with('success', 'Usuario actualizado correctamente.');
+        return response()->json(['message' => 'User updated successfully']);
     }
 }
