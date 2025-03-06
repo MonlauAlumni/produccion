@@ -137,7 +137,7 @@ const { auth, appName } = usePage().props;
                     <div class="flex gap-4 items-center">
                         <a href="/admin/dashboard" class="text-white text-xl font-bold flex items-center gap-4">
                             <img src="/public/images/logo.png" alt="Alumni" class="w-8 h-8">
-                            Adminitrador
+                            Administrador
                         </a>
                     </div>
                     <box-icon name='x' color="#fff" size="md" class="hover:cursor-pointer"
