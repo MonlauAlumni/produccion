@@ -4,6 +4,7 @@ import ProfileHeader from "@/Components/Profile/ProfileHeader.vue";
 import AboutSection from "@/Components/Profile/AboutSection.vue";
 import ExperienceSection from "@/Components/Profile/ExperienceSection.vue";
 import EditModal from "@/Components/Profile/EditModal.vue";
+import Layout from "@/Components/Layout.vue";
 
 import { ref } from "vue";
 
@@ -30,10 +31,9 @@ const openEditModal = () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 flex flex-col">
-    <NavBar />
+  <Layout>
     <main class="flex flex-col items-center justify-center  py-6">
-      <div class="flex flex-col space-y-6 w-full max-w-4xl">
+      <div class="flex flex-col space-y-6 w-full max-w-5xl">
         <ProfileHeader :user="user" :isSameUser="isSameUser" :profile="profile" :openEditModal="openEditModal" />
         <AboutSection :profile="profile" />
         <ExperienceSection title="Experiencia Laboral" :isSameUser="isSameUser" :items="workExperiences" :slang="slang" :type="'work'" />
@@ -42,5 +42,5 @@ const openEditModal = () => {
         <EditModal :user="user" :profile="profile" ref="editModal" />
       </div>
     </main>
-  </div>
+  </Layout>
 </template>
