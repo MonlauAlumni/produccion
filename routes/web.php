@@ -19,9 +19,9 @@ use Illuminate\Support\Facades\Auth;
 
 
 Route::get('/home', function () {
-
     return Inertia::render('Home');
 })->name('home');
+
 Route::get('/', function () {
     return Inertia::render('LandingPage');
 });

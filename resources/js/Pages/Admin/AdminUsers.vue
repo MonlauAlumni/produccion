@@ -5,6 +5,7 @@ import AdminLayout from './Layouts/AdminLayout.vue';
 import InputWithIcon from '@/Components/InputWithIcon.vue';
 import Table from '@/Components/Admin/Table.vue';
 import BaseModal from '@/Components/Admin/BaseModal.vue';
+import axios from 'axios';
 
 const page = usePage();
 
@@ -85,10 +86,35 @@ const paginationRange = computed(() => {
     return rangeWithDots;
 });
 
-//modals
+// Modals
 const modalDeleteUser = ref(false);
 const modalBlockUser = ref(false);
+const selectedUserId = ref(null);
 
+// Function to open delete modal and set the selected user
+function openDeleteModal(userId) {
+    selectedUserId.value = userId;
+    modalDeleteUser.value = true;
+}
+
+// Function to delete user with axios
+function deleteUser() {
+    if (!selectedUserId.value) return;
+    
+    axios.delete(`/admin/user/${selectedUserId.value}`)
+        .then(response => {
+            modalDeleteUser.value = false;
+            searchUsers();
+        })
+        .catch(error => {
+            modalDeleteUser.value = false;
+        });
+}
+
+function blockUser() {
+    // Implement block user functionality if needed
+    modalBlockUser.value = false;
+}
 </script>
 
 <template>
@@ -174,7 +200,7 @@ const modalBlockUser = ref(false);
                     <button class="text-blue-600 hover:text-blue-900 cursor-pointer" @click="singleUser(user.id)">
                         <box-icon name='edit' color='#3b82f6' size='sm'></box-icon>
                     </button>
-                    <button class="text-red-600 hover:text-red-900 cursor-pointer" @click="modalDeleteUser = true">
+                    <button class="text-red-600 hover:text-red-900 cursor-pointer" @click="openDeleteModal(user.id)">
                         <box-icon name='trash-alt' color='#ef4444' size='sm'></box-icon>
                     </button>
                     <button class="text-gray-600 hover:text-gray-900 cursor-pointer" @click="modalBlockUser = true">

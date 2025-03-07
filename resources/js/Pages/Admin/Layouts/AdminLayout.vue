@@ -1,5 +1,8 @@
 <script setup>
 import { defineProps, defineEmits, ref, watch, onMounted, onUnmounted } from 'vue';
+import { router, usePage } from '@inertiajs/vue3';
+
+
 import 'boxicons';
 
 const props = defineProps({
@@ -9,6 +12,11 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:sidebar']);
+const userMenuOpen = ref(false);
+
+const toggleUserMenu = () => {
+    userMenuOpen.value = !userMenuOpen.value;
+};
 
 const sidebarState = ref(props.sidebar);
 const overlay = ref(null);
@@ -42,16 +50,11 @@ watch(sidebarState, (newValue) => {
     }
 });
 
-function handleScroll() {
-    isScrolled.value = window.scrollY > 0;
-}
-
 onMounted(() => {
     overlay.value = document.createElement('div');
     overlay.value.classList.add('fixed', 'inset-0', 'bg-black', 'opacity-0', 'transition-opacity', 'duration-300', 'ease-in-out', 'pointer-events-none', 'z-49');
     document.body.appendChild(overlay.value);
 
-    window.addEventListener('scroll', handleScroll);
 });
 
 onUnmounted(() => {
@@ -59,7 +62,6 @@ onUnmounted(() => {
         overlay.value.parentNode.removeChild(overlay.value);
     }
     document.removeEventListener('click', closeSidebar);
-    window.removeEventListener('scroll', handleScroll);
 });
 
 watch(sidebarState, (newValue) => {
@@ -67,42 +69,78 @@ watch(sidebarState, (newValue) => {
         overlay.value.classList.add('opacity-60', 'pointer-events-auto');
         overlay.value.classList.remove('opacity-0', 'pointer-events-none');
     } else {
-        overlay.value.classList.add('opacity-0', 'pointer-events-none');
         overlay.value.classList.remove('opacity-60', 'pointer-events-auto');
+        overlay.value.classList.add('opacity-0', 'pointer-events-none');
     }
 });
+
+const { auth, appName } = usePage().props;
+
 </script>
 
 <template>
-<nav ref="headerRef" 
-         class="p-4 flex justify-between items-center border-b border-blue-600 sticky top-0 bg-white/80 z-20 transition-all duration-300"
-         :class="{ 'py-2': isScrolled }">
-        <div class="flex gap-4 items-center">
-            <a href="/admin/dashboard" class="text-blue-600 font-bold flex items-center gap-4 transition-all duration-300"
-               :class="{ 'text-3xl': !isScrolled, 'text-2xl': isScrolled }">
-                <img src="/public/images/logo.png" alt="Alumni" 
-                     class="transition-all duration-300"
-                     :class="{ 'w-17 h-16': !isScrolled, 'w-8 h-8': isScrolled }">
-                Alumni
-            </a>
+    <nav class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] py-3 px-4 ">
+        <div class="container mx-auto flex justify-between items-center">
+            <!-- Logo y nombre -->
+            <div class="flex items-center">
+                <a href="/" class="text-white font-bold flex items-center gap-3">
+
+                    <img src="../../../../../public/images/monlau-logo.png" alt="Alumni" class="w-8 h-8">
+
+                    <span class="text-xl">Alumni</span>
+                </a>
+            </div>
+            <div class="flex items-center gap-4">
+                <ul>
+                    <li v-if="auth?.user" class="relative">
+                        <button @click="toggleUserMenu" class="flex items-center gap-2 text-white">
+                            <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                                <i class='bx bxs-user text-white'></i>
+                            </div>
+                            <span class="hidden sm:inline">{{ auth.user.name }}</span>
+                            <i class='bx bx-chevron-down'></i>
+                        </button>
+
+                        <div v-if="userMenuOpen"
+                            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                            <a href="/profile" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                <i class='bx bx-user mr-2'></i> Mi Perfil
+                            </a>
+                            <a href="/dashboard" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                <i class='bx bx-grid-alt mr-2'></i> Dashboard
+                            </a>
+                            <a href="/settings" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                <i class='bx bx-cog mr-2'></i> Configuración
+                            </a>
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <a href="/logout" class="block px-4 py-2 text-red-600 hover:bg-gray-100">
+                                <i class='bx bx-log-out mr-2'></i> Cerrar Sesión
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+                <!-- Menú central - visible solo en pantallas medianas y grandes -->
+                <box-icon name='menu' color="white" size="md" class="hover:cursor-pointer transition-all duration-300"
+                    @click.stop="toggleSidebar"></box-icon>
+            </div>
+
         </div>
-        <box-icon name='menu' color="#2563EB" :size="isScrolled ? 'sm' : 'md'" class="hover:cursor-pointer transition-all duration-300"
-            @click.stop="toggleSidebar"></box-icon>
     </nav>
 
     <div class="w-full">
         <transition name="slide">
             <div v-if="sidebarState" ref="sidebarRef"
-                class="fixed top-0 right-0 h-full bg-white shadow-lg z-50 transition-transform duration-300 ease-in-out transform overflow-y-auto w-full sm:w-64"
+                class="fixed top-0 right-0 min-h-full bg-white shadow-2xl z-50 transition-transform duration-300 ease-in-out transform overflow-y-auto w-full sm:w-64 flex flex-col"
                 :class="{ 'translate-x-0': sidebarState, 'translate-x-full': !sidebarState }" @click.stop>
-                <div class="p-4 flex justify-between items-center border-b border-blue-600">
+                <div
+                    class="p-4 flex justify-between items-center border-b bg-gradient-to-r from-[#193CB8] to-[#2748c6]">
                     <div class="flex gap-4 items-center">
-                        <a href="/admin/dashboard" class="text-blue-600 text-xl font-bold flex items-center gap-4">
+                        <a href="/admin/dashboard" class="text-white text-xl font-bold flex items-center gap-4">
                             <img src="/public/images/logo.png" alt="Alumni" class="w-8 h-8">
-                            Alumni
+                            Administrador
                         </a>
                     </div>
-                    <box-icon name='x' color="#2563EB" size="md" class="hover:cursor-pointer"
+                    <box-icon name='x' color="#fff" size="md" class="hover:cursor-pointer"
                         @click.stop="toggleSidebar"></box-icon>
                 </div>
                 <div class="p-4">
@@ -161,10 +199,18 @@ watch(sidebarState, (newValue) => {
 
 
                     </ul>
+
+                    <div class="mt-6 cursor-pointer align-self-end">
+                        <a @click="router.get('/home')"
+                            class="flex items-center justify-center gap-2 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-300">
+                            <box-icon name='left-arrow-alt' color="white" size="md"></box-icon>
+                            Volver a Alumni
+                        </a>
+                    </div>
                 </div>
             </div>
         </transition>
-        <div class="p-4 min-h-screen">
+        <div class="p-4 min-h-screen bg-gray-50">
             <h1 class="text-2xl text-blue-600 font-bold">{{ props.title }}</h1>
             <slot></slot>
         </div>
