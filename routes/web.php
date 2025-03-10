@@ -42,9 +42,9 @@ Route::middleware('auth')->group(function() {
     Route::get('/empresa/{slang}', [CompanyController::class, 'show'])->name('empresa.show');
     Route::post('/empresa/{slang}/update-logo', [CompanyController::class, 'updateLogo'])->name('empresa.updateLogo');
     
-    Route::get('/job-offers/{id}', [JobOfferController::class, 'show'])->name('job-offers.show');
 
- 
+
+    Route::get('/job-offers/{id}', [JobOfferController::class, 'show'])->name('job-offers.show');
     Route::get('/ofertas/crear', [JobOfferController::class, 'create'])->name('ofertas.crear'); 
     Route::post('/ofertas/crear', [JobOfferController::class, 'store'])->name('ofertas.store'); 
 
