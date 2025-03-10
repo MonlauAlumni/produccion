@@ -37,15 +37,19 @@
           />
           <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
           
-          <!-- Banner upload button for admins -->
-          <div v-if="isAdmin" class="absolute bottom-4 right-4">
-            <label class="cursor-pointer bg-white/90 hover:bg-white text-[#193CB8] px-3 py-2 rounded-md shadow-md flex items-center gap-2 transition-all">
+       
+          <div class="absolute bottom-4 cursor-pointer  right-4">
+            <label class=" bg-white/90 hover:bg-white text-[#193CB8] px-3 py-2 rounded-md shadow-md flex items-center gap-2 transition-all">
               <i class='bx bx-image-add'></i>
-              <span class="text-sm font-medium">Cambiar Banner</span>
+              <span class="  text-sm font-medium">Cambiar Banner</span>
               <input type="file" class="hidden" accept="image/*">
             </label>
           </div>
+         
         </div>
+        <button class="absolute">
+          asd
+        </button>
   
         <main class="flex flex-col items-center justify-center -mt-16 relative z-10 px-4">
           <div class="flex flex-col space-y-6 w-full max-w-5xl">

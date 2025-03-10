@@ -1,5 +1,6 @@
 <script setup>
   import { ref } from 'vue';
+  import { router } from '@inertiajs/vue3';
   
   const props = defineProps({
     items: Array,  
@@ -19,6 +20,10 @@
   const toggleExpand = () => {
     isExpanded.value = !isExpanded.value;
   };
+
+  const createJobOffer = () => {
+    router.get('/ofertas/crear');
+  }
   </script>
   
   <template>
@@ -35,9 +40,11 @@
           </div>
           <div class="space-x-3 flex items-center">
             <button v-if="isAdmin" @click.stop="isJobListingModalOpen = true" 
-              class="flex items-center gap-1 text-[#193CB8] hover:text-[#2748c6] bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md transition-colors">
+              class="flex items-center gap-1 text-[#193CB8] hover:text-[#2748c6] cursor- bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md transition-colors">
+              <div @click="createJobOffer" class="flex justify-center items-center gap-1">
               <i class="bx bx-plus"></i>
               <span class="text-sm font-medium">Nueva Oferta</span>
+            </div>
             </button>
             <i class="bx text-xl" :class="isExpanded ? 'bx-chevron-up' : 'bx-chevron-down'"></i>
           </div>
