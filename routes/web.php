@@ -62,6 +62,8 @@ Route::middleware('auth')->group(function() {
     });
 
     Route::get('/settings', [SettingsController::class, 'show'])->name('settings');
+    Route::put('/user/update', [SettingsController::class, 'updateUser'])->name('user.update');
+
   
 
 });

@@ -85,15 +85,6 @@ class AdminController extends Controller
         ]);
 
         $user->update($validated);
-
-        return response()->json(['message' => 'User updated successfully']);
-    }
-
-    public function deleteUser($id)
-    {
-        $user = User::findOrFail($id);
-        $user->delete();
-
-        return response()->json(['message' => 'User deleted successfully']);
+        return redirect()->back()->with('success', 'Usuario actualizado exitosamente.');
     }
 }
