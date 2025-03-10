@@ -144,6 +144,28 @@ export default {
     toggleSidebar() {
       this.isOpen = !this.isOpen;
     },
+<<<<<<< HEAD
   }
+=======
+    data() {
+        return {
+            isOpen: false,
+            menuItems: [
+                { text: 'Inicio', route: '/home' },
+                { text: 'Social' },
+                { text: 'Notificaciones' },
+                { text: 'Mis Ofertas', route: '/ofertas' },
+                { text: 'Empresas' },
+                { text: 'Alumnos' },
+                { text: 'Configuración' }
+            ]
+        };
+    },
+    methods: {
+        toggleSidebar() {
+            this.isOpen = !this.isOpen;
+        }
+    }
+>>>>>>> feature/job-offers
 };
 </script>
