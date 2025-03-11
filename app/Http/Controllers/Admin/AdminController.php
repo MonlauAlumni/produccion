@@ -53,11 +53,37 @@ class AdminController extends Controller
                 ]);
 
 
-            case 'companies':
-                return Inertia::render('Admin/AdminCompanies', [
-                    'companies' => Company::all()
-                ]);
+                case 'companies':
+                    $query = Company::select(['id', 'company_name', 'company_phone', 'fiscal_id', 'user_id'])
+                        ->with('user:id,email,name,last_name_1,last_name_2') // Include the related user data
+                        ->when($request->filled('id'), function ($query) use ($request) {
+                            $query->where('id', $request->id);
+                        })
+                        ->when($request->filled('company_name'), function ($query) use ($request) {
+                            $company_name = strtolower($request->company_name);
+                            $query->whereRaw('LOWER(company_name) like ?', ["%{$company_name}%"]);
+                        })
+                        ->when($request->filled('company_phone'), function ($query) use ($request) {
+                            $query->where('company_phone', 'like', '%' . $request->company_phone . '%');
+                        })
+                        ->when($request->filled('fiscal_id'), function ($query) use ($request) {
+                            $query->where('fiscal_id', 'like', '%' . $request->fiscal_id . '%');
+                        })
+                        ->orderBy('id', 'desc')
+                        ->paginate($request->pagination ?? 10);
+                
+                    $companies = $query;
+                
+                    $totalCompanies = $companies->total();  
+                
+                    return Inertia::render('Admin/AdminCompanies', [
+                        'companies' => $companies->items(),
+                        'pagination' => $companies,
+                        'totalCompanies' => $totalCompanies,
+                        'filters' => $request->all(),                
+                    ]);
 
+                
                 
             default:
                 abort(404);

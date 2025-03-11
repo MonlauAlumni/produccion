@@ -31,6 +31,9 @@ Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/admin/user/{id}', [AdminController::class, 'singleUser'])->name('admin.user');
     Route::put('/admin/user/{id}', [AdminController::class, 'updateUser'])->name('admin.user.update');
     Route::delete('/admin/user/{id}', [AdminController::class, 'deleteUser'])->name('admin.user.delete');
+
+    Route::get('/admin/company/{id}', [AdminController::class, 'singleCompany'])->name('admin.company');
+    
 });
    
 
