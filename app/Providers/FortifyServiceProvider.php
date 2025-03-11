@@ -11,27 +11,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Inertia\Inertia;
 use Laravel\Fortify\Fortify;
-use Laravel\Fortify\Contracts\TwoFactorChallengeViewResponse;
 
-class AppServiceProvider extends ServiceProvider
+class FortifyServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
      */
     public function register(): void
     {
-        $this->app->singleton(TwoFactorChallengeViewResponse::class, function () {
-            return new class implements TwoFactorChallengeViewResponse {
-                public function toResponse($request)
-                {
-                    return Inertia::render('Auth/TwoFactorChallenge')->toResponse($request);
-                }
-            };
-        });
+        //
     }
 
     /**
@@ -44,10 +33,6 @@ class AppServiceProvider extends ServiceProvider
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
 
-        Fortify::twoFactorChallengeView(function () {
-            return Inertia::render('Auth/TwoFactorChallenge');
-        });
-
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
 
@@ -57,14 +42,5 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('two-factor', function (Request $request) {
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
-
-        Fortify::authenticateUsing(function (Request $request) {
-            $user = User::where('email', $request->email)->first();
-    
-            if ($user && Hash::check($request->password, $user->password)) {
-                return $user;
-            }
-        });
     }
 }
-

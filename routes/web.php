@@ -9,12 +9,15 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterCompanyController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Company\CompanyController;
+use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Profile\ExperienceController;
 use App\Http\Controllers\JobOffers\JobOfferController;
 use App\Http\Controllers\JobOffers\JobApplicationController;
 use App\Http\Middleware\IsAdministrator;
 use App\Http\Middleware\IsCompany;
 use App\Http\Middleware\IsStudent;
+use Laravel\Fortify\Http\Controllers\TwoFactorAuthenticationController;
+use Laravel\Fortify\Http\Controllers\TwoFactorQrCodeController;
 use Illuminate\Support\Facades\Auth;    
 
 
@@ -29,6 +32,16 @@ Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/admin/user/{id}', [AdminController::class, 'singleUser'])->name('admin.user');
     Route::put('/admin/user/{id}', [AdminController::class, 'updateUser'])->name('admin.user.update');
     Route::delete('/admin/user/{id}', [AdminController::class, 'deleteUser'])->name('admin.user.delete');
+
+    Route::get('/admin/company/{id}', [AdminController::class, 'singleCompany'])->name('admin.company');
+    
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/user/two-factor-authentication', [TwoFactorAuthenticationController::class, 'store']);
+    Route::delete('/user/two-factor-authentication', [TwoFactorAuthenticationController::class, 'destroy']);
+    Route::get('/user/two-factor-qr-code', [TwoFactorQrCodeController::class, 'show']);
+
 });
    
 
@@ -50,9 +63,13 @@ Route::middleware('auth')->group(function() {
     Route::post('/ofertas/crear', [JobOfferController::class, 'store'])->name('ofertas.store'); 
 
 
-    
 
-  
+
+    Route::get('/settings', [SettingsController::class, 'show'])->name('settings');
+    Route::get('/settings/change-password', [SettingsController::class, 'changePassword'])->name('change-password');
+
+    Route::put('/settings/change-password', [SettingsController::class, 'updatePassword'])->name('update-password');
+    Route::put('/user/update', [SettingsController::class, 'updateUser'])->name('user.update');
 
 });
 
