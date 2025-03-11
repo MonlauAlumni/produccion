@@ -3,6 +3,7 @@ import Layout from '@/Components/Layout.vue';
 import { ref, computed, onMounted } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
 import axios from 'axios';
+import StandardButton from '@/Components/StandardButton.vue';
 
 const user = computed(() => usePage().props.auth?.user);
 const username = ref(user.value.name);
@@ -17,6 +18,29 @@ const emailSending = ref(false);
 const isUpdating = ref(false);
 const updateErrors = ref({});
 const updateSuccess = ref(false);
+
+// Social settings
+const socialProfiles = ref({
+  twitter: user.value?.social_profiles?.twitter || '',
+  linkedin: user.value?.social_profiles?.linkedin || '',
+  github: user.value?.social_profiles?.github || '',
+  website: user.value?.social_profiles?.website || ''
+});
+
+const notificationPreferences = ref({
+  mentions: user.value?.notification_preferences?.mentions || true,
+  comments: user.value?.notification_preferences?.comments || true,
+  messages: user.value?.notification_preferences?.messages || true,
+  updates: user.value?.notification_preferences?.updates || false
+});
+
+// Privacy settings
+const privacySettings = ref({
+  profileVisibility: user.value?.privacy_settings?.profileVisibility || 'public',
+  showEmail: user.value?.privacy_settings?.showEmail || false,
+  showActivity: user.value?.privacy_settings?.showActivity || true,
+  allowTagging: user.value?.privacy_settings?.allowTagging || true
+});
 
 const toggleDarkMode = () => {
     if (isDarkMode.value) {
@@ -79,7 +103,10 @@ const updateUserInfo = async () => {
         const response = await axios.put('/user/update', {
             name: username.value,
             email: email.value,
-            allow_emails: emailSending.value
+            allow_emails: emailSending.value,
+            social_profiles: socialProfiles.value,
+            notification_preferences: notificationPreferences.value,
+            privacy_settings: privacySettings.value
         });
 
         if (response.status === 200) {
@@ -163,7 +190,7 @@ const handle2FAButtonClick = () => {
 // New reactive variable for font size preview
 const fontSize = ref(16);
 
-// --- New code start ---
+// Profile picture handling
 const profilePictureSrc = ref('/storage/images/profile-pictures/foto.png');
 const fileInputRef = ref(null);
 
@@ -178,7 +205,56 @@ const uploadProfilePicture = async (e) => {
         console.log('Uploading:', file);
     }
 };
-// --- New code end ---
+
+// Social account connection status
+const connectedAccounts = ref({
+    google: false,
+    github: true,
+    twitter: false,
+    facebook: false
+});
+
+const connectAccount = (platform) => {
+    // This would typically redirect to OAuth flow
+    console.log(`Connecting to ${platform}...`);
+    // For demo purposes, toggle the connection status
+    connectedAccounts.value[platform] = !connectedAccounts.value[platform];
+};
+
+// Session management
+const activeSessions = ref([
+    { 
+        device: 'Chrome on Windows', 
+        location: 'Madrid, Spain', 
+        ip: '192.168.1.1', 
+        lastActive: '2 minutes ago',
+        current: true
+    },
+    { 
+        device: 'Safari on iPhone', 
+        location: 'Barcelona, Spain', 
+        ip: '192.168.1.2', 
+        lastActive: '2 days ago',
+        current: false
+    },
+    { 
+        device: 'Firefox on MacOS', 
+        location: 'Valencia, Spain', 
+        ip: '192.168.1.3', 
+        lastActive: '5 days ago',
+        current: false
+    }
+]);
+
+const terminateSession = (index) => {
+    if (!activeSessions.value[index].current) {
+        activeSessions.value.splice(index, 1);
+    }
+};
+
+const terminateAllSessions = () => {
+    activeSessions.value = activeSessions.value.filter(session => session.current);
+};
 
 </script>
 
@@ -194,11 +270,11 @@ const uploadProfilePicture = async (e) => {
                     </div>
                     <div class="flex space-x-2 mt-4 md:mt-0">
                         <button @click="updateUserInfo" :disabled="isUpdating"
-                            class="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600 cursor-pointer text-white transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                            class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] px-4 py-2 rounded hover:bg-blue-600 cursor-pointer text-white transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
                             {{ isUpdating ? 'Actualizando...' : 'Actualizar Información' }}
                         </button>
                         <button @click="router.get('/settings/change-password')"
-                            class="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600 cursor-pointer text-white transition duration-300">
+                            class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] px-4 py-2 rounded hover:bg-blue-600 cursor-pointer text-white transition duration-300">
                             Cambiar Contraseña
                         </button>
                     </div>
@@ -348,54 +424,346 @@ const uploadProfilePicture = async (e) => {
                     </div>
                 </div>
             </div>
-
-
         </div>
 
-        <h1 class="border-y border-gray-500 p-2 dark:text-gray-500">SOCIAL</h1>
-        <div class="p-4">
-            <div class="flex items-center">
-                <span class="text-gray-300 dark:text-gray-700">Allow emails</span>
-                <label class="relative inline-flex items-center cursor-pointer ml-2">
-                    <input type="checkbox" v-model="emailSending" class="sr-only peer">
-                    <div class="w-11 h-6 rounded-full transition-all duration-300"
-                        :class="!emailSending ? 'bg-yellow-500' : 'bg-gray-600'">
-                        <div class="absolute top-1 left-1 h-4 w-4 bg-white border border-gray-300 rounded-full transition-all duration-300"
-                            :class="!emailSending ? 'translate-x-5 border-white' : ''"></div>
+        <!-- SOCIAL SECTION -->
+        <h1 class="border-y border-gray-500 p-2 dark:text-gray-500 mt-6">SOCIAL</h1>
+        <div class="p-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Email Notifications -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Notificaciones por Email</h2>
+                
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-gray-700 dark:text-gray-300">Permitir emails</span>
+                    <label class="relative inline-flex items-center cursor-pointer ml-2">
+                        <input type="checkbox" v-model="emailSending" class="sr-only peer">
+                        <div class="w-11 h-6 rounded-full transition-all duration-300"
+                            :class="emailSending ? 'bg-blue-500' : 'bg-gray-600'">
+                            <div class="absolute top-1 left-1 h-4 w-4 bg-white border border-gray-300 rounded-full transition-all duration-300"
+                                :class="emailSending ? 'translate-x-5 border-white' : ''"></div>
+                        </div>
+                    </label>
+                </div>
+                
+                <div class="space-y-3 mt-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-700 dark:text-gray-300">Menciones</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" v-model="notificationPreferences.mentions" class="sr-only peer" :disabled="!emailSending">
+                            <div class="w-11 h-6 rounded-full transition-all duration-300"
+                                :class="[notificationPreferences.mentions && emailSending ? 'bg-blue-500' : 'bg-gray-600', !emailSending ? 'opacity-50' : '']">
+                                <div class="absolute top-1 left-1 h-4 w-4 bg-white border border-gray-300 rounded-full transition-all duration-300"
+                                    :class="notificationPreferences.mentions && emailSending ? 'translate-x-5 border-white' : ''"></div>
+                            </div>
+                        </label>
                     </div>
-                </label>
+                    
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-700 dark:text-gray-300">Comentarios</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" v-model="notificationPreferences.comments" class="sr-only peer" :disabled="!emailSending">
+                            <div class="w-11 h-6 rounded-full transition-all duration-300"
+                                :class="[notificationPreferences.comments && emailSending ? 'bg-blue-500' : 'bg-gray-600', !emailSending ? 'opacity-50' : '']">
+                                <div class="absolute top-1 left-1 h-4 w-4 bg-white border border-gray-300 rounded-full transition-all duration-300"
+                                    :class="notificationPreferences.comments && emailSending ? 'translate-x-5 border-white' : ''"></div>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-700 dark:text-gray-300">Mensajes directos</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" v-model="notificationPreferences.messages" class="sr-only peer" :disabled="!emailSending">
+                            <div class="w-11 h-6 rounded-full transition-all duration-300"
+                                :class="[notificationPreferences.messages && emailSending ? 'bg-blue-500' : 'bg-gray-600', !emailSending ? 'opacity-50' : '']">
+                                <div class="absolute top-1 left-1 h-4 w-4 bg-white border border-gray-300 rounded-full transition-all duration-300"
+                                    :class="notificationPreferences.messages && emailSending ? 'translate-x-5 border-white' : ''"></div>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-700 dark:text-gray-300">Actualizaciones del sistema</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" v-model="notificationPreferences.updates" class="sr-only peer" :disabled="!emailSending">
+                            <div class="w-11 h-6 rounded-full transition-all duration-300"
+                                :class="[notificationPreferences.updates && emailSending ? 'bg-blue-500' : 'bg-gray-600', !emailSending ? 'opacity-50' : '']">
+                                <div class="absolute top-1 left-1 h-4 w-4 bg-white border border-gray-300 rounded-full transition-all duration-300"
+                                    :class="notificationPreferences.updates && emailSending ? 'translate-x-5 border-white' : ''"></div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Social Profiles -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Perfiles Sociales</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Conecta tus perfiles sociales para compartir contenido y mejorar tu experiencia.</p>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center">
+                        <div class="relative w-full">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="bx bxl-twitter text-blue-400"></i>
+                            </div>
+                            <input v-model="socialProfiles.twitter" type="text" placeholder="Usuario de Twitter" 
+                                class="block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600" />
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <div class="relative w-full">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="bx bxl-linkedin text-blue-700"></i>
+                            </div>
+                            <input v-model="socialProfiles.linkedin" type="text" placeholder="URL de LinkedIn" 
+                                class="block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600" />
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <div class="relative w-full">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="bx bxl-github text-gray-800 dark:text-white"></i>
+                            </div>
+                            <input v-model="socialProfiles.github" type="text" placeholder="Usuario de GitHub" 
+                                class="block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600" />
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <div class="relative w-full">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="bx bx-globe text-green-600"></i>
+                            </div>
+                            <input v-model="socialProfiles.website" type="text" placeholder="Sitio web personal" 
+                                class="block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Connected Accounts -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Cuentas Conectadas</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Conecta tus cuentas para iniciar sesión más fácilmente.</p>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                        <div class="flex items-center">
+                            <i class="bx bxl-google text-2xl text-red-500 mr-3"></i>
+                            <span class="text-gray-800 dark:text-gray-200">Google</span>
+                        </div>
+                        <button @click="connectAccount('google')" 
+                            :class="[
+                                'px-4 py-2 rounded-lg text-white',
+                                connectedAccounts.google ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'
+                            ]">
+                            {{ connectedAccounts.google ? 'Desconectar' : 'Conectar' }}
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                        <div class="flex items-center">
+                            <i class="bx bxl-github text-2xl text-gray-800 dark:text-white mr-3"></i>
+                            <span class="text-gray-800 dark:text-gray-200">GitHub</span>
+                        </div>
+                        <button @click="connectAccount('github')" 
+                            :class="[
+                                'px-4 py-2 rounded-lg text-white',
+                                connectedAccounts.github ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'
+                            ]">
+                            {{ connectedAccounts.github ? 'Desconectar' : 'Conectar' }}
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                        <div class="flex items-center">
+                            <i class="bx bxl-twitter text-2xl text-blue-400 mr-3"></i>
+                            <span class="text-gray-800 dark:text-gray-200">Twitter</span>
+                        </div>
+                        <button @click="connectAccount('twitter')" 
+                            :class="[
+                                'px-4 py-2 rounded-lg text-white',
+                                connectedAccounts.twitter ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'
+                            ]">
+                            {{ connectedAccounts.twitter ? 'Desconectar' : 'Conectar' }}
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                        <div class="flex items-center">
+                            <i class="bx bxl-facebook text-2xl text-blue-600 mr-3"></i>
+                            <span class="text-gray-800 dark:text-gray-200">Facebook</span>
+                        </div>
+                        <button @click="connectAccount('facebook')" 
+                            :class="[
+                                'px-4 py-2 rounded-lg text-white',
+                                connectedAccounts.facebook ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'
+                            ]">
+                            {{ connectedAccounts.facebook ? 'Desconectar' : 'Conectar' }}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <h1 class="border-y border-gray-500 p-2 dark:text-gray-500">SECURITY</h1>
-        <p class="px-4 mt-4 dark:text-gray-700">Add an extra layer of security to your account.</p>
+        <!-- PRIVACY SECTION -->
+        <h1 class="border-y border-gray-500 p-2 dark:text-gray-500 mt-6">PRIVACIDAD</h1>
+        <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Privacy Settings -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Configuración de Privacidad</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Controla quién puede ver tu información y cómo se utiliza.</p>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Visibilidad del Perfil</label>
+                        <select v-model="privacySettings.profileVisibility"
+                            class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600">
+                            <option value="public">Público - Visible para todos</option>
+                            <option value="contacts">Contactos - Solo visible para contactos</option>
+                            <option value="private">Privado - Solo visible para ti</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-700 dark:text-gray-300">Mostrar correo electrónico</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" v-model="privacySettings.showEmail" class="sr-only peer">
+                            <div class="w-11 h-6 rounded-full transition-all duration-300"
+                                :class="privacySettings.showEmail ? 'bg-blue-500' : 'bg-gray-600'">
+                                <div class="absolute top-1 left-1 h-4 w-4 bg-white border border-gray-300 rounded-full transition-all duration-300"
+                                    :class="privacySettings.showEmail ? 'translate-x-5 border-white' : ''"></div>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-700 dark:text-gray-300">Mostrar actividad reciente</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" v-model="privacySettings.showActivity" class="sr-only peer">
+                            <div class="w-11 h-6 rounded-full transition-all duration-300"
+                                :class="privacySettings.showActivity ? 'bg-blue-500' : 'bg-gray-600'">
+                                <div class="absolute top-1 left-1 h-4 w-4 bg-white border border-gray-300 rounded-full transition-all duration-300"
+                                    :class="privacySettings.showActivity ? 'translate-x-5 border-white' : ''"></div>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-700 dark:text-gray-300">Permitir etiquetado</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" v-model="privacySettings.allowTagging" class="sr-only peer">
+                            <div class="w-11 h-6 rounded-full transition-all duration-300"
+                                :class="privacySettings.allowTagging ? 'bg-blue-500' : 'bg-gray-600'">
+                                <div class="absolute top-1 left-1 h-4 w-4 bg-white border border-gray-300 rounded-full transition-all duration-300"
+                                    :class="privacySettings.allowTagging ? 'translate-x-5 border-white' : ''"></div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Active Sessions -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Sesiones Activas</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Gestiona tus sesiones activas y cierra sesión en dispositivos remotos.</p>
+                
+                <div class="space-y-4">
+                    <div v-for="(session, index) in activeSessions" :key="index" 
+                        class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg flex justify-between items-center">
+                        <div>
+                            <div class="flex items-center">
+                                <i class="bx bx-desktop text-xl text-blue-500 mr-2"></i>
+                                <span class="font-medium text-gray-800 dark:text-gray-200">{{ session.device }}</span>
+                                <span v-if="session.current" class="ml-2 px-2 py-0.5 bg-green-100 text-green-800 text-xs rounded-full">Actual</span>
+                            </div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                {{ session.location }} • {{ session.ip }} • Última actividad: {{ session.lastActive }}
+                            </div>
+                        </div>
+                        <button v-if="!session.current" @click="terminateSession(index)"
+                            class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm">
+                            Cerrar
+                        </button>
+                    </div>
+                    
+                    <button @click="terminateAllSessions" 
+                        class="w-full mt-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg">
+                        Cerrar todas las otras sesiones
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECURITY SECTION -->
+        <h1 class="border-y border-gray-500 p-2 dark:text-gray-500 mt-6">SEGURIDAD</h1>
+        <p class="px-4 mt-4 dark:text-gray-300">Añade una capa extra de seguridad a tu cuenta.</p>
         <div class="p-4 grid grid-cols-2 gap-4">
-            <div class="bg-gray-900 dark:bg-gray-50 p-6 rounded-lg dark:text-gray-700 shadow-lg">
-                <p class="text-xl font-bold">Two-Factor Authentication (2FA)</p>
-                <p class="mt-2 text-justify">
-                    Two-Factor Authentication adds an extra layer of security to your account.
-                    By requiring a second form of verification, it helps prevent unauthorized access,
-                    even if someone knows your password.
-                </p>
-                <p class="mt-2 text-justify">
-                    Once enabled, you'll be asked for a verification code sent to your device each time
-                    you log in. You can use an authenticator app to complete this process.
-                </p>
-                <button @click="handle2FAButtonClick()" :class="[
-                    'w-1/2',
-                    'text-white',
-                    'font-semibold',
-                    'p-3',
-                    'rounded-lg',
-                    'cursor-pointer',
-                    'text-center',
-                    'mt-4',
-                    'transition',
-                    'duration-300',
-                    isTwoFactorEnabled ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'
-                ]">
-                    {{ isTwoFactorEnabled ? "DISABLE 2FA (NOT RECOMMENDED)" : "ENABLE 2FA" }}
-                </button>
+            <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-lg text-gray-700 dark:text-gray-300 shadow-lg">
+            <p class="text-xl font-bold">Autenticación de Dos Factores (2FA)</p>
+            <p class="mt-2 text-justify">
+                La Autenticación de Dos Factores añade una capa extra de seguridad a tu cuenta.
+                Al requerir una segunda forma de verificación, ayuda a prevenir accesos no autorizados,
+                incluso si alguien conoce tu contraseña.
+            </p>
+            <p class="mt-2 text-justify">
+                Una vez habilitada, se te pedirá un código de verificación enviado a tu dispositivo cada vez
+                que inicies sesión. Puedes usar una aplicación de autenticación para completar este proceso.
+            </p>
+            <button @click="handle2FAButtonClick()" :class="[
+                'w-1/2',
+                'text-white',
+                'font-semibold',
+                'p-3',
+                'rounded-lg',
+                'cursor-pointer',
+                'text-center',
+                'mt-4',
+                'transition',
+                'duration-300',
+                isTwoFactorEnabled ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'
+            ]">
+                {{ isTwoFactorEnabled ? "DISABLE 2FA (NOT RECOMMENDED)" : "ENABLE 2FA" }}
+            </button>
+            </div>
+            
+            <!-- Login History -->
+            <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-lg text-gray-700 dark:text-gray-300 shadow-lg">
+            <p class="text-xl font-bold">Historial de Inicio de Sesión</p>
+            <p class="mt-2 text-justify">
+                Revisa tu historial de inicio de sesión para detectar actividades sospechosas.
+                Si observas inicios de sesión que no reconoces, cambia tu contraseña inmediatamente
+                y habilita la autenticación de dos factores.
+            </p>
+            <div class="mt-4 max-h-40 overflow-y-auto space-y-2">
+                <div class="flex justify-between items-center p-2 bg-gray-200 dark:bg-gray-800 rounded">
+                <div>
+                    <div class="text-gray-700 dark:text-gray-300 font-medium">Madrid, Spain</div>
+                    <div class="text-gray-600 dark:text-gray-400 text-sm">Chrome • Windows • Hoy, 14:32</div>
+                </div>
+                <div class="text-green-500 text-sm">Exitoso</div>
+                </div>
+                <div class="flex justify-between items-center p-2 bg-gray-200 dark:bg-gray-800 rounded">
+                <div>
+                    <div class="text-gray-700 dark:text-gray-300 font-medium">Barcelona, Spain</div>
+                    <div class="text-gray-600 dark:text-gray-400 text-sm">Safari • iOS • Ayer, 09:15</div>
+                </div>
+                <div class="text-green-500 text-sm">Exitoso</div>
+                </div>
+                <div class="flex justify-between items-center p-2 bg-gray-200 dark:bg-gray-800 rounded">
+                <div>
+                    <div class="text-gray-700 dark:text-gray-300 font-medium">Unknown Location</div>
+                    <div class="text-gray-600 dark:text-gray-400 text-sm">Firefox • Linux • 15/03/2023, 22:45</div>
+                </div>
+                <div class="text-red-500 text-sm">Fallido</div>
+                </div>
+            </div>
+            <button class="bg-blue-500 hover:bg-blue-600 text-white font-semibold p-3 rounded-lg cursor-pointer text-center mt-4 transition duration-300 w-1/2">
+                Ver Historial Completo
+            </button>
             </div>
         </div>
 
@@ -418,31 +786,30 @@ const uploadProfilePicture = async (e) => {
         <!-- Disable 2FA Confirmation Modal -->
         <div v-if="disableConfirmModal" class="fixed inset-0 flex items-center justify-center bg-black/50">
             <div class="bg-gray-900 dark:bg-white p-6 rounded-lg shadow-lg w-96 text-center">
-                <h2 class="text-xl font-bold text-red-500 mb-4">WARNING: Disabling 2FA</h2>
+                <h2 class="text-xl font-bold text-red-500 mb-4">ADVERTENCIA: Deshabilitar 2FA</h2>
                 <div class="p-4 bg-red-100 dark:bg-red-50 rounded-lg mb-4">
-                    <p class="text-red-800 font-semibold">This action is not recommended</p>
+                    <p class="text-red-800 font-semibold">Esta acción no es recomendable</p>
                 </div>
                 <p class="text-gray-300 dark:text-gray-700 text-justify mb-4">
-                    Disabling Two-Factor Authentication will significantly reduce the security of your account.
-                    Without 2FA, your account will be more vulnerable to unauthorized access.
+                    Deshabilitar la Autenticación de Dos Factores reducirá significativamente la seguridad de tu cuenta.
+                    Sin 2FA, tu cuenta será más vulnerable a accesos no autorizados.
                 </p>
                 <p class="text-gray-300 dark:text-gray-700 text-justify mb-4">
-                    We strongly recommend keeping 2FA enabled to protect your personal information and data.
+                    Recomendamos encarecidamente mantener 2FA habilitado para proteger tu información personal y datos.
                 </p>
                 <div class="flex justify-between gap-2">
                     <button @click="closeDisableConfirmation()"
                         class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer transition duration-300 flex-1">
-                        Cancel
+                        Cancelar
                     </button>
                     <button @click="disable2FA()" :disabled="!confirmButtonEnabled"
                         class="mt-4 px-4 py-2 rounded-lg cursor-pointer transition duration-300 flex-1 flex items-center justify-center"
                         :class="confirmButtonEnabled ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gray-500 text-gray-300 cursor-not-allowed'">
-                        <span v-if="!confirmButtonEnabled">Wait {{ confirmCountdown }}s</span>
-                        <span v-else>I understand, disable 2FA</span>
+                        <span v-if="!confirmButtonEnabled">Espera {{ confirmCountdown }}s</span>
+                        <span v-else>Entiendo, deshabilitar 2FA</span>
                     </button>
                 </div>
             </div>
-        </div>
+                </div>
     </Layout>
-
 </template>
