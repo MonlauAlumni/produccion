@@ -72,4 +72,14 @@ class JobOfferController extends Controller
         return redirect()->route('home');
     }
 
+    public function index() {
+
+
+
+        return Inertia::render('JobOffers/AllJobOffers', [
+           
+        ]);
+
+    }
+
 }

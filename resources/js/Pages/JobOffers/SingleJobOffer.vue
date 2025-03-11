@@ -75,7 +75,6 @@
   <template>
     <Layout>
     <div class="min-h-screen bg-gray-50 flex flex-col">
-   
       
       <!-- Header Section with Company Info -->
       <div class="bg-[#193CB8] text-white py-6 border-b-4 border-[#193CB8]/20">
@@ -123,7 +122,7 @@
             <div class="mt-4 md:mt-0 flex flex-col items-end">
               <button 
                 @click="applyToJob"
-                class="bg-white text-[#193CB8] font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-blue-50 flex items-center"
+                class="bg-white text-[#193CB8] cursor-pointer font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-blue-50 flex items-center"
               >
                 <i class='bx bx-send mr-2'></i>
                 Inscribirme
@@ -136,33 +135,7 @@
         </div>
       </div>
       
-      <!-- Quick Info Bar -->
-      <div class="bg-white border-b">
-        <div class="max-w-5xl mx-auto px-4 py-3">
-          <div class="flex flex-wrap justify-between text-sm">
-            <div class="flex items-center mr-6 mb-2 md:mb-0">
-              <i class='bx bx-briefcase text-[#193CB8] mr-1'></i>
-              <span class="text-gray-500 mr-1">Experiencia:</span>
-              <span class="font-medium">{{ jobOffer.experience.split(' ')[0] }}</span>
-            </div>
-            <div class="flex items-center mr-6 mb-2 md:mb-0">
-              <i class='bx bx-book text-[#193CB8] mr-1'></i>
-              <span class="text-gray-500 mr-1">Estudios:</span>
-              <span class="font-medium">{{ jobOffer.requirements.split(' ')[0] }}</span>
-            </div>
-            <div class="flex items-center mr-6 mb-2 md:mb-0">
-              <i class='bx bx-user-plus text-[#193CB8] mr-1'></i>
-              <span class="text-gray-500 mr-1">Vacantes:</span>
-              <span class="font-medium">{{ jobOffer.vacancies }}</span>
-            </div>
-            <div class="flex items-center mb-2 md:mb-0">
-              <i class='bx bx-building-house text-[#193CB8] mr-1'></i>
-              <span class="text-gray-500 mr-1">Empresa:</span>
-              <span class="font-medium">{{ jobOffer.company.employees }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
+     
       
       <div class="max-w-5xl mx-auto py-6 px-4">
         <div class="grid md:grid-cols-3 gap-6">
@@ -279,26 +252,30 @@
                     {{ jobOffer.vacancies }}
                   </div>
                 </div>
+                <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
+                  <div class="text-sm text-gray-500">Inscritos</div>
+                  <div class="font-medium flex items-center">
+                    <i class='bx bx-user-plus text-[#193CB8] mr-1'></i>
+                    50+
+                  </div>
+                </div>
                 
                 <div class="flex items-center justify-between mb-4">
                   <div class="text-sm text-gray-500">Proceso:</div>
                   <div class="font-medium flex items-center">
                     <i class='bx bx-check-shield text-[#193CB8] mr-1'></i>
-                    Rápido
+                    En selección
                   </div>
                 </div>
                 
                 <button 
                   @click="applyToJob"
-                  class="w-full bg-[#193CB8] text-white font-semibold py-3 px-6 rounded-lg shadow-sm hover:bg-[#142d8c] flex items-center justify-center mt-3"
+                  class="w-full bg-[#193CB8] cursor-pointer text-white font-semibold py-3 px-6 rounded-lg shadow-sm hover:bg-[#142d8c] flex items-center justify-center mt-5"
                 >
                   <i class='bx bx-send mr-2'></i>
                   Inscribirme a la oferta
                 </button>
-                
-                <div class="flex items-center justify-center mt-3 text-sm text-gray-500">
-                  <i class='bx bx-shield-quarter mr-1'></i> Aplicación segura
-                </div>
+             
               </div>
             </div>
             
@@ -394,32 +371,10 @@
           </div>
         </div>
         
-        <!-- Bottom Action Bar -->
-        <div class="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-4 flex flex-col sm:flex-row items-center justify-between">
-          <div class="flex items-center mb-3 sm:mb-0">
-            <div class="w-10 h-10 bg-[#193CB8]/10 rounded-full flex items-center justify-center text-[#193CB8] mr-3">
-              <i class='bx bx-share-alt'></i>
-            </div>
-            <div>
-              <h3 class="font-medium text-gray-800">¿Conoces a alguien que encaje?</h3>
-              <p class="text-sm text-gray-500">Comparte esta oferta con tu red profesional</p>
-            </div>
-          </div>
-          <div class="flex gap-2">
-            <button class="bg-gray-100 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-200 flex items-center">
-              <i class='bx bxl-linkedin text-[#0077b5] mr-1'></i> LinkedIn
-            </button>
-            <button class="bg-gray-100 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-200 flex items-center">
-              <i class='bx bx-envelope text-[#193CB8] mr-1'></i> Email
-            </button>
-            <button class="bg-gray-100 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-200 flex items-center">
-              <i class='bx bx-link text-[#193CB8] mr-1'></i> Copiar
-            </button>
-          </div>
-        </div>
+       
       </div>
     </div>  
-    </Layout>
+  </Layout>
   </template>
   
   <style>

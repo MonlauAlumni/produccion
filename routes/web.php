@@ -61,6 +61,7 @@ Route::middleware('auth')->group(function() {
     Route::get('/ofertas/{id}', [JobOfferController::class, 'show'])->name('job-offers.show');
     Route::get('/ofertas/crear', [JobOfferController::class, 'create'])->name('ofertas.crear'); 
     Route::post('/ofertas/crear', [JobOfferController::class, 'store'])->name('ofertas.store'); 
+    Route::get('/ofertas', [JobOfferController::class, 'index'])->name('ofertas.index');
 
 
 
