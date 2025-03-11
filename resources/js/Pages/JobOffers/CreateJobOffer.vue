@@ -1,7 +1,7 @@
 <script setup>
   import { ref, computed } from 'vue'
   import { router } from '@inertiajs/vue3'
-  import NavBar from '@/Components/Navbar.vue'
+  import Layout from '@/Components/Layout.vue'
   
   const form = ref({
     title: '',
@@ -78,12 +78,13 @@
   </script>
   
   <template>
+    <Layout>
     <div class="min-h-screen bg-gray-50 flex flex-col">
-      <NavBar />
+      
       
       <!-- Header Section -->
-      <div class="bg-gradient-to-r from-[#193CB8] to-[#2d50c7] text-white py-8">
-        <div class="max-w-5xl mx-auto px-4">
+      <div class="bg-[#193CB8] flex text-white py-8">
+        <div class="mx-auto min-w-5xl  px-4">
           <h1 class="text-3xl font-bold flex items-center">
             <i class='bx bx-plus-circle mr-3 text-4xl'></i>
             Crear Nueva Oferta de Empleo
@@ -103,7 +104,7 @@
         </div>
       </div>
       
-      <div class="max-w-5xl mx-auto py-8 px-4">
+      <div class="min-w-5xl max-w-5xl mx-auto py-8 px-4">
         <!-- Form Steps Navigation -->
         <div class="bg-white rounded-xl shadow-md mb-6 overflow-hidden">
           <div class="flex border-b">
@@ -590,6 +591,7 @@
         </form>
       </div>
     </div>
+  </Layout>
   </template>
   
   <style>

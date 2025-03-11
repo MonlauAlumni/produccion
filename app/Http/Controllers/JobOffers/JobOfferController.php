@@ -9,6 +9,21 @@ use Illuminate\Http\Request;
 
 class JobOfferController extends Controller
 {
+
+    public function index(Request $request)
+    {
+        
+        $page = $request->input('page', 1);
+        
+       
+        $offers = JobOffer::paginate(10); 
+        
+      
+        return inertia('JobOffers/Index', [
+            'jobOffers' => $offers
+        ]);
+    }
+
     public function show(JobOffer $jobOffer)
     {
         return Inertia::render('JobOffers/SingleJobOffer', [

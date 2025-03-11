@@ -1,3 +1,39 @@
+<script>
+  import { usePage } from '@inertiajs/vue3';
+
+  const { user } = usePage().props || {};
+
+  export default {
+    
+    data() {
+      return {
+        isOpen: false,
+        darkMode: false,
+        topMenuItems: [
+          { text: 'Inicio', icon: 'bx-home', active: true },
+          { text: 'Notificaciones', icon: 'bx-bell', badge: '5' },
+          { text: 'Mensajes', icon: 'bx-envelope', badge: '2' },
+          { text: 'Calendario', icon: 'bx-calendar' },
+        ],
+        middleMenuItems: [
+          { text: 'Alumni connect', icon: 'bx-group' },
+          { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo' },
+          { text: 'Empresas', icon: 'bx-buildings' },
+        ],
+        bottomMenuItems: [
+        
+          { text: 'Configuración', icon: 'bx-cog' },
+          { text: 'Cerrar sesión', icon: 'bx-log-out' }
+        ]
+      };
+    },
+    methods: {
+      toggleSidebar() {
+        this.isOpen = !this.isOpen;
+      },
+    }
+  };
+  </script>
 <template>
   <div>
     <!-- Mobile menu button -->
@@ -8,13 +44,17 @@
     <!-- Overlay for mobile -->
     <div v-if="isOpen" @click="toggleSidebar" class="fixed inset-0 bg-black/50 md:hidden z-40 backdrop-blur-sm"></div>
 
-    <!-- Sidebar -->
+    <div class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] flex gap-x-5 text-white p-4">
+      <img src="../../../public/images/monlau-logo.png" alt="Alumni" class="w-8 h-8">
+      <h1 class="text-2xl font-semibold">Alumni</h1>
+
+    </div>
     <aside :class="[
       'h-full w-64 flex flex-col bg-white z-40 shadow-lg border-r border-gray-100 transition-all duration-300',
       isOpen ? 'fixed top-0 left-0 translate-x-0' : 'fixed top-0 left-0 -translate-x-full',
       'md:static md:translate-x-0'  
     ]">
-      <!-- User profile -->
+     
       <div class="p-4 border-b border-gray-100">
         <div class="flex items-center space-x-3 mb-3">
           <div class="relative">
@@ -24,7 +64,7 @@
             <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white"></div>
           </div>
           <div>
-            <p class="font-semibold text-gray-800">{{ username }}</p>
+            <p class="font-semibold text-gray-800">{{ user?.name || 'Usuario' }}</p>
             <p class="text-xs text-gray-500 flex items-center">
               <i class='bx bxs-circle text-green-500 text-[8px] mr-1'></i> Online
             </p>
@@ -111,61 +151,3 @@
     </aside>
   </div>
 </template>
-
-<script>
-export default {
-  props: {
-    username: { type: String, default: 'Usuario Alumni' },
-    usertag: { type: String, default: 'alumni@example.com' }
-  },
-  data() {
-    return {
-      isOpen: false,
-      darkMode: false,
-      topMenuItems: [
-        { text: 'Inicio', icon: 'bx-home', active: true },
-        { text: 'Notificaciones', icon: 'bx-bell', badge: '5' },
-        { text: 'Mensajes', icon: 'bx-envelope', badge: '2' },
-        { text: 'Calendario', icon: 'bx-calendar' },
-      ],
-      middleMenuItems: [
-        { text: 'Alumni connect', icon: 'bx-group' },
-        { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo' },
-        { text: 'Empresas', icon: 'bx-buildings' },
-      ],
-      bottomMenuItems: [
-      
-        { text: 'Configuración', icon: 'bx-cog' },
-        { text: 'Cerrar sesión', icon: 'bx-log-out' }
-      ]
-    };
-  },
-  methods: {
-    toggleSidebar() {
-      this.isOpen = !this.isOpen;
-    },
-<<<<<<< HEAD
-  }
-=======
-    data() {
-        return {
-            isOpen: false,
-            menuItems: [
-                { text: 'Inicio', route: '/home' },
-                { text: 'Social' },
-                { text: 'Notificaciones' },
-                { text: 'Mis Ofertas', route: '/ofertas' },
-                { text: 'Empresas' },
-                { text: 'Alumnos' },
-                { text: 'Configuración' }
-            ]
-        };
-    },
-    methods: {
-        toggleSidebar() {
-            this.isOpen = !this.isOpen;
-        }
-    }
->>>>>>> feature/job-offers
-};
-</script>

@@ -1,19 +1,19 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex flex-col">
+  <div class="min-h-screen bg-gray-50 flex  flex-col">
     <!-- Navbar (Header siempre arriba, fijo en la parte superior) -->
-    <Navbar :auth="auth" class="w-full" />
+  
 
     <!-- Main container for Sidebar and Content -->
     <div class="flex flex-1"> 
       <!-- Sidebar (Izquierda, debajo del Navbar) -->
       <Sidebar 
         :username="auth?.user?.name || 'Usuario Alumni'" 
-        class="hidden md:block md:w-64 md:h-[calc(100vh-64px)]" 
+        class="hidden md:block md:w-64  fixed md:h-[calc(100vh-64px)]" 
       />
 
-      <!-- Contenido principal -->
-      <main class="flex-grow p-4 ml-0 md:ml-64 mt-16">
-        <slot />
+      <!-- Main Content -->
+      <main class="flex-1   ml-65 bg-gray-50">
+        <slot></slot>
       </main>
     </div>
   </div>
