@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 import AdminLayout from './Layouts/AdminLayout.vue';
 import InputWithIcon from '@/Components/InputWithIcon.vue';
+import axios from 'axios';
 
 import { defineProps } from 'vue';
 
@@ -22,19 +23,19 @@ const formUser = ref({
 });
 
 function updateUser(event) {
-    event.preventDefault();
-    router.put(`/admin/user/${props.user.id}`, formUser.value, {
-        preserveState: true,
-        preserveScroll: true,
-    }).catch(error => {
-        console.error(error);
-    });
+    axios.put(`/admin/user/${props.user.id}`, formUser.value)
+        .then(response => {
+            console.log(response.data);
+        })
+        .catch(error => {
+            console.error(error);
+        });
 }
 </script>
 <template>
     <AdminLayout title="Editar usuario">
         <div class="h-full p-6">
-            <box-icon name='arrow-back' color="#2563EB" class="cursor-pointer" size="md"></box-icon>
+            <box-icon name='arrow-back' color="#2563EB" class="cursor-pointer" size="md" @click="router.get('/admin/users')"></box-icon>
             <form @submit="updateUser" class="bg-white p-6 rounded shadow space-y-6 mt-2">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>

@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\JobOffer;
+
 
 class Company extends Model
 {
@@ -26,6 +28,11 @@ class Company extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function jobOffers()
+    {
+        return $this->hasMany(JobOffer::class);
     }
 
 

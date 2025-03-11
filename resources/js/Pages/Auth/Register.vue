@@ -85,7 +85,7 @@ export default {
         v-model="form.last_name_1"
         icon="person"
         placeholder="Introduce tu primer apellido"
-        id="last_name_1"
+        id="last_name_1" ujm
         required />
       </div>  
       <div class="flex flex-row gap-4">
