@@ -9,6 +9,22 @@ const user = computed(() => usePage().props.auth?.user);
 const username = ref(user.value.name);
 const email = ref(user.value.email);
 
+
+const selectedLanguage = ref('es');
+
+// Agregar arreglo de idiomas con bandera, nombre y código
+const languages = [
+    { code: 'es', name: 'Español (España)', flag: '/images/flags/es.png' },
+    { code: 'ca', name: 'Català', flag: '/images/flags/ca.png' },
+    { code: 'en', name: 'English', flag: '/images/flags/en.png' },
+    { code: 'fr', name: 'Français', flag: '/images/flags/fr.png' },
+    { code: 'de', name: 'Deutsch', flag: '/images/flags/de.png' }
+];
+
+const changeLanguage = () => {
+    console.log('Language changed to:', selectedLanguage.value);
+};
+
 const isTwoFactorEnabled = ref(!!user.value?.two_factor_secret);
 const qrCode = ref("");
 
@@ -222,7 +238,6 @@ const connectAccount = (platform) => {
     connectedAccounts.value[platform] = !connectedAccounts.value[platform];
 };
 
-// Session management
 const activeSessions = ref([
     {
         device: 'Chrome on Windows',
@@ -350,6 +365,8 @@ const terminateAllSessions = () => {
 
             </div>
 
+
+
             <div
                 class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-2xl space-y-6 border border-gray-200 dark:border-gray-700">
                 <div class="flex flex-col md:flex-row md:justify-between md:items-center">
@@ -427,6 +444,25 @@ const terminateAllSessions = () => {
                     </div>
                 </div>
             </div>
+
+
+            <!-- Reemplazar bloque de Idiomas -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl">
+                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">IDIOMAS</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Selecciona tu idioma:</p>
+                <div class="grid grid-cols-3 gap-4">
+                    <div v-for="lang in languages" :key="lang.code"
+                        @click="selectedLanguage = lang.code; changeLanguage()"
+                        :class="[
+                            'cursor-pointer p-4 rounded text-center',
+                            selectedLanguage === lang.code ? 'bg-blue-200' : 'bg-white dark:bg-gray-800'
+                        ]">
+                        <img :src="lang.flag" alt="" class="mx-auto mb-2 w-20 h-12" />
+                        <span class="block text-sm font-semibold">{{ lang.name }}</span>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- SOCIAL SECTION -->
@@ -508,21 +544,12 @@ const terminateAllSessions = () => {
             </div>
 
             <!-- Social Profiles -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl">
                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Perfiles Sociales</h2>
                 <p class="text-gray-600 dark:text-gray-400 mb-4">Conecta tus perfiles sociales para compartir contenido
                     y mejorar tu experiencia.</p>
 
-                <div class="space-y-4">
-                    <div class="flex items-center">
-                        <div class="relative w-full">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="bx bxl-twitter text-blue-400"></i>
-                            </div>
-                            <input v-model="socialProfiles.twitter" type="text" placeholder="Usuario de Twitter"
-                                class="block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600" />
-                        </div>
-                    </div>
+                <div class="flex flex-col justify-between gap-4">
 
                     <div class="flex items-center">
                         <div class="relative w-full">
@@ -553,6 +580,10 @@ const terminateAllSessions = () => {
                                 class="block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600" />
                         </div>
                     </div>
+                    <button @click="updateUserInfo" :disabled="isUpdating"
+                        class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] px-4 py-2 rounded hover:bg-blue-600 cursor-pointer text-white transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                        {{ isUpdating ? 'Actualizando...' : 'Actualizar Información' }}
+                    </button>
                 </div>
             </div>
 
@@ -715,7 +746,7 @@ const terminateAllSessions = () => {
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-6 px-4 border-t pt-4">SEGURIDAD</h1>
         <p class="px-4 mt-4 dark:text-gray-300">Añade una capa extra de seguridad a tu cuenta.</p>
         <div class="p-4 grid grid-cols-2 gap-4">
-            <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-lg text-gray-700 dark:text-gray-300 shadow-lg">
+            <div class="bg-white dark:bg-gray-900 p-6 rounded-lg text-gray-700 dark:text-gray-300 shadow-xl">
                 <p class="text-xl font-bold">Autenticación de Dos Factores (2FA)</p>
                 <p class="mt-2 text-justify">
                     La Autenticación de Dos Factores añade una capa extra de seguridad a tu cuenta.
@@ -744,7 +775,7 @@ const terminateAllSessions = () => {
             </div>
 
             <!-- Login History -->
-            <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-lg text-gray-700 dark:text-gray-300 shadow-lg">
+            <div class="bg-white dark:bg-gray-900 p-6 rounded-lg text-gray-700 dark:text-gray-300 shadow-xl">
                 <p class="text-xl font-bold">Historial de Inicio de Sesión</p>
                 <p class="mt-2 text-justify">
                     Revisa tu historial de inicio de sesión para detectar actividades sospechosas.
@@ -801,29 +832,29 @@ const terminateAllSessions = () => {
         <!-- Disable 2FA Confirmation Modal -->
         <div v-if="disableConfirmModal" class="fixed inset-0 flex items-center justify-center bg-black/50 p-4 z-50">
             <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg w-full max-w-md text-center">
-            <h2 class="text-xl font-bold text-red-600 dark:text-red-400 mb-4">ADVERTENCIA: Deshabilitar 2FA</h2>
-            <div class="p-4 bg-red-100 dark:bg-red-800 rounded-lg mb-4">
-                <p class="text-red-800 dark:text-red-200 font-semibold">Esta acción no es recomendable</p>
-            </div>
-            <p class="text-gray-700 dark:text-gray-300 text-justify mb-4">
-                Deshabilitar la Autenticación de Dos Factores reducirá significativamente la seguridad de tu cuenta.
-                Sin 2FA, tu cuenta será más vulnerable a accesos no autorizados.
-            </p>
-            <p class="text-gray-700 dark:text-gray-300 text-justify mb-4">
-                Recomendamos encarecidamente mantener 2FA habilitado para proteger tu información personal y datos.
-            </p>
-            <div class="flex justify-between gap-2">
-                <button @click="closeDisableConfirmation()"
-                class="mt-4 px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 cursor-pointer transition duration-300 flex-1">
-                Cancelar
-                </button>
-                <button @click="disable2FA()" :disabled="!confirmButtonEnabled"
-                class="mt-4 px-4 py-2 rounded-lg cursor-pointer transition duration-300 flex-1 flex items-center justify-center"
-                :class="confirmButtonEnabled ? 'bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white' : 'bg-gray-500 dark:bg-gray-600 text-gray-300 cursor-not-allowed'">
-                <span v-if="!confirmButtonEnabled">Espera {{ confirmCountdown }}s</span>
-                <span v-else>Entiendo, deshabilitar 2FA</span>
-                </button>
-            </div>
+                <h2 class="text-xl font-bold text-red-600 dark:text-red-400 mb-4">ADVERTENCIA: Deshabilitar 2FA</h2>
+                <div class="p-4 bg-red-100 dark:bg-red-800 rounded-lg mb-4">
+                    <p class="text-red-800 dark:text-red-200 font-semibold">Esta acción no es recomendable</p>
+                </div>
+                <p class="text-gray-700 dark:text-gray-300 text-justify mb-4">
+                    Deshabilitar la Autenticación de Dos Factores reducirá significativamente la seguridad de tu cuenta.
+                    Sin 2FA, tu cuenta será más vulnerable a accesos no autorizados.
+                </p>
+                <p class="text-gray-700 dark:text-gray-300 text-justify mb-4">
+                    Recomendamos encarecidamente mantener 2FA habilitado para proteger tu información personal y datos.
+                </p>
+                <div class="flex justify-between gap-2">
+                    <button @click="closeDisableConfirmation()"
+                        class="mt-4 px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 cursor-pointer transition duration-300 flex-1">
+                        Cancelar
+                    </button>
+                    <button @click="disable2FA()" :disabled="!confirmButtonEnabled"
+                        class="mt-4 px-4 py-2 rounded-lg cursor-pointer transition duration-300 flex-1 flex items-center justify-center"
+                        :class="confirmButtonEnabled ? 'bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white' : 'bg-gray-500 dark:bg-gray-600 text-gray-300 cursor-not-allowed'">
+                        <span v-if="!confirmButtonEnabled">Espera {{ confirmCountdown }}s</span>
+                        <span v-else>Entiendo, deshabilitar 2FA</span>
+                    </button>
+                </div>
             </div>
         </div>
     </Layout>
