@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -8,19 +7,20 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request; // Asegúrate de importar Request
 
 class SocialLoginController extends Controller
 {
     public function redirectToMicrosoft(){
         return Socialite::driver('microsoft')->redirect();
-
     }
-      public function redirectToGoogle()
-      {
-          return Socialite::driver('google')->redirect();
-      }
 
-      public function handleMicrosoftCallback(){
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function handleMicrosoftCallback(Request $request){ // Agregar Request como parámetro
         $microsoftUser = Socialite::driver('microsoft')->user();
         $accessToken = $microsoftUser->token;
 
@@ -38,100 +38,103 @@ class SocialLoginController extends Controller
             if(isset($group['displayName'])) {
                 $groupNames[] = $group['displayName'];
             }
-
         }
-        //dd($groupNames);
-        //dd($microsoftUser);
+
+        // Buscar si el usuario ya existe
         $user = User::where('microsoft_id', $microsoftUser->getId())->first();
+        
         if (!$user) {
+            // Si el usuario no existe, lo guardamos temporalmente
             Session::put('microsoft_user', [
                 'email' => $microsoftUser->getEmail(),
                 'microsoft_id' => $microsoftUser->getId(),
                 'password' => bcrypt(Str::random(16)),
                 'role' => 'student',
             ]);
-        }
+            return redirect('/complete-profile');
+        } else {
+            // Si el usuario existe, comprobamos si tiene 2FA habilitado
+            if ($user->two_factor_secret) {
+                $request->session()->put('login.id', $user->id);
+                $request->session()->save();
+                return redirect()->route('two-factor.login');
+            }
 
-        else {
+            // Si no tiene 2FA, iniciamos sesión
             Auth::login($user);
             return redirect('/home');
         }
-        
-       
-        return redirect('/complete-profile');
-      }
-     
-     
-      public function handleGoogleCallback()
-      {
-          try {
-              $googleUser = Socialite::driver('google')->user();
-      
-              if (!$googleUser->getEmail()) {
-                  throw new \Exception('No se pudo obtener el correo electrónico del usuario.');
-              }
-      
-              
-              $user = User::where('email', $googleUser->getEmail())->first();
-              
-              if (!$user) {
-                  
-                  Session::put('google_user', [
-                      'email' => $googleUser->getEmail(),
-                      'google_id' => $googleUser->getId(),
-                      'password' => bcrypt(Str::random(16)),
-                      
-                  ]);
-              }
-      
-             
-              return redirect('/complete-profile');
-          } catch (\Exception $e) {
-              return redirect('/login')->with('error', 'Error al iniciar sesión con Google: ' . $e->getMessage());
-          }
-      }
-    
-    /**
-     * Redirigir al usuario a GitHub para autorizar la aplicación.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
+    }
+
+    public function handleGoogleCallback(Request $request) // Agregar Request como parámetro
+    {
+        try {
+            $googleUser = Socialite::driver('google')->user();
+
+            if (!$googleUser->getEmail()) {
+                throw new \Exception('No se pudo obtener el correo electrónico del usuario.');
+            }
+
+            // Buscar si el usuario ya existe
+            $user = User::where('email', $googleUser->getEmail())->first();
+
+            if (!$user) {
+                // Si el usuario no existe, lo guardamos temporalmente
+                Session::put('google_user', [
+                    'email' => $googleUser->getEmail(),
+                    'google_id' => $googleUser->getId(),
+                    'password' => bcrypt(Str::random(16)),
+                ]);
+                return redirect('/complete-profile');
+            } else {
+                // Si el usuario existe, comprobamos si tiene 2FA habilitado
+                if ($user->two_factor_secret) {
+                    $request->session()->put('login.id', $user->id);
+                    $request->session()->save();
+                    return redirect()->route('two-factor.login');
+                }
+
+                // Si no tiene 2FA, iniciamos sesión
+                Auth::login($user);
+                return redirect('/home');
+            }
+        } catch (\Exception $e) {
+            return redirect('/login')->with('error', 'Error al iniciar sesión con Google: ' . $e->getMessage());
+        }
+    }
+
     public function github_redirect()
     {
         return Socialite::driver('github')->redirect();
     }
 
-    /**
-     * Manejar la respuesta de GitHub después de que el usuario autoriza la aplicación.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function github_callback()
-{
-    
-    $githubUser = Socialite::driver('github')->stateless()->user();
-    
-  
-   
-    $user = User::where('github_id', $githubUser->getId())->first();
+    public function github_callback(Request $request) // Agregar Request como parámetro
+    {
+        $githubUser = Socialite::driver('github')->stateless()->user();
 
-  
-    if (!$user) {
-       
-        Session::put('github_user', [
-            'email' => $githubUser->getEmail(),
-            'github_id' => $githubUser->getId(),
-            'password' => bcrypt(Str::random(16)),
-          
-        ]);
+        // Buscar si el usuario ya existe
+        $user = User::where('github_id', $githubUser->getId())->first();
+
+        if (!$user) {
+            // Si el usuario no existe, lo guardamos temporalmente
+            Session::put('github_user', [
+                'email' => $githubUser->getEmail(),
+                'github_id' => $githubUser->getId(),
+                'password' => bcrypt(Str::random(16)),
+            ]);
+            return redirect('/complete-profile');
+        } else {
+            // Si el usuario existe, comprobamos si tiene 2FA habilitado
+            if ($user->two_factor_secret) {
+                $request->session()->put('login.id', $user->id);
+                $request->session()->save();
+                return redirect()->route('two-factor.login');
+            }
+
+            // Si no tiene 2FA, iniciamos sesión
+            Auth::login($user);
+            return redirect('/home');
+        }
     }
-
-    else {
-        Auth::login($user);
-        return redirect('/home');
-    }
-
-    return redirect('/complete-profile');
 }
 
-}

@@ -11,10 +11,12 @@ use App\Models\Company;
 use App\Models\Educations;   
 use App\Models\WorkExperience;
 use App\Models\Skill;
+use Laravel\Fortify\TwoFactorAuthenticatable;
+
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, Notifiable, HasRoles, TwoFactorAuthenticatable;
 
     protected $fillable = [
         'name', 
