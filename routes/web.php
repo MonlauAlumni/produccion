@@ -18,9 +18,7 @@ use App\Http\Middleware\IsStudent;
 use Illuminate\Support\Facades\Auth;    
 
 
-Route::get('/home', function () {
-    return Inertia::render('Home');
-})->name('home');
+
 
 Route::get('/', function () {
     return Inertia::render('LandingPage');
@@ -35,6 +33,8 @@ Route::group(['middleware' => ['role:admin']], function () {
    
 
 Route::middleware('auth')->group(function() {
+    Route::get('/home', [JobOfferController::class, 'index'])->name('home');
+
     Route::get('/perfil/{slang}', [ProfileController::class, 'profile'])->name('perfil.show');
     Route::put('/perfil/{slang}', [ProfileController::class, 'update'])->name('perfil.update');
     Route::post('/perfil/{slug}/experiencia', [ExperienceController::class, 'storeWork'])->name('perfil.experience.store');
@@ -45,7 +45,7 @@ Route::middleware('auth')->group(function() {
     
 
 
-    Route::get('/job-offers/{id}', [JobOfferController::class, 'show'])->name('job-offers.show');
+    Route::get('/ofertas/{id}', [JobOfferController::class, 'show'])->name('job-offers.show');
     Route::get('/ofertas/crear', [JobOfferController::class, 'create'])->name('ofertas.crear'); 
     Route::post('/ofertas/crear', [JobOfferController::class, 'store'])->name('ofertas.store'); 
 

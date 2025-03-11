@@ -4,20 +4,33 @@
   import Layout from '@/Components/Layout.vue'
   import JobCard from '@/Pages/JobOffers/JobCard.vue'
   
-  // Estado para el feed infinito
-  const jobOffers = ref([])
-  const isLoading = ref(false)
-  const page = ref(1)
-  const hasMorePages = ref(true)
-  const showScrollTopButton = ref(false)
+  const props = defineProps({
+    jobOffers: {
+      type: Object,
+      required: true
+    }
+  });
+  
+  // Extraer los datos de las ofertas de trabajo
+  const jobOffersList = ref(props.jobOffers.data || []);
+  const pagination = computed(() => ({
+    currentPage: props.jobOffers.current_page,
+    lastPage: props.jobOffers.last_page,
+    from: props.jobOffers.from,
+    to: props.jobOffers.to,
+    total: props.jobOffers.total
+  }));
+  
+  const isLoading = ref(false);
+  const showScrollTopButton = ref(false);
   
   // Estado para interacciones
-  const savedJobs = ref(new Set())
-  const likedJobs = ref(new Set())
-  const viewedJobs = ref(new Set())
+  const savedJobs = ref(new Set());
+  const likedJobs = ref(new Set());
+  const viewedJobs = ref(new Set());
   
   // Estado para filtros rápidos
-  const activeFilter = ref('recommended')
+  const activeFilter = ref('all');
   
   // Categorías destacadas
   const featuredCategories = [
@@ -27,263 +40,124 @@
     { id: 'finance', name: 'Finanzas', icon: 'bx-money', color: '#28A745' },
     { id: 'health', name: 'Salud', icon: 'bx-plus-medical', color: '#17A2B8' },
     { id: 'education', name: 'Educación', icon: 'bx-book-open', color: '#6F42C1' }
-  ]
+  ];
   
-  // Datos de ejemplo para las ofertas de trabajo (simulando API)
-  const fetchJobOffers = async (pageNum) => {
-    isLoading.value = true
+  // Cargar más ofertas (paginación)
+  const loadMoreJobs = async () => {
+    if (isLoading.value || pagination.value.currentPage >= pagination.value.lastPage) return;
     
-    // Simulamos una llamada a API con un retraso
-    await new Promise(resolve => setTimeout(resolve, 800))
+    isLoading.value = true;
     
-    // Generamos datos de ejemplo
-    const newOffers = Array(10).fill().map((_, index) => {
-      const id = (pageNum - 1) * 10 + index + 1
-      const randomCompany = getRandomCompany()
-      const randomLocation = getRandomLocation()
-      const randomSalary = getRandomSalary()
-      const randomSkills = getRandomSkills()
-      const randomJobType = getRandomJobType()
-      const randomDaysAgo = Math.floor(Math.random() * 14) + 1
-      const randomApplicants = Math.floor(Math.random() * 100) + 5
-      const randomViews = randomApplicants * (Math.floor(Math.random() * 10) + 5)
-      
-      return {
-        id,
-        title: getRandomJobTitle(),
-        company: randomCompany,
-        location: randomLocation,
-        job_type: randomJobType.value,
-        job_type_label: randomJobType.label,
-        salary_min: randomSalary.min,
-        salary_max: randomSalary.max,
-        posted_date: getDateDaysAgo(randomDaysAgo),
-        skills: randomSkills,
-        experience: getRandomExperience(),
-        description: getRandomDescription(),
-        applicants: randomApplicants,
-        views: randomViews,
-        match_percentage: Math.floor(Math.random() * 31) + 70, // 70-100%
-        is_promoted: Math.random() > 0.8,
-        is_urgent: Math.random() > 0.9,
-        is_remote_friendly: randomJobType.value === 'remote' || Math.random() > 0.7
-      }
-    })
-    
-    // Simulamos que no hay más páginas después de la 5
-    if (pageNum >= 5) {
-      hasMorePages.value = false
+    try {
+      // Usar Inertia para cargar la siguiente página
+      const nextPage = pagination.value.currentPage + 1;
+      await router.get(
+        '/ofertas', 
+        { page: nextPage },
+        { 
+          preserveState: true,
+          preserveScroll: true,
+          only: ['jobOffers'],
+          onSuccess: (page) => {
+            // Añadir las nuevas ofertas a la lista existente
+            if (page.props.jobOffers && page.props.jobOffers.data) {
+              jobOffersList.value = [...jobOffersList.value, ...page.props.jobOffers.data];
+            }
+          }
+        }
+      );
+    } catch (error) {
+      console.error('Error al cargar más ofertas:', error);
+    } finally {
+      isLoading.value = false;
     }
-    
-    jobOffers.value = [...jobOffers.value, ...newOffers]
-    isLoading.value = false
-  }
-  
-  // Funciones para generar datos aleatorios
-  const getRandomJobTitle = () => {
-    const titles = [
-      'Desarrollador Full Stack',
-      'Frontend Developer',
-      'Backend Engineer',
-      'UX/UI Designer',
-      'DevOps Engineer',
-      'Data Scientist',
-      'Product Manager',
-      'Mobile Developer',
-      'QA Engineer',
-      'Project Manager',
-      'Marketing Specialist',
-      'Content Manager',
-      'SEO Specialist',
-      'Growth Hacker',
-      'Customer Success Manager'
-    ]
-    return titles[Math.floor(Math.random() * titles.length)]
-  }
-  
-  const getRandomCompany = () => {
-    const companies = [
-      { name: 'Tech Solutions', logo: null, industry: 'Tecnología' },
-      { name: 'Digital Agency', logo: null, industry: 'Marketing Digital' },
-      { name: 'Fintech Startup', logo: null, industry: 'Finanzas' },
-      { name: 'Creative Studio', logo: null, industry: 'Diseño' },
-      { name: 'Cloud Services', logo: null, industry: 'Tecnología' },
-      { name: 'Analytics Corp', logo: null, industry: 'Análisis de Datos' },
-      { name: 'SaaS Platform', logo: null, industry: 'Software' },
-      { name: 'App Factory', logo: null, industry: 'Desarrollo Móvil' },
-      { name: 'Health Tech', logo: null, industry: 'Salud' },
-      { name: 'Edu Platform', logo: null, industry: 'Educación' }
-    ]
-    return companies[Math.floor(Math.random() * companies.length)]
-  }
-  
-  const getRandomLocation = () => {
-    const locations = [
-      'Madrid, España',
-      'Barcelona, España',
-      'Valencia, España',
-      'Sevilla, España',
-      'Bilbao, España',
-      'Málaga, España',
-      'Zaragoza, España',
-      'Remoto, España',
-      'Remoto, Internacional'
-    ]
-    return locations[Math.floor(Math.random() * locations.length)]
-  }
-  
-  const getRandomJobType = () => {
-    const types = [
-      { value: 'remote', label: 'Remoto' },
-      { value: 'onsite', label: 'Presencial' },
-      { value: 'hybrid', label: 'Híbrido' }
-    ]
-    return types[Math.floor(Math.random() * types.length)]
-  }
-  
-  const getRandomSalary = () => {
-    const bases = [25000, 30000, 35000, 40000, 45000, 50000, 60000]
-    const base = bases[Math.floor(Math.random() * bases.length)]
-    return {
-      min: base,
-      max: base + Math.floor(Math.random() * 20000) + 5000
-    }
-  }
-  
-  const getRandomSkills = () => {
-    const allSkills = [
-      'JavaScript', 'Vue.js', 'React', 'Angular', 'Node.js', 'PHP', 'Laravel', 
-      'Python', 'Java', 'AWS', 'Docker', 'Kubernetes', 'SQL', 'MongoDB', 
-      'HTML/CSS', 'UI/UX', 'Figma', 'Adobe XD', 'TypeScript', 'GraphQL',
-      'Git', 'CI/CD', 'Agile', 'Scrum', 'REST API', 'Redux', 'Sass',
-      'Tailwind CSS', 'Bootstrap', 'WordPress', 'SEO', 'Content Marketing',
-      'Social Media', 'Google Analytics', 'Adobe Creative Suite'
-    ]
-    
-    // Seleccionar entre 3 y 6 habilidades aleatorias
-    const numSkills = Math.floor(Math.random() * 4) + 3
-    const skills = new Set()
-    
-    while (skills.size < numSkills) {
-      const randomIndex = Math.floor(Math.random() * allSkills.length)
-      skills.add(allSkills[randomIndex])
-    }
-    
-    return Array.from(skills)
-  }
-  
-  const getRandomExperience = () => {
-    const experiences = ['0-1 años', '1-2 años', '2-3 años', '3-5 años', '5+ años']
-    return experiences[Math.floor(Math.random() * experiences.length)]
-  }
-  
-  const getRandomDescription = () => {
-    const descriptions = [
-      'Buscamos un profesional apasionado para unirse a nuestro equipo en crecimiento.',
-      'Únete a nuestra empresa líder en el sector y desarrolla tu carrera profesional.',
-      'Forma parte de un equipo innovador con proyectos desafiantes e interesantes.',
-      'Oportunidad para crecer en una empresa con cultura de aprendizaje continuo.',
-      'Posición clave en una startup en fase de expansión con grandes oportunidades.'
-    ]
-    return descriptions[Math.floor(Math.random() * descriptions.length)]
-  }
-  
-  const getDateDaysAgo = (days) => {
-    const date = new Date()
-    date.setDate(date.getDate() - days)
-    return date.toISOString().split('T')[0]
-  }
+  };
   
   // Manejar scroll infinito
   const handleScroll = () => {
-    const scrollPosition = window.scrollY + window.innerHeight
-    const pageHeight = document.documentElement.scrollHeight
-    
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const pageHeight = document.documentElement.scrollHeight;
+  
     // Mostrar/ocultar botón para volver arriba
-    showScrollTopButton.value = window.scrollY > 500
-    
+    showScrollTopButton.value = window.scrollY > 500;
+  
     // Cargar más ofertas cuando estamos cerca del final
-    if (scrollPosition > pageHeight - 500 && !isLoading.value && hasMorePages.value) {
-      page.value++
-      fetchJobOffers(page.value)
+    if (scrollPosition > pageHeight - 500 && !isLoading.value && pagination.value.currentPage < pagination.value.lastPage) {
+      loadMoreJobs();
     }
-  }
+  };
   
   // Guardar oferta
   const toggleSaveJob = (jobId) => {
     if (savedJobs.value.has(jobId)) {
-      savedJobs.value.delete(jobId)
+      savedJobs.value.delete(jobId);
     } else {
-      savedJobs.value.add(jobId)
-      
-      // Animación de confeti o feedback visual (simulado)
-      // En una implementación real, se usaría una librería de confeti o animaciones
+      savedJobs.value.add(jobId);
     }
-  }
+  };
   
   // Like a una oferta
   const toggleLikeJob = (jobId) => {
     if (likedJobs.value.has(jobId)) {
-      likedJobs.value.delete(jobId)
+      likedJobs.value.delete(jobId);
     } else {
-      likedJobs.value.add(jobId)
+      likedJobs.value.add(jobId);
     }
-  }
+  };
   
   // Ver detalle de oferta
   const viewJobOffer = (jobId) => {
-    viewedJobs.value.add(jobId)
-    router.get(`/ofertas/${jobId}`)
-  }
+    viewedJobs.value.add(jobId);
+    console.log("hola" . $jobId);
+    router.get(`/ofertas/${jobId}`);
+  };
   
   // Aplicar a oferta
   const applyToJob = (jobId) => {
-    // Aquí iría la lógica para aplicar a la oferta
-    // Por ahora solo marcamos como vista
-    viewedJobs.value.add(jobId)
-  }
+    viewedJobs.value.add(jobId);
+    router.get(`/ofertas/${jobId}/aplicar`);
+  };
   
   // Compartir oferta
   const shareJob = (jobId) => {
-    // Simulación de compartir
-    alert(`Compartiendo oferta ${jobId}`)
-  }
+    // Implementación de compartir (podría usar la API Web Share si está disponible)
+    if (navigator.share) {
+      navigator.share({
+        title: 'Oferta de trabajo',
+        text: 'Mira esta oferta de trabajo',
+        url: `${window.location.origin}/ofertas/${jobId}`,
+      });
+    } else {
+      // Fallback para navegadores que no soportan Web Share API
+      alert(`Compartiendo oferta ${jobId}`);
+    }
+  };
   
   // Volver al inicio de la página
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
       behavior: 'smooth'
-    })
-  }
+    });
+  };
   
   // Cambiar filtro activo
   const setFilter = (filter) => {
-    activeFilter.value = filter
+    activeFilter.value = filter;
     
-    // En una implementación real, esto recargaría las ofertas
-    // Por ahora, simulamos un refresco
-    jobOffers.value = []
-    page.value = 1
-    hasMorePages.value = true
-    fetchJobOffers(page.value)
-  }
-  
-  // Comprobar si un trabajo está guardado
-  const isJobSaved = (jobId) => {
-    return savedJobs.value.has(jobId)
-  }
-  
-  // Comprobar si un trabajo tiene like
-  const isJobLiked = (jobId) => {
-    return likedJobs.value.has(jobId)
-  }
+    // Navegar a la ruta con el filtro aplicado
+    router.get('/ofertas', { filter }, { preserveScroll: true });
+  };
   
   // Inicializar
   onMounted(() => {
-    fetchJobOffers(page.value)
-    window.addEventListener('scroll', handleScroll)
-  })
+    window.addEventListener('scroll', handleScroll);
+    
+    // Limpiar al desmontar
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  });
   </script>
   
   <template>
@@ -296,16 +170,16 @@
               <!-- Quick Filters -->
               <div class="flex items-center space-x-1 overflow-x-auto hide-scrollbar">
                 <button 
-                  @click="setFilter('recommended')"
+                  @click="setFilter('all')"
                   :class="[
                     'px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors',
-                    activeFilter === 'recommended' 
+                    activeFilter === 'all' 
                       ? 'bg-[#193CB8] text-white' 
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   ]"
                 >
-                  <i class='bx bx-star mr-1'></i>
-                  Recomendadas
+                  <i class='bx bx-globe mr-1'></i>
+                  Todas
                 </button>
                 <button 
                   @click="setFilter('recent')"
@@ -364,13 +238,13 @@
             <!-- Feed Items -->
             <div class="space-y-6">
               <JobCard 
-                v-for="job in jobOffers" 
+                v-for="job in jobOffersList" 
                 :key="job.id"
                 :jobOffer="job"
                 :isLiked="likedJobs.has(job.id)"
                 :isSaved="savedJobs.has(job.id)"
                 class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden job-card"
-                :class="{ 'border-[#193CB8] border-2': job.is_promoted }"
+                :class="{ 'border-[#193CB8] border-2': job.status === 'featured' }"
                 @view="viewJobOffer"
                 @apply="applyToJob"
                 @save="toggleSaveJob"
@@ -388,7 +262,7 @@
               </div>
               
               <!-- End of Results -->
-              <div v-if="!hasMorePages && !isLoading" class="text-center py-8">
+              <div v-if="pagination.currentPage >= pagination.lastPage && !isLoading && jobOffersList.length > 0" class="text-center py-8">
                 <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <i class='bx bx-check-circle text-3xl text-[#193CB8]'></i>
                 </div>
@@ -401,6 +275,15 @@
                   <i class='bx bx-chevron-up mr-1'></i>
                   Volver arriba
                 </button>
+              </div>
+              
+              <!-- No Results -->
+              <div v-if="jobOffersList.length === 0 && !isLoading" class="text-center py-8">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i class='bx bx-search-alt text-3xl text-[#193CB8]'></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-800 mb-2">No se encontraron ofertas</h3>
+                <p class="text-gray-500 mb-4">Prueba con otros filtros o vuelve más tarde</p>
               </div>
             </div>
           </div>

@@ -16,4 +16,9 @@ class JobOffer extends Model
     protected $casts = [
         'expires_at' => 'datetime',
     ];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 }

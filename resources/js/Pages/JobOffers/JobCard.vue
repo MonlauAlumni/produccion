@@ -5,14 +5,26 @@
         jobOffer: {
             type: Object,
             required: true
+        },
+        company: {
+            type: Object,
+            default: () => ({})
+        },
+        isLiked: {
+            type: Boolean,
+            default: false
+        },
+        isSaved: {
+            type: Boolean,
+            default: false
         }
     });
     
     const emit = defineEmits([
-        'view', 
-        'apply', 
-        'save', 
-        'like', 
+        'view',
+        'apply',
+        'save',
+        'like',
         'share'
     ]);
     
@@ -25,6 +37,8 @@
     
     // Calcular tiempo desde publicación
     const getTimeAgo = (dateString) => {
+        if (!dateString) return 'Reciente';
+        
         const posted = new Date(dateString);
         const today = new Date();
         const diffTime = Math.abs(today - posted);
@@ -35,6 +49,16 @@
         if (diffDays < 7) return `Hace ${diffDays} días`;
         if (diffDays < 30) return `Hace ${Math.floor(diffDays / 7)} semanas`;
         return `Hace ${Math.floor(diffDays / 30)} meses`;
+    };
+    
+    // Obtener etiqueta para tipo de trabajo
+    const getJobTypeLabel = (jobType) => {
+        const types = {
+            'remote': 'Remoto',
+            'onsite': 'Presencial',
+            'hybrid': 'Híbrido'
+        };
+        return types[jobType] || jobType;
     };
     
     // Métodos para emitir eventos
@@ -61,14 +85,13 @@
     
     <template>
         <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-            <!-- Promoted Badge -->
-            <div v-if="jobOffer.is_promoted" class="bg-[#193CB8] text-white text-xs font-bold px-3 py-1 flex items-center">
+            <!-- Status Badge (si existe) -->
+            <div v-if="jobOffer.status === 'featured'" class="bg-[#193CB8] text-white text-xs font-bold px-3 py-1 flex items-center">
                 <i class='bx bx-star mr-1'></i>
                 Oferta destacada
             </div>
-    
-            <!-- Urgent Badge -->
-            <div v-if="jobOffer.is_urgent" class="bg-red-500 text-white text-xs font-bold px-3 py-1 flex items-center">
+            
+            <div v-if="jobOffer.status === 'urgent'" class="bg-red-500 text-white text-xs font-bold px-3 py-1 flex items-center">
                 <i class='bx bx-time mr-1'></i>
                 Contratación urgente
             </div>
@@ -79,8 +102,10 @@
                     <!-- Company Logo -->
                     <div
                         class="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center shrink-0 border border-gray-200">
-                        <img v-if="jobOffer.company.logo" :src="jobOffer.company.logo" :alt="jobOffer.company.name"
-                            class="w-10 h-10 object-contain" />
+                        <img v-if="jobOffer.company && jobOffer.company.logo" 
+                             :src="jobOffer.company.logo" 
+                             :alt="jobOffer.company.name"
+                             class="w-10 h-10 object-contain" />
                         <i v-else class='bx bx-building text-2xl text-gray-400'></i>
                     </div>
     
@@ -92,14 +117,16 @@
                                     @click="viewJobOffer(jobOffer.id)">
                                     {{ jobOffer.title }}
                                 </h2>
-                                <div class="text-gray-700">{{ jobOffer.company.name }}</div>
+                                <div class="text-gray-700">
+                                    {{ jobOffer.company ? jobOffer.company.name : '' }}
+                                </div>
                             </div>
     
-                            <!-- Match Percentage -->
-                            <div v-if="jobOffer.match_percentage >= 85"
-                                class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-full flex items-center">
-                                <i class='bx bx-check-circle mr-1'></i>
-                                {{ jobOffer.match_percentage }}% match
+                            <!-- Expires Badge -->
+                            <div v-if="jobOffer.expires_at"
+                                class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-1 rounded-full flex items-center">
+                                <i class='bx bx-calendar-exclamation mr-1'></i>
+                                Expira: {{ new Date(jobOffer.expires_at).toLocaleDateString() }}
                             </div>
                         </div>
     
@@ -111,11 +138,15 @@
                             </div>
                             <div class="flex items-center text-gray-600">
                                 <i class='bx bx-time-five mr-1 text-[#193CB8]'></i>
-                                {{ jobOffer.job_type_label }}
+                                {{ getJobTypeLabel(jobOffer.job_type) }}
                             </div>
                             <div class="flex items-center text-gray-600">
                                 <i class='bx bx-money mr-1 text-[#193CB8]'></i>
                                 {{ formatSalaryRange(jobOffer.salary_min, jobOffer.salary_max) }}
+                            </div>
+                            <div v-if="jobOffer.category" class="flex items-center text-gray-600">
+                                <i class='bx bx-category mr-1 text-[#193CB8]'></i>
+                                {{ jobOffer.category }}
                             </div>
                         </div>
                     </div>
@@ -123,64 +154,35 @@
     
                 <!-- Description -->
                 <div class="mt-4 text-gray-700">
-                    {{ jobOffer.description }}
-                </div>
-    
-                <!-- Skills -->
-                <div class="flex flex-wrap gap-2 mt-4">
-                    <span v-for="(skill, index) in jobOffer.skills.slice(0, 5)" :key="index"
-                        class="px-2 py-1 bg-[#193CB8]/10 text-[#193CB8] rounded-md text-xs font-medium">
-                        {{ skill }}
-                    </span>
-                    <span v-if="jobOffer.skills.length > 5"
-                        class="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs font-medium">
-                        +{{ jobOffer.skills.length - 5 }} más
-                    </span>
-                </div>
-    
-                <!-- Remote Badge -->
-                <div v-if="jobOffer.is_remote_friendly"
-                    class="mt-3 inline-flex items-center text-xs font-medium text-green-700 bg-green-100 px-2 py-1 rounded-md">
-                    <i class='bx bx-globe mr-1'></i>
-                    Apto para trabajo remoto
+                    <p class="line-clamp-3">{{ jobOffer.description }}</p>
                 </div>
     
                 <!-- Stats & Engagement -->
                 <div class="flex flex-wrap items-center justify-between mt-4 pt-4 border-t border-gray-100">
                     <div class="flex items-center space-x-4 text-sm text-gray-500">
                         <div class="flex items-center">
-                            <i class='bx bx-user mr-1'></i>
-                            {{ jobOffer.applicants }} candidatos
-                        </div>
-                        <div class="flex items-center">
-                            <i class='bx bx-show mr-1'></i>
-                            {{ jobOffer.views }} vistas
-                        </div>
-                        <div class="flex items-center">
                             <i class='bx bx-calendar mr-1'></i>
-                            {{ getTimeAgo(jobOffer.posted_date) }}
+                            {{ getTimeAgo(jobOffer.created_at) }}
                         </div>
                     </div>
     
                     <!-- Action Buttons -->
                     <div class="flex items-center space-x-2 mt-3 sm:mt-0">
-                        <button @click="toggleLikeJob(jobOffer.id)" 
-                            :class="[
-                                'p-2 rounded-full transition-colors',
-                                $attrs.isLiked 
-                                    ? 'bg-red-100 text-red-500' 
-                                    : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                            ]">
-                            <i :class="[$attrs.isLiked ? 'bxs-heart' : 'bx-heart']"></i>
+                        <button @click="toggleLikeJob(jobOffer.id)" :class="[
+                            'p-2 rounded-full transition-colors',
+                            isLiked 
+                                ? 'bg-red-100 text-red-500' 
+                                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                        ]">
+                            <i :class="[isLiked ? 'bxs-heart' : 'bx-heart']"></i>
                         </button>
-                        <button @click="toggleSaveJob(jobOffer.id)" 
-                            :class="[
-                                'p-2 rounded-full transition-colors',
-                                $attrs.isSaved 
-                                    ? 'bg-[#193CB8]/20 text-[#193CB8]' 
-                                    : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                            ]">
-                            <i :class="[$attrs.isSaved ? 'bxs-bookmark' : 'bx-bookmark']"></i>
+                        <button @click="toggleSaveJob(jobOffer.id)" :class="[
+                            'p-2 rounded-full transition-colors',
+                            isSaved 
+                                ? 'bg-[#193CB8]/20 text-[#193CB8]' 
+                                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                        ]">
+                            <i :class="[isSaved ? 'bxs-bookmark' : 'bx-bookmark']"></i>
                         </button>
                         <button @click="shareJob(jobOffer.id)"
                             class="p-2 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors">

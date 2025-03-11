@@ -12,17 +12,17 @@ class JobOfferController extends Controller
 
     public function index(Request $request)
     {
-        
         $page = $request->input('page', 1);
-        
-       
-        $offers = JobOffer::paginate(10); 
-        
-      
-        return inertia('JobOffers/Index', [
-            'jobOffers' => $offers
+        // Obtener las ofertas paginadas (aunque no se usa en este caso)
+        $offers = JobOffer::with('company')->paginate(10);
+    
+        // Pasar el string 'hola' a Inertia
+        return Inertia::render('Home', [
+            'jobOffers' =>  $offers
         ]);
     }
+    
+
 
     public function show(JobOffer $jobOffer)
     {

@@ -44,7 +44,7 @@
     <!-- Overlay for mobile -->
     <div v-if="isOpen" @click="toggleSidebar" class="fixed inset-0 bg-black/50 md:hidden z-40 backdrop-blur-sm"></div>
 
-    <div class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] flex gap-x-5 text-white p-4">
+    <div class="bg-[#193CB8] flex gap-x-5 text-white p-4">
       <img src="../../../public/images/monlau-logo.png" alt="Alumni" class="w-8 h-8">
       <h1 class="text-2xl font-semibold">Alumni</h1>
 
