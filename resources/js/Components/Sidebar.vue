@@ -1,150 +1,165 @@
 <script>
   import { usePage } from '@inertiajs/vue3';
-
-  const { user } = usePage().props || {};
-
+  
   export default {
-    
     data() {
       return {
         isOpen: false,
         darkMode: false,
         topMenuItems: [
-          { text: 'Inicio', icon: 'bx-home', active: true },
-          { text: 'Notificaciones', icon: 'bx-bell', badge: '5' },
-          { text: 'Mensajes', icon: 'bx-envelope', badge: '2' },
-          { text: 'Calendario', icon: 'bx-calendar' },
+          { text: 'Inicio', icon: 'bx-home', route: '/home' },
+          { text: 'Notificaciones', icon: 'bx-bell', badge: '5', route: '/notificaciones' },
+          { text: 'Mensajes', icon: 'bx-envelope', badge: '2', route: '/mensajes' },
+          { text: 'Calendario', icon: 'bx-calendar', route: '/calendario' },
         ],
         middleMenuItems: [
-          { text: 'Alumni connect', icon: 'bx-group' },
-          { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo' },
-          { text: 'Empresas', icon: 'bx-buildings' },
+          { text: 'Alumni connect', icon: 'bx-group', route: '/connect' },
+          { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo', route: '/ofertas' },
+          { text: 'Empresas', icon: 'bx-buildings', route: '/empresas' },
         ],
         bottomMenuItems: [
-        
-          { text: 'Configuración', icon: 'bx-cog' },
-          { text: 'Cerrar sesión', icon: 'bx-log-out' }
+          { text: 'Configuración', icon: 'bx-cog', route: '/configuracion' },
+          { text: 'Cerrar sesión', icon: 'bx-log-out', route: '/logout' }
         ]
       };
+    },
+    computed: {
+      user() {
+        return usePage().props.user || { name: 'Usuario' };
+      },
+      currentRoute() {
+        return window.location.pathname; // Obtiene la ruta actual
+      }
     },
     methods: {
       toggleSidebar() {
         this.isOpen = !this.isOpen;
       },
+      navigateTo(route) {
+        this.$inertia.visit(route);
+      },
+      isActive(route) {
+        return this.currentRoute === route;
+      }
     }
   };
   </script>
-<template>
-  <div>
-    <!-- Mobile menu button -->
-    <button @click="toggleSidebar" class="md:hidden fixed top-4 left-4 z-50 bg-[#193CB8] text-white p-2 rounded-md shadow-md">
-      <i class='bx bx-menu text-xl'></i>
-    </button>
-
-    <!-- Overlay for mobile -->
-    <div v-if="isOpen" @click="toggleSidebar" class="fixed inset-0 bg-black/50 md:hidden z-40 backdrop-blur-sm"></div>
-
-    <!-- Sidebar -->
-    <aside :class="[
-      'h-full w-64 flex flex-col bg-white z-40 shadow-lg border-r border-gray-100 transition-all duration-300',
-      isOpen ? 'fixed top-0 left-0 translate-x-0' : 'fixed top-0 left-0 -translate-x-full',
-      'md:static md:translate-x-0'  
-    ]">
-      <!-- User profile -->
-      <div class="p-4 border-b border-gray-100">
-        <div class="flex items-center space-x-3 mb-3">
-          <div class="relative">
-            <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
-              <i class='bx bxs-user text-xl'></i>
+  
+  <template>
+    <div>
+      <!-- Botón menú mobile -->
+      <button @click="toggleSidebar" class="md:hidden fixed top-4 left-4 z-50 bg-[#193CB8] text-white p-2 rounded-md shadow-md">
+        <i class='bx bx-menu text-xl'></i>
+      </button>
+  
+      <!-- Overlay para móviles -->
+      <div v-if="isOpen" @click="toggleSidebar" class="fixed inset-0 bg-black/50 md:hidden z-40 backdrop-blur-sm"></div>
+  
+      <!-- Sidebar -->
+      <aside :class="[
+        'h-full w-64 flex flex-col bg-white z-40 shadow-lg border-r border-gray-100 transition-all duration-300',
+        isOpen ? 'fixed top-0 left-0 translate-x-0' : 'fixed top-0 left-0 -translate-x-full',
+        'md:static md:translate-x-0'  
+      ]">
+        <!-- Perfil usuario -->
+        <div class="p-4 border-b border-gray-100">
+          <div class="flex items-center space-x-3 mb-3">
+            <div class="relative">
+              <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
+                <i class='bx bxs-user text-xl'></i>
+              </div>
+              <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white"></div>
             </div>
-            <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white"></div>
-          </div>
-          <div>
-            <p class="font-semibold text-gray-800">{{ user?.name || 'Usuario' }}</p>
-            <p class="text-xs text-gray-500 flex items-center">
-              <i class='bx bxs-circle text-green-500 text-[8px] mr-1'></i> Online
-            </p>
+            <div>
+              <p class="font-semibold text-gray-800">{{ user.name }}</p>
+              <p class="text-xs text-gray-500 flex items-center">
+                <i class='bx bxs-circle text-green-500 text-[8px] mr-1'></i> Online
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div class="flex-1 overflow-y-auto">
-        <!-- Top navigation section -->
-        <div class="p-4">
-          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">Principal</p>
-          <nav>
-            <ul class="space-y-1">
-              <li v-for="item in topMenuItems" :key="item.text">
-                <a 
-                  href="#" 
-                  :class="[
-                    'flex items-center px-3 py-2.5 rounded-md transition-all relative',
-                    item.active 
-                      ? 'bg-blue-50 text-[#193CB8] font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-[#193CB8] before:rounded-r-md' 
-                      : 'text-gray-700 hover:bg-gray-50'
-                  ]"
-                >
-                  <i :class="['bx text-xl mr-3', item.icon]"></i>
-                  <span>{{ item.text }}</span>
-                  <span v-if="item.badge" class="ml-auto bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
-                    {{ item.badge }}
-                  </span>
-                </a>
-              </li>
-            </ul>
-          </nav>
+  
+        <div class="flex-1 overflow-y-auto">
+          <!-- Sección principal -->
+          <div class="p-4">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">Principal</p>
+            <nav>
+              <ul class="space-y-1">
+                <li v-for="item in topMenuItems" :key="item.text">
+                  <a 
+                    @click.prevent="navigateTo(item.route)" 
+                    :class="[
+                      'flex items-center px-3 py-2.5 rounded-md transition-all relative cursor-pointer',
+                      isActive(item.route) 
+                        ? 'bg-blue-50 text-[#193CB8] font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-[#193CB8] before:rounded-r-md' 
+                        : 'text-gray-700 hover:bg-gray-50'
+                    ]"
+                  >
+                    <i :class="['bx text-xl mr-3', item.icon]"></i>
+                    <span>{{ item.text }}</span>
+                    <span v-if="item.badge" class="ml-auto bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+                      {{ item.badge }}
+                    </span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+  
+          <!-- Sección social -->
+          <div class="p-4 border-t border-gray-100">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">Social</p>
+            <nav>
+              <ul class="space-y-1">
+                <li v-for="item in middleMenuItems" :key="item.text">
+                  <a 
+                    @click.prevent="navigateTo(item.route)" 
+                    :class="[
+                      'flex items-center px-3 py-2.5 rounded-md transition-all relative cursor-pointer',
+                      isActive(item.route) 
+                        ? 'bg-blue-50 text-[#193CB8] font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-[#193CB8] before:rounded-r-md' 
+                        : 'text-gray-700 hover:bg-gray-50'
+                    ]"
+                  >
+                    <i :class="['bx text-xl mr-3', item.icon]"></i>
+                    <span>{{ item.text }}</span>
+                    <span v-if="item.badge" class="ml-auto bg-[#193CB8] text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+                      {{ item.badge }}
+                    </span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
         </div>
-
-        <!-- Middle section -->
+  
+        <!-- Botón Crear oferta -->
         <div class="p-4 border-t border-gray-100">
-          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">Social</p>
-          <nav>
-            <ul class="space-y-1">
-              <li v-for="item in middleMenuItems" :key="item.text">
-                <a 
-                  href="#" 
-                  :class="[
-                    'flex items-center px-3 py-2.5 rounded-md transition-all relative',
-                    item.active 
-                      ? 'bg-blue-50 text-[#193CB8] font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-[#193CB8] before:rounded-r-md' 
-                      : 'text-gray-700 hover:bg-gray-50'
-                  ]"
-                >
-                  <i :class="['bx text-xl mr-3', item.icon]"></i>
-                  <span>{{ item.text }}</span>
-                  <span v-if="item.badge" class="ml-auto bg-[#193CB8] text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
-                    {{ item.badge }}
-                  </span>
-                </a>
-              </li>
-            </ul>
-          </nav>
+          <button class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] text-white w-full py-3 rounded-md shadow-md hover:from-[#1535a3] hover:to-[#193CB8] transition-all flex items-center justify-center">
+            <i class='bx bx-plus-circle mr-2'></i>
+            <span>Crear oferta</span>
+          </button>
         </div>
-      </div>
-
-      <!-- Post button -->
-      <div class="p-4 border-t border-gray-100">
-        <button class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] text-white w-full py-3 rounded-md shadow-md hover:from-[#1535a3] hover:to-[#193CB8] transition-all flex items-center justify-center">
-          <i class='bx bx-plus-circle mr-2'></i>
-          <span>Crear Post</span>
-        </button>
-      </div>
-
-      <!-- Bottom section -->
-      <div class="p-4 border-t border-gray-100">
-        <ul class="space-y-1">
-          <li v-for="item in bottomMenuItems" :key="item.text">
-            <a 
-              href="#" 
-              class="flex items-center px-3 py-2.5 text-gray-700 rounded-md transition-all hover:bg-gray-50"
-            >
-              <i :class="['bx text-xl mr-3', item.icon]"></i>
-              <span>{{ item.text }}</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </aside>
-  </div>
-</template>
-
+  
+        <!-- Sección inferior -->
+        <div class="p-4 border-t border-gray-100">
+          <ul class="space-y-1">
+            <li v-for="item in bottomMenuItems" :key="item.text">
+              <a 
+                @click.prevent="navigateTo(item.route)" 
+                :class="[
+                  'flex items-center px-3 py-2.5 text-gray-700 rounded-md transition-all cursor-pointer',
+                  item.text === 'Cerrar sesión' ? 'hover:bg-red-500 hover:text-white' : 'hover:bg-gray-50'
+                ]"
+              >
+                <i :class="['bx text-xl mr-3', item.icon]"></i>
+                <span>{{ item.text }}</span>
+              </a>
+            </li>
+            
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </template>
+  

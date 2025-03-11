@@ -1,18 +1,18 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex flex-col">
+  <div class="min-h-screen absolute bg-gray-50 w-full flex flex-col">
     <!-- Navbar (Header siempre arriba, fijo en la parte superior) -->
-    <Navbar :auth="auth" class="w-full" />
+    <Navbar  :auth="auth" class="w-full fixed" />
 
     <!-- Main container for Sidebar and Content -->
     <div class="flex flex-1"> 
       <!-- Sidebar (Izquierda, debajo del Navbar) -->
       <Sidebar 
         :username="auth?.user?.name || 'Usuario Alumni'" 
-        class="hidden md:block md:w-64 md:h-[calc(100vh-64px)]" 
+        class="fixed md:w-64 z-10 mt-14 md:h-[calc(100vh-64px)]" 
       />
 
       <!-- Main Content -->
-      <main class="flex-1  bg-gray-50">
+      <main class="flex-1 ml-50  mt-14 bg-gray-50">
         <slot></slot>
       </main>
     </div>

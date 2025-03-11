@@ -30,6 +30,7 @@
   </Layout>
 </template>
 
+<<<<<<< HEAD
 <script>
 import Layout from '@/Components/Layout.vue';
 
@@ -50,3 +51,10 @@ export default {
 };
 </script>
 
+=======
+<script setup>
+import Navbar from '../Components/Navbar.vue';
+import SideBar from '../Components/SideBar.vue';
+import HomeContainer from '../Components/HomeContainer.vue';
+</script>
+>>>>>>> feature/job-offers
