@@ -43,6 +43,19 @@ class SettingsController extends Controller
 
 }
 
+public function changeLanguage(Request $request) {
+    $validated = $request->validate([
+        'language' => ['required','string'],
+    ]);
+
+    $user = $request->user();
+    $settings = $user->settings()->first();
+    $settings->language = $validated['language'];
+    $settings->save();
+
+    return redirect()->route('settings.show')->with('success', 'Apariencia actualizada correctamente');
+}
+
 public function updateAppearance(Request $request) {
     $validated = $request->validate([
         'highlight_color' => ['required','string'],

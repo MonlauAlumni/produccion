@@ -17,7 +17,7 @@ const username = ref(user.value.name);
 const email = ref(user.value.email);
 
 
-const selectedLanguage = ref('es');
+const selectedLanguage = ref(props.settings.language);
 
 // Agregar arreglo de idiomas con bandera, nombre y código
 const languages = [
@@ -29,7 +29,11 @@ const languages = [
 ];
 
 const changeLanguage = () => {
-    console.log('Language changed to:', selectedLanguage.value);
+    router.put('/settings/change-language', {
+        preserveScroll: true,
+        preserveSate: true,
+        language: selectedLanguage.value
+    });
 };
 
 const isTwoFactorEnabled = ref(!!user.value?.two_factor_secret);
