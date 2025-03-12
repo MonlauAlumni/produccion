@@ -152,7 +152,6 @@
                     </div>
                 </div>
     
-                <!-- Description -->
                 <div class="mt-4 text-gray-700">
                     <p class="line-clamp-3">{{ jobOffer.description }}</p>
                 </div>

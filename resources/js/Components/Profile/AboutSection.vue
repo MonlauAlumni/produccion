@@ -30,7 +30,7 @@
         <div v-if="isCompany && profile.founded_year" class="mt-6 pt-6 border-t border-gray-200">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex items-center gap-3">
-              <div class="bg-blue-50 p-2 rounded-full">
+              <div class="bg-blue-50 p-2 flex rounded-full">
                 <i class='bx bx-calendar text-[#193CB8] text-xl'></i>
               </div>
               <div>
@@ -40,7 +40,7 @@
             </div>
             
             <div class="flex items-center gap-3">
-              <div class="bg-blue-50 p-2 rounded-full">
+              <div class="bg-blue-50 p-2 flex rounded-full">
                 <i class='bx bx-globe text-[#193CB8] text-xl'></i>
               </div>
               <div>

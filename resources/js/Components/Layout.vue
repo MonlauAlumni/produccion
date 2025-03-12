@@ -12,7 +12,7 @@
       />
 
       <!-- Main Content -->
-      <main class="flex-1 ml-50  mt-14 bg-gray-50">
+      <main class="flex-1 ml-50  mt-13 bg-gray-50">
         <slot></slot>
       </main>
     </div>

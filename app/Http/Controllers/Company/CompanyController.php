@@ -36,6 +36,16 @@ class CompanyController extends Controller
         return redirect()->route('empresa.show', ['slang' => $company->slang]);
     }
 
+    public function updateBanner(Request $request, $company)
+    {
+        $company = Company::where('slang', $company)->firstOrFail();
+ 
+        $path = $request->file('banner_url')->store('banners', 'public');
+        $company->update(['banner_url' => '/storage/' . $path]);   
+
+        return redirect()->route('empresa.show', ['slang' => $company->slang]);
+    }   
+
     public function update(Request $request, $slang)
     {
    

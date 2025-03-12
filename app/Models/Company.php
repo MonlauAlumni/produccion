@@ -33,6 +33,7 @@ class Company extends Model
         'website',
         'founded_year',
         'email',
+        'banner_url'
     ];
 
     public function user()
