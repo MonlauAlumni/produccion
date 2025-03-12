@@ -25,8 +25,8 @@ class ProfileController extends Controller
     $authUser = Auth::user();
    
     $isSameUser = $authUser && $authUser->id === $user->id;
-  
-    return Inertia::render('Auth/Profile', [
+    
+    return Inertia::render('Student/Profile', [
         'user' => $user,
         'profile' => $user->profile,
         'workExperiences' => $user->workExperiences,
@@ -51,7 +51,7 @@ class ProfileController extends Controller
 
 
         if ($user) {
-            return inertia('Auth/CompleteProfile', [
+            return inertia('Student/CompleteProfile', [
                 'email' => $user['email'],
             ]);
         }

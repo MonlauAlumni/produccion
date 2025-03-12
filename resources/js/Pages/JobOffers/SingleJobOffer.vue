@@ -2,40 +2,14 @@
   import { ref } from 'vue'
   import { router } from '@inertiajs/vue3'
   import Layout from '@/Components/Layout.vue'
+  const props = defineProps({
+    jobOffer: {
+      type: Object,
+      required: true
+    }
+  })
   
-  const jobOffer = {
-    id: 1,
-    title: 'Desarrollador Full Stack',
-    company: {
-      name: 'Tech Solutions',
-      logo: 'https://example.com/logo.png',
-      industry: 'Tecnología',
-      employees: '50-100 empleados',
-      website: 'https://techsolutions.com'
-    },
-    requirements: 'Grado en informática o afines',
-    experience: 'Al menos 3 años de experiencia en desarrollo web',
-    description: '<p>Buscamos un desarrollador full-stack apasionado por la tecnología para unirse a nuestro equipo y contribuir a proyectos innovadores. Se valoran conocimientos en frameworks como Vue.js y Laravel.</p><p>El candidato ideal tendrá experiencia en desarrollo de aplicaciones web modernas y estará familiarizado con metodologías ágiles de desarrollo.</p><p>Ofrecemos un ambiente de trabajo dinámico, posibilidad de teletrabajo y un plan de carrera personalizado.</p>',
-    responsibilities: [
-      'Desarrollo de nuevas funcionalidades para aplicaciones web',
-      'Mantenimiento y mejora de código existente',
-      'Colaboración con el equipo de diseño para implementar interfaces de usuario',
-      'Participación en reuniones de planificación y revisión de sprints'
-    ],
-    benefits: [
-      'Horario flexible',
-      'Posibilidad de teletrabajo',
-      'Formación continua',
-      'Seguro médico privado'
-    ],
-    vacancies: 3,
-    salary_min: 2500,
-    salary_max: 4000,
-    location: 'Madrid, España',
-    job_type: 'remote',
-    posted_date: '2023-11-15',
-    deadline: '2023-12-15'
-  }
+  const jobOffer = ref(props.jobOffer)
   
   const skills = ref(['Vue.js', 'Laravel', 'PHP', 'MySQL', 'Git', 'JavaScript', 'HTML/CSS', 'API REST'])
   

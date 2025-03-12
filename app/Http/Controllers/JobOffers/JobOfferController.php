@@ -24,8 +24,11 @@ class JobOfferController extends Controller
     
 
 
-    public function show(JobOffer $jobOffer)
+    public function show($id)
     {
+        $jobOffer = JobOffer::with('company')->findOrFail($id);
+
+   
         return Inertia::render('JobOffers/SingleJobOffer', [
             'jobOffer' => $jobOffer
         ]);
@@ -39,11 +42,10 @@ class JobOfferController extends Controller
     public function store(Request $request)
     {
        
-      
 
         // Crear la oferta de trabajo
     $jobOffer = JobOffer::create([
-        'company_id' => $request->user()->company->id,
+        'company_id' => auth()->user()->company->id,
         'title' => $request->title,
         'description' => $request->description,
         'minExperience' => $request->minExperience,
@@ -57,10 +59,10 @@ class JobOfferController extends Controller
         'category' => 'it', // Si hay una categoría para la oferta
     ]);
 
-    // Si se pasan habilidades, asociarlas con la oferta
-    if ($request->has('skills') && count($request->skills) > 0) {
-        $jobOffer->skills()->sync($request->skills); // Usa sync para añadir habilidades
-    }
+    // // Si se pasan habilidades, asociarlas con la oferta
+    // if ($request->has('skills') && count($request->skills) > 0) {
+    //     $jobOffer->skills()->sync($request->skills); // Usa sync para añadir habilidades
+    // }
 
     // Si se sube un archivo, manejarlo
     if ($request->hasFile('file')) {

@@ -3,7 +3,7 @@
   import CompanyProfileHeader from "@/Components/Company/CompanyProfileHeader.vue";
   import AboutSection from "@/Components/Profile/AboutSection.vue";
   import JobListingSection from "@/Components/Company/JobListingSection.vue";
-  import EditModal from "@/Components/Profile/EditModal.vue";
+  import EditModalCompany from "@/Pages/Company/EditModalCompany.vue";
   import Layout from "@/Components/Layout.vue";
   import { ref } from "vue";
   
@@ -173,6 +173,7 @@
       </div>
       
       <!-- Edit Modal -->
-      <EditModal :company="company" :profile="company" :isCompany="true" ref="editModal" />
-    </Layout>
+
+      <EditModalCompany :company="company" :profile="company" :isCompany="true" ref="editModal" />
+   </Layout>
   </template>

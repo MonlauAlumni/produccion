@@ -55,14 +55,13 @@ Route::middleware('auth')->group(function() {
 
     Route::get('/empresa/{slang}', [CompanyController::class, 'show'])->name('empresa.show');
     Route::post('/empresa/{slang}/update-logo', [CompanyController::class, 'updateLogo'])->name('empresa.updateLogo');
-    
+    Route::post('/empresa/{slang}/update', [CompanyController::class, 'update'])->name('empresa.update');
 
 
-    Route::get('/ofertas/{id}', [JobOfferController::class, 'show'])->name('job-offers.show');
     Route::get('/ofertas/crear', [JobOfferController::class, 'create'])->name('ofertas.crear'); 
     Route::post('/ofertas/crear', [JobOfferController::class, 'store'])->name('ofertas.store'); 
     Route::get('/ofertas', [JobOfferController::class, 'index'])->name('ofertas.index');
-
+    Route::get('/ofertas/{id}', [JobOfferController::class, 'show'])->name('job-offers.show');
 
 
 
