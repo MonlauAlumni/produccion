@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen absolute bg-gray-50 w-full flex flex-col">
     <!-- Navbar (Header siempre arriba, fijo en la parte superior) -->
-    <Navbar  :auth="auth" class="w-full fixed" />
+    <Navbar  :auth="auth" class="w-full z-50 fixed" />
 
     <!-- Main container for Sidebar and Content -->
     <div class="flex flex-1"> 
