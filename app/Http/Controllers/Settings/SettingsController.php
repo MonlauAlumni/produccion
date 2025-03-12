@@ -9,8 +9,12 @@ use Illuminate\Support\Facades\Hash;
 
 class SettingsController extends Controller
 {
-    public function show() {
-        return Inertia::render('Settings/Settings');
+    public function show(Request $request) {
+        $settings = $request->user()->settings()->first();
+        return Inertia::render('Settings/Settings', [
+            'settings' => $request->user()->settings()->first()
+
+        ]);
     }
 
     public function changePassword() {
@@ -48,6 +52,21 @@ class SettingsController extends Controller
     }
     
     return back()->with('success', 'User information updated successfully');
+}
+
+public function updateAppearance(Request $request) {
+    $validated = $request->validate([
+        'highlight_color' => ['required','string'],
+        'font_size' => ['required','integer'],
+    ]);
+
+    $user = $request->user();
+    $settings = $user->settings()->first();
+    $settings->highlight_color = $validated['highlight_color'];
+    $settings->font_size = $validated['font_size'];
+    $settings->save();
+
+    return redirect()->route('settings.show')->with('success', 'Apariencia actualizada correctamente');
 }
 
 public function updatePassword(Request $request)

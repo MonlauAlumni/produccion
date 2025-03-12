@@ -1,11 +1,18 @@
 <script setup>
 import Layout from '@/Components/Layout.vue';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, defineProps } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
 import axios from 'axios';
 import StandardButton from '@/Components/StandardButton.vue';
 
-const user = computed(() => usePage().props.auth?.user);
+const user = computed(() => usePage().props.auth.user);
+
+const props = defineProps({
+    settings: {
+        type: Array,
+        required: true
+    }
+});
 const username = ref(user.value.name);
 const email = ref(user.value.email);
 
@@ -32,8 +39,15 @@ const isDarkMode = ref(localStorage.getItem('theme') == 'dark');
 const emailSending = ref(false);
 
 const isUpdating = ref(false);
+const isAppearanceUpdating = ref(false);
 const updateErrors = ref({});
+const updateAppearanceErrors = ref({});
 const updateSuccess = ref(false);
+const updateAppearanceSuccess = ref(false);
+
+
+//Appareance settings
+const highlightColor = ref(props.settings.highlightColor);
 
 // Social settings
 const socialProfiles = ref({
@@ -160,6 +174,33 @@ const updateUserInfo = async () => {
     }
 };
 
+const updateAppearanceInfo = () => {
+    isAppearanceUpdating.value = true;
+    updateAppearanceErrors.value = {};
+    updateAppearanceSuccess.value = false;
+
+    router.put('/settings/update-appearance', {
+        highlight_color: highlightColor.value,
+        font_size: fontSize.value
+    }, {
+        onSuccess: () => {
+            updateAppearanceSuccess.value = true;
+        },
+        onError: (errors) => {
+            console.error('Error actualizando la configuración de apariencia:', errors);
+            updateAppearanceErrors.value.general = 'Error inesperado al actualizar la apariencia.';
+        },
+        onFinish: () => {
+            isAppearanceUpdating.value = false;
+            if (updateSuccess.value) {
+                setTimeout(() => {
+                    updateSuccess.value = false;
+                }, 3000);
+            }
+        }
+    });
+};
+
 // Modals
 const qrModal = ref(false);
 const disableConfirmModal = ref(false);
@@ -205,7 +246,7 @@ const handle2FAButtonClick = () => {
 };
 
 // New reactive variable for font size preview
-const fontSize = ref(16);
+const fontSize = ref(props.settings.font_size)
 
 // Profile picture handling
 const profilePictureSrc = ref('/storage/images/profile-pictures/foto.png');
@@ -236,6 +277,12 @@ const connectAccount = (platform) => {
     console.log(`Connecting to ${platform}...`);
     // For demo purposes, toggle the connection status
     connectedAccounts.value[platform] = !connectedAccounts.value[platform];
+};
+
+const resetToDefaults = () => {
+    fontSize.value = 16;
+    highlightColor.value = '#000000';
+    console.log(props.settings, user.value);
 };
 
 const activeSessions = ref([
@@ -392,6 +439,14 @@ const terminateAllSessions = () => {
                 </div>
                 <div class="mt-4 border-t pt-4">
                     <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Personalización Avanzada</h3>
+                    <div v-if="updateAppearanceSuccess"
+                        class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow">
+                        Apariencia actualizada exitosamente.
+                    </div>
+                    <div v-if="updateAppearanceErrors.general"
+                        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow">
+                        {{ updateAppearanceErrors.general }}
+                    </div>
                     <p class="mt-2 text-gray-600 dark:text-gray-400">
                         Explora opciones adicionales para configurar tu interfaz, como la selección de colores de acento
                         y ajustes de fuente para mejorar la legibilidad.
@@ -400,12 +455,13 @@ const terminateAllSessions = () => {
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Color de
                                 Acento</label>
-                            <select
+                            <select v-model="highlightColor"
                                 class="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600">
-                                <option>Azul</option>
-                                <option>Rojo</option>
-                                <option>Verde</option>
-                                <option>Púrpura</option>
+                                <option value="#000000">Negro</option>
+                                <option value="#0000ff">Azul</option>
+                                <option value="#ff0000">Rojo</option>
+                                <option value="#00ff00">Verde</option>
+                                <option value="#800080">Púrpura</option>
                             </select>
                         </div>
                         <div>
@@ -413,6 +469,11 @@ const terminateAllSessions = () => {
                                 Fuente de las Publicaciones</label>
                             <input v-model="fontSize" type="range" min="12" max="24" class="w-full mt-1" />
                         </div>
+                        <div class="flex justify-end mt-4"></div>
+                        <button @click="resetToDefaults"
+                            class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] px-4 py-2 rounded hover:bg-blue-600 cursor-pointer text-white transition duration-300">
+                            Restablecer
+                        </button>
                     </div>
                     <div class="mt-4 flex flex-col space-y-2">
                         <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Previsualización del Tema
@@ -441,6 +502,10 @@ const terminateAllSessions = () => {
                                 </span>
                             </div>
                         </div>
+                        <button @click="updateAppearanceInfo" :disabled="isAppearanceUpdating"
+                            class="mt-2 bg-gradient-to-r from-[#193CB8] to-[#2748c6] px-4 py-2 rounded hover:bg-blue-600 cursor-pointer text-white transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                            {{ isAppearanceUpdating ? 'Actualizando...' : 'Actualizar apariencia' }}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -452,8 +517,7 @@ const terminateAllSessions = () => {
                 <p class="text-gray-600 dark:text-gray-400 mb-4">Selecciona tu idioma:</p>
                 <div class="grid grid-cols-3 gap-4">
                     <div v-for="lang in languages" :key="lang.code"
-                        @click="selectedLanguage = lang.code; changeLanguage()"
-                        :class="[
+                        @click="selectedLanguage = lang.code; changeLanguage()" :class="[
                             'cursor-pointer p-4 rounded text-center',
                             selectedLanguage === lang.code ? 'bg-blue-200' : 'bg-white dark:bg-gray-800'
                         ]">

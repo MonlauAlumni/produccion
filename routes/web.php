@@ -65,9 +65,9 @@ Route::middleware('auth')->group(function() {
 
 
 
-    Route::get('/settings', [SettingsController::class, 'show'])->name('settings');
+    Route::get('/settings', [SettingsController::class, 'show'])->name('settings.show');
     Route::get('/settings/change-password', [SettingsController::class, 'changePassword'])->name('change-password');
-
+    Route::put('/settings/update-appearance', [SettingsController::class, 'updateAppearance'])->name('update-appearance');
     Route::put('/settings/change-password', [SettingsController::class, 'updatePassword'])->name('update-password');
     Route::put('/user/update', [SettingsController::class, 'updateUser'])->name('user.update');
 
