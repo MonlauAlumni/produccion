@@ -38,20 +38,9 @@ class SettingsController extends Controller
         // $user->email_verified_at = null;
     }
     
-    // if (isset($validated['allow_emails'])) {
-    //     $user->allow_emails = $validated['allow_emails'];
-    // }
-    
     $user->save();
-    
-    if ($request->wantsJson()) {
-        return response()->json([
-            'message' => 'User information updated successfully',
-            'user' => $user
-        ]);
-    }
-    
-    return back()->with('success', 'User information updated successfully');
+    return redirect()->route('settings.show')->with('success', 'Apariencia actualizada correctamente');
+
 }
 
 public function updateAppearance(Request $request) {
@@ -89,8 +78,7 @@ public function updatePassword(Request $request)
     $user->password = Hash::make($request->password);
     $user->save();
 
-    return response()->json([
-        'message' => 'Contraseña actualizada correctamente'
-    ]);
+    return redirect()->route('settings.show')->with('success', 'Apariencia actualizada correctamente');
+
 }
 }

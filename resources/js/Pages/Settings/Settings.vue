@@ -125,53 +125,49 @@ const disable2FA = async () => {
     }
 };
 
-const updateUserInfo = async () => {
+const updateUserInfo = () => {
     isUpdating.value = true;
     updateErrors.value = {};
     updateSuccess.value = false;
 
-    try {
-        const response = await axios.put('/user/update', {
-            name: username.value,
-            email: email.value,
-            allow_emails: emailSending.value,
-            social_profiles: socialProfiles.value,
-            notification_preferences: notificationPreferences.value,
-            privacy_settings: privacySettings.value
-        });
-
-        if (response.status === 200) {
+    router.put('/user/update', {
+        name: username.value,
+        email: email.value,
+        allow_emails: emailSending.value,
+        social_profiles: socialProfiles.value,
+        notification_preferences: notificationPreferences.value,
+        privacy_settings: privacySettings.value
+    }, {
+        preserveScroll: true,
+        onSuccess: () => {
             updateSuccess.value = true;
-        }
-    } catch (error) {
-        console.error('Error updating user information:', error);
+        },
+        onError: (errors) => {
+            console.error('Error updating user information:', errors);
 
-        if (error.response?.status === 422 && error.response.data.errors) {
-            const serverErrors = error.response.data.errors;
-
-            if (serverErrors.name) {
-                updateErrors.value.name = Array.isArray(serverErrors.name)
-                    ? serverErrors.name[0]
-                    : serverErrors.name;
+            if (errors.name) {
+                updateErrors.value.name = Array.isArray(errors.name)
+                    ? errors.name[0]
+                    : errors.name;
             }
 
-            if (serverErrors.email) {
-                updateErrors.value.email = Array.isArray(serverErrors.email)
-                    ? serverErrors.email[0]
-                    : serverErrors.email;
+            if (errors.email) {
+                updateErrors.value.email = Array.isArray(errors.email)
+                    ? errors.email[0]
+                    : errors.email;
+            } else {
+                updateErrors.value.general = 'An error occurred while updating your information.';
             }
-        } else {
-            updateErrors.value.general = 'An error occurred while updating your information.';
+        },
+        onFinish: () => {
+            isUpdating.value = false;
+            if (updateSuccess.value) {
+                setTimeout(() => {
+                    updateSuccess.value = false;
+                }, 3000);
+            }
         }
-    } finally {
-        isUpdating.value = false;
-
-        if (updateSuccess.value) {
-            setTimeout(() => {
-                updateSuccess.value = false;
-            }, 3000);
-        }
-    }
+    });
 };
 
 const updateAppearanceInfo = () => {
@@ -183,6 +179,7 @@ const updateAppearanceInfo = () => {
         highlight_color: highlightColor.value,
         font_size: fontSize.value
     }, {
+        preserveScroll: true,
         onSuccess: () => {
             updateAppearanceSuccess.value = true;
         },
