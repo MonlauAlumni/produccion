@@ -11,13 +11,18 @@ class CompanyController extends Controller
 {
     public function show($slang){
         
-        $company = Company::where('slang', $slang)->firstOrFail();
+        $company = Company::where('slang', $slang)->with('jobOffers')->firstOrFail();
+
         if (!$company){
             abort(404);
         }
+
         $userId = auth()->id();
         $isAdmin = ($userId === $company->user_id);
-        //dd($company);
+        
+        $company->jobOffers = $company->jobOffers->toArray();
+
+        
         return Inertia::render('Company/SingleCompany', [
             'company' => $company,
             'isAdmin' => $isAdmin

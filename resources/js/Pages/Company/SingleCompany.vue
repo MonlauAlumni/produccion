@@ -10,7 +10,6 @@
   
   const props = defineProps({
     company: Object,
-    jobListings: Array,
     isAdmin: Boolean,
   });
   
@@ -34,6 +33,7 @@
       props.company.banner_url = response.data.banner_url;
     });
   };
+
   
   
   </script>
@@ -82,7 +82,7 @@
                 <JobListingSection 
                   title="Ofertas de Empleo" 
                   :isAdmin="isAdmin" 
-                  :items="jobListings" 
+                  :items="company.jobOffers" 
                   :slang="company.slang" 
                 />
               </div>
