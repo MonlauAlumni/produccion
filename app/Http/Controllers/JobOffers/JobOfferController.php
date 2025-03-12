@@ -16,7 +16,6 @@ class JobOfferController extends Controller
         // Obtener las ofertas paginadas (aunque no se usa en este caso)
         $offers = JobOffer::with('company')->paginate(10);
     
-        // Pasar el string 'hola' a Inertia
         return Inertia::render('Home', [
             'jobOffers' =>  $offers
         ]);
@@ -72,6 +71,6 @@ class JobOfferController extends Controller
         return redirect()->route('home');
     }
 
-    
+  
 
 }

@@ -1,6 +1,9 @@
 <script setup>
-    import { defineProps, defineEmits } from 'vue';
-    
+    import { defineProps, defineEmits, computed} from 'vue';
+    import { usePage } from '@inertiajs/vue3';
+    const page = usePage()
+    const settings = computed(() => page.props.auth.user_settings)
+
     const props = defineProps({
         jobOffer: {
             type: Object,
@@ -19,6 +22,7 @@
             default: false
         }
     });
+    
     
     const emit = defineEmits([
         'view',
@@ -153,8 +157,8 @@
                 </div>
     
                 <!-- Description -->
-                <div class="mt-4 text-gray-700">
-                    <p class="line-clamp-3">{{ jobOffer.description }}</p>
+                <div class="mt-4 text-gray-700" :style="{ fontSize: settings.font_size + 'px' }">
+                    {{ jobOffer.description }}
                 </div>
     
                 <!-- Stats & Engagement -->
@@ -168,24 +172,17 @@
     
                     <!-- Action Buttons -->
                     <div class="flex items-center space-x-2 mt-3 sm:mt-0">
-                        <button @click="toggleLikeJob(jobOffer.id)" :class="[
-                            'p-2 rounded-full transition-colors',
-                            isLiked 
-                                ? 'bg-red-100 text-red-500' 
-                                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                        ]">
-                            <i :class="[isLiked ? 'bxs-heart' : 'bx-heart']"></i>
-                        </button>
+                        
                         <button @click="toggleSaveJob(jobOffer.id)" :class="[
-                            'p-2 rounded-full transition-colors',
+                            'px-2 py-2 rounded-full flex cursor-pointer items-center justify-center transition-colors',
                             isSaved 
                                 ? 'bg-[#193CB8]/20 text-[#193CB8]' 
                                 : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                         ]">
-                            <i :class="[isSaved ? 'bxs-bookmark' : 'bx-bookmark']"></i>
+                            <i :class="[isSaved ? 'bx bxs-bookmark' : 'bx bx-bookmark']"></i>
                         </button>
                         <button @click="shareJob(jobOffer.id)"
-                            class="p-2 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors">
+                            class="p-2 flex justify-center items-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors">
                             <i class='bx bx-share-alt'></i>
                         </button>
                     </div>
@@ -194,11 +191,11 @@
                 <!-- Apply Button -->
                 <div class="mt-4 flex">
                     <button @click="viewJobOffer(jobOffer.id)"
-                        class="flex-1 bg-white border border-[#193CB8] text-[#193CB8] font-medium py-2 rounded-l-lg hover:bg-[#193CB8]/5 transition-colors">
+                        class="flex-1 bg-white border cursor-pointer border-[#193CB8] text-[#193CB8] hover:bg-blue-100 font-medium py-2 rounded-l-lg hover:bg-[#193CB8]/5 transition-colors">
                         Ver detalles
                     </button>
                     <button @click="applyToJob(jobOffer.id)"
-                        class="flex-1 bg-[#193CB8] text-white font-medium py-2 rounded-r-lg hover:bg-[#142d8c] transition-colors">
+                        class="flex-1 bg-[#193CB8] cursor-pointer text-white font-medium py-2 rounded-r-lg hover:bg-[#142d8c] transition-colors">
                         Aplicar ahora
                     </button>
                 </div>

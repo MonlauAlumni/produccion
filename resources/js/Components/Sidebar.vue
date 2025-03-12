@@ -18,7 +18,7 @@
           { text: 'Empresas', icon: 'bx-buildings', route: '/empresas' },
         ],
         bottomMenuItems: [
-          { text: 'Configuración', icon: 'bx-cog', route: '/configuracion' },
+          { text: 'Configuración', icon: 'bx-cog', route: '/settings' },
           { text: 'Cerrar sesión', icon: 'bx-log-out', route: '/logout' }
         ]
       };
