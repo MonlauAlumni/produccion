@@ -13,7 +13,14 @@ return new class extends Migration
     {
         Schema::create('user_settings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->boolean('dark_mode')->default(false);
+            $table->string('font_size')->default('base');
+            $table->string('language')->default('es'); 
+            $table->boolean('email_notifications')->default(true);
+            $table->boolean('push_notifications')->default(true);
+            $table->string('highlight_color')->default('#000000'); 
+            $table->timestamps();
         });
     }
 
