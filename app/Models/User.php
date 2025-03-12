@@ -55,6 +55,11 @@ class User extends Authenticatable
         return $this->hasOne(Company::class);
     }
 
+    public function settings()
+    {
+        return $this->hasOne(UserSetting::class);
+    }
+
     public function getSlangAttribute()
     {
         return strtolower(
