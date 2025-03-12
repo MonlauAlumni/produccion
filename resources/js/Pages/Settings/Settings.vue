@@ -16,6 +16,20 @@ const props = defineProps({
 const username = ref(user.value.name);
 const email = ref(user.value.email);
 
+const t = (key) => {
+  const keys = key.split('.');
+  let value = usePage().props.translations;
+  
+  for (const k of keys) {
+    if (value && typeof value === 'object' && k in value) {
+      value = value[k];
+    } else {
+      return key; 
+    }
+  }
+  
+  return value;
+};
 
 const selectedLanguage = ref(props.settings.language);
 

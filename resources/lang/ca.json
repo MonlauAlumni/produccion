@@ -1,0 +1,136 @@
+
+{
+    "account": {
+      "title": "COMPTE",
+      "description": "Administra la informació del teu compte.",
+      "update_info": "Actualitzar Informació",
+      "updating": "Actualitzant...",
+      "change_password": "Canviar Contrasenya",
+      "info_updated": "Informació actualitzada amb èxit.",
+      "username": "Nom d'usuari",
+      "email": "Correu electrònic",
+      "profile_picture": {
+        "title": "Foto de Perfil",
+        "description": "Personalitza la teva foto de perfil."
+      }
+    },
+    "appearance": {
+      "title": "APARENÇA",
+      "theme": "TEMA",
+      "description": "Personalitza la teva experiència triant el mode de visualització i configurant opcions addicionals que s'adaptin al teu estil.",
+      "dark_mode": "Mode Fosc",
+      "advanced": {
+        "title": "Personalització Avançada",
+        "description": "Explora opcions addicionals per configurar la teva interfície, com la selecció de colors d'accent i ajustos de font per millorar la llegibilitat.",
+        "updated": "Aparença actualitzada amb èxit.",
+        "accent_color": "Color d'Accent",
+        "font_size": "Mida de Font de les Publicacions",
+        "reset": "Restablir",
+        "preview": {
+          "title": "Previsualització del Tema",
+          "description": "Aquesta és una previsualització del tema seleccionat. Canvia les opcions de personalització i observa com es transforma l'entorn de la teva aplicació.",
+          "example": "Exemple",
+          "update": "Actualitzar aparença"
+        },
+        "colors": {
+          "black": "Negre",
+          "blue": "Blau",
+          "red": "Vermell",
+          "green": "Verd",
+          "purple": "Porpra"
+        }
+      }
+    },
+    "language": {
+      "title": "IDIOMA",
+      "description": "Selecciona el teu idioma:"
+    },
+    "social": {
+      "title": "SOCIAL",
+      "email_notifications": {
+        "title": "Notificacions per Email",
+        "allow_emails": "Permetre emails",
+        "mentions": "Mencions",
+        "comments": "Comentaris",
+        "direct_messages": "Missatges directes",
+        "system_updates": "Actualitzacions del sistema"
+      },
+      "profiles": {
+        "title": "Perfils Socials",
+        "description": "Connecta els teus perfils socials per compartir contingut i millorar la teva experiència.",
+        "linkedin_placeholder": "URL de LinkedIn",
+        "github_placeholder": "Usuari de GitHub",
+        "website_placeholder": "Lloc web personal"
+      },
+      "connected_accounts": {
+        "title": "Comptes Connectats",
+        "description": "Connecta els teus comptes per iniciar sessió més fàcilment.",
+        "connect": "Connectar",
+        "disconnect": "Desconnectar"
+      }
+    },
+    "privacy": {
+      "title": "PRIVACITAT",
+      "settings": {
+        "title": "Configuració de Privacitat",
+        "description": "Controla qui pot veure la teva informació i com s'utilitza.",
+        "profile_visibility": "Visibilitat del Perfil",
+        "visibility_options": {
+          "public": "Públic - Visible per a tothom",
+          "contacts": "Contactes - Només visible per a contactes",
+          "private": "Privat - Només visible per a tu"
+        },
+        "show_email": "Mostrar correu electrònic",
+        "show_activity": "Mostrar activitat recent",
+        "allow_tagging": "Permetre etiquetatge"
+      },
+      "sessions": {
+        "title": "Sessions Actives",
+        "description": "Gestiona les teves sessions actives i tanca sessió en dispositius remots.",
+        "current": "Actual",
+        "last_activity": "Última activitat",
+        "close": "Tancar",
+        "close_all": "Tancar totes les altres sessions"
+      }
+    },
+    "security": {
+      "title": "SEGURETAT",
+      "description": "Afegeix una capa extra de seguretat al teu compte.",
+      "2fa": {
+        "title": "Autenticació de Dos Factors (2FA)",
+        "description": "L'Autenticació de Dos Factors afegeix una capa extra de seguretat al teu compte. En requerir una segona forma de verificació, ajuda a prevenir accessos no autoritzats, fins i tot si algú coneix la teva contrasenya.",
+        "description2": "Un cop habilitada, se't demanarà un codi de verificació enviat al teu dispositiu cada vegada que iniciïs sessió. Pots utilitzar una aplicació d'autenticació per completar aquest procés.",
+        "enable": "ACTIVAR 2FA",
+        "disable": "DESACTIVAR 2FA (NO RECOMANAT)",
+        "qr_code": {
+          "title": "Escaneja aquest Codi QR",
+          "description": "Utilitza la teva aplicació d'autenticació per escanejar el codi i habilitar 2FA",
+          "cancel": "Cancel·lar",
+          "confirm": "Confirmar"
+        },
+        "disable_warning": {
+          "title": "ADVERTÈNCIA: Deshabilitar 2FA",
+          "not_recommended": "Aquesta acció no és recomanable",
+          "description1": "Deshabilitar l'Autenticació de Dos Factors reduirà significativament la seguretat del teu compte. Sense 2FA, el teu compte serà més vulnerable a accessos no autoritzats.",
+          "description2": "Recomanem encaridament mantenir 2FA habilitat per protegir la teva informació personal i dades.",
+          "cancel": "Cancel·lar",
+          "wait": "Espera",
+          "seconds": "s",
+          "confirm": "Entenc, deshabilitar 2FA"
+        }
+      },
+      "login_history": {
+        "title": "Historial d'Inici de Sessió",
+        "description": "Revisa el teu historial d'inici de sessió per detectar activitats sospitoses. Si observes inicis de sessió que no reconeixes, canvia la teva contrasenya immediatament i habilita l'autenticació de dos factors.",
+        "success": "Exitós",
+        "failed": "Fallat",
+        "view_all": "Veure Historial Complet"
+      }
+    },
+    "errors": {
+      "general": "S'ha produït un error en actualitzar la teva informació.",
+      "appearance": "Error inesperat en actualitzar l'aparença."
+    }
+  }
+  
+  
