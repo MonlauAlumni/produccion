@@ -39,6 +39,9 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
             'training_area' => $request->training_area,
         ]);
+
+        $user->settings()->create();
+
         Auth::login($user);
         $user->assignRole('alumne');
   

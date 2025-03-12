@@ -1,13 +1,54 @@
 <script setup>
 import Layout from '@/Components/Layout.vue';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, defineProps } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
 import axios from 'axios';
 import StandardButton from '@/Components/StandardButton.vue';
 
-const user = computed(() => usePage().props.auth?.user);
+const user = computed(() => usePage().props.auth.user);
+
+const props = defineProps({
+    settings: {
+        type: Array,
+        required: true
+    }
+});
 const username = ref(user.value.name);
 const email = ref(user.value.email);
+
+const t = (key) => {
+  const keys = key.split('.');
+  let value = usePage().props.translations;
+  
+  for (const k of keys) {
+    if (value && typeof value === 'object' && k in value) {
+      value = value[k];
+    } else {
+      return key; 
+    }
+  }
+  
+  return value;
+};
+
+const selectedLanguage = ref(props.settings.language);
+
+// Agregar arreglo de idiomas con bandera, nombre y código
+const languages = [
+    { code: 'es', name: 'Español (España)', flag: '/images/flags/es.png' },
+    { code: 'ca', name: 'Català', flag: '/images/flags/ca.png' },
+    { code: 'en', name: 'English', flag: '/images/flags/en.png' },
+    { code: 'fr', name: 'Français', flag: '/images/flags/fr.png' },
+    { code: 'de', name: 'Deutsch', flag: '/images/flags/de.png' }
+];
+
+const changeLanguage = () => {
+    router.put('/settings/change-language', {
+        preserveScroll: true,
+        preserveSate: true,
+        language: selectedLanguage.value
+    });
+};
 
 const isTwoFactorEnabled = ref(!!user.value?.two_factor_secret);
 const qrCode = ref("");
@@ -16,8 +57,15 @@ const isDarkMode = ref(localStorage.getItem('theme') == 'dark');
 const emailSending = ref(false);
 
 const isUpdating = ref(false);
+const isAppearanceUpdating = ref(false);
 const updateErrors = ref({});
+const updateAppearanceErrors = ref({});
 const updateSuccess = ref(false);
+const updateAppearanceSuccess = ref(false);
+
+
+//Appareance settings
+const highlightColor = ref(props.settings.highlight_color);
 
 // Social settings
 const socialProfiles = ref({
@@ -95,53 +143,95 @@ const disable2FA = async () => {
     }
 };
 
-const updateUserInfo = async () => {
+const updateUserInfo = () => {
     isUpdating.value = true;
     updateErrors.value = {};
     updateSuccess.value = false;
 
-    try {
-        const response = await axios.put('/user/update', {
-            name: username.value,
-            email: email.value,
-            allow_emails: emailSending.value,
-            social_profiles: socialProfiles.value,
-            notification_preferences: notificationPreferences.value,
-            privacy_settings: privacySettings.value
-        });
-
-        if (response.status === 200) {
+    router.put('/user/update', {
+        name: username.value,
+        email: email.value,
+        allow_emails: emailSending.value,
+        social_profiles: socialProfiles.value,
+        notification_preferences: notificationPreferences.value,
+        privacy_settings: privacySettings.value
+    }, {
+        preserveScroll: true,
+        onSuccess: () => {
             updateSuccess.value = true;
-        }
-    } catch (error) {
-        console.error('Error updating user information:', error);
+        },
+        onError: (errors) => {
+            console.error('Error updating user information:', errors);
 
-        if (error.response?.status === 422 && error.response.data.errors) {
-            const serverErrors = error.response.data.errors;
-
-            if (serverErrors.name) {
-                updateErrors.value.name = Array.isArray(serverErrors.name)
-                    ? serverErrors.name[0]
-                    : serverErrors.name;
+            if (errors.name) {
+                updateErrors.value.name = Array.isArray(errors.name)
+                    ? errors.name[0]
+                    : errors.name;
             }
 
-            if (serverErrors.email) {
-                updateErrors.value.email = Array.isArray(serverErrors.email)
-                    ? serverErrors.email[0]
-                    : serverErrors.email;
+            if (errors.email) {
+                updateErrors.value.email = Array.isArray(errors.email)
+                    ? errors.email[0]
+                    : errors.email;
+            } else {
+                updateErrors.value.general = 'An error occurred while updating your information.';
             }
-        } else {
-            updateErrors.value.general = 'An error occurred while updating your information.';
+        },
+        onFinish: () => {
+            isUpdating.value = false;
+            if (updateSuccess.value) {
+                setTimeout(() => {
+                    const el = document.querySelector('.bg-green-100.border.border-green-400.text-green-700');
+                    if (el) {
+                        el.style.transition = 'opacity 500ms ease';
+                        el.style.opacity = '0';
+                        setTimeout(() => {
+                            updateSuccess.value = false;
+                        }, 500);
+                    } else {
+                        updateSuccess.value = false;
+                    }
+                }, 2500);
+            }
         }
-    } finally {
-        isUpdating.value = false;
+    });
+};
 
-        if (updateSuccess.value) {
-            setTimeout(() => {
-                updateSuccess.value = false;
-            }, 3000);
+const updateAppearanceInfo = () => {
+    isAppearanceUpdating.value = true;
+    updateAppearanceErrors.value = {};
+    updateAppearanceSuccess.value = false;
+
+    router.put('/settings/update-appearance', {
+        highlight_color: highlightColor.value,
+        font_size: fontSize.value
+    }, {
+        preserveScroll: true,
+        onSuccess: () => {
+            updateAppearanceSuccess.value = true;
+        },
+        onError: (errors) => {
+            console.error('Error actualizando la configuración de apariencia:', errors);
+            updateAppearanceErrors.value.general = 'Error inesperado al actualizar la apariencia.';
+        },
+        onFinish: () => {
+            isAppearanceUpdating.value = false;
+            if (updateAppearanceSuccess.value) {
+                setTimeout(() => {
+                    const el = document.querySelector('.bg-green-100.border.border-green-400.text-green-700');
+                    if (el) {
+                        el.style.transition = 'opacity 500ms ease';
+                        el.style.opacity = '0';
+                        setTimeout(() => {
+                            updateAppearanceSuccess.value = false;
+                        }, 500);
+                    } else {
+                        updateAppearanceSuccess.value = false;
+                    }
+                }, 2500);
+            }
         }
-    }
+    });
 };
 
 // Modals
@@ -189,7 +279,7 @@ const handle2FAButtonClick = () => {
 };
 
 // New reactive variable for font size preview
-const fontSize = ref(16);
+const fontSize = ref(props.settings.font_size)
 
 // Profile picture handling
 const profilePictureSrc = ref('/storage/images/profile-pictures/foto.png');
@@ -222,7 +312,12 @@ const connectAccount = (platform) => {
     connectedAccounts.value[platform] = !connectedAccounts.value[platform];
 };
 
-// Session management
+const resetToDefaults = () => {
+    fontSize.value = 16;
+    highlightColor.value = '#000000';
+    console.log(props.settings, user.value);
+};
+
 const activeSessions = ref([
     {
         device: 'Chrome on Windows',
@@ -350,6 +445,8 @@ const terminateAllSessions = () => {
 
             </div>
 
+
+
             <div
                 class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-2xl space-y-6 border border-gray-200 dark:border-gray-700">
                 <div class="flex flex-col md:flex-row md:justify-between md:items-center">
@@ -375,6 +472,14 @@ const terminateAllSessions = () => {
                 </div>
                 <div class="mt-4 border-t pt-4">
                     <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Personalización Avanzada</h3>
+                    <div v-if="updateAppearanceSuccess"
+                        class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow">
+                        Apariencia actualizada exitosamente.
+                    </div>
+                    <div v-if="updateAppearanceErrors.general"
+                        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow">
+                        {{ updateAppearanceErrors.general }}
+                    </div>
                     <p class="mt-2 text-gray-600 dark:text-gray-400">
                         Explora opciones adicionales para configurar tu interfaz, como la selección de colores de acento
                         y ajustes de fuente para mejorar la legibilidad.
@@ -383,12 +488,13 @@ const terminateAllSessions = () => {
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Color de
                                 Acento</label>
-                            <select
+                            <select v-model="highlightColor"
                                 class="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600">
-                                <option>Azul</option>
-                                <option>Rojo</option>
-                                <option>Verde</option>
-                                <option>Púrpura</option>
+                                <option value="#000000">Negro</option>
+                                <option value="#0000ff">Azul</option>
+                                <option value="#ff0000">Rojo</option>
+                                <option value="#00ff00">Verde</option>
+                                <option value="#800080">Púrpura</option>
                             </select>
                         </div>
                         <div>
@@ -396,13 +502,18 @@ const terminateAllSessions = () => {
                                 Fuente de las Publicaciones</label>
                             <input v-model="fontSize" type="range" min="12" max="24" class="w-full mt-1" />
                         </div>
+                        <div class="flex justify-end mt-4"></div>
+                        <button @click="resetToDefaults"
+                            class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] px-4 py-2 rounded hover:bg-blue-600 cursor-pointer text-white transition duration-300">
+                            Restablecer
+                        </button>
                     </div>
                     <div class="mt-4 flex flex-col space-y-2">
                         <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Previsualización del Tema
                         </h3>
                         <div class="p-4 bg-gray-100 dark:bg-gray-900 rounded-lg shadow-inner">
                             <p class="text-sm text-gray-700 dark:text-gray-300" :style="{ fontSize: fontSize + 'px' }">
-                                Esta es una previsualización del tema seleccionado. Cambia las opciones de
+                                Esta es una previsualización del <span class="font-bold" :style="{ color: highlightColor }">tema seleccionado</span>. Cambia las opciones de
                                 personalización y
                                 observa cómo se transforma el entorno de tu aplicación.
                             </p>
@@ -424,9 +535,30 @@ const terminateAllSessions = () => {
                                 </span>
                             </div>
                         </div>
+                        <button @click="updateAppearanceInfo" :disabled="isAppearanceUpdating"
+                            class="mt-2 bg-gradient-to-r from-[#193CB8] to-[#2748c6] px-4 py-2 rounded hover:bg-blue-600 cursor-pointer text-white transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                            {{ isAppearanceUpdating ? 'Actualizando...' : 'Actualizar apariencia' }}
+                        </button>
                     </div>
                 </div>
             </div>
+
+
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">IDIOMA</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Selecciona tu idioma:</p>
+                <div class="grid grid-cols-3 gap-4">
+                    <div v-for="lang in languages" :key="lang.code"
+                        @click="selectedLanguage = lang.code; changeLanguage()" :class="[
+                            'cursor-pointer p-4 rounded text-center',
+                            selectedLanguage === lang.code ? 'bg-blue-200' : 'bg-white dark:bg-gray-800'
+                        ]">
+                        <img :src="lang.flag" alt="" class="mx-auto mb-2 w-20 h-12" />
+                        <span class="block text-sm font-semibold">{{ lang.name }}</span>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- SOCIAL SECTION -->
@@ -508,21 +640,12 @@ const terminateAllSessions = () => {
             </div>
 
             <!-- Social Profiles -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl">
                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Perfiles Sociales</h2>
                 <p class="text-gray-600 dark:text-gray-400 mb-4">Conecta tus perfiles sociales para compartir contenido
                     y mejorar tu experiencia.</p>
 
-                <div class="space-y-4">
-                    <div class="flex items-center">
-                        <div class="relative w-full">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="bx bxl-twitter text-blue-400"></i>
-                            </div>
-                            <input v-model="socialProfiles.twitter" type="text" placeholder="Usuario de Twitter"
-                                class="block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600" />
-                        </div>
-                    </div>
+                <div class="flex flex-col justify-between gap-4">
 
                     <div class="flex items-center">
                         <div class="relative w-full">
@@ -553,6 +676,10 @@ const terminateAllSessions = () => {
                                 class="block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600" />
                         </div>
                     </div>
+                    <button @click="updateUserInfo" :disabled="isUpdating"
+                        class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] px-4 py-2 rounded hover:bg-blue-600 cursor-pointer text-white transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                        {{ isUpdating ? 'Actualizando...' : 'Actualizar Información' }}
+                    </button>
                 </div>
             </div>
 
@@ -715,7 +842,7 @@ const terminateAllSessions = () => {
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-6 px-4 border-t pt-4">SEGURIDAD</h1>
         <p class="px-4 mt-4 dark:text-gray-300">Añade una capa extra de seguridad a tu cuenta.</p>
         <div class="p-4 grid grid-cols-2 gap-4">
-            <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-lg text-gray-700 dark:text-gray-300 shadow-lg">
+            <div class="bg-white dark:bg-gray-900 p-6 rounded-lg text-gray-700 dark:text-gray-300 shadow-xl">
                 <p class="text-xl font-bold">Autenticación de Dos Factores (2FA)</p>
                 <p class="mt-2 text-justify">
                     La Autenticación de Dos Factores añade una capa extra de seguridad a tu cuenta.
@@ -744,7 +871,7 @@ const terminateAllSessions = () => {
             </div>
 
             <!-- Login History -->
-            <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-lg text-gray-700 dark:text-gray-300 shadow-lg">
+            <div class="bg-white dark:bg-gray-900 p-6 rounded-lg text-gray-700 dark:text-gray-300 shadow-xl">
                 <p class="text-xl font-bold">Historial de Inicio de Sesión</p>
                 <p class="mt-2 text-justify">
                     Revisa tu historial de inicio de sesión para detectar actividades sospechosas.
@@ -801,29 +928,29 @@ const terminateAllSessions = () => {
         <!-- Disable 2FA Confirmation Modal -->
         <div v-if="disableConfirmModal" class="fixed inset-0 flex items-center justify-center bg-black/50 p-4 z-50">
             <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg w-full max-w-md text-center">
-            <h2 class="text-xl font-bold text-red-600 dark:text-red-400 mb-4">ADVERTENCIA: Deshabilitar 2FA</h2>
-            <div class="p-4 bg-red-100 dark:bg-red-800 rounded-lg mb-4">
-                <p class="text-red-800 dark:text-red-200 font-semibold">Esta acción no es recomendable</p>
-            </div>
-            <p class="text-gray-700 dark:text-gray-300 text-justify mb-4">
-                Deshabilitar la Autenticación de Dos Factores reducirá significativamente la seguridad de tu cuenta.
-                Sin 2FA, tu cuenta será más vulnerable a accesos no autorizados.
-            </p>
-            <p class="text-gray-700 dark:text-gray-300 text-justify mb-4">
-                Recomendamos encarecidamente mantener 2FA habilitado para proteger tu información personal y datos.
-            </p>
-            <div class="flex justify-between gap-2">
-                <button @click="closeDisableConfirmation()"
-                class="mt-4 px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 cursor-pointer transition duration-300 flex-1">
-                Cancelar
-                </button>
-                <button @click="disable2FA()" :disabled="!confirmButtonEnabled"
-                class="mt-4 px-4 py-2 rounded-lg cursor-pointer transition duration-300 flex-1 flex items-center justify-center"
-                :class="confirmButtonEnabled ? 'bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white' : 'bg-gray-500 dark:bg-gray-600 text-gray-300 cursor-not-allowed'">
-                <span v-if="!confirmButtonEnabled">Espera {{ confirmCountdown }}s</span>
-                <span v-else>Entiendo, deshabilitar 2FA</span>
-                </button>
-            </div>
+                <h2 class="text-xl font-bold text-red-600 dark:text-red-400 mb-4">ADVERTENCIA: Deshabilitar 2FA</h2>
+                <div class="p-4 bg-red-100 dark:bg-red-800 rounded-lg mb-4">
+                    <p class="text-red-800 dark:text-red-200 font-semibold">Esta acción no es recomendable</p>
+                </div>
+                <p class="text-gray-700 dark:text-gray-300 text-justify mb-4">
+                    Deshabilitar la Autenticación de Dos Factores reducirá significativamente la seguridad de tu cuenta.
+                    Sin 2FA, tu cuenta será más vulnerable a accesos no autorizados.
+                </p>
+                <p class="text-gray-700 dark:text-gray-300 text-justify mb-4">
+                    Recomendamos encarecidamente mantener 2FA habilitado para proteger tu información personal y datos.
+                </p>
+                <div class="flex justify-between gap-2">
+                    <button @click="closeDisableConfirmation()"
+                        class="mt-4 px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 cursor-pointer transition duration-300 flex-1">
+                        Cancelar
+                    </button>
+                    <button @click="disable2FA()" :disabled="!confirmButtonEnabled"
+                        class="mt-4 px-4 py-2 rounded-lg cursor-pointer transition duration-300 flex-1 flex items-center justify-center"
+                        :class="confirmButtonEnabled ? 'bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white' : 'bg-gray-500 dark:bg-gray-600 text-gray-300 cursor-not-allowed'">
+                        <span v-if="!confirmButtonEnabled">Espera {{ confirmCountdown }}s</span>
+                        <span v-else>Entiendo, deshabilitar 2FA</span>
+                    </button>
+                </div>
             </div>
         </div>
     </Layout>

@@ -1,6 +1,9 @@
 <script setup>
-    import { defineProps, defineEmits } from 'vue';
-    
+    import { defineProps, defineEmits, computed} from 'vue';
+    import { usePage } from '@inertiajs/vue3';
+    const page = usePage()
+    const settings = computed(() => page.props.auth.user_settings)
+
     const props = defineProps({
         jobOffer: {
             type: Object,
@@ -19,6 +22,7 @@
             default: false
         }
     });
+    
     
     const emit = defineEmits([
         'view',
@@ -153,8 +157,8 @@
                 </div>
     
                 <!-- Description -->
-                <div class="mt-4 text-gray-700">
-                    <p class="line-clamp-3">{{ jobOffer.description }}</p>
+                <div class="mt-4 text-gray-700" :style="{ fontSize: settings.font_size + 'px' }">
+                    {{ jobOffer.description }}
                 </div>
     
                 <!-- Stats & Engagement -->
