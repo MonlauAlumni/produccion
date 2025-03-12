@@ -47,7 +47,7 @@ const updateAppearanceSuccess = ref(false);
 
 
 //Appareance settings
-const highlightColor = ref(props.settings.highlightColor);
+const highlightColor = ref(props.settings.highlight_color);
 
 // Social settings
 const socialProfiles = ref({
@@ -163,8 +163,17 @@ const updateUserInfo = () => {
             isUpdating.value = false;
             if (updateSuccess.value) {
                 setTimeout(() => {
-                    updateSuccess.value = false;
-                }, 3000);
+                    const el = document.querySelector('.bg-green-100.border.border-green-400.text-green-700');
+                    if (el) {
+                        el.style.transition = 'opacity 500ms ease';
+                        el.style.opacity = '0';
+                        setTimeout(() => {
+                            updateSuccess.value = false;
+                        }, 500);
+                    } else {
+                        updateSuccess.value = false;
+                    }
+                }, 2500);
             }
         }
     });
@@ -189,10 +198,19 @@ const updateAppearanceInfo = () => {
         },
         onFinish: () => {
             isAppearanceUpdating.value = false;
-            if (updateSuccess.value) {
+            if (updateAppearanceSuccess.value) {
                 setTimeout(() => {
-                    updateSuccess.value = false;
-                }, 3000);
+                    const el = document.querySelector('.bg-green-100.border.border-green-400.text-green-700');
+                    if (el) {
+                        el.style.transition = 'opacity 500ms ease';
+                        el.style.opacity = '0';
+                        setTimeout(() => {
+                            updateAppearanceSuccess.value = false;
+                        }, 500);
+                    } else {
+                        updateAppearanceSuccess.value = false;
+                    }
+                }, 2500);
             }
         }
     });
@@ -477,7 +495,7 @@ const terminateAllSessions = () => {
                         </h3>
                         <div class="p-4 bg-gray-100 dark:bg-gray-900 rounded-lg shadow-inner">
                             <p class="text-sm text-gray-700 dark:text-gray-300" :style="{ fontSize: fontSize + 'px' }">
-                                Esta es una previsualización del tema seleccionado. Cambia las opciones de
+                                Esta es una previsualización del <span class="font-bold" :style="{ color: highlightColor }">tema seleccionado</span>. Cambia las opciones de
                                 personalización y
                                 observa cómo se transforma el entorno de tu aplicación.
                             </p>
@@ -508,9 +526,8 @@ const terminateAllSessions = () => {
             </div>
 
 
-            <!-- Reemplazar bloque de Idiomas -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl">
-                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">IDIOMAS</h2>
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">IDIOMA</h2>
                 <p class="text-gray-600 dark:text-gray-400 mb-4">Selecciona tu idioma:</p>
                 <div class="grid grid-cols-3 gap-4">
                     <div v-for="lang in languages" :key="lang.code"
