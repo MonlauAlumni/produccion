@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->boolean('dark_mode')->default(false);
-            $table->string('font_size')->default('base');
+            $table->integer('font_size')->default(16);
             $table->string('language')->default('es'); 
             $table->boolean('email_notifications')->default(true);
             $table->boolean('push_notifications')->default(true);
