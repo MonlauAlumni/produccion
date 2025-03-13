@@ -369,7 +369,7 @@ const terminateAllSessions = () => {
                             class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] px-4 py-2 rounded hover:bg-blue-600 cursor-pointer text-white transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
                             {{ isUpdating ? 'Actualizando...' : 'Actualizar Información' }}
                         </button>
-                        <button @click="router.get('/settings/change-password')"
+                        <button @click="router.get('/configuracion/cambiar-contraseña')"
                             class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] px-4 py-2 rounded hover:bg-blue-600 cursor-pointer text-white transition duration-300">
                             Cambiar Contraseña
                         </button>

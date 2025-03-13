@@ -68,11 +68,11 @@ Route::middleware('auth')->group(function() {
 
 
 
-    Route::get('/settings', [SettingsController::class, 'show'])->name('settings.show');
-    Route::get('/settings/change-password', [SettingsController::class, 'changePassword'])->name('change-password');
-    Route::put('/settings/update-appearance', [SettingsController::class, 'updateAppearance'])->name('update-appearance');
-    Route::put('/settings/change-password', [SettingsController::class, 'updatePassword'])->name('update-password');
-    Route::put('/settings/change-language', [SettingsController::class, 'changeLanguage'])->name('change-language');
+    Route::get('/configuracion', [SettingsController::class, 'show'])->name('settings.show');
+    Route::get('/configuracion/cambiar-contraseña', [SettingsController::class, 'changePassword'])->name('change-password');
+    Route::put('/configuracion/update-appearance', [SettingsController::class, 'updateAppearance'])->name('update-appearance');
+    Route::put('/configuracion/change-password', [SettingsController::class, 'updatePassword'])->name('update-password');
+    Route::put('/configuracion/change-language', [SettingsController::class, 'changeLanguage'])->name('change-language');
     Route::put('/user/update', [SettingsController::class, 'updateUser'])->name('user.update');
 
 });
