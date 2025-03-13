@@ -3,16 +3,15 @@
     <!-- Navbar (Header siempre arriba, fijo en la parte superior) -->
     <Navbar  :auth="auth" class="w-full z-50 fixed" />
 
-    <!-- Main container for Sidebar and Content -->
     <div class="flex flex-1"> 
-      <!-- Sidebar (Izquierda, debajo del Navbar) -->
+
       <Sidebar 
         :username="auth?.user?.name || 'Usuario Alumni'" 
-        class="fixed md:w-64 z-10 mt-14 md:h-[calc(100vh-64px)]" 
+        class="fixed md:w-64 z-40 mt-14 md:h-[calc(100vh-64px)]" 
       />
 
       <!-- Main Content -->
-      <main class="flex-1 ml-50  mt-14 bg-gray-50">
+      <main class="flex-1 md:ml-64  mt-14 bg-gray-50">
         <slot></slot>
       </main>
     </div>
