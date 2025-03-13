@@ -7,7 +7,8 @@ import NProgress from 'nprogress';
 import 'boxicons';
 import 'boxicons/css/boxicons.min.css'
 import '../css/app.css';
- 
+
+
 window.Inertia = Inertia;
 
 createInertiaApp({

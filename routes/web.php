@@ -21,7 +21,9 @@ use Laravel\Fortify\Http\Controllers\TwoFactorQrCodeController;
 use Illuminate\Support\Facades\Auth;    
 
 
-
+Route::fallback(function () {
+    return Inertia::render('404_page'); 
+});
 
 Route::get('/', function () {
     return Inertia::render('LandingPage');
