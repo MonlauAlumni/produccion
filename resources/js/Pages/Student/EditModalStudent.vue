@@ -23,20 +23,17 @@
       name: '',
       last_name_1: '',
       last_name_2: '',
-      job_title: '',
       location: '',
       description: '',
+      job_title: '',
       email: '',
       phone: '',
       availability: '',
       degree: '',
       graduation_year: '',
-      social_links: {
-        linkedin: '',
-        github: '',
-        twitter: '',
-        website: ''
-      }
+      linkedin: '',
+      github: '',
+      website: '',
     });
     
     // Opciones para disponibilidad
@@ -63,20 +60,17 @@
         name: props.user.name || '',
         last_name_1: props.user.last_name_1 || '',
         last_name_2: props.user.last_name_2 || '',
-        job_title: props.profile?.job_title || '',
         location: props.profile?.location || '',
         description: props.profile?.description || '',
         email: props.user.email || '',
         phone: props.profile?.phone || '',
         availability: props.profile?.availability || 'Disponible para ofertas',
         degree: props.profile?.degree || '',
+        job_title: props.profile?.job_title || '',
         graduation_year: props.profile?.graduation_year || '',
-        social_links: {
-          linkedin: props.profile?.social_links?.linkedin || '',
-          github: props.profile?.social_links?.github || '',
-          twitter: props.profile?.social_links?.twitter || '',
-          website: props.profile?.social_links?.website || ''
-        }
+        linkedin: props.profile?.linkedin || '',
+        github: props.profile?.github || '',
+        website: props.profile?.website || '',
       };
     });
     
@@ -98,13 +92,10 @@
     const saveChanges = () => {
       isLoading.value = true;
       errorMessage.value = '';
-      
-      router.post(`/perfil/${props.user.slang}/update`, form.value, {
+      router.put(`/perfil/${props.user.profile.slang}`, form.value, {
         onSuccess: () => {
           successMessage.value = 'Perfil actualizado correctamente';
-          setTimeout(() => {
-            closeModal();
-          }, 2000);
+          closeModal();
         },
         onError: (errors) => {
           errorMessage.value = 'Ha ocurrido un error al actualizar el perfil';
@@ -334,7 +325,7 @@
                       <i class='bx bxl-linkedin text-[#193CB8] text-xl'></i>
                     </div>
                     <input 
-                      v-model="form.social_links.linkedin" 
+                      v-model="form.linkedin" 
                       type="url" 
                       placeholder="URL de LinkedIn" 
                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#193CB8]"
@@ -346,7 +337,7 @@
                       <i class='bx bxl-github text-[#193CB8] text-xl'></i>
                     </div>
                     <input 
-                      v-model="form.social_links.github" 
+                      v-model="form.github" 
                       type="url" 
                       placeholder="URL de GitHub" 
                     
@@ -355,24 +346,14 @@
                     />
                   </div>
                   
-                  <div class="flex items-center gap-3">
-                    <div class="bg-blue-50 p-2 rounded-full">
-                      <i class='bx bxl-twitter text-[#193CB8] text-xl'></i>
-                    </div>
-                    <input 
-                      v-model="form.social_links.twitter" 
-                      type="url" 
-                      placeholder="URL de Twitter" 
-                      class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#193CB8]"
-                    />
-                  </div>
+                  
                   
                   <div class="flex items-center gap-3">
                     <div class="bg-blue-50 p-2 rounded-full">
                       <i class='bx bx-globe text-[#193CB8] text-xl'></i>
                     </div>
                     <input 
-                      v-model="form.social_links.website" 
+                      v-model="formwebsite" 
                       type="url" 
                       placeholder="URL de sitio web personal" 
                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#193CB8]"

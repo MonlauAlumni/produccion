@@ -13,9 +13,9 @@ class CompanyController extends Controller
         
         $company = Company::where('slang', $slang)->with('jobOffers')->firstOrFail();
 
-        if (!$company){
-            abort(404);
-        }
+        if (!$company) {
+            return Inertia::render('404_page');
+         }
 
         $userId = auth()->id();
         $isAdmin = ($userId === $company->user_id);

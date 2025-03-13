@@ -13,7 +13,7 @@
     const file = e.target.files[0];
     const formData = new FormData();
     formData.append('profile_picture', file);
-    router.post(`/perfil/${props.user.slang}/update-profile-picture`, formData, {
+    router.post(`/perfil/${props.user.profile.slang}/update-profile-picture`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -111,16 +111,13 @@
             
             <!-- Redes sociales -->
             <div class="mt-4 flex items-center gap-3 justify-center md:justify-start">
-              <a href="#" class="bg-blue-50 hover:bg-blue-100 p-2 rounded-full text-[#193CB8] transition-colors">
+              <a :href="user.profile.linkedin" class="bg-blue-50 hover:bg-blue-100 cursor-pointer p-2 flex rounded-full text-[#193CB8] transition-colors">
                 <i class='bx bxl-linkedin text-xl'></i>
               </a>
-              <a href="#" class="bg-blue-50 hover:bg-blue-100 p-2 rounded-full text-[#193CB8] transition-colors">
+              <a :href="user.profile.github" class="bg-blue-50 hover:bg-blue-100 cursor-pointer p-2 flex rounded-full text-[#193CB8] transition-colors">
                 <i class='bx bxl-github text-xl'></i>
               </a>
-              <a href="#" class="bg-blue-50 hover:bg-blue-100 p-2 rounded-full text-[#193CB8] transition-colors">
-                <i class='bx bxl-twitter text-xl'></i>
-              </a>
-              <a href="#" class="bg-blue-50 hover:bg-blue-100 p-2 rounded-full text-[#193CB8] transition-colors">
+              <a :href="profile.website" class="bg-blue-50 hover:bg-blue-100 cursor-pointer p-2 flex rounded-full text-[#193CB8] transition-colors">
                 <i class='bx bx-globe text-xl'></i>
               </a>
             </div>

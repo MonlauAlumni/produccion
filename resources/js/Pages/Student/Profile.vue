@@ -7,6 +7,7 @@
   import EditModalStudent from "@/Pages/Student/EditModalStudent.vue";
   import Layout from "@/Components/Layout.vue";
   import { ref } from "vue";
+  import { router } from "@inertiajs/vue3";
   
   const props = defineProps({
     user: Object,
@@ -25,7 +26,22 @@
       editModal.value.openModal();
     }
   };
+
+  const uploadbanner = (e) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append("banner_url", file);
+    console.log(props.user.slang);
+    router.post(`/perfil/${props.user.slang}/update-banner`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }).then((response) => {
+      props.profile.banner_url = response.data.banner_url;
+    });
+  }
   
+
   // Default banner if none is provided
   const defaultBanner = "/images/default-student-banner.jpg";
   </script>
@@ -43,11 +59,11 @@
           <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
           
           <!-- Banner upload button for user's own profile -->
-          <div v-if="isSameUser" class="absolute bottom-4 right-4">
+          <div v-if="isSameUser"  class="absolute z-40 bottom-4 right-4">
             <label class="cursor-pointer bg-white/90 hover:bg-white text-[#193CB8] px-3 py-2 rounded-md shadow-md flex items-center gap-2 transition-all">
               <i class='bx bx-image-add'></i>
               <span class="text-sm font-medium">Cambiar Banner</span>
-              <input type="file" class="hidden" accept="image/*">
+              <input type="file" @change="uploadBanner" class="hidden" accept="image/*">
             </label>
           </div>
         </div>

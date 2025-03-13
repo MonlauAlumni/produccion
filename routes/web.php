@@ -53,8 +53,11 @@ Route::middleware('auth')->group(function() {
     Route::get('/perfil/{slang}', [ProfileController::class, 'profile'])->name('perfil.show');
     Route::put('/perfil/{slang}', [ProfileController::class, 'update'])->name('perfil.update');
     Route::post('/perfil/{slug}/experiencia', [ExperienceController::class, 'storeWork'])->name('perfil.experience.store');
-    Route::post('/perfil/{slang}/educacion', [ExperienceController::class, 'storeEducation'])->name('educacion.store');
-
+    Route::post('/perfil/{slang}/educacion', [ExperienceController::class, 'storeEducation'])->name('perfil.educacion.store');
+    Route::post('/perfil/{slang}/update-banner', [ProfileController::class, 'updateBanner'])->name('perfil.updateBanner');
+    Route::post('/perfil/{slang}/update-logo', [ProfileController::class, 'updateLogo'])->name('perfil.updateLogo');
+    Route::post('/perfil/{slang}/update-cv', [ProfileController::class, 'updateCV'])->name('perfil.updateCV');
+    
     Route::get('/empresa/{slang}', [CompanyController::class, 'show'])->name('empresa.show');
     Route::post('/empresa/{slang}/update-logo', [CompanyController::class, 'updateLogo'])->name('empresa.updateLogo');
     Route::post('/empresa/{slang}/update', [CompanyController::class, 'update'])->name('empresa.update');

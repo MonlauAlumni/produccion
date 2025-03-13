@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Models\User;
+use App\Models\Profile;
 
 use Illuminate\Support\Facades\Session;
 
@@ -14,14 +15,23 @@ class ProfileController extends Controller
 {
 
     public function profile($slang)
-{
-    $user = User::all()->first(function ($user) use ($slang) {
-        return $user->slang === $slang;
-    });
+{   
+
+    $user = User::whereHas('profile', function ($query) use ($slang) {
+        $query->where('slang', $slang);
+    })->with('profile')->first();
 
     if (!$user) {
-        abort(404);
-    }
+        return Inertia::render('404_page');
+     }
+
+    $authUserId = auth()->user()->id;
+    $user = User::with('profile')->find($authUserId);
+
+
+    
+  
+    
     $authUser = Auth::user();
    
     $isSameUser = $authUser && $authUser->id === $user->id;
@@ -113,37 +123,82 @@ class ProfileController extends Controller
         Session::forget('google_user');
         Session::forget('microsoft_user');
 
-        return redirect('/')->with('success', 'Perfil completado con éxito. ¡Por favor, inicia sesión!');
+        return redirect('/home')->with('success', 'Perfil completado con éxito. ¡Por favor, inicia sesión!');
     }
 
 
 
-    public function update(Request $request)
+    public function update(Request $request, $slang)
     {
   
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'last_name_1' => 'required|string|max:255',
-            'last_name_2' => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:255',
-        ]);
-    
-       
-        $user = auth()->user(); 
-     
-  
-        // Actualizar el perfil
+        $user = User::with('profile')->get()->filter(function ($user) use ($slang) {
+            return $user->profile && $user->profile->slang === $slang;
+        })->first();
+
+        $userProfile = $user->profile;
+
+
+
         $user->update([
-            'name' => $request->input('name'),
-            'last_name_1' => $request->input('last_name_1'),
-            'last_name_2' => $request->input('last_name_2'),
+            'name' => $request->name,
+            'last_name_1' => $request->last_name_1,
+            'last_name_2' => $request->last_name_2,
+            'email' => $request->email,
         ]);
-        
-        $user->profile->update([
-            'description' => $request->input('description'),
+
+        $userProfile->update([
+            'description' => $request->description,
+            'location' => $request->location,
+            'phone' => $request->phone,
+            'availability' => $request->availability,
+            'degree' => $request->degree,
+            'job_title' => $request->job_title,
+            'graduation_year' => $request->graduation_year,
+            'linkedin' => $request->linkedin,
+            'github' => $request->github,
+            'website' => $request->website,
         ]);
-        
-      
-        
+
+    }
+        public function updateBanner(Request $request, $slang)
+    {
+        $user = User::with('profile')->get()->filter(function ($user) use ($slang) {
+            return $user->profile && $user->profile->slang === $slang;
+        })->first();
+
+        $userProfile = $user->profile;
+  
+        $userProfile->update([
+            'banner_url' => $request->banner_url,
+        ]);
+    }
+
+    public function updateCV(Request $request, $slang)
+    {
+        $user = User::with('profile')->get()->filter(function ($user) use ($slang) {
+            return $user->profile && $user->profile->slang === $slang;
+        })->first();
+
+        $userProfile = $user->profile;
+
+        $userProfile->update([
+            'cv_path' => $request->cv_path,
+        ]);
+    }
+
+    public function updateLogo(Request $request, $slang)
+    {
+        $user = User::with('profile')->get()->filter(function ($user) use ($slang) {
+            return $user->profile && $user->profile->slang === $slang;
+        })->first();
+
+        $userProfile = $user->profile;
+
+        $userProfile->update([
+            'profile_picture' => $request->profile_picture,
+        ]);
     }
 }
+
+
+
