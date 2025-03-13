@@ -56,6 +56,7 @@ Route::middleware('auth')->group(function() {
     Route::get('/empresa/{slang}', [CompanyController::class, 'show'])->name('empresa.show');
     Route::post('/empresa/{slang}/update-logo', [CompanyController::class, 'updateLogo'])->name('empresa.updateLogo');
     Route::post('/empresa/{slang}/update', [CompanyController::class, 'update'])->name('empresa.update');
+    Route::post('/empresa/{slang}/update-banner', [CompanyController::class, 'updateBanner'])->name('empresa.updateBanner');
 
 
     Route::get('/ofertas/crear', [JobOfferController::class, 'create'])->name('ofertas.crear'); 

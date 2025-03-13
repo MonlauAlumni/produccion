@@ -172,10 +172,10 @@ defineExpose({
          @click.stop>
       
       <!-- Cabecera del modal -->
-      <div class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] text-white p-6">
+      <div class="bg-[#193CB8] text-white p-6">
         <div class="flex items-center justify-between">
           <h2 class="text-xl font-bold">Editar Perfil de Empresa</h2>
-          <button @click="closeModal" class="text-white hover:text-gray-200 transition-colors">
+          <button @click="closeModal" class="text-white cursor-pointer hover:text-gray-200 transition-colors">
             <i class='bx bx-x text-2xl'></i>
           </button>
         </div>

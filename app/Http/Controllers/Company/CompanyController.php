@@ -11,13 +11,18 @@ class CompanyController extends Controller
 {
     public function show($slang){
         
-        $company = Company::where('slang', $slang)->firstOrFail();
+        $company = Company::where('slang', $slang)->with('jobOffers')->firstOrFail();
+
         if (!$company){
             abort(404);
         }
+
         $userId = auth()->id();
         $isAdmin = ($userId === $company->user_id);
-        //dd($company);
+        
+        $company->jobOffers = $company->jobOffers->toArray();
+
+        
         return Inertia::render('Company/SingleCompany', [
             'company' => $company,
             'isAdmin' => $isAdmin
@@ -35,6 +40,16 @@ class CompanyController extends Controller
 
         return redirect()->route('empresa.show', ['slang' => $company->slang]);
     }
+
+    public function updateBanner(Request $request, $company)
+    {
+        $company = Company::where('slang', $company)->firstOrFail();
+ 
+        $path = $request->file('banner_url')->store('banners', 'public');
+        $company->update(['banner_url' => '/storage/' . $path]);   
+
+        return redirect()->route('empresa.show', ['slang' => $company->slang]);
+    }   
 
     public function update(Request $request, $slang)
     {
