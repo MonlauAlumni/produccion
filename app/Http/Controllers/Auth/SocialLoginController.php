@@ -53,12 +53,16 @@ class SocialLoginController extends Controller
             ]);
             return redirect('/complete-profile');
         } else {
+            if (!$user->settings()->exists()) {
+                $user->settings()->create();
+            }
             // Si el usuario existe, comprobamos si tiene 2FA habilitado
             if ($user->two_factor_secret) {
                 $request->session()->put('login.id', $user->id);
                 $request->session()->save();
                 return redirect()->route('two-factor.login');
             }
+            
 
             // Si no tiene 2FA, iniciamos sesión
             Auth::login($user);
@@ -87,6 +91,9 @@ class SocialLoginController extends Controller
                 ]);
                 return redirect('/complete-profile');
             } else {
+                if (!$user->settings()->exists()) {
+                    $user->settings()->create();
+                }
                 // Si el usuario existe, comprobamos si tiene 2FA habilitado
                 if ($user->two_factor_secret) {
                     $request->session()->put('login.id', $user->id);
@@ -124,6 +131,9 @@ class SocialLoginController extends Controller
             ]);
             return redirect('/complete-profile');
         } else {
+            if (!$user->settings()->exists()) {
+                $user->settings()->create();
+            }
             // Si el usuario existe, comprobamos si tiene 2FA habilitado
             if ($user->two_factor_secret) {
                 $request->session()->put('login.id', $user->id);

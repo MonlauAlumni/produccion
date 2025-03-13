@@ -16,6 +16,11 @@ class LoginController extends Controller
         return Inertia::render('Auth/Login');
     }
 
+    public function show(Request $request)
+    {
+        return Inertia::render('Auth/MonlauLogin');
+    }
+
     public function store(Request $request)
     {
         // Validación de los datos de entrada
@@ -54,6 +59,10 @@ class LoginController extends Controller
         // Si no tiene habilitado 2FA, iniciamos sesión directamente
         Auth::login($user, $request->has('remember'));
         $request->session()->regenerate();
+
+        if (!$user->settings()->exists()) {
+            $user->settings()->create([]);
+        }
 
         return redirect()->route('dashboard'); // Redirigir al dashboard u otra página
     }

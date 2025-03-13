@@ -60,7 +60,7 @@ class ProfileController extends Controller
 
     public function store(Request $request)
     {
-        
+
         $request->validate([
             'name' => 'required|string|max:255',
             'last_name_1' => 'required|string|max:255',
@@ -68,7 +68,7 @@ class ProfileController extends Controller
             'training_area' => 'required|in:Informatica,Marketing,Automocion',
         ]);
 
-
+      
         $githubUser = Session::get('github_user');
         $googleUser = Session::get('google_user');
         $microsoftUser = Session::get('microsoft_user');
@@ -79,12 +79,14 @@ class ProfileController extends Controller
                 'github_id' => $githubUser['github_id'],
                 'google_id' => null,
                 'password' => $githubUser['password'],
-
+           
                 'name' => $request->input('name'),
                 'last_name_1' => $request->input('last_name_1'),
                 'last_name_2' => $request->input('last_name_2'),
                 'training_area' => $request->input('training_area'),
             ]);
+            $user = User::where('email', $githubUser['email'])->first();
+
         } elseif ($googleUser) {
             $user = User::create([
                 'email' => $googleUser['email'],
@@ -95,7 +97,10 @@ class ProfileController extends Controller
                 'last_name_2' => $request->input('last_name_2'),
                 'training_area' => $request->input('training_area'),
             ]);
-        } elseif ($microsoftUser) {
+            $user = User::where('email', $googleUser['email'])->first();
+
+        }
+        elseif($microsoftUser) {
             $user = User::create([
                 'email' => $microsoftUser['email'],
                 'microsoft_id' => $microsoftUser['microsoft_id'],
@@ -105,15 +110,22 @@ class ProfileController extends Controller
                 'last_name_2' => $request->input('last_name_2'),
                 'training_area' => $request->input('training_area'),
             ]);
-        }
-        $user->assignRole('alumne');
 
+            $user = User::where('email', $microsoftUser['email'])->first();
+
+        }
+        Auth::login($user);
+        $user->assignRole('alumne');
+        $user->settings()->create();
+        $request->session()->regenerate();
+        
         // Limpiar los datos de la sesión
         Session::forget('github_user');
         Session::forget('google_user');
         Session::forget('microsoft_user');
 
-        return redirect('/')->with('success', 'Perfil completado con éxito. ¡Por favor, inicia sesión!');
+
+        return redirect('/home')->with('success', 'Perfil completado con éxito. ¡Por favor, inicia sesión!');
     }
 
 

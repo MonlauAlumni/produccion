@@ -87,6 +87,8 @@ Route::middleware(['guest'])->group(function () {
 
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
+    Route::get('/login-monlau', [LoginController::class, 'show'])->name('login.monlau');
+    Route::post('/login-monlau', [LoginController::class, 'store']);
 
     Route::get('github/redirect', [SocialLoginController::class, 'github_redirect'])->name('github.redirect');
     Route::get('github/callback', [SocialLoginController::class, 'github_callback'])->name('github.callback');
