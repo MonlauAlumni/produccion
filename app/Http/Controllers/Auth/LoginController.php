@@ -16,6 +16,11 @@ class LoginController extends Controller
         return Inertia::render('Auth/Login');
     }
 
+    public function show(Request $request)
+    {
+        return Inertia::render('Auth/MonlauLogin');
+    }
+
     public function store(Request $request)
     {
         // Validación de los datos de entrada
@@ -55,7 +60,11 @@ class LoginController extends Controller
         Auth::login($user, $request->has('remember'));
         $request->session()->regenerate();
 
-        return redirect()->route('home'); // Redirigir al dashboard u otra página
+        if (!$user->settings()->exists()) {
+            $user->settings()->create([]);
+        }
+
+        return redirect()->route('dashboard'); // Redirigir al dashboard u otra página
     }
 
     public function destroy(Request $request)
