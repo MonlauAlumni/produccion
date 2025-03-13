@@ -4,7 +4,7 @@
   import AboutSection from "@/Components/Profile/AboutSection.vue";
   import ExperienceSection from "@/Components/Profile/ExperienceSection.vue";
   import SkillsSection from "@/Components/Profile/SkillsSection.vue";
-  import EditModal from "@/Components/Profile/EditModal.vue";
+  import EditModalStudent from "@/Pages/Student/EditModalStudent.vue";
   import Layout from "@/Components/Layout.vue";
   import { ref } from "vue";
   
@@ -160,6 +160,7 @@
       </div>
       
       <!-- Edit Modal -->
-      <EditModal :user="user" :profile="profile" ref="editModal" />
-    </Layout>
+      
+      <EditModalStudent :user="user" :profile="profile" ref="editModal" />
+     </Layout>
   </template>

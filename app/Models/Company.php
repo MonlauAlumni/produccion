@@ -23,6 +23,17 @@ class Company extends Model
         'fiscal_id',
         'description',
         'profile_picture',
+        'sector',
+        'size',
+        'location',
+        'linkedin',
+        'twitter',
+        'facebook',
+        'instagram',
+        'website',
+        'founded_year',
+        'email',
+        'banner_url'
     ];
 
     public function user()

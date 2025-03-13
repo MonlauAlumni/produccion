@@ -80,11 +80,7 @@
   <template>
     <Layout>
     <div class="min-h-screen bg-gray-50 flex flex-col">
-<<<<<<< HEAD
       
-=======
-   
->>>>>>> feature/layout-on-pages
       
       <!-- Header Section -->
       <div class="bg-[#193CB8] flex text-white py-8">
@@ -595,11 +591,7 @@
         </form>
       </div>
     </div>
-<<<<<<< HEAD
-  </Layout>
-=======
     </Layout>
->>>>>>> feature/layout-on-pages
   </template>
   
   <style>

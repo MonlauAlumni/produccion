@@ -25,7 +25,7 @@
   
   // Computed property for company industry
   const industry = computed(() => {
-    return props.company.industry || 'Sector no especificado';
+    return props.company.sector || 'Sector no especificado';
   });
   
   // Computed property for company size
@@ -81,9 +81,10 @@
               <!-- Botones de acción -->
               <div class="flex items-center gap-3 mt-4 md:mt-0">
                 <button v-if="isAdmin" @click="props.openEditModal" 
-                  class="flex items-center gap-1.5 bg-[#193CB8] hover:bg-[#2748c6] text-white px-4 py-2 rounded-md transition-colors">
-                  <i class='bx bx-pencil'></i>
+                  class="flex items-center cursor-pointer gap-1.5 bg-[#193CB8] hover:bg-[#2748c6] text-white px-3 py-2 rounded-md transition-colors">
+                  <div class="flex justify-center items-center w-30 gap-3"><i class='bx bx-pencil'></i>
                   <span>Editar Perfil</span>
+                </div>
                 </button>
                 
                 <button v-else
@@ -92,7 +93,7 @@
                   <span>Contactar</span>
                 </button>
                 
-                <button class="flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-4 py-2 rounded-md transition-colors">
+                <button class="flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 cursor-pointer px-4 py-2 rounded-md transition-colors">
                   <i class='bx bx-share-alt'></i>
                   <span class="hidden sm:inline">Compartir</span>
                 </button>

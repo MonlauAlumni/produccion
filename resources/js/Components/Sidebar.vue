@@ -89,10 +89,10 @@
                   <a 
                     @click.prevent="navigateTo(item.route)" 
                     :class="[
-                      'flex items-center px-3 py-2.5 rounded-md transition-all relative cursor-pointer',
+                      'flex items-center px-3  py-2.5 rounded-md transition-all relative cursor-pointer',
                       isActive(item.route) 
                         ? 'bg-blue-50 text-[#193CB8] font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-[#193CB8] before:rounded-r-md' 
-                        : 'text-gray-700 hover:bg-gray-50'
+                        : 'text-gray-700 hover:bg-blue-100'
                     ]"
                   >
                     <i :class="['bx text-xl mr-3', item.icon]"></i>
@@ -135,7 +135,7 @@
   
         <!-- Botón Crear oferta -->
         <div class="p-4 border-t border-gray-100">
-          <button class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] text-white w-full py-3 rounded-md shadow-md hover:from-[#1535a3] hover:to-[#193CB8] transition-all flex items-center justify-center">
+          <button @click.prevent="navigateTo('/ofertas/crear')" class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] text-white w-full py-3 rounded-md shadow-md hover:from-[#1535a3] cursor-pointer hover:to-[#193CB8] transition-all flex items-center justify-center">
             <i class='bx bx-plus-circle mr-2'></i>
             <span>Crear oferta</span>
           </button>
