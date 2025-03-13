@@ -162,15 +162,16 @@ class ProfileController extends Controller
     }
         public function updateBanner(Request $request, $slang)
     {
+
         $user = User::with('profile')->get()->filter(function ($user) use ($slang) {
             return $user->profile && $user->profile->slang === $slang;
         })->first();
 
-        $userProfile = $user->profile;
+        $path = $request->file('banner_url')->store('banners', 'public');
+    
+        $user->profile->update(['banner_url' => '/storage/' . $path]);   
   
-        $userProfile->update([
-            'banner_url' => $request->banner_url,
-        ]);
+        return redirect()->route('perfil.show', ['slang' => $user->profile->slang]);
     }
 
     public function updateCV(Request $request, $slang)

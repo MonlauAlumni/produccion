@@ -124,7 +124,7 @@
                 }}
               </p>
               <button v-if="isSameUser" @click="isExperienceModalOpen = true"
-                class="mt-4 inline-flex items-center gap-2 bg-[#193CB8] hover:bg-[#2748c6] text-white px-4 py-2 rounded-md transition-colors">
+                class="mt-4 inline-flex items-center cursor-pointer gap-2 bg-[#193CB8] hover:bg-[#2748c6] text-white px-4 py-2 rounded-md transition-colors">
                 <i class='bx bx-plus'></i>
                 <span>Añadir {{ type === 'work' ? 'experiencia' : 'formación' }}</span>
               </button>

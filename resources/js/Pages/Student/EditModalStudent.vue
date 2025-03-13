@@ -353,7 +353,7 @@
                       <i class='bx bx-globe text-[#193CB8] text-xl'></i>
                     </div>
                     <input 
-                      v-model="formwebsite" 
+                      v-model="form.website" 
                       type="url" 
                       placeholder="URL de sitio web personal" 
                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#193CB8]"

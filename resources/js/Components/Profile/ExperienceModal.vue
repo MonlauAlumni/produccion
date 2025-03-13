@@ -84,13 +84,13 @@
   </script>
   
   <template>
-    <div v-if="isOpen" class="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+    <div v-if="isOpen" class="fixed inset-0  flex items-center justify-center bg-black/50 min-w-screen z-50">
       <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden transform transition-all">
         <div class="bg-[#193CB8] px-6 py-4 flex justify-between items-center">
           <h2 class="text-xl font-semibold text-white">
             {{ props.type === 'work' ? 'Añadir Experiencia Laboral' : 'Añadir Formación Académica' }}
           </h2>
-          <button @click="closeModal" class="text-white hover:text-blue-200 transition-colors">
+          <button @click="closeModal" class="text-white cursor-pointer hover:text-blue-200 transition-colors">
             <i class='bx bx-x text-xl'></i>
           </button>
         </div>

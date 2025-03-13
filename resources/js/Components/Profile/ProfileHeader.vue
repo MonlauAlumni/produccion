@@ -89,7 +89,7 @@
               <!-- Botones de acción -->
               <div class="flex items-center gap-3 mt-4 md:mt-0 justify-center md:justify-end">
                 <button v-if="isSameUser" @click="props.openEditModal" 
-                  class="flex items-center gap-1.5 bg-[#193CB8] hover:bg-[#2748c6] text-white px-3 py-2 rounded-md transition-colors">
+                  class="flex items-center cursor-pointer gap-1.5 bg-[#193CB8] hover:bg-[#2748c6] text-white px-3 py-2 rounded-md transition-colors">
                   <div class="flex justify-center items-center w-30 gap-3">
                   <i class='bx bx-pencil'></i>
                   <span>Editar Perfil</span>
@@ -111,15 +111,16 @@
             
             <!-- Redes sociales -->
             <div class="mt-4 flex items-center gap-3 justify-center md:justify-start">
-              <a :href="user.profile.linkedin" class="bg-blue-50 hover:bg-blue-100 cursor-pointer p-2 flex rounded-full text-[#193CB8] transition-colors">
+              <a v-if="user.profile.linkedin" :href="user.profile.linkedin" class="bg-blue-50 hover:bg-blue-100 cursor-pointer p-2 flex rounded-full text-[#193CB8] transition-colors">
                 <i class='bx bxl-linkedin text-xl'></i>
               </a>
-              <a :href="user.profile.github" class="bg-blue-50 hover:bg-blue-100 cursor-pointer p-2 flex rounded-full text-[#193CB8] transition-colors">
+              <a v-if="user.profile.github" :href="user.profile.github" class="bg-blue-50 hover:bg-blue-100 cursor-pointer p-2 flex rounded-full text-[#193CB8] transition-colors">
                 <i class='bx bxl-github text-xl'></i>
               </a>
-              <a :href="profile.website" class="bg-blue-50 hover:bg-blue-100 cursor-pointer p-2 flex rounded-full text-[#193CB8] transition-colors">
+              <a v-if="user.profile.website" :href="user.profile.website" class="bg-blue-50 hover:bg-blue-100 cursor-pointer p-2 flex rounded-full text-[#193CB8] transition-colors">
                 <i class='bx bx-globe text-xl'></i>
               </a>
+              
             </div>
           </div>
         </div>

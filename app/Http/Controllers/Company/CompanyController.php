@@ -48,7 +48,7 @@ class CompanyController extends Controller
         $path = $request->file('banner_url')->store('banners', 'public');
         $company->update(['banner_url' => '/storage/' . $path]);   
 
-        return redirect()->route('empresa.show', ['slang' => $company->slang]);
+        return redirect()->route('perfil.show', ['slang' => $company->slang]);
     }   
 
     public function update(Request $request, $slang)

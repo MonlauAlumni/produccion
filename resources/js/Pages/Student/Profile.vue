@@ -27,12 +27,12 @@
     }
   };
 
-  const uploadbanner = (e) => {
+  const uploadBanner = (e) => {
     const file = e.target.files[0];
     const formData = new FormData();
     formData.append("banner_url", file);
-    console.log(props.user.slang);
-    router.post(`/perfil/${props.user.slang}/update-banner`, formData, {
+
+    router.post(`/perfil/${props.user.profile.slang}/update-banner`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -52,7 +52,7 @@
         <!-- Student Banner -->
         <div class="relative w-full h-64 md:h-80 bg-gradient-to-r from-[#193CB8] to-[#2748c6] overflow-hidden">
           <img 
-            :src="profile?.banner_url || defaultBanner" 
+            :src="profile.banner_url || defaultBanner" 
             alt="Student Banner" 
             class="w-full h-full object-cover opacity-80"
           />
