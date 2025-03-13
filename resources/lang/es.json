@@ -1,0 +1,135 @@
+{
+    "account": {
+      "title": "CUENTA",
+      "description": "Administre la información de tu cuenta.",
+      "update_info": "Actualizar Información",
+      "updating": "Actualizando...",
+      "change_password": "Cambiar Contraseña",
+      "info_updated": "Información actualizada exitosamente.",
+      "username": "Nombre de usuario",
+      "email": "Correo electrónico",
+      "profile_picture": {
+        "title": "Foto de Perfil",
+        "description": "Personaliza tu foto de perfil."
+      }
+    },
+    "appearance": {
+      "title": "APARIENCIA",
+      "theme": "TEMA",
+      "description": "Personaliza tu experiencia eligiendo el modo de visualización y configurando opciones adicionales que se adapten a tu estilo.",
+      "dark_mode": "Modo Oscuro",
+      "advanced": {
+        "title": "Personalización Avanzada",
+        "description": "Explora opciones adicionales para configurar tu interfaz, como la selección de colores de acento y ajustes de fuente para mejorar la legibilidad.",
+        "updated": "Apariencia actualizada exitosamente.",
+        "accent_color": "Color de Acento",
+        "font_size": "Tamaño de Fuente de las Publicaciones",
+        "reset": "Restablecer",
+        "preview": {
+          "title": "Previsualización del Tema",
+          "description": "Esta es una previsualización del tema seleccionado. Cambia las opciones de personalización y observa cómo se transforma el entorno de tu aplicación.",
+          "example": "Ejemplo",
+          "update": "Actualizar apariencia"
+        },
+        "colors": {
+          "black": "Negro",
+          "blue": "Azul",
+          "red": "Rojo",
+          "green": "Verde",
+          "purple": "Púrpura"
+        }
+      }
+    },
+    "language": {
+      "title": "IDIOMA",
+      "description": "Selecciona tu idioma:"
+    },
+    "social": {
+      "title": "SOCIAL",
+      "email_notifications": {
+        "title": "Notificaciones por Email",
+        "allow_emails": "Permitir emails",
+        "mentions": "Menciones",
+        "comments": "Comentarios",
+        "direct_messages": "Mensajes directos",
+        "system_updates": "Actualizaciones del sistema"
+      },
+      "profiles": {
+        "title": "Perfiles Sociales",
+        "description": "Conecta tus perfiles sociales para compartir contenido y mejorar tu experiencia.",
+        "linkedin_placeholder": "URL de LinkedIn",
+        "github_placeholder": "Usuario de GitHub",
+        "website_placeholder": "Sitio web personal"
+      },
+      "connected_accounts": {
+        "title": "Cuentas Conectadas",
+        "description": "Conecta tus cuentas para iniciar sesión más fácilmente.",
+        "connect": "Conectar",
+        "disconnect": "Desconectar"
+      }
+    },
+    "privacy": {
+      "title": "PRIVACIDAD",
+      "settings": {
+        "title": "Configuración de Privacidad",
+        "description": "Controla quién puede ver tu información y cómo se utiliza.",
+        "profile_visibility": "Visibilidad del Perfil",
+        "visibility_options": {
+          "public": "Público - Visible para todos",
+          "contacts": "Contactos - Solo visible para contactos",
+          "private": "Privado - Solo visible para ti"
+        },
+        "show_email": "Mostrar correo electrónico",
+        "show_activity": "Mostrar actividad reciente",
+        "allow_tagging": "Permitir etiquetado"
+      },
+      "sessions": {
+        "title": "Sesiones Activas",
+        "description": "Gestiona tus sesiones activas y cierra sesión en dispositivos remotos.",
+        "current": "Actual",
+        "last_activity": "Última actividad",
+        "close": "Cerrar",
+        "close_all": "Cerrar todas las otras sesiones"
+      }
+    },
+    "security": {
+      "title": "SEGURIDAD",
+      "description": "Añade una capa extra de seguridad a tu cuenta.",
+      "2fa": {
+        "title": "Autenticación de Dos Factores (2FA)",
+        "description": "La Autenticación de Dos Factores añade una capa extra de seguridad a tu cuenta. Al requerir una segunda forma de verificación, ayuda a prevenir accesos no autorizados, incluso si alguien conoce tu contraseña.",
+        "description2": "Una vez habilitada, se te pedirá un código de verificación enviado a tu dispositivo cada vez que inicies sesión. Puedes usar una aplicación de autenticación para completar este proceso.",
+        "enable": "ACTIVAR 2FA",
+        "disable": "DESACTIVAR 2FA (NO RECOMENDADO)",
+        "qr_code": {
+          "title": "Scan this QR Code",
+          "description": "Use your authenticator app to scan the code and enable 2FA",
+          "cancel": "Cancel",
+          "confirm": "Confirm"
+        },
+        "disable_warning": {
+          "title": "ADVERTENCIA: Deshabilitar 2FA",
+          "not_recommended": "Esta acción no es recomendable",
+          "description1": "Deshabilitar la Autenticación de Dos Factores reducirá significativamente la seguridad de tu cuenta. Sin 2FA, tu cuenta será más vulnerable a accesos no autorizados.",
+          "description2": "Recomendamos encarecidamente mantener 2FA habilitado para proteger tu información personal y datos.",
+          "cancel": "Cancelar",
+          "wait": "Espera",
+          "seconds": "s",
+          "confirm": "Entiendo, deshabilitar 2FA"
+        }
+      },
+      "login_history": {
+        "title": "Historial de Inicio de Sesión",
+        "description": "Revisa tu historial de inicio de sesión para detectar actividades sospechosas. Si observas inicios de sesión que no reconoces, cambia tu contraseña inmediatamente y habilita la autenticación de dos factores.",
+        "success": "Exitoso",
+        "failed": "Fallido",
+        "view_all": "Ver Historial Completo"
+      }
+    },
+    "errors": {
+      "general": "Ha ocurrido un error al actualizar tu información.",
+      "appearance": "Error inesperado al actualizar la apariencia."
+    }
+  }
+  
+  

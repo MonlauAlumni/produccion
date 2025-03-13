@@ -1,2 +1,8 @@
 @import "tailwindcss";
 @source "../views";
+@custom-variant dark (&:where(.dark, .dark *));
+
+
+* {
+    font-family: 'figtree', sans-serif;
+}
