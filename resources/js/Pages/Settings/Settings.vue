@@ -357,7 +357,7 @@ const terminateAllSessions = () => {
 <template>
     <Layout :auth="auth">
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-4 p-4">
             <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-xl space-y-6">
                 <div class="flex flex-col md:flex-row md:justify-between md:items-center">
                     <div>

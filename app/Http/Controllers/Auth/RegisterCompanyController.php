@@ -37,14 +37,14 @@ class RegisterCompanyController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        // //Registro del Alumno (Usuario)
+        // //Registro del Usuario (Usuario)
         try {
         $user = User::create([
             'name' => $request->name,
             'last_name_1' => $request->last_name_1,
             'last_name_2' => $request->last_name_2,
             'email' => $request->email,
-            'password' => Hash::make($request->password), // Encriptamos la contraseña
+            'password' => Hash::make($request->password),
             'training_area' => 'Informatica',
         ]);
         $user->assignRole('empresa'); 
@@ -62,7 +62,7 @@ class RegisterCompanyController extends Controller
         Auth::login($user);
 
 
-        return redirect('/')->with('success', 'Perfil completado con éxito. ¡Bienvenido!');
+        return redirect('/home')->with('success', 'Perfil completado con éxito. ¡Bienvenido!');
 
     } catch (\Exception $e) {
         dd($e);

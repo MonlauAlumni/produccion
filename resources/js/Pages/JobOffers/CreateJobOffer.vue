@@ -6,30 +6,43 @@
   const form = ref({
     title: '',
     description: '',
-    minExperience: '',
-    minStudies: '',
+    location: '',
+    requirements: '',
+    experience: '',
+    responsibilities: [],
+    benefits: [],
+    min_experience: '',
+    min_studies: '',
     vacancies: '',
-    workMode: '',
+    work_mode: '',
     minimum_salary: '',
     maximum_salary: '',
     skills: [],
+    deadline: '',
     file: null
   })
   
   const skills = ref(['Vue.js', 'Laravel', 'PHP', 'MySQL', 'Git', 'JavaScript', 'HTML', 'CSS', 'React', 'Node.js'])
   const newSkill = ref('')
   const fileName = ref('')
+  
+  // For responsibilities and benefits
+  const newResponsibility = ref('')
+  const newBenefit = ref('')
+  
   const formProgress = computed(() => {
     let filled = 0;
-    let total = 7; // Campos obligatorios
+    let total = 9; // Campos obligatorios (increased from 7 to include new required fields)
     
     if (form.value.title) filled++;
     if (form.value.description) filled++;
-    if (form.value.minExperience) filled++;
-    if (form.value.minStudies) filled++;
+    if (form.value.requirements) filled++;
+    if (form.value.min_experience) filled++;
+    if (form.value.min_studies) filled++;
     if (form.value.vacancies) filled++;
-    if (form.value.workMode) filled++;
+    if (form.value.work_mode) filled++;
     if (form.value.skills.length > 0) filled++;
+    if (form.value.deadline) filled++;
     
     return Math.round((filled / total) * 100);
   })
@@ -51,6 +64,28 @@
     }
   }
   
+  const addResponsibility = () => {
+    if (newResponsibility.value.trim() !== '') {
+      form.value.responsibilities.push(newResponsibility.value.trim())
+      newResponsibility.value = ''
+    }
+  }
+  
+  const removeResponsibility = (index) => {
+    form.value.responsibilities.splice(index, 1)
+  }
+  
+  const addBenefit = () => {
+    if (newBenefit.value.trim() !== '') {
+      form.value.benefits.push(newBenefit.value.trim())
+      newBenefit.value = ''
+    }
+  }
+  
+  const removeBenefit = (index) => {
+    form.value.benefits.splice(index, 1)
+  }
+  
   const handleFileUpload = (event) => {
     form.value.file = event.target.files[0]
     fileName.value = event.target.files[0]?.name || ''
@@ -62,25 +97,26 @@
     })
   }
   
-  const activeSection = ref('basic') // basic, details, requirements, finish
+  const activeSection = ref('basic') // basic, details, requirements, benefits, finish
   
   const nextSection = () => {
     if (activeSection.value === 'basic') activeSection.value = 'details'
     else if (activeSection.value === 'details') activeSection.value = 'requirements'
-    else if (activeSection.value === 'requirements') activeSection.value = 'finish'
+    else if (activeSection.value === 'requirements') activeSection.value = 'benefits'
+    else if (activeSection.value === 'benefits') activeSection.value = 'finish'
   }
   
   const prevSection = () => {
     if (activeSection.value === 'details') activeSection.value = 'basic'
     else if (activeSection.value === 'requirements') activeSection.value = 'details'
-    else if (activeSection.value === 'finish') activeSection.value = 'requirements'
+    else if (activeSection.value === 'benefits') activeSection.value = 'requirements'
+    else if (activeSection.value === 'finish') activeSection.value = 'benefits'
   }
   </script>
   
   <template>
     <Layout>
     <div class="min-h-screen bg-gray-50 flex flex-col">
-      
       
       <!-- Header Section -->
       <div class="bg-[#193CB8] flex text-white py-8">
@@ -143,6 +179,18 @@
             >
               <i class='bx bx-list-check'></i>
               Requisitos
+            </button>
+            <button 
+              @click="activeSection = 'benefits'"
+              :class="[
+                'flex-1 py-4 px-4 text-center font-medium transition-colors flex items-center justify-center gap-2',
+                activeSection === 'benefits' 
+                  ? 'bg-[#193CB8] text-white' 
+                  : 'text-gray-600 hover:bg-gray-50'
+              ]"
+            >
+              <i class='bx bx-gift'></i>
+              Beneficios
             </button>
             <button 
               @click="activeSection = 'finish'"
@@ -212,6 +260,50 @@
                   Una descripción detallada ayuda a los candidatos a entender mejor la posición
                 </p>
               </div>
+
+              <div>
+                <label for="localidad" class="block text-sm font-medium text-gray-700 mb-1">
+                  Localidad <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class='bx bx-map text-gray-400'></i>
+                  </div>
+                  <input
+                    id="localidad"
+                    v-model="form.location"
+                    type="text"
+                    placeholder="Ej: Madrid"
+                    required
+                    class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#193CB8] focus:border-[#193CB8] bg-white"
+                  >
+                </div>
+                <p class="mt-1 text-sm text-gray-500">
+                  Indica la ciudad o localidad donde se desarrollará el trabajo
+                </p>
+              </div>
+              
+              <!-- Deadline -->
+              <div>
+                <label for="deadline" class="block text-sm font-medium text-gray-700 mb-1">
+                  Fecha límite de aplicación <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class='bx bx-calendar text-gray-400'></i>
+                  </div>
+                  <input
+                    id="deadline"
+                    v-model="form.deadline"
+                    type="date"
+                    required
+                    class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#193CB8] focus:border-[#193CB8] bg-white"
+                  >
+                </div>
+                <p class="mt-1 text-sm text-gray-500">
+                  Establece una fecha límite para recibir aplicaciones
+                </p>
+              </div>
               
               <div class="flex justify-end pt-4">
                 <button 
@@ -257,22 +349,23 @@
                   </div>
                 </div>
                 <div>
-                  <label for="workMode" class="block text-sm font-medium text-gray-700 mb-1">
-                    Modalidad Jornada <span class="text-red-500">*</span>
+                  <label for="work_mode" class="block text-sm font-medium text-gray-700 mb-1">
+                    Modalidad de Trabajo <span class="text-red-500">*</span>
                   </label>
                   <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <i class='bx bx-time-five text-gray-400'></i>
                     </div>
                     <select
-                      id="workMode"
-                      v-model="form.workMode"
+                      id="work_mode"
+                      v-model="form.work_mode"
                       required
                       class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#193CB8] focus:border-[#193CB8] bg-white appearance-none"
                     >
                       <option value="">Selecciona la modalidad</option>
-                      <option value="part-time">Media jornada</option>
-                      <option value="full-time">Jornada completa</option>
+                      <option value="onsite">Presencial</option>
+                      <option value="remote">Remoto</option>
+                      <option value="hybrid">Híbrido</option>
                     </select>
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                       <i class='bx bx-chevron-down text-gray-400'></i>
@@ -283,28 +376,10 @@
   
               <!-- Salary -->
               <div>
-                <label for="salary" class="block text-sm font-medium text-gray-700 mb-1">
+                <label class="block text-sm font-medium text-gray-700 mb-1">
                   Salario
                 </label>
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class='bx bx-money text-gray-400'></i>
-                  </div>
-                  <select
-                    id="salary"
-                    v-model="form.salary"
-                    class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#193CB8] focus:border-[#193CB8] bg-white appearance-none"
-                  >
-                    <option value="">Selecciona el tipo de salario</option>
-                    <option value="none">Sin especificar</option>
-                    <option value="fixed">Especificar salario</option>
-                  </select>
-                  <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <i class='bx bx-chevron-down text-gray-400'></i>
-                  </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4" v-if="form.salary === 'fixed'">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label for="minimum_salary" class="block text-sm font-medium text-gray-700 mb-1">
                       Salario Mínimo
@@ -318,7 +393,6 @@
                         v-model="form.minimum_salary"
                         type="number"
                         placeholder="Ej: 25000"
-                        required
                         class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#193CB8] focus:border-[#193CB8] bg-white"
                       >
                     </div>
@@ -336,10 +410,52 @@
                         v-model="form.maximum_salary"
                         type="number"
                         placeholder="Ej: 35000"
-                        required
                         class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#193CB8] focus:border-[#193CB8] bg-white"
                       >
                     </div>
+                  </div>
+                </div>
+                <p class="mt-1 text-sm text-gray-500">
+                  Deja ambos campos vacíos si no deseas especificar el salario
+                </p>
+              </div>
+              
+              <!-- Responsibilities -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-3">
+                  Responsabilidades
+                </label>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
+                  <div class="space-y-2 mb-4">
+                    <div v-for="(responsibility, index) in form.responsibilities" :key="index" class="flex items-center bg-white p-3 rounded-lg border border-gray-200">
+                      <span class="flex-1">{{ responsibility }}</span>
+                      <button 
+                        type="button" 
+                        @click="removeResponsibility(index)"
+                        class="text-red-500 hover:text-red-700"
+                      >
+                        <i class='bx bx-trash'></i>
+                      </button>
+                    </div>
+                    <div v-if="form.responsibilities.length === 0" class="text-gray-500 text-center py-2">
+                      No hay responsabilidades añadidas
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <input
+                      v-model="newResponsibility"
+                      @keyup.enter="addResponsibility"
+                      type="text"
+                      placeholder="Añadir responsabilidad..."
+                      class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg shadow-sm focus:outline-none focus:ring-[#193CB8] focus:border-[#193CB8] bg-white"
+                    >
+                    <button 
+                      type="button" 
+                      @click="addResponsibility"
+                      class="bg-gradient-to-r from-[#193CB8] to-[#2d50c7] text-white px-4 py-3 rounded-r-lg hover:shadow-md transition-all duration-300"
+                    >
+                      <i class='bx bx-plus'></i>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -378,7 +494,7 @@
               <!-- Experience and Studies -->
               <div class="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label for="minExperience" class="block text-sm font-medium text-gray-700 mb-1">
+                  <label for="min_experience" class="block text-sm font-medium text-gray-700 mb-1">
                     Experiencia Mínima <span class="text-red-500">*</span>
                   </label>
                   <div class="relative">
@@ -386,15 +502,15 @@
                       <i class='bx bx-time text-gray-400'></i>
                     </div>
                     <select
-                      id="minExperience"
-                      v-model="form.minExperience"
+                      id="min_experience"
+                      v-model="form.min_experience"
                       required
                       class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#193CB8] focus:border-[#193CB8] bg-white appearance-none"
                     >
                       <option value="">Selecciona la experiencia mínima</option>
                       <option value="0">Sin Experiencia</option>
-                      <option value="1-2">1-2 años</option>
-                      <option value="3-5">3-4 años</option>
+                      <option value="1">1-2 años</option>
+                      <option value="3">3-4 años</option>
                       <option value="5">5 o más años</option>
                     </select>
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -403,7 +519,7 @@
                   </div>
                 </div>
                 <div>
-                  <label for="minStudies" class="block text-sm font-medium text-gray-700 mb-1">
+                  <label for="min_studies" class="block text-sm font-medium text-gray-700 mb-1">
                     Estudios Mínimos <span class="text-red-500">*</span>
                   </label>
                   <div class="relative">
@@ -411,8 +527,8 @@
                       <i class='bx bx-book text-gray-400'></i>
                     </div>
                     <select
-                      id="minStudies"
-                      v-model="form.minStudies"
+                      id="min_studies"
+                      v-model="form.min_studies"
                       required
                       class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#193CB8] focus:border-[#193CB8] bg-white appearance-none"
                     >
@@ -426,6 +542,46 @@
                     </div>
                   </div>
                 </div>
+              </div>
+              
+              <!-- Detailed Requirements -->
+              <div>
+                <label for="requirements" class="block text-sm font-medium text-gray-700 mb-1">
+                  Requisitos detallados <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <textarea
+                    id="requirements"
+                    v-model="form.requirements"
+                    placeholder="Describe los requisitos específicos para el puesto..."
+                    required
+                    rows="4"
+                    class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#193CB8] focus:border-[#193CB8] bg-white"
+                  ></textarea>
+                </div>
+                <p class="mt-1 text-sm text-gray-500">
+                  Detalla los requisitos específicos que deben cumplir los candidatos
+                </p>
+              </div>
+              
+              <!-- Experience Description -->
+              <div>
+                <label for="experience" class="block text-sm font-medium text-gray-700 mb-1">
+                  Descripción de la experiencia <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <textarea
+                    id="experience"
+                    v-model="form.experience"
+                    placeholder="Describe la experiencia necesaria para el puesto..."
+                    required
+                    rows="4"
+                    class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#193CB8] focus:border-[#193CB8] bg-white"
+                  ></textarea>
+                </div>
+                <p class="mt-1 text-sm text-gray-500">
+                  Detalla el tipo de experiencia que debe tener el candidato ideal
+                </p>
               </div>
   
               <!-- Skills -->
@@ -471,6 +627,80 @@
                   </div>
                   <p class="mt-2 text-sm text-gray-500">
                     Selecciona todas las habilidades relevantes o añade nuevas
+                  </p>
+                </div>
+              </div>
+              
+              <div class="flex justify-between pt-4">
+                <button 
+                  type="button" 
+                  @click="prevSection"
+                  class="bg-gray-100 text-gray-700 font-medium py-2 px-6 rounded-lg hover:bg-gray-200 transition-colors flex items-center"
+                >
+                  <i class='bx bx-left-arrow-alt mr-2'></i>
+                  Anterior
+                </button>
+                <button 
+                  type="button" 
+                  @click="nextSection"
+                  class="bg-gradient-to-r from-[#193CB8] to-[#2d50c7] text-white font-medium py-2 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center"
+                >
+                  Siguiente
+                  <i class='bx bx-right-arrow-alt ml-2'></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Benefits Section -->
+          <div v-if="activeSection === 'benefits'" class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="bg-gradient-to-r from-[#193CB8]/10 to-white p-4 border-b">
+              <h2 class="text-xl font-bold text-[#193CB8] flex items-center">
+                <i class='bx bx-gift mr-2'></i>
+                Beneficios
+              </h2>
+            </div>
+            
+            <div class="p-6 space-y-6">
+              <!-- Benefits List -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-3">
+                  Beneficios para el empleado
+                </label>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
+                  <div class="space-y-2 mb-4">
+                    <div v-for="(benefit, index) in form.benefits" :key="index" class="flex items-center bg-white p-3 rounded-lg border border-gray-200">
+                      <span class="flex-1">{{ benefit }}</span>
+                      <button 
+                        type="button" 
+                        @click="removeBenefit(index)"
+                        class="text-red-500 hover:text-red-700"
+                      >
+                        <i class='bx bx-trash'></i>
+                      </button>
+                    </div>
+                    <div v-if="form.benefits.length === 0" class="text-gray-500 text-center py-2">
+                      No hay beneficios añadidos
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <input
+                      v-model="newBenefit"
+                      @keyup.enter="addBenefit"
+                      type="text"
+                      placeholder="Añadir beneficio..."
+                      class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg shadow-sm focus:outline-none focus:ring-[#193CB8] focus:border-[#193CB8] bg-white"
+                    >
+                    <button 
+                      type="button" 
+                      @click="addBenefit"
+                      class="bg-gradient-to-r from-[#193CB8] to-[#2d50c7] text-white px-4 py-3 rounded-r-lg hover:shadow-md transition-all duration-300"
+                    >
+                      <i class='bx bx-plus'></i>
+                    </button>
+                  </div>
+                  <p class="mt-2 text-sm text-gray-500">
+                    Añade los beneficios que ofrece tu empresa (seguro médico, teletrabajo, etc.)
                   </p>
                 </div>
               </div>
@@ -547,11 +777,15 @@
                   </div>
                   <div class="flex items-start">
                     <div class="w-32 text-sm font-medium text-gray-500">Experiencia:</div>
-                    <div class="flex-1">{{ form.minExperience || 'No especificado' }}</div>
+                    <div class="flex-1">{{ form.min_experience || 'No especificado' }}</div>
                   </div>
                   <div class="flex items-start">
                     <div class="w-32 text-sm font-medium text-gray-500">Estudios:</div>
-                    <div class="flex-1">{{ form.minStudies || 'No especificado' }}</div>
+                    <div class="flex-1">{{ form.min_studies || 'No especificado' }}</div>
+                  </div>
+                  <div class="flex items-start">
+                    <div class="w-32 text-sm font-medium text-gray-500">Fecha límite:</div>
+                    <div class="flex-1">{{ form.deadline || 'No especificado' }}</div>
                   </div>
                   <div class="flex items-start">
                     <div class="w-32 text-sm font-medium text-gray-500">Habilidades:</div>
@@ -595,7 +829,7 @@
   </template>
   
   <style>
-  /* Estilos adicionales para mejorar la apariencia */
+  /* Estilos básicos para el contenido */
   .prose p {
     margin-bottom: 1rem;
     line-height: 1.7;

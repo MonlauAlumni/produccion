@@ -9,12 +9,32 @@ class JobOffer extends Model
     use HasFactory;
 
     protected $fillable = [
-        'company_id', 'title', 'description', 'salary_min', 'salary_max', 
-        'location', 'job_type', 'category', 'expires_at', 'status'
+        'company_id', 
+        'title', 
+        'description', 
+        'requirements',
+        'experience',
+        'responsibilities',
+        'benefits',
+        'min_experience',
+        'min_studies',
+        'vacancies',
+        'minimum_salary', 
+        'maximum_salary', 
+        'location', 
+        'work_mode', 
+        'category', 
+        'expires_at',
+        'deadline', 
+        'status',
+        'file'
     ];
 
     protected $casts = [
         'expires_at' => 'datetime',
+        'deadline' => 'datetime',
+        'responsibilities' => 'array',
+        'benefits' => 'array',
     ];
 
     public function company()
