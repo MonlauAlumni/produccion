@@ -55,7 +55,7 @@ class LoginController extends Controller
         Auth::login($user, $request->has('remember'));
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard'); // Redirigir al dashboard u otra página
+        return redirect()->route('home'); // Redirigir al dashboard u otra página
     }
 
     public function destroy(Request $request)
