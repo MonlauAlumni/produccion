@@ -65,7 +65,7 @@
         <div class="p-4 border-b border-gray-100">
           <div class="flex items-center space-x-3 mb-3">
             <div class="relative">
-              <div v-if="!user.profile_picture" class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
+              <div v-if="!user.profile.profile_picture" class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
                 <i class='bx bxs-user text-xl'></i>
               </div>
                 <img v-else :src="`/storage/${user.profile_picture}`" alt="Profile picture" class="w-12 h-12 rounded-full shadow-sm border-2 border-white">

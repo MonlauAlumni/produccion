@@ -93,7 +93,7 @@ class SocialLoginController extends Controller
         }
     }
 
-    public function handleGoogleCallback(Request $request) // Agregar Request como parámetro
+    public function handleGoogleCallback(Request $request) 
     {
         try {
             $googleUser = Socialite::driver('google')->user();

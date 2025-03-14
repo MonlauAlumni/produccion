@@ -16,34 +16,34 @@ class ProfileController extends Controller
 {
 
     public function profile($slang)
-{   
+    {
 
-    $user = User::whereHas('profile', function ($query) use ($slang) {
-        $query->where('slang', $slang);
-    })->with('profile')->first();
+        $user = User::whereHas('profile', function ($query) use ($slang) {
+            $query->where('slang', $slang);
+        })->with('profile')->first();
 
-    if (!$user) {
-        return Inertia::render('404_page');
-     }
+        if (!$user) {
+            return Inertia::render('404_page');
+        }
 
-    $authUserId = auth()->user()->id;
-    $user = User::with('profile')->find($authUserId);
-    
-    $authUser = Auth::user();
-   
-    $isSameUser = $authUser && $authUser->id === $user->id;
-    
-    return Inertia::render('Student/Profile', [
-        'user' => $user,
-        'profile' => $user->profile,
-        'workExperiences' => $user->workExperiences,
-        'educations' => $user->educations,
-        'isSameUser' => $isSameUser,
-        'slang' => $slang,
-      
-        
-    ]);
-}
+        $authUserId = auth()->user()->id;
+        $user = User::with('profile')->find($authUserId);
+
+        $authUser = Auth::user();
+
+        $isSameUser = $authUser && $authUser->id === $user->id;
+
+        return Inertia::render('Student/Profile', [
+            'user' => $user,
+            'profile' => $user->profile,
+            'workExperiences' => $user->workExperiences,
+            'educations' => $user->educations,
+            'isSameUser' => $isSameUser,
+            'slang' => $slang,
+
+
+        ]);
+    }
 
     public function show()
     {
@@ -75,7 +75,7 @@ class ProfileController extends Controller
             'training_area' => 'required|in:Informatica,Marketing,Automocion',
         ]);
 
-      
+
         $githubUser = Session::get('github_user');
         $googleUser = Session::get('google_user');
         $microsoftUser = Session::get('microsoft_user');
@@ -86,7 +86,7 @@ class ProfileController extends Controller
                 'github_id' => $githubUser['github_id'],
                 'google_id' => null,
                 'password' => $githubUser['password'],
-           
+
                 'name' => $request->input('name'),
                 'last_name_1' => $request->input('last_name_1'),
                 'last_name_2' => $request->input('last_name_2'),
@@ -106,8 +106,7 @@ class ProfileController extends Controller
             ]);
             $user = User::where('email', $googleUser['email'])->first();
 
-        }
-        elseif($microsoftUser) {
+        } elseif ($microsoftUser) {
             $user = User::create([
                 'email' => $microsoftUser['email'],
                 'microsoft_id' => $microsoftUser['microsoft_id'],
@@ -116,7 +115,7 @@ class ProfileController extends Controller
                 'last_name_1' => $request->input('last_name_1'),
                 'last_name_2' => $request->input('last_name_2'),
                 'training_area' => $request->input('training_area'),
-                'profile_picture' => $microsoftUser['profile_photo_path'] ? $microsoftUser['profile_photo_path'] : null,
+
             ]);
 
             $user = User::where('email', $microsoftUser['email'])->first();
@@ -126,8 +125,9 @@ class ProfileController extends Controller
         $user->assignRole('alumne');
         $user->settings()->create();
         $user->profile()->create();
+        $user->profile()->update(['profile_picture' => $microsoftUser['profile_photo_path'] ? $microsoftUser['profile_photo_path'] : null,]);
         $request->session()->regenerate();
-        
+
         // Limpiar los datos de la sesión
         Session::forget('github_user');
         Session::forget('google_user');
@@ -139,58 +139,58 @@ class ProfileController extends Controller
 
 
     public function update(Request $request, $slang)
-{
-    $user = User::with('profile')->get()->filter(function ($user) use ($slang) {
-        return $user->profile && $user->profile->slang === $slang;
-    })->first();
+    {
+        $user = User::with('profile')->get()->filter(function ($user) use ($slang) {
+            return $user->profile && $user->profile->slang === $slang;
+        })->first();
 
-    $userProfile = $user->profile;
+        $userProfile = $user->profile;
 
-    $user->update([
-        'name' => $request->name,
-        'last_name_1' => $request->last_name_1,
-        'last_name_2' => $request->last_name_2,
-        'email' => $request->email,
-    ]);
+        $user->update([
+            'name' => $request->name,
+            'last_name_1' => $request->last_name_1,
+            'last_name_2' => $request->last_name_2,
+            'email' => $request->email,
+        ]);
 
-    // Cambio aquí: verificar si hay un archivo 'cv' en la solicitud
-    if($request->hasFile('cv')) {
-        
-        if($userProfile->cv_path) {
-            Storage::disk('public')->delete($userProfile->cv_path);
+        // Cambio aquí: verificar si hay un archivo 'cv' en la solicitud
+        if ($request->hasFile('cv')) {
+
+            if ($userProfile->cv_path) {
+                Storage::disk('public')->delete($userProfile->cv_path);
+            }
+
+            $cvPath = $request->file('cv')->store('cv', 'public');
+
+            $userProfile->cv_path = $cvPath;
         }
 
-        $cvPath = $request->file('cv')->store('cv', 'public');
+        $userProfile->update([
+            'description' => $request->description,
+            'location' => $request->location,
+            'phone' => $request->phone,
+            'availability' => $request->availability,
+            'degree' => $request->degree,
+            'job_title' => $request->job_title,
+            'graduation_year' => $request->graduation_year,
+            'linkedin' => $request->linkedin,
+            'github' => $request->github,
+            'website' => $request->website,
+        ]);
 
-        $userProfile->cv_path = $cvPath;
+        return redirect()->back()->with('success', 'Perfil actualizado correctamente');
     }
-
-    $userProfile->update([
-        'description' => $request->description,
-        'location' => $request->location,
-        'phone' => $request->phone,
-        'availability' => $request->availability,
-        'degree' => $request->degree,
-        'job_title' => $request->job_title,
-        'graduation_year' => $request->graduation_year,
-        'linkedin' => $request->linkedin,
-        'github' => $request->github,
-        'website' => $request->website,
-    ]);
-
-    return redirect()->back()->with('success', 'Perfil actualizado correctamente');
-}
-        public function updateBanner(Request $request, $slang)
+    public function updateBanner(Request $request, $slang)
     {
-    
+
         $user = User::with('profile')->get()->filter(function ($user) use ($slang) {
             return $user->profile && $user->profile->slang === $slang;
         })->first();
 
         $path = $request->file('banner_url')->store('banners', 'public');
-    
-        $user->profile->update(['banner_url' => '/storage/' . $path]);   
- 
+
+        $user->profile->update(['banner_url' => '/storage/' . $path]);
+
         return redirect()->route('perfil.show', ['slang' => $user->profile->slang]);
     }
 
@@ -213,38 +213,38 @@ class ProfileController extends Controller
             return $user->profile && $user->profile->slang === $slang;
         })->first();
 
-      
+
         $path = $request->file('profile_picture')->store('profile_picture', 'public');
-    
-        $user->profile->update(['profile_picture' => '/storage/' . $path]);  
+
+        $user->profile->update(['profile_picture' => '/storage/' . $path]);
 
         return redirect()->route('perfil.show', ['slang' => $user->profile->slang]);
     }
 
     public function downloadCV($slang)
-{
-    // Buscar al usuario con el slang proporcionado
-    $user = User::with('profile')->get()->filter(function ($user) use ($slang) {
-        return $user->profile && $user->profile->slang === $slang;
-    })->first();
+    {
+        // Buscar al usuario con el slang proporcionado
+        $user = User::with('profile')->get()->filter(function ($user) use ($slang) {
+            return $user->profile && $user->profile->slang === $slang;
+        })->first();
 
-    if (!$user) {
-        abort(404, 'No existe el usuario');
+        if (!$user) {
+            abort(404, 'No existe el usuario');
+        }
+
+        $cvPath = $user->profile->cv_path;
+        $filePath = storage_path('app/public/' . $cvPath);
+
+        if (!file_exists($filePath)) {
+            abort(404, 'No existe el archivo');
+        }
+
+        // Forzar la descarga del archivo
+        return response()->download($filePath, basename($filePath), [
+            'Content-Type' => 'application/pdf', // Especificamos que es un PDF
+            'Content-Disposition' => 'attachment; filename="' . basename($filePath) . '"', // Esto asegura que se descargue
+        ]);
     }
-
-    $cvPath = $user->profile->cv_path;
-    $filePath = storage_path('app/public/' . $cvPath);
-
-    if (!file_exists($filePath)) {
-        abort(404, 'No existe el archivo');
-    }
-
-    // Forzar la descarga del archivo
-    return response()->download($filePath, basename($filePath), [
-        'Content-Type' => 'application/pdf', // Especificamos que es un PDF
-        'Content-Disposition' => 'attachment; filename="' . basename($filePath) . '"', // Esto asegura que se descargue
-    ]);
-}
 
 
 

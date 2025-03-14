@@ -51,7 +51,7 @@
           <!-- Foto de perfil -->
           <div class="relative h-28 w-28 rounded-full bg-white shadow-md overflow-hidden group border-4 border-white mx-auto md:mx-0">
             <img 
-              :src="`/storage/${user.profile_picture}` || '/images/default-avatar.png'"  
+              :src="`/storage/${profile.profile_picture}` || '/images/default-avatar.png'"  
               :alt="fullName" 
               class="h-full w-full object-cover" 
             />
