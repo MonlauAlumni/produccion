@@ -6,14 +6,17 @@ use App\Models\JobOffer;
 use Inertia\Inertia;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class JobOfferController extends Controller
 {
 
     public function index(Request $request)
     {
-        $user = auth()->user();
-        //dd($user->profile);
+        // $lastUser = User::latest()->first();
+        // if ($lastUser) {
+        //     $lastUser->delete();
+        // }
         $page = $request->input('page', 1);
         // Obtener las ofertas paginadas (aunque no se usa en este caso)
         $offers = JobOffer::with('company')->paginate(10);

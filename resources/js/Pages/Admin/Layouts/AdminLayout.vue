@@ -109,7 +109,7 @@ const { auth, appName } = usePage().props;
                             <a href="/dashboard" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                                 <i class='bx bx-grid-alt mr-2'></i> Dashboard
                             </a>
-                            <a href="/settings" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            <a href="/configuracion" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                                 <i class='bx bx-cog mr-2'></i> Configuración
                             </a>
                             <div class="border-t border-gray-100 my-1"></div>

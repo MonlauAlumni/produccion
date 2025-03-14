@@ -78,11 +78,11 @@ Route::middleware('auth')->group(function() {
 
 
 
-    Route::get('/settings', [SettingsController::class, 'show'])->name('settings.show');
-    Route::get('/settings/change-password', [SettingsController::class, 'changePassword'])->name('change-password');
-    Route::put('/settings/update-appearance', [SettingsController::class, 'updateAppearance'])->name('update-appearance');
-    Route::put('/settings/change-password', [SettingsController::class, 'updatePassword'])->name('update-password');
-    Route::put('/settings/change-language', [SettingsController::class, 'changeLanguage'])->name('change-language');
+    Route::get('/configuracion', [SettingsController::class, 'show'])->name('settings.show');
+    Route::get('/configuracion/cambiar-contraseña', [SettingsController::class, 'changePassword'])->name('change.password');
+    Route::put('/settings/update-appearance', [SettingsController::class, 'updateAppearance'])->name('update.appearance');
+    Route::put('/settings/change-password', [SettingsController::class, 'updatePassword'])->name('update.password');
+    Route::put('/settings/change-language', [SettingsController::class, 'changeLanguage'])->name('change.language');
     Route::put('/user/update', [SettingsController::class, 'updateUser'])->name('user.update');
 
 });
@@ -99,6 +99,8 @@ Route::middleware(['guest'])->group(function () {
 
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
+    Route::get('/login-monlau', [LoginController::class, 'show'])->name('login.monlau');
+    Route::post('/login-monlau', [LoginController::class, 'store']);
 
     Route::get('github/redirect', [SocialLoginController::class, 'github_redirect'])->name('github.redirect');
     Route::get('github/callback', [SocialLoginController::class, 'github_callback'])->name('github.callback');

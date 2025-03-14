@@ -138,7 +138,7 @@ const updatePassword = async () => {
 };
 
 const goBack = () => {
-  router.get('/settings');
+  router.get('/configuracion');
 };
 </script>
 
