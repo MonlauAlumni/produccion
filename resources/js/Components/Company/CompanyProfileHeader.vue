@@ -43,7 +43,7 @@
             <img 
               :src="company.profile_picture" 
               :alt="company.name + ' logo'" 
-              class="h-full w-full object-cover" 
+              class="h-27 w-28 rounded-lg" 
             />
             
             <!-- Hover para subir nueva imagen (solo para administradores) -->

@@ -318,8 +318,8 @@
               <div class="flex-1">
                 <!-- Feed Items -->
                 <div class="space-y-6">
-                  <JobCard 
-                    v-for="job in jobOffersList" 
+                    <JobCard 
+                    v-for="job in jobOffersList.slice().reverse()" 
                     :key="job.id"
                     :jobOffer="job"
                     :isLiked="likedJobs.has(job.id)"
@@ -330,7 +330,7 @@
                     @save="toggleSaveJob"
                     @like="toggleLikeJob"
                     @share="shareJob"
-                  />
+                    />
                   
                   <!-- Loading Indicator -->
                   <div v-if="isLoading" class="flex justify-center py-4">

@@ -10,9 +10,12 @@ use App\Models\User;
 
 class JobOfferController extends Controller
 {
-
+    
+    
     public function index(Request $request)
     {
+        // dd(JobOffer::all());
+
         $page = $request->input('page', 1);
         $offers = JobOffer::with('company')->paginate(10);
                 

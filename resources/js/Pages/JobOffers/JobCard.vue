@@ -110,7 +110,7 @@ const shareJob = (id) => {
                     class="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center shrink-0 border border-gray-200">
                     <img v-if="jobOffer.company && jobOffer.company.profile_picture"
                         :src="`${jobOffer.company.profile_picture}`" :alt="jobOffer.company.name || ''"
-                        class="w-13 h-13 object-contain rounded-lg" />
+                        class="w-13 h-13 rounded-lg" />
                     <i v-else class='bx bx-building text-2xl text-gray-400'></i>
                 </div>
 
