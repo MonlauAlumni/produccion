@@ -64,7 +64,7 @@ class LoginController extends Controller
             $user->settings()->create([]);
         }
 
-        return redirect()->route('dashboard'); // Redirigir al dashboard u otra página
+        return redirect()->route('home');
     }
 
     public function destroy(Request $request)

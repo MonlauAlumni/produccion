@@ -357,8 +357,8 @@ const terminateAllSessions = () => {
 <template>
     <Layout :auth="auth">
 
-        <div class="grid grid-cols-2 gap-4">
-            <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-xl space-y-6">
+        <div class="grid grid-cols-2 gap-4 p-4">
+            <div class="p-6 border border-gray-200 bg-white dark:bg-gray-800 rounded-lg shadow-xl space-y-6">
                 <div class="flex flex-col md:flex-row md:justify-between md:items-center">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">CUENTA</h1>
@@ -448,7 +448,7 @@ const terminateAllSessions = () => {
 
 
             <div
-                class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-2xl space-y-6 border border-gray-200 dark:border-gray-700">
+                class="p-6 bg-white dark:bg-gray-800  rounded-xl shadow-2xl space-y-6 border border-gray-200 dark:border-gray-700">
                 <div class="flex flex-col md:flex-row md:justify-between md:items-center">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">APARIENCIA</h1>
@@ -544,7 +544,7 @@ const terminateAllSessions = () => {
             </div>
 
 
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-200">
                 <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">IDIOMA</h2>
                 <p class="text-gray-600 dark:text-gray-400 mb-4">Selecciona tu idioma:</p>
                 <div class="grid grid-cols-3 gap-4">
@@ -565,7 +565,7 @@ const terminateAllSessions = () => {
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-6 px-4 border-t pt-4">SOCIAL</h1>
         <div class="p-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Email Notifications -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-200">
                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Notificaciones por Email</h2>
 
                 <div class="flex items-center justify-between mb-4">
@@ -640,7 +640,7 @@ const terminateAllSessions = () => {
             </div>
 
             <!-- Social Profiles -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-200">
                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Perfiles Sociales</h2>
                 <p class="text-gray-600 dark:text-gray-400 mb-4">Conecta tus perfiles sociales para compartir contenido
                     y mejorar tu experiencia.</p>
@@ -684,7 +684,7 @@ const terminateAllSessions = () => {
             </div>
 
             <!-- Connected Accounts -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-200">
                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Cuentas Conectadas</h2>
                 <p class="text-gray-600 dark:text-gray-400 mb-4">Conecta tus cuentas para iniciar sesión más fácilmente.
                 </p>
@@ -749,7 +749,7 @@ const terminateAllSessions = () => {
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-6 px-4 border-t pt-4">PRIVACIDAD</h1>
         <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Privacy Settings -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-200">
                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Configuración de Privacidad</h2>
                 <p class="text-gray-600 dark:text-gray-400 mb-4">Controla quién puede ver tu información y cómo se
                     utiliza.</p>
@@ -805,7 +805,7 @@ const terminateAllSessions = () => {
             </div>
 
             <!-- Active Sessions -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-200">
                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Sesiones Activas</h2>
                 <p class="text-gray-600 dark:text-gray-400 mb-4">Gestiona tus sesiones activas y cierra sesión en
                     dispositivos remotos.</p>
@@ -842,7 +842,7 @@ const terminateAllSessions = () => {
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-6 px-4 border-t pt-4">SEGURIDAD</h1>
         <p class="px-4 mt-4 dark:text-gray-300">Añade una capa extra de seguridad a tu cuenta.</p>
         <div class="p-4 grid grid-cols-2 gap-4">
-            <div class="bg-white dark:bg-gray-900 p-6 rounded-lg text-gray-700 dark:text-gray-300 shadow-xl">
+            <div class="bg-white dark:bg-gray-900 p-6 rounded-lg border border-gray-200 text-gray-700 dark:text-gray-300 shadow-xl">
                 <p class="text-xl font-bold">Autenticación de Dos Factores (2FA)</p>
                 <p class="mt-2 text-justify">
                     La Autenticación de Dos Factores añade una capa extra de seguridad a tu cuenta.
@@ -871,7 +871,7 @@ const terminateAllSessions = () => {
             </div>
 
             <!-- Login History -->
-            <div class="bg-white dark:bg-gray-900 p-6 rounded-lg text-gray-700 dark:text-gray-300 shadow-xl">
+            <div class="bg-white border border-gray-200 dark:bg-gray-900 p-6 rounded-lg text-gray-700 dark:text-gray-300 shadow-xl">
                 <p class="text-xl font-bold">Historial de Inicio de Sesión</p>
                 <p class="mt-2 text-justify">
                     Revisa tu historial de inicio de sesión para detectar actividades sospechosas.

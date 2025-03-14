@@ -7,11 +7,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Http\Request; // Asegúrate de importar Request
+use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class SocialLoginController extends Controller
 {
-    public function redirectToMicrosoft(){
+    public function redirectToMicrosoft()
+    {
         return Socialite::driver('microsoft')->redirect();
     }
 
@@ -20,8 +25,10 @@ class SocialLoginController extends Controller
         return Socialite::driver('google')->redirect();
     }
 
-    public function handleMicrosoftCallback(Request $request){ // Agregar Request como parámetro
+    public function handleMicrosoftCallback(Request $request)
+    { // Agregar Request como parámetro
         $microsoftUser = Socialite::driver('microsoft')->user();
+        // dd($microsoftUser);
         $accessToken = $microsoftUser->token;
 
         $client = new \GuzzleHttp\Client();
@@ -34,22 +41,38 @@ class SocialLoginController extends Controller
         $groups = json_decode($response->getBody(), true);
         $groupNames = [];
 
-        foreach ($groups['value'] as $group){
-            if(isset($group['displayName'])) {
+        foreach ($groups['value'] as $group) {
+            if (isset($group['displayName'])) {
                 $groupNames[] = $group['displayName'];
             }
         }
 
-        // Buscar si el usuario ya existe
         $user = User::where('microsoft_id', $microsoftUser->getId())->first();
-        
+
+
+        // Buscar si el usuario ya exist
+
         if (!$user) {
-            // Si el usuario no existe, lo guardamos temporalmente
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $accessToken,
+                'Accept' => 'image/jpeg'
+            ])->get('https://graph.microsoft.com/v1.0/me/photo/$value');
+
+            if ($response->successful()) {
+                $profileImage = 'data:image/jpeg;base64,' . base64_encode($response->body());
+                $base64Str = substr($profileImage, strpos($profileImage, ",") + 1);
+
+                $imageData = base64_decode($base64Str);
+                $filename = 'logos/' . uniqid() . '.jpg';
+                Storage::disk('public')->put($filename, $imageData);
+            }
+
             Session::put('microsoft_user', [
                 'email' => $microsoftUser->getEmail(),
                 'microsoft_id' => $microsoftUser->getId(),
                 'password' => bcrypt(Str::random(16)),
                 'role' => 'student',
+                'profile_photo_path' => $filename,
             ]);
             return redirect('/complete-profile');
         } else {
@@ -62,7 +85,7 @@ class SocialLoginController extends Controller
                 $request->session()->save();
                 return redirect()->route('two-factor.login');
             }
-            
+
 
             // Si no tiene 2FA, iniciamos sesión
             Auth::login($user);

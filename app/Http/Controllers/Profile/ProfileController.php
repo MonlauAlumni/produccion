@@ -28,10 +28,6 @@ class ProfileController extends Controller
 
     $authUserId = auth()->user()->id;
     $user = User::with('profile')->find($authUserId);
-
-
-    
-  
     
     $authUser = Auth::user();
    
@@ -120,6 +116,7 @@ class ProfileController extends Controller
                 'last_name_1' => $request->input('last_name_1'),
                 'last_name_2' => $request->input('last_name_2'),
                 'training_area' => $request->input('training_area'),
+                'profile_picture' => $microsoftUser['profile_photo_path'] ? $microsoftUser['profile_photo_path'] : null,
             ]);
 
             $user = User::where('email', $microsoftUser['email'])->first();
@@ -128,6 +125,7 @@ class ProfileController extends Controller
         Auth::login($user);
         $user->assignRole('alumne');
         $user->settings()->create();
+        $user->profile()->create();
         $request->session()->regenerate();
         
         // Limpiar los datos de la sesión

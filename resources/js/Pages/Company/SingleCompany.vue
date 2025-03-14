@@ -60,7 +60,6 @@
           </div>
          
         </div>
-      
   
         <main class="flex flex-col items-center justify-center -mt-16 relative z-10 px-4">
           <div class="flex flex-col space-y-6 w-full max-w-5xl">

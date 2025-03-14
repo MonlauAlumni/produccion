@@ -146,13 +146,13 @@
                     </div>
                     
                     <!-- Salario (si existe) -->
-                    <div v-if="item.salary || item.salary_min || item.salary_max" 
+                    <div v-if="item.minimum_salary && item.maximum_salary" 
                       class="bg-green-50 text-green-700 px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-1 self-start sm:self-center">
                       <i class='bx bx-euro'></i>
-                      <span>{{ item.salary || (item.salary_min && item.salary_max ? 
-                        `${item.salary_min.toLocaleString()}€ - ${item.salary_max.toLocaleString()}€` : 
-                        item.salary_min ? `Desde ${item.salary_min.toLocaleString()}€` : 
-                        item.salary_max ? `Hasta ${item.salary_max.toLocaleString()}€` : 'No especificado') }}</span>
+                      <span>{{ (item.minimum_salary && item.maximum_salary ? 
+                        `${item.minimum_salary.toLocaleString()}€ - ${item.maximum_salary.toLocaleString()}€` : 
+                        item.minimum_salary ? `Desde ${item.minimum_salary.toLocaleString()}€` : 
+                        item.maximum_salary ? `Hasta ${item.maximum_salary.toLocaleString()}€` : 'No especificado') }}</span>
                     </div>
                   </div>
                   
@@ -160,10 +160,10 @@
                   <div class="flex flex-wrap gap-2 mt-3">
                     <div :class="[
                       'flex items-center text-xs px-2 py-1 rounded-md', 
-                      getJobTypeColor(item.job_type || item.type)
+                      getJobTypeColor(item.work_mode || item.type)
                     ]">
-                      <i :class="['bx mr-1', getJobTypeIcon(item.job_type || item.type)]"></i>
-                      {{ getJobTypeLabel(item.job_type || item.type) }}
+                      <i :class="['bx mr-1', getJobTypeIcon(item.work_mode)]"></i>
+                      {{ getJobTypeLabel(item.work_mode) }}
                     </div>
                     
                     <div class="flex items-center text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-md">

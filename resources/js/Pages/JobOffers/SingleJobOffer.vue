@@ -34,16 +34,32 @@
     })
   }
   
-  // Calcular días restantes hasta la fecha límite
   const getDaysRemaining = (dateString) => {
-    const deadline = new Date(dateString);
+    const parts = dateString.split('-');
+    if (parts.length !== 3) {
+      console.error('Formato de fecha inválido');
+      return NaN;
+    }
+    const [year, month, day] = parts;
+    const dayOnly = day.split("T")[0];
+    const deadline = new Date(year, month - 1, dayOnly);
     const today = new Date();
-    const diffTime = Math.abs(deadline - today);
+    today.setHours(0, 0, 0, 0);
+    const diffTime = deadline - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+ 
     return diffDays;
   }
-  
-  const daysRemaining = getDaysRemaining(jobOffer.deadline);
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+  const daysRemaining = getDaysRemaining(props.jobOffer.deadline);
   </script>
   
   <template>
@@ -55,12 +71,12 @@
         <div class="max-w-5xl mx-auto px-4">
           <div class="flex flex-col md:flex-row items-start gap-5">
             <!-- Company Logo -->
-            <div class="w-20 h-20 bg-white rounded-lg shadow-md flex items-center justify-center p-1 border-2 border-white">
+            <div class="w-20 h-20 bg-white rounded-lg shadow-md flex items-center justify-center border-2 border-white">
               <img 
-                v-if="jobOffer.company.logo" 
-                :src="jobOffer.company.logo" 
-                :alt="jobOffer.company.name"
-                class="w-16 h-16 object-contain rounded"
+                v-if="jobOffer.company.profile_picture" 
+                :src="jobOffer.company.profile_picture" 
+                :alt="jobOffer.company.company_name"
+                class="w-19 h-19 rounded-lg"
               />
               <i v-else class='bx bx-building text-4xl text-[#193CB8]'></i>
             </div>
@@ -69,7 +85,7 @@
             <div class="flex-1">
               <div class="flex items-center text-sm mb-1 text-blue-100">
                 <i class='bx bx-buildings mr-1'></i>
-                {{ jobOffer.company.name }} · {{ jobOffer.company.industry }}
+                {{ jobOffer.company.company_name }} · {{ jobOffer.company.sector }}
               </div>
               <h1 class="text-2xl font-bold mb-2">{{ jobOffer.title }}</h1>
               <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm mt-2">
@@ -102,7 +118,7 @@
                 Inscribirme
               </button>
               <div class="text-xs text-blue-100 mt-2">
-                <i class='bx bx-user-plus'></i> {{ jobOffer.vacancies }} vacantes disponibles
+                <i class='bx bx-user-plus'></i> {{ jobOffer.vacancies }} {{ jobOffer.vacancies === 1 ? 'vacante disponible' : 'vacantes disponibles' }}
               </div>
             </div>
           </div>
@@ -186,7 +202,7 @@
             </div>
             
             <!-- Benefits Section -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div v-if="jobOffer.benefits" class="bg-white rounded-lg shadow-sm border border-gray-200">
               <div class="border-b border-gray-200 p-4 flex items-center">
                 <i class='bx bx-gift text-xl text-[#193CB8] mr-2'></i>
                 <h2 class="text-lg font-bold text-gray-800">Beneficios</h2>
@@ -215,7 +231,7 @@
                   <div class="text-sm text-gray-500">Fecha límite:</div>
                   <div class="font-medium flex items-center">
                     <i class='bx bx-time-five text-[#193CB8] mr-1'></i>
-                    {{ jobOffer.deadline }}
+                    {{ formatDate(jobOffer.deadline) }}
                   </div>
                 </div>
                 
@@ -238,7 +254,8 @@
                   <div class="text-sm text-gray-500">Proceso:</div>
                   <div class="font-medium flex items-center">
                     <i class='bx bx-check-shield text-[#193CB8] mr-1'></i>
-                    En selección
+                    En selección 
+                    <!-- {{jobOffer.status}} -->
                   </div>
                 </div>
                 
@@ -263,15 +280,15 @@
                 <div class="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
                   <div class="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center">
                     <img 
-                      v-if="jobOffer.company.logo" 
-                      :src="jobOffer.company.logo" 
-                      :alt="jobOffer.company.name"
-                      class="w-10 h-10 object-contain"
+                      v-if="jobOffer.company.profile_picture" 
+                      :src="jobOffer.company.profile_picture" 
+                      :alt="jobOffer.company.company_name"
+                      class="w-13 h-13 rounded-lg"
                     />
                     <i v-else class='bx bx-building text-2xl text-gray-400'></i>
                   </div>
                   <div>
-                    <h4 class="font-semibold">{{ jobOffer.company.name }}</h4>
+                    <h4 class="font-semibold">{{ jobOffer.company.company_name }}</h4>
                     <p class="text-sm text-gray-600">{{ jobOffer.company.industry }}</p>
                   </div>
                 </div>
@@ -279,15 +296,15 @@
                 <div class="space-y-3">
                   <div class="flex items-center">
                     <i class='bx bx-group text-[#193CB8] mr-2'></i>
-                    <span class="text-sm">{{ jobOffer.company.employees }}</span>
+                    <span class="text-sm">{{ jobOffer.company.size }}</span>
                   </div>
                   <div class="flex items-center">
                     <i class='bx bx-globe text-[#193CB8] mr-2'></i>
-                    <a href="#" class="text-sm text-[#193CB8] hover:underline">{{ jobOffer.company.website }}</a>
+                    <a :href="jobOffer.company.website" class="text-sm text-[#193CB8] hover:underline">{{ jobOffer.company.website }}</a>
                   </div>
                   <div class="flex items-center">
                     <i class='bx bx-map text-[#193CB8] mr-2'></i>
-                    <span class="text-sm">{{ jobOffer.location }}</span>
+                    <span class="text-sm">{{ jobOffer.location ? jobOffer.location : 'No especificada'  }}</span>
                   </div>
                 </div>
                 

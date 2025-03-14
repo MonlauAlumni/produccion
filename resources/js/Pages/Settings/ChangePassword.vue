@@ -145,7 +145,7 @@ const goBack = () => {
 <template>
   <Layout :auth="auth">
     <div class="max-w-4xl mx-auto">
-      <div class="flex items-center mb-6">
+      <div class="flex items-center mb-6 mt-4">
         <button @click="goBack" class="cursor-pointer flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
           <i class="bx bx-arrow-back mr-2 text-xl"></i>
           <span>Volver a Ajustes</span>
