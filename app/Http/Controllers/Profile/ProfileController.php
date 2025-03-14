@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Models\User;
 use App\Models\Profile;
+use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Support\Facades\Session;
 
@@ -210,6 +211,35 @@ class ProfileController extends Controller
 
         return redirect()->route('perfil.show', ['slang' => $user->profile->slang]);
     }
+
+    public function downloadCV($slang)
+{
+    // Buscar al usuario con el slang proporcionado
+    $user = User::with('profile')->get()->filter(function ($user) use ($slang) {
+        return $user->profile && $user->profile->slang === $slang;
+    })->first();
+
+    if (!$user) {
+        abort(404, 'No existe el usuario');
+    }
+
+    $cvPath = $user->profile->cv_path;
+    $filePath = storage_path('app/public/' . $cvPath);
+
+    if (!file_exists($filePath)) {
+        abort(404, 'No existe el archivo');
+    }
+
+    // Forzar la descarga del archivo
+    return response()->download($filePath, basename($filePath), [
+        'Content-Type' => 'application/pdf', // Especificamos que es un PDF
+        'Content-Disposition' => 'attachment; filename="' . basename($filePath) . '"', // Esto asegura que se descargue
+    ]);
+}
+
+
+
+
 }
 
 

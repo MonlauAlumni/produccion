@@ -20,7 +20,10 @@
     });
   };
   
-  // Computed property for full name
+  const downloadCV = () => {
+    window.location.href = `/perfil/${props.user.profile.slang}/download-cv/`;
+  };
+
   const fullName = computed(() => {
     return `${props.user.name || ''} ${props.user.last_name_1 || ''} ${props.user.last_name_2 || ''}`.trim();
   });
@@ -102,7 +105,7 @@
                   <span>Contactar</span>
                 </button>
                 
-                <button class="flex items-center cursor-pointer gap-1.5 bg-white hover:bg-blue-100 text-gray-700 border border-gray-300 px-4 py-2 rounded-md transition-colors">
+                <button @click="downloadCV" class="flex items-center cursor-pointer gap-1.5 bg-white hover:bg-blue-100 text-gray-700 border border-gray-300 px-4 py-2 rounded-md transition-colors">
                   <i class='bx bx-file text-xl'></i>
                   <span class="hidden sm:inline">Descargar CV</span>
                 </button>

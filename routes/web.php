@@ -56,7 +56,7 @@ Route::middleware('auth')->group(function() {
     Route::post('/perfil/{slang}/educacion', [ExperienceController::class, 'storeEducation'])->name('perfil.educacion.store');
     Route::post('/perfil/{slang}/update-banner', [ProfileController::class, 'updateBanner'])->name('perfil.updateBanner');
     Route::post('/perfil/{slang}/update-profile-picture', [ProfileController::class, 'updateProfilePicture'])->name('perfil.updateProfilePicture');
-    Route::post('/perfil/{slang}/update-cv', [ProfileController::class, 'updateCV'])->name('perfil.updateCV');
+    Route::get('/perfil/{slang}/download-cv', [ProfileController::class, 'downloadCV'])->name('perfil.downloadCV');
     
     Route::get('/empresa/{slang}', [CompanyController::class, 'show'])->name('empresa.show');
     Route::post('/empresa/{slang}/update-logo', [CompanyController::class, 'updateLogo'])->name('empresa.updateLogo');

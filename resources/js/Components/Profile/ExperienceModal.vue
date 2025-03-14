@@ -150,7 +150,7 @@
                   <i :class="['bx text-xl', props.type === 'work' ? 'bx-briefcase' : 'bx-graduation']"></i>
                   {{ props.type === 'work' ? 'Añadir Experiencia Laboral' : 'Añadir Formación Académica' }}
                 </h2>
-                <button @click="closeModal" class="text-white cursor-pointer hover:text-gray-200 transition-colors bg-white/20 rounded-full p-1.5">
+                <button @click="closeModal" class="text-white flex cursor-pointer hover:text-gray-200 transition-colors bg-white/20 rounded-full p-1.5">
                   <i class='bx bx-x text-xl'></i>
                 </button>
               </div>
