@@ -13,6 +13,8 @@ use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Profile\ExperienceController;
 use App\Http\Controllers\JobOffers\JobOfferController;
 use App\Http\Controllers\JobOffers\JobApplicationController;
+use App\Http\Controllers\Social\SocialController;
+use App\Http\Controllers\Social\GroupController;
 use App\Http\Middleware\IsAdministrator;
 use App\Http\Middleware\IsCompany;
 use App\Http\Middleware\IsStudent;
@@ -36,14 +38,12 @@ Route::group(['middleware' => ['role:admin']], function () {
     Route::delete('/admin/user/{id}', [AdminController::class, 'deleteUser'])->name('admin.user.delete');
 
     Route::get('/admin/company/{id}', [AdminController::class, 'singleCompany'])->name('admin.company');
-    
 });
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/two-factor-authentication', [TwoFactorAuthenticationController::class, 'store']);
     Route::delete('/user/two-factor-authentication', [TwoFactorAuthenticationController::class, 'destroy']);
     Route::get('/user/two-factor-qr-code', [TwoFactorQrCodeController::class, 'show']);
-
 });
    
 
@@ -75,6 +75,17 @@ Route::middleware('auth')->group(function() {
     Route::post('/ofertas/crear', [JobOfferController::class, 'store'])->name('ofertas.store'); 
     Route::get('/ofertas', [JobOfferController::class, 'index'])->name('ofertas.index');
     Route::get('/ofertas/{id}', [JobOfferController::class, 'show'])->name('job-offers.show');
+
+    Route::get('/connect', [SocialController::class, 'show'])->name('connect.show'); 
+    Route::get('/grupos', [App\Http\Controllers\Social\GroupController::class, 'index'])->name('groups.index');
+    Route::get('/grupos/nuevo', [GroupController::class, 'showCreateGroup'])->name('create-group.show');
+    Route::get('/grupos/{slug}', [App\Http\Controllers\Social\GroupController::class, 'show'])->name('groups.show');
+
+    Route::post('/grupos/nuevo', [App\Http\Controllers\Social\GroupController::class, 'createGroup'])->name('groups.store');
+    Route::post('/grupos/{slug}/update-banner', [App\Http\Controllers\Social\GroupController::class, 'updateBanner'])->name('groups.update-banner');
+    Route::post('/grupos/{slug}/update-logo', [App\Http\Controllers\Social\GroupController::class, 'updateLogo'])->name('groups.update-logo');
+    Route::post('/grupos/{slug}/join', [App\Http\Controllers\Social\GroupController::class, 'joinGroup'])->name('groups.join');
+    Route::post('/grupos/{slug}/invite', [App\Http\Controllers\Social\GroupController::class, 'inviteMember'])->name('groups.invite');
 
 
 
