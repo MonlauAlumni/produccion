@@ -129,40 +129,50 @@ class ProfileController extends Controller
 
 
     public function update(Request $request, $slang)
-    {
-  
-        $user = User::with('profile')->get()->filter(function ($user) use ($slang) {
-            return $user->profile && $user->profile->slang === $slang;
-        })->first();
+{
+    $user = User::with('profile')->get()->filter(function ($user) use ($slang) {
+        return $user->profile && $user->profile->slang === $slang;
+    })->first();
 
-        $userProfile = $user->profile;
+    $userProfile = $user->profile;
 
+    $user->update([
+        'name' => $request->name,
+        'last_name_1' => $request->last_name_1,
+        'last_name_2' => $request->last_name_2,
+        'email' => $request->email,
+    ]);
 
+    // Cambio aquí: verificar si hay un archivo 'cv' en la solicitud
+    if($request->hasFile('cv')) {
+        
+        if($userProfile->cv_path) {
+            Storage::disk('public')->delete($userProfile->cv_path);
+        }
 
-        $user->update([
-            'name' => $request->name,
-            'last_name_1' => $request->last_name_1,
-            'last_name_2' => $request->last_name_2,
-            'email' => $request->email,
-        ]);
+        $cvPath = $request->file('cv')->store('cv', 'public');
 
-        $userProfile->update([
-            'description' => $request->description,
-            'location' => $request->location,
-            'phone' => $request->phone,
-            'availability' => $request->availability,
-            'degree' => $request->degree,
-            'job_title' => $request->job_title,
-            'graduation_year' => $request->graduation_year,
-            'linkedin' => $request->linkedin,
-            'github' => $request->github,
-            'website' => $request->website,
-        ]);
-
+        $userProfile->cv_path = $cvPath;
     }
+
+    $userProfile->update([
+        'description' => $request->description,
+        'location' => $request->location,
+        'phone' => $request->phone,
+        'availability' => $request->availability,
+        'degree' => $request->degree,
+        'job_title' => $request->job_title,
+        'graduation_year' => $request->graduation_year,
+        'linkedin' => $request->linkedin,
+        'github' => $request->github,
+        'website' => $request->website,
+    ]);
+
+    return redirect()->back()->with('success', 'Perfil actualizado correctamente');
+}
         public function updateBanner(Request $request, $slang)
     {
-
+    
         $user = User::with('profile')->get()->filter(function ($user) use ($slang) {
             return $user->profile && $user->profile->slang === $slang;
         })->first();
@@ -170,7 +180,7 @@ class ProfileController extends Controller
         $path = $request->file('banner_url')->store('banners', 'public');
     
         $user->profile->update(['banner_url' => '/storage/' . $path]);   
-  
+ 
         return redirect()->route('perfil.show', ['slang' => $user->profile->slang]);
     }
 
@@ -187,17 +197,18 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function updateLogo(Request $request, $slang)
+    public function updateProfilePicture(Request $request, $slang)
     {
         $user = User::with('profile')->get()->filter(function ($user) use ($slang) {
             return $user->profile && $user->profile->slang === $slang;
         })->first();
 
-        $userProfile = $user->profile;
+      
+        $path = $request->file('profile_picture')->store('profile_picture', 'public');
+    
+        $user->profile->update(['profile_picture' => '/storage/' . $path]);  
 
-        $userProfile->update([
-            'profile_picture' => $request->profile_picture,
-        ]);
+        return redirect()->route('perfil.show', ['slang' => $user->profile->slang]);
     }
 }
 

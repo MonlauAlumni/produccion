@@ -48,7 +48,7 @@
           <!-- Foto de perfil -->
           <div class="relative h-28 w-28 rounded-full bg-white shadow-md overflow-hidden group border-4 border-white mx-auto md:mx-0">
             <img 
-              :src="user.profile_picture || '/images/default-avatar.png'" 
+              :src="user.profile.profile_picture || '/images/default-avatar.png'" 
               :alt="fullName" 
               class="h-full w-full object-cover" 
             />
@@ -91,7 +91,7 @@
                 <button v-if="isSameUser" @click="props.openEditModal" 
                   class="flex items-center cursor-pointer gap-1.5 bg-[#193CB8] hover:bg-[#2748c6] text-white px-3 py-2 rounded-md transition-colors">
                   <div class="flex justify-center items-center w-30 gap-3">
-                  <i class='bx bx-pencil'></i>
+                  <i class='bx bx-pencil text-x'></i>
                   <span>Editar Perfil</span>
                 </div>
                 </button>
@@ -102,9 +102,9 @@
                   <span>Contactar</span>
                 </button>
                 
-                <button class="flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-4 py-2 rounded-md transition-colors">
-                  <i class='bx bx-share-alt'></i>
-                  <span class="hidden sm:inline">Compartir</span>
+                <button class="flex items-center cursor-pointer gap-1.5 bg-white hover:bg-blue-100 text-gray-700 border border-gray-300 px-4 py-2 rounded-md transition-colors">
+                  <i class='bx bx-file text-xl'></i>
+                  <span class="hidden sm:inline">Descargar CV</span>
                 </button>
               </div>
             </div>
