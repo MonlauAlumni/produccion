@@ -12,10 +12,12 @@ class JobOfferController extends Controller
 
     public function index(Request $request)
     {
+        $user = auth()->user();
+        //dd($user->profile);
         $page = $request->input('page', 1);
         // Obtener las ofertas paginadas (aunque no se usa en este caso)
         $offers = JobOffer::with('company')->paginate(10);
-    
+        
         return Inertia::render('Home', [
             'jobOffers' =>  $offers
         ]);

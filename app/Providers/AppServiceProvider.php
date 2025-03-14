@@ -10,6 +10,8 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use App\Observers\ProfileObserver;
+use App\Models\Profile;
 use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
@@ -37,6 +39,8 @@ class AppServiceProvider extends ServiceProvider
         Inertia::share([
             'user' => fn () => auth()->user(),
         ]);
+
+        Profile::observe(ProfileObserver::class);   
     }
 }
 

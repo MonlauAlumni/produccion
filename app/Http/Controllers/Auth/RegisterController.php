@@ -41,10 +41,13 @@ class RegisterController extends Controller
         ]);
 
         $user->settings()->create();
+        $user->profile()->create();
+
+     
 
         Auth::login($user);
         $user->assignRole('alumne');
-  
+     
         return redirect('/home')->with('success', 'Perfil completado con éxito. ¡Por favor, inicia sesión!');
     }
 }

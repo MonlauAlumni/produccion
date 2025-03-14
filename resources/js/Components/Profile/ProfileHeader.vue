@@ -13,14 +13,17 @@
     const file = e.target.files[0];
     const formData = new FormData();
     formData.append('profile_picture', file);
-    router.post(`/perfil/${props.user.slang}/update-profile-picture`, formData, {
+    router.post(`/perfil/${props.user.profile.slang}/update-profile-picture`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
   };
   
-  // Computed property for full name
+  const downloadCV = () => {
+    window.location.href = `/perfil/${props.user.profile.slang}/download-cv/`;
+  };
+
   const fullName = computed(() => {
     return `${props.user.name || ''} ${props.user.last_name_1 || ''} ${props.user.last_name_2 || ''}`.trim();
   });
@@ -48,7 +51,7 @@
           <!-- Foto de perfil -->
           <div class="relative h-28 w-28 rounded-full bg-white shadow-md overflow-hidden group border-4 border-white mx-auto md:mx-0">
             <img 
-              :src="user.profile_picture || '/images/default-avatar.png'" 
+              :src="user.profile.profile_picture || '/images/default-avatar.png'" 
               :alt="fullName" 
               class="h-full w-full object-cover" 
             />
@@ -89,9 +92,9 @@
               <!-- Botones de acción -->
               <div class="flex items-center gap-3 mt-4 md:mt-0 justify-center md:justify-end">
                 <button v-if="isSameUser" @click="props.openEditModal" 
-                  class="flex items-center gap-1.5 bg-[#193CB8] hover:bg-[#2748c6] text-white px-3 py-2 rounded-md transition-colors">
+                  class="flex items-center cursor-pointer gap-1.5 bg-[#193CB8] hover:bg-[#2748c6] text-white px-3 py-2 rounded-md transition-colors">
                   <div class="flex justify-center items-center w-30 gap-3">
-                  <i class='bx bx-pencil'></i>
+                  <i class='bx bx-pencil text-x'></i>
                   <span>Editar Perfil</span>
                 </div>
                 </button>
@@ -102,27 +105,25 @@
                   <span>Contactar</span>
                 </button>
                 
-                <button class="flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-4 py-2 rounded-md transition-colors">
-                  <i class='bx bx-share-alt'></i>
-                  <span class="hidden sm:inline">Compartir</span>
+                <button @click="downloadCV" class="flex items-center cursor-pointer gap-1.5 bg-white hover:bg-blue-100 text-gray-700 border border-gray-300 px-4 py-2 rounded-md transition-colors">
+                  <i class='bx bx-file text-xl'></i>
+                  <span class="hidden sm:inline">Descargar CV</span>
                 </button>
               </div>
             </div>
             
             <!-- Redes sociales -->
             <div class="mt-4 flex items-center gap-3 justify-center md:justify-start">
-              <a href="#" class="bg-blue-50 hover:bg-blue-100 p-2 rounded-full text-[#193CB8] transition-colors">
+              <a v-if="user.profile.linkedin" :href="user.profile.linkedin" class="bg-blue-50 hover:bg-blue-100 cursor-pointer p-2 flex rounded-full text-[#193CB8] transition-colors">
                 <i class='bx bxl-linkedin text-xl'></i>
               </a>
-              <a href="#" class="bg-blue-50 hover:bg-blue-100 p-2 rounded-full text-[#193CB8] transition-colors">
+              <a v-if="user.profile.github" :href="user.profile.github" class="bg-blue-50 hover:bg-blue-100 cursor-pointer p-2 flex rounded-full text-[#193CB8] transition-colors">
                 <i class='bx bxl-github text-xl'></i>
               </a>
-              <a href="#" class="bg-blue-50 hover:bg-blue-100 p-2 rounded-full text-[#193CB8] transition-colors">
-                <i class='bx bxl-twitter text-xl'></i>
-              </a>
-              <a href="#" class="bg-blue-50 hover:bg-blue-100 p-2 rounded-full text-[#193CB8] transition-colors">
+              <a v-if="user.profile.website" :href="user.profile.website" class="bg-blue-50 hover:bg-blue-100 cursor-pointer p-2 flex rounded-full text-[#193CB8] transition-colors">
                 <i class='bx bx-globe text-xl'></i>
               </a>
+              
             </div>
           </div>
         </div>

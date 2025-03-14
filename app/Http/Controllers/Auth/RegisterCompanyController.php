@@ -48,7 +48,7 @@ class RegisterCompanyController extends Controller
             'training_area' => 'Informatica',
         ]);
         $user->assignRole('empresa'); 
-       
+        $user->settings()->create();
         // Registro de la Empresa
         $company = Company::create([
             'user_id' => $user->id,

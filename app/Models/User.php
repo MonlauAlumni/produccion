@@ -60,11 +60,6 @@ class User extends Authenticatable
         return $this->hasOne(UserSetting::class);
     }
 
-    public function getSlangAttribute()
-    {
-        return strtolower(
-            str_replace(' ', '-', trim("{$this->name}-{$this->last_name_1}" . ($this->last_name_2 ? "-{$this->last_name_2}" : "")))
-        );
-    }
+   
   
  }

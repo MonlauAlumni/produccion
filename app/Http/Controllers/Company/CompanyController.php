@@ -13,9 +13,9 @@ class CompanyController extends Controller
         
         $company = Company::where('slang', $slang)->with('jobOffers')->firstOrFail();
 
-        if (!$company){
-            abort(404);
-        }
+        if (!$company) {
+            return Inertia::render('404_page');
+         }
 
         $userId = auth()->id();
         $isAdmin = ($userId === $company->user_id);
@@ -48,7 +48,7 @@ class CompanyController extends Controller
         $path = $request->file('banner_url')->store('banners', 'public');
         $company->update(['banner_url' => '/storage/' . $path]);   
 
-        return redirect()->route('empresa.show', ['slang' => $company->slang]);
+        return redirect()->route('perfil.show', ['slang' => $company->slang]);
     }   
 
     public function update(Request $request, $slang)
