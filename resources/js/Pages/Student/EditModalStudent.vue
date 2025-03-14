@@ -515,21 +515,7 @@
                     </div>
                   </div>
                   
-                  <div class="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-100">
-                    <h3 class="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                      <i class='bx bx-shield-quarter text-[#193CB8]'></i>
-                      Privacidad de contacto
-                    </h3>
-                    <p class="text-sm text-gray-600 mb-3">
-                      Tu información de contacto solo será visible para las empresas que te contacten a través de la plataforma.
-                    </p>
-                    <div class="flex items-center gap-2">
-                      <input type="checkbox" id="privacy-consent" class="rounded text-[#193CB8] focus:ring-[#193CB8]" checked />
-                      <label for="privacy-consent" class="text-sm text-gray-700">
-                        Acepto que las empresas puedan ver mi información de contacto
-                      </label>
-                    </div>
-                  </div>
+                  
                 </div>
                 
                 <!-- Redes sociales -->

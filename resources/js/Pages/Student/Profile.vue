@@ -27,6 +27,14 @@
     }
   };
 
+  const formatDate = (date) => {
+    if (!date) return null;
+
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = new Date(date).toLocaleDateString('es-ES', options);
+    return formattedDate;
+  }
+
   const uploadBanner = (e) => {
     const file = e.target.files[0];
     const formData = new FormData();
@@ -152,19 +160,23 @@
                   <h2 class="text-xl font-semibold mb-4">Disponibilidad</h2>
                   <hr class="border-t border-[#193CB8] mb-4" />
                   
-                  <div class="flex items-center justify-between">
+                  <div class="flex flex-col items-start gap-2">
                     <span class="text-gray-700">Estado actual:</span>
-                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                      {{ profile?.availability || 'Disponible para ofertas' }}
-                    </span>
-                  </div>
+                    
+      
+                  <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                    {{ profile?.availability || 'Disponible para ofertas' }}
+                  </span>
+                </div>
                   
                   <div class="mt-4 pt-4 border-t border-gray-100">
                     <div class="flex items-center gap-2 text-gray-700">
                       <i class='bx bx-time-five text-[#193CB8]'></i>
-                      <span>Última actualización: {{ profile?.last_update || 'Recientemente' }}</span>
+                      <span>Última actualización: </span>
                     </div>
+                    {{ formatDate(profile?.updated_at) || 'Recientemente' }}
                   </div>
+                  
                 </div>
               </div>
             </div>

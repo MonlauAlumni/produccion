@@ -52,8 +52,15 @@ Route::middleware('auth')->group(function() {
 
     Route::get('/perfil/{slang}', [ProfileController::class, 'profile'])->name('perfil.show');
     Route::post('/perfil/{slang}', [ProfileController::class, 'update'])->name('perfil.update');
-    Route::post('/perfil/{slug}/experiencia', [ExperienceController::class, 'storeWork'])->name('perfil.experience.store');
+
+    Route::post('/perfil/{slang}/experiencia', [ExperienceController::class, 'storeWork'])->name('perfil.experience.store');
+    Route::put('/perfil/{slang}/experiencia/{id}', [ExperienceController::class, 'updateWork'])->name('perfil.experience.update');
+    Route::delete('/perfil/{slang}/experiencia/{id}', [ExperienceController::class, 'deleteWork'])->name('perfil.experience.delete');
+
     Route::post('/perfil/{slang}/educacion', [ExperienceController::class, 'storeEducation'])->name('perfil.educacion.store');
+    Route::put('/perfil/{slang}/educacion/{id}', [ExperienceController::class, 'updateEducation'])->name('perfil.educacion.update');
+    Route::delete('/perfil/{slang}/educacion/{id}', [ExperienceController::class, 'deleteEducation'])->name('perfil.educacion.delete');
+    
     Route::post('/perfil/{slang}/update-banner', [ProfileController::class, 'updateBanner'])->name('perfil.updateBanner');
     Route::post('/perfil/{slang}/update-profile-picture', [ProfileController::class, 'updateProfilePicture'])->name('perfil.updateProfilePicture');
     Route::get('/perfil/{slang}/download-cv', [ProfileController::class, 'downloadCV'])->name('perfil.downloadCV');
