@@ -126,14 +126,14 @@ class GroupController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('group_posts', 'public');
+            $imagePath = $request->file('image')->store('groups/group_posts', 'public');
         }
 
         $post = GroupPost::create([
             'group_id' => $groupId,
             'user_id' => Auth::id(),
             'content' => $request->content,
-            'image' => $imagePath,
+            'image' => '/storage/'.$imagePath,
         ]);
 
         return redirect()->back()->with('success', 'Post creado con éxito!');

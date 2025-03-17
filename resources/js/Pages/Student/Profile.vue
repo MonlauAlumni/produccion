@@ -61,7 +61,7 @@
         <div class="relative w-full h-64 md:h-80 bg-gradient-to-r from-[#193CB8] to-[#2748c6] overflow-hidden">
           <img v-if="profile.banner_url"
             :src="profile.banner_url || defaultBanner" 
-            alt="Student Banner" 
+            :alt="profile.banner_url" 
             class="w-full h-full object-cover opacity-80"
           />
           <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>

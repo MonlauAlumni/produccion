@@ -189,7 +189,6 @@ class ProfileController extends Controller
         })->first();
 
         $path = $request->file('banner_url')->store('banners', 'public');
-
         $user->profile->update(['banner_url' => '/storage/' . $path]);
 
         return redirect()->route('perfil.show', ['slang' => $user->profile->slang]);
@@ -215,8 +214,7 @@ class ProfileController extends Controller
         })->first();
 
 
-        $path = $request->file('profile_picture')->store('profile_picture', 'public');
-
+        $path = '/storage/'.$request->file('profile_picture')->store('profile_picture', 'public');
         $user->profile->update(['profile_picture' => $path]);
 
         return redirect()->route('perfil.show', ['slang' => $user->profile->slang]);

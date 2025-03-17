@@ -50,7 +50,7 @@ class AppServiceProvider extends ServiceProvider
                 'name' => $user->name,
                 'email' => $user->email,
                 'profile_picture' => optional($user->profile)->profile_picture,
-                'company' => optional($user->company)->only(['company_name', 'id', 'profile_picture']), // Asegúrate de que 'profile_picture' está incluido
+                'company' => optional($user->company)->only(['company_name', 'id', 'profile_picture']),
             ];
         },
     ]);

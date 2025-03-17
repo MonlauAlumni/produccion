@@ -128,7 +128,7 @@ const formatDate = (dateString) => {
     <Layout :auth="auth">
         <div class="min-h-screen bg-gray-50 flex flex-col">
             <div class="relative w-full h-64 md:h-80 bg-gradient-to-r from-[#193CB8] to-[#2748c6] overflow-hidden">
-                <img :src="group.group_banner || '/images/default-banner.jpg'" :alt="group.name + ' banner'"
+                <img :src="group.group_banner || '/storage/images/default-banner.jpg'" :alt="group.name + ' banner'"
                     class="w-full h-full object-cover opacity-80" />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
 
@@ -287,13 +287,8 @@ const formatDate = (dateString) => {
                                         class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                         <div class="flex items-start gap-3">
                                             <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                                                <img
-                                                    :src="post.user?.profile?.profile_picture
-                                                        ? `/storage/${post.user.profile.profile_picture}`
-                                                        : '/images/default-avatar.jpg'"
-                                                    :alt="post.user?.name"
-                                                    class="w-full h-full object-cover"
-                                                />
+                                                <img :src="post.user.profile.profile_picture || '/images/default-avatar.jpg'"
+                                                    :alt="post.user.profile.profile_picture" class="w-full h-full object-cover" />
                                             </div>
                                             <div class="flex-1">
                                                 <div class="flex items-center justify-between">
@@ -312,7 +307,7 @@ const formatDate = (dateString) => {
                                                     <p class="text-gray-700">{{ post.content }}</p>
 
                                                     <!-- Imagen de la publicación si existe -->
-                                                    <img v-if="post.image_url" :src="post.image_url"
+                                                    <img v-if="post.image" :src="post.image"
                                                         alt="Imagen de la publicación"
                                                         class="mt-3 rounded-lg w-full object-cover max-h-96" />
                                                 </div>
