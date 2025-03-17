@@ -108,10 +108,12 @@
                   <span>Contactar</span>
                 </button>
                 
-                <button @click="downloadCV" class="flex items-center cursor-pointer gap-1.5 bg-white hover:bg-blue-100 text-gray-700 border border-gray-300 px-4 py-2 rounded-md transition-colors">
-                  <i class='bx bx-file text-xl'></i>
-                  <span class="hidden sm:inline">Descargar CV</span>
-                </button>
+                <button v-if="profile.cv_path" @click="downloadCV" 
+                class="flex items-center gap-1.5 cursor-pointer bg-white hover:bg-blue-100 md:w-40 text-gray-700 border border-gray-300 px-4 py-2 rounded-md transition-colors">
+                <i class='bx bx-file text-xl'></i>
+                <span class="sm:inline">Descargar CV</span>
+              </button>
+              
               </div>
             </div>
             

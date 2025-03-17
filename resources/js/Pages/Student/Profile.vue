@@ -128,7 +128,7 @@
                       </div>
                       <div>
                         <p class="text-sm text-gray-500">Email</p>
-                        <p class="text-gray-700">{{ user.email || 'No disponible' }}</p>
+                        <p class="text-gray-700 text-sm">{{ user.email || 'No disponible' }}</p>
                       </div>
                     </div>
                     
