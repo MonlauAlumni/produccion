@@ -71,16 +71,25 @@ export default {
       <div class="p-4 border-b border-gray-100">
         <div class="flex items-center space-x-3 mb-3">
           <div class="relative">
-
-            <div v-if="!user?.profile?.profile_picture && !user?.company"
-              class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
-              <i class='bx bxs-user text-xl'></i>
+            <div v-if="user.company">
+              <img v-if="user.company.profile_picture" :src="user.company.profile_picture"
+                alt="Profile picture" class="w-12 h-12  shadow-sm border-2 border-white">
+              <div v-else
+                class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
+                <i class='bx bxs-building text-xl'></i>
+              </div>
             </div>
+            <div v-if="user.profile">
+                <img v-if="user.profile.profile_picture" :src="user.profile.profile_picture"
+                  alt="Profile picture" class="w-12 h-12  shadow-sm border-2 border-white">
+                <div v-else
+                  class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
+                  <i class='bx bxs-user text-xl'></i>
+                </div>
+            </div>
+            
 
-            <img v-else
-              :src="user?.company?.profile_picture ? user.company.profile_picture : (user?.profile?.profile_picture ? user.profile.profile_picture : '/storage/images/default-avatar.png')"
-              alt="Profile picture"
-              :class="user?.company ? 'w-12 h-12 shadow-sm border-2 border-white' : 'w-12 h-12 rounded-full shadow-sm border-2 border-white'">
+            
 
 
 
@@ -90,11 +99,8 @@ export default {
 
           </div>
           <div>
-            <button @click.prevent="navigateTo(`/perfil/${user.profile.slang}`)" class="hover:underline cursor-pointer">
-
-              <p v-if="user.company" class="font-semibold text-gray-800">{{ user.company.company_name }}</p>
-              <p v-else class="font-semibold text-gray-800">{{ user.name }} {{ user.last_name_1 }}</p>
-            </button>
+              <p @click.prevent="navigateTo(`/empresa/${user.company.slang}`)" v-if="user.company" class="font-semibold text-gray-800 hover:underline cursor-pointer">{{ user.company.company_name }}</p>
+              <p @click.prevent="navigateTo(`/perfil/${user.profile.slang}`)" v-else class="font-semibold text-gray-800 hover:underline cursor-pointer">{{ user.name }} {{ user.last_name_1 }}</p>
             <p class="text-xs text-gray-500 flex items-center">
               <i class='bx bxs-circle text-green-500 text-[8px] mr-1'></i> Online
             </p>
