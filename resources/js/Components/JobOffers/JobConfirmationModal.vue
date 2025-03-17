@@ -106,14 +106,14 @@
             <div class="flex flex-col sm:flex-row gap-2 p-4 bg-gray-50 border-t border-gray-100 justify-end">
               <button 
                 @click="closeModal"
-                class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50"
+                class="px-4 py-2 border cursor-pointer border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50"
               >
                 Cancelar
               </button>
               <button 
                 @click="applyToJob"
                 :disabled="isSubmitting"
-                class="px-4 py-2 bg-[#193CB8] hover:bg-[#142d8c] text-white rounded-lg font-medium flex items-center justify-center"
+                class="px-4 py-2 bg-[#193CB8] cursor-pointer hover:bg-[#142d8c] text-white rounded-lg font-medium flex items-center justify-center"
               >
                 <i v-if="isSubmitting" class='bx bx-loader-alt animate-spin mr-2'></i>
                 <i v-else class='bx bx-send mr-2'></i>

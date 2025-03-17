@@ -14,7 +14,7 @@
         ],
         middleMenuItems: [
           { text: 'Alumni connect', icon: 'bx-group', route: '/connect' },
-          { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo', route: '/ofertas' },
+          { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo', route: '/mis-ofertas' },
           { text: 'Empresas', icon: 'bx-buildings', route: '/empresas' },
         ],
         bottomMenuItems: [
