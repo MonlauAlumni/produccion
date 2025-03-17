@@ -86,6 +86,7 @@ Route::middleware('auth')->group(function() {
     Route::post('/grupos/{slug}/update-logo', [App\Http\Controllers\Social\GroupController::class, 'updateLogo'])->name('groups.update-logo');
     Route::post('/grupos/{slug}/join', [App\Http\Controllers\Social\GroupController::class, 'joinGroup'])->name('groups.join');
     Route::post('/grupos/{slug}/invite', [App\Http\Controllers\Social\GroupController::class, 'inviteMember'])->name('groups.invite');
+    Route::post('/grupos/{groupId}/posts', [GroupController::class, 'storePost'])->name('group.storePost');
 
 
 

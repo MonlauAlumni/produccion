@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Group;
 use App\Models\GroupUser;
+use App\Models\GroupPost;
 use Illuminate\Support\Facades\Auth;
 
 use Inertia\Inertia;
@@ -94,7 +95,7 @@ class GroupController extends Controller
     public function show($slug)
     {
         $group = Group::where('slug', $slug)
-            ->with(['members.user', 'posts.user', 'posts.comments.user'])
+            ->with(['members.user.profile', 'posts.user.profile', 'posts.comments.user.profile'])
             ->firstOrFail();
         
         $isAdmin = false;
@@ -115,4 +116,27 @@ class GroupController extends Controller
             'isMember' => $isMember,
         ]);
     }
+
+    public function storePost(Request $request, $groupId)
+    {
+        $request->validate([
+            'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('group_posts', 'public');
+        }
+
+        $post = GroupPost::create([
+            'group_id' => $groupId,
+            'user_id' => Auth::id(),
+            'content' => $request->content,
+            'image' => $imagePath,
+        ]);
+
+        return redirect()->back()->with('success', 'Post creado con éxito!');
+    }
+
 }

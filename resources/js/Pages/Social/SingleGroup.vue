@@ -17,6 +17,9 @@ const showEditModal = ref(false);
 const inviteEmail = ref('');
 const isUploading = ref(false);
 
+const content = ref('');
+const image = ref(null);
+
 const joinGroup = () => {
     router.post(`/grupos/${props.group.slug}/join`, {}, {
         onSuccess: () => {
@@ -36,6 +39,25 @@ const inviteMember = () => {
             showInviteModal.value = false;
         }
     });
+};
+
+const submitPost = () => {
+    const formData = new FormData();
+    formData.append('content', content.value);
+    if (image.value) {
+        formData.append('image', image.value);
+    }
+
+    router.post(`/grupos/${props.group.id}/posts`, formData, {
+        onSuccess: () => {
+            content.value = '';
+            image.value = null;
+        }
+    });
+};
+
+const handleFileChange = (event) => {
+    image.value = event.target.files[0];
 };
 
 const uploadBanner = (e) => {
@@ -95,6 +117,8 @@ const formatDate = (dateString) => {
         day: 'numeric'
     });
 };
+
+
 </script>
 
 <template>
@@ -107,7 +131,7 @@ const formatDate = (dateString) => {
 
                 <div v-if="isAdmin" class="absolute bottom-4 right-4">
                     <label
-                        class="cursor-pointer bg-white/90 hover:bg-white text-[#193CB8] px-3 py-2 rounded-md shadow-md flex items-center gap-2 transition-all">
+                        class="bg-white/90 hover:bg-white text-[#193CB8] px-3 py-2 rounded-md shadow-md flex items-center gap-2 transition-all cursor-pointer">
                         <i class='bx bx-image-add'></i>
                         <span class="text-sm font-medium">Cambiar Banner</span>
                         <input type="file" @change="uploadBanner" class="hidden" accept="image/*">
@@ -120,7 +144,7 @@ const formatDate = (dateString) => {
                     <!-- Cabecera del grupo -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                         <div class="p-6 pt-20 relative">
-     
+
                             <div class="absolute left-6 -top-12">
                                 <div class="relative">
                                     <div
@@ -145,7 +169,7 @@ const formatDate = (dateString) => {
                                     <div class="flex items-center text-gray-500 text-sm mt-2">
                                         <span class="flex items-center mr-4">
                                             <i class='bx bx-user-circle mr-1'></i> {{ group.members ?
-                                            group.members.length : 0 }} miembros
+                                                group.members.length : 0 }} miembros
                                         </span>
                                         <span class="flex items-center">
                                             <i class='bx bx-lock-open-alt mr-1' v-if="group.privacy === 'public'"></i>
@@ -230,46 +254,37 @@ const formatDate = (dateString) => {
                                 <div v-if="isMember" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                     <div class="flex items-start gap-3">
                                         <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                                            <img :src="auth.user.profile_photo_url || '/images/default-avatar.jpg'"
+                                            <img :src="auth.user.profile?.profile_picture || '/images/default-avatar.jpg'"
                                                 alt="Tu avatar" class="w-full h-full object-cover" />
+
                                         </div>
-                                        <div class="flex-1">
-                                            <textarea placeholder="Comparte algo con el grupo..."
-                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] outline-none transition-colors resize-none"
-                                                rows="3"></textarea>
-
-                                            <div class="flex justify-between items-center mt-3">
-                                                <div class="flex gap-2">
-                                                    <button
-                                                        class="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
+                                        <div class='flex-1'>
+                                            <textarea v-model='content' placeholder='Comparte algo con el grupo...'
+                                                class='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] outline-none transition-colors resize-none'
+                                                rows='3'></textarea>
+                                            <div class='flex justify-between items-center mt-3'>
+                                                <div class='flex gap-2'>
+                                                    <input type='file' @change='handleFileChange' class='hidden'
+                                                        id='fileUpload'>
+                                                    <label for='fileUpload'
+                                                        class='p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors cursor-pointer'>
                                                         <i class='bx bx-image-alt'></i>
-                                                    </button>
-                                                    <button
-                                                        class="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
-                                                        <i class='bx bx-link-alt'></i>
-                                                    </button>
-                                                    <button
-                                                        class="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
-                                                        <i class='bx bx-file'></i>
-                                                    </button>
+                                                    </label>
                                                 </div>
-
-                                                <button
-                                                    class="px-4 py-1.5 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm">
-                                                    Publicar
-                                                </button>
+                                                <button @click='submitPost'
+                                                    class='px-4 py-1.5 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm'>Publicar</button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Lista de publicaciones -->
-                                <div v-if="group.posts && group.posts.length > 0" class="space-y-4">
+                                <div v-if="group.posts && group.posts.length > 0" class="space-y-4 mt-4">
                                     <div v-for="post in group.posts" :key="post.id"
                                         class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                         <div class="flex items-start gap-3">
                                             <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                                                <img :src="post.user.profile_photo_url || '/images/default-avatar.jpg'"
+                                                <img :src="post.user.profile?.profile_picture || '/images/default-avatar.jpg'"
                                                     :alt="post.user.name" class="w-full h-full object-cover" />
                                             </div>
                                             <div class="flex-1">
