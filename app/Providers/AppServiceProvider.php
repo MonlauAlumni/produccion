@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Inertia::share([
             'user' => fn () => auth()->user(),
-            'profile' => fn () => auth()->user()->profile,
+            'profile.profile_picture' => fn () => auth()->check() ? auth()->user()->profile : null,
         ]);
 
         Profile::observe(ProfileObserver::class);   
