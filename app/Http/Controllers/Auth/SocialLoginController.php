@@ -63,7 +63,7 @@ class SocialLoginController extends Controller
                 $base64Str = substr($profileImage, strpos($profileImage, ",") + 1);
 
                 $imageData = base64_decode($base64Str);
-                $filename = 'logos/' . uniqid() . '.jpg';
+                $filename = '/profile_picture/' . uniqid() . '.jpg';
                 Storage::disk('public')->put($filename, $imageData);
             }
 
@@ -72,8 +72,9 @@ class SocialLoginController extends Controller
                 'microsoft_id' => $microsoftUser->getId(),
                 'password' => bcrypt(Str::random(16)),
                 'role' => 'student',
-                'profile_photo_path' => $filename,
+                'profile_photo_path' => isset($filename) ? $filename : null,
             ]);
+        
             return redirect('/complete-profile');
         } else {
             if (!$user->settings()->exists()) {

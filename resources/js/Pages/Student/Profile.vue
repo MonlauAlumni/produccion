@@ -60,7 +60,7 @@
         <!-- Student Banner -->
         <div class="relative w-full h-64 md:h-80 bg-gradient-to-r from-[#193CB8] to-[#2748c6] overflow-hidden">
           <img v-if="profile.banner_url"
-          :src="`/storage/${profile.banner_url}` || defaultBanner" 
+            :src="profile.banner_url || defaultBanner" 
             alt="Student Banner" 
             class="w-full h-full object-cover opacity-80"
           />
