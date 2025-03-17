@@ -147,7 +147,7 @@
                   <button 
                     type="button" 
                     @click="closeModal" 
-                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors flex items-center gap-1"
+                    class="px-4 py-2 text-sm cursor-pointer font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors flex items-center gap-1"
                   >
                     <i class='bx bx-x'></i>
                     Cancelar
@@ -155,7 +155,7 @@
                   <button 
                     type="button"
                     @click="confirmDelete"
-                    class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors flex items-center gap-1"
+                    class="px-4 py-2 text-sm cursor-pointer font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors flex items-center gap-1"
                     :disabled="isLoading"
                   >
                     <i v-if="isLoading" class='bx bx-loader-alt animate-spin'></i>

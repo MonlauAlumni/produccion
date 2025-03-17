@@ -65,14 +65,16 @@
         <div class="p-4 border-b border-gray-100">
           <div class="flex items-center space-x-3 mb-3">
             <div class="relative">
-              <div v-if="!user.profile_picture" class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
+              <div v-if="!user.profile.profile_picture" class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
                 <i class='bx bxs-user text-xl'></i>
               </div>
-                <img v-else :src="`/storage/${user.profile_picture}`" alt="Profile picture" class="w-12 h-12 rounded-full shadow-sm border-2 border-white">
+                <img v-else :src="user.profile.profile_picture ? `/storage/${user.profile.profile_picture}` : '/images/default-avatar.png'"  alt="Profile picture" class="w-12 h-12 rounded-full shadow-sm border-2 border-white">
               <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white"></div>
             </div>
             <div>
-              <p class="font-semibold text-gray-800">{{ user.name }}</p>
+              <button @click.prevent="navigateTo(`/perfil/${user.profile.slang}`)" class="hover:underline cursor-pointer">
+              <p class="font-semibold text-gray-800">{{ user.name }} {{ user.last_name_1}}</p>
+            </button>
               <p class="text-xs text-gray-500 flex items-center">
                 <i class='bx bxs-circle text-green-500 text-[8px] mr-1'></i> Online
               </p>

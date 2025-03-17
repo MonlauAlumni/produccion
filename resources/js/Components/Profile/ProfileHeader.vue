@@ -19,6 +19,8 @@
       },
     });
   };
+
+  console.log("PFP", props.profile.profile_picture);
   
   const downloadCV = () => {
     window.location.href = `/perfil/${props.user.profile.slang}/download-cv/`;
@@ -51,10 +53,11 @@
           <!-- Foto de perfil -->
           <div class="relative h-28 w-28 rounded-full bg-white shadow-md overflow-hidden group border-4 border-white mx-auto md:mx-0">
             <img 
-              :src="`/storage/${profile.profile_picture}` || '/images/default-avatar.png'"  
-              :alt="fullName" 
-              class="h-full w-full object-cover" 
-            />
+  :src="profile.profile_picture ? `/storage/${profile.profile_picture}` : '/images/default-avatar.png'"  
+  :alt="fullName" 
+  class="h-full w-full object-cover" 
+/>
+
             
             <!-- Hover para subir nueva imagen (solo para el propio usuario) -->
             <div v-if="isSameUser" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -105,10 +108,12 @@
                   <span>Contactar</span>
                 </button>
                 
-                <button @click="downloadCV" class="flex items-center cursor-pointer gap-1.5 bg-white hover:bg-blue-100 text-gray-700 border border-gray-300 px-4 py-2 rounded-md transition-colors">
-                  <i class='bx bx-file text-xl'></i>
-                  <span class="hidden sm:inline">Descargar CV</span>
-                </button>
+                <button v-if="profile.cv_path" @click="downloadCV" 
+                class="flex items-center gap-1.5 cursor-pointer bg-white hover:bg-blue-100 md:w-40 text-gray-700 border border-gray-300 px-4 py-2 rounded-md transition-colors">
+                <i class='bx bx-file text-xl'></i>
+                <span class="sm:inline">Descargar CV</span>
+              </button>
+              
               </div>
             </div>
             
