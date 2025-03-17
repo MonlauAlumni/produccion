@@ -62,7 +62,7 @@ class JobOfferController extends Controller
             'expires_at' => $request->expires_at,
             'deadline' => $request->deadline,
             'status' => 'active',
-            'category' => $request->category ?? 'it',
+            'category' => $request->category,
         ]);
     
         // Si se sube un archivo, manejarlo

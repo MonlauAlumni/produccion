@@ -3,6 +3,7 @@
   import { router } from '@inertiajs/vue3'
   import Layout from '@/Components/Layout.vue'
   import JobCard from '@/Pages/JobOffers/JobCard.vue'
+  import JobConfirmationModal from '@/Components/JobOffers/JobConfirmationModal.vue'
 
   const props = defineProps({
     jobOffers: {
@@ -10,6 +11,16 @@
       required: true
     }
   });
+
+  const isJobConfirmationModalOpen = ref(false);  
+
+  const openJobConfirmationModal = (jobId) => {
+    isJobConfirmationModalOpen.value = true;
+  };
+
+  const closeJobConfirmationModal = () => {
+    isJobConfirmationModalOpen.value = false;
+  };
 
   // Extraer los datos de las ofertas de trabajo
   const jobOffersList = ref(props.jobOffers.data || []);

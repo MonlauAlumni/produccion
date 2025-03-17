@@ -86,8 +86,8 @@
             <div>
               <button @click.prevent="navigateTo(`/perfil/${user.profile.slang}`)" class="hover:underline cursor-pointer">
                 
-                <p v-if="user.company" class="font-semibold text-gray-800">{{ user.company.profile_picture }}</p>
-                <p v-else class="font-semibold text-gray-800">{{ user.name }} {{ user.last_name_1}}</p>
+               <p v-if="user.company" class="font-semibold text-gray-800">{{ user.company.company_name }}</p>
+                <p v-else class="font-semibold text-gray-800">{{ user.name }} {{ user.last_name_1}}</p> 
             </button>
               <p class="text-xs text-gray-500 flex items-center">
                 <i class='bx bxs-circle text-green-500 text-[8px] mr-1'></i> Online
