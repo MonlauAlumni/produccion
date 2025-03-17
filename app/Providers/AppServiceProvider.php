@@ -35,13 +35,30 @@ class AppServiceProvider extends ServiceProvider
      * Bootstrap any application services.
      */
     public function boot(): void
-    {
-        Inertia::share([
-            'user' => fn () => auth()->user(),
-            'profile.profile_picture' => fn () => auth()->check() ? auth()->user()->profile : null,
-        ]);
+{
+    Inertia::share([
+        'user' => function () {
+            $user = auth()->user();
+    
+            if (!$user) {
+                return null;
+            }
+    
+            // Solo pasar los campos necesarios
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'profile_picture' => optional($user->profile)->profile_picture,
+                'company' => optional($user->company)->only(['company_name', 'id', 'profile_picture']), // Asegúrate de que 'profile_picture' está incluido
+            ];
+        },
+    ]);
+    
+    
 
-        Profile::observe(ProfileObserver::class);   
-    }
+    Profile::observe(ProfileObserver::class);
+}
+
 }
 
