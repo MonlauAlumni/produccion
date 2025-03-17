@@ -242,7 +242,7 @@ const sanitizeHTML = (html) => {
                                         <i class='bx bx-envelope mr-1'></i> Solicitar unirse
                                     </button>
 
-                                    <button v-if="isMember" @click="showInviteModal = true"
+                                    <button v-if="isAdmin" @click="showInviteModal = true"
                                         class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center">
                                         <i class='bx bx-user-plus mr-1'></i> Invitar
                                     </button>
@@ -294,8 +294,8 @@ const sanitizeHTML = (html) => {
                                 <div v-if="isMember" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                     <div class="flex items-start gap-3">
                                         <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                                            <img v-if="auth.user.profile.profile_picture"
-                                                :src="auth.user.profile?.profile_picture || '/images/default-avatar.jpg'"
+                                            <img v-if="auth.user.profile && auth.user.profile.profile_picture"
+                                                :src="auth.user.profile.profile_picture || '/images/default-avatar.jpg'"
                                                 alt="Tu avatar" class="w-full h-full object-cover" />
                                         </div>
                                         <div class='flex-1'>
@@ -404,7 +404,7 @@ const sanitizeHTML = (html) => {
 
                                                 <div v-if="isMember" class="mt-3 flex items-center gap-2">
                                                     <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-                                                        <img :src="auth.user.profile.profile_picture || '/images/default-avatar.jpg'"
+                                                        <img :src="auth.user && auth.user.profile ? auth.user.profile.profile_picture : '/images/default-avatar.jpg'"
                                                             alt="Tu avatar" class="w-full h-full object-cover" />
                                                     </div>
                                                     <div class="flex-1 relative">

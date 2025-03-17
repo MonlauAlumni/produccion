@@ -142,4 +142,26 @@ class GroupController extends Controller
         return redirect()->back()->with('success', 'Post creado con éxito!');
     }
 
+    public function joinGroup(Request $request) {
+
+        $group = Group::where('slug', $request->slug)->firstOrFail();
+        if ($group->privacy === 'private') {
+            return redirect()->back()->with('error', 'Este grupo es privado, no puedes unirte sin invitación.');
+        }
+
+        $group->members_count++;
+        $group->save();
+
+        GroupUser::create([
+            'group_id' => $group->id,
+            'user_id' => Auth::id(),
+            'role' => 'member',
+            'joined_at' => now(),
+            'created_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Te has unido al grupo correctamente!');
+
+    }
+
 }
