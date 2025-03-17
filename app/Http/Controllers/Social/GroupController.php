@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Group;
 use App\Models\GroupUser;
 use App\Models\GroupPost;
+use Mews\Purifier\Facades\Purifier;
 use Illuminate\Support\Facades\Auth;
 
 use Inertia\Inertia;
@@ -129,10 +130,12 @@ class GroupController extends Controller
             $imagePath = $request->file('image')->store('groups/group_posts', 'public');
         }
 
+        $sanitizedContent = Purifier::clean($request->content);
+
         $post = GroupPost::create([
             'group_id' => $groupId,
             'user_id' => Auth::id(),
-            'content' => $request->content,
+            'content' => $sanitizedContent,
             'image' => '/storage/'.$imagePath,
         ]);
 
