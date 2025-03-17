@@ -76,6 +76,10 @@ Route::middleware('auth')->group(function() {
     Route::get('/ofertas', [JobOfferController::class, 'index'])->name('ofertas.index');
     Route::get('/ofertas/{id}', [JobOfferController::class, 'show'])->name('job-offers.show');
 
+    Route::post('/ofertas/{id}/aplicar', [JobApplicationController::class, 'store'])->name('job-application.store');
+
+    Route::get('/mis-ofertas', [JobOfferController::class, 'myOffers'])->name('my-offers.index');
+
     Route::get('/connect', [SocialController::class, 'show'])->name('connect.show'); 
     Route::get('/grupos', [App\Http\Controllers\Social\GroupController::class, 'index'])->name('groups.index');
     Route::get('/grupos/nuevo', [GroupController::class, 'showCreateGroup'])->name('create-group.show');

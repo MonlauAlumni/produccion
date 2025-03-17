@@ -2,6 +2,7 @@
   import { ref } from 'vue'
   import { router } from '@inertiajs/vue3'
   import Layout from '@/Components/Layout.vue'
+  import JobConfirmationModal from '@/Components/JobOffers/JobConfirmationModal.vue'
   const props = defineProps({
     jobOffer: {
       type: Object,
@@ -10,6 +11,7 @@
   })
   
   const jobOffer = ref(props.jobOffer)
+  const showConfirmationModal = ref(false)
   
   const skills = ref(['Vue.js', 'Laravel', 'PHP', 'MySQL', 'Git', 'JavaScript', 'HTML/CSS', 'API REST'])
   
@@ -23,16 +25,25 @@
   }
   
   const formatSalaryRange = (min, max) => {
+    min = parseInt(min, 10);
+    max = parseInt(max, 10);
+    
     if (!min && !max) return 'No especificado'
-    if (min && max) return `${min}€ - ${max}€`
+    if (min && max) return  `${min}€ - ${max}€`
     return min ? `Desde ${min}€` : `Hasta ${max}€`
   }
   
   const applyToJob = () => {
-    router.post(route('job-applications.store'), {
-      job_offer_id: jobOffer.id
-    })
+    openConfirmationModal()
   }
+
+  const openConfirmationModal = () => {
+  showConfirmationModal.value = true
+}
+
+const closeConfirmationModal = () => {
+  showConfirmationModal.value = false
+}
   
   const getDaysRemaining = (dateString) => {
     const parts = dateString.split('-');
@@ -95,11 +106,11 @@
                 </div>
                 <div class="flex items-center">
                   <i class='bx bx-time-five mr-1'></i>
-                  {{ formatJobType(jobOffer.job_type) }}
+                  {{ formatJobType(jobOffer.work_mode) }}
                 </div>
                 <div class="flex items-center">
                   <i class='bx bx-money-withdraw mr-1'></i>
-                  {{ formatSalaryRange(jobOffer.salary_min, jobOffer.salary_max) }}
+                  {{ formatSalaryRange(jobOffer.minimum_salary, jobOffer.maximum_salary) }}
                 </div>
                 <div class="flex items-center">
                   <i class='bx bx-calendar mr-1'></i>
@@ -231,7 +242,7 @@
                   <div class="text-sm text-gray-500">Fecha límite:</div>
                   <div class="font-medium flex items-center">
                     <i class='bx bx-time-five text-[#193CB8] mr-1'></i>
-                    {{ formatDate(jobOffer.deadline) }}
+                    <p class="text-sm">{{ formatDate(jobOffer.deadline) }}</p>
                   </div>
                 </div>
                 
@@ -289,7 +300,7 @@
                   </div>
                   <div>
                     <h4 class="font-semibold">{{ jobOffer.company.company_name }}</h4>
-                    <p class="text-sm text-gray-600">{{ jobOffer.company.industry }}</p>
+                    <p class="text-sm text-gray-600">{{ jobOffer.company.sector }}</p>
                   </div>
                 </div>
                 
@@ -304,11 +315,11 @@
                   </div>
                   <div class="flex items-center">
                     <i class='bx bx-map text-[#193CB8] mr-2'></i>
-                    <span class="text-sm">{{ jobOffer.location ? jobOffer.location : 'No especificada'  }}</span>
+                    <span class="text-sm">{{ jobOffer.company.location ? jobOffer.company.location : 'No especificada'  }}</span>
                   </div>
                 </div>
                 
-                <a href="#" class="flex items-center justify-center text-[#193CB8] text-sm mt-4 hover:underline">
+                <a @click.prevent="router.get(`/empresa/${jobOffer.company.slang}`)" class="flex cursor-pointer items-center justify-center text-[#193CB8] text-sm mt-4 hover:underline">
                   <i class='bx bx-building mr-1'></i> Ver perfil completo
                 </a>
               </div>
@@ -365,6 +376,11 @@
        
       </div>
     </div>  
+    <JobConfirmationModal
+    :is-open="showConfirmationModal"
+    :job-offer="jobOffer"
+    @close="closeConfirmationModal"
+  />
   </Layout>
   </template>
   

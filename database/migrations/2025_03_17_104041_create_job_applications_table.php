@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('job_applications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('job_offer_id')->constrained('job_offers')->onDelete('cascade');
-            $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->text('cover_letter')->nullable();
             $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');
             $table->timestamps();
-            $table->unique(['job_offer_id', 'student_id']);
+            $table->unique(['job_offer_id', 'user_id']);
         });
     }
 

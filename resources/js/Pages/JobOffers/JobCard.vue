@@ -34,6 +34,8 @@ const emit = defineEmits([
 
 // Formatear rango salarial
 const formatSalaryRange = (min, max) => {
+    min = parseInt(min, 10);
+    max = parseInt(max, 10);
     if (!min && !max) return 'No especificado';
     if (min && max) return `${min.toLocaleString()}€ - ${max.toLocaleString()}€`;
     return min ? `Desde ${min.toLocaleString()}€` : `Hasta ${max.toLocaleString()}€`;
@@ -85,6 +87,35 @@ const toggleLikeJob = (id) => {
 const shareJob = (id) => {
     emit('share', id);
 };
+
+const getIconClass = (category) => {
+      switch (category) {
+        case 'it':
+          return 'bx bx-code-alt';
+        case 'automotive':
+          return 'bx bx-car';
+        case 'marketing':
+          return 'bx bx-line-chart';
+        default:
+          return 'bx bx-category'; 
+      }
+    };
+
+  
+const getCategoryLabel = (category) => {
+      switch (category) {
+        case 'it':
+          return 'Tecnología';
+        case 'automotive':
+          return 'Automoción';
+        case 'marketing':
+          return 'Marketing';
+        default:
+          return 'Categoría desconocida'; 
+      }
+    }
+  ;
+
 </script>
 
 <template>
@@ -150,9 +181,11 @@ const shareJob = (id) => {
                             {{ formatSalaryRange(jobOffer.minimum_salary, jobOffer.maximum_salary) }}
                         </div>
                         <div v-if="jobOffer.category" class="flex items-center text-gray-600">
-                            <i class='bx bx-category mr-1 text-[#193CB8]'></i>
-                            {{ jobOffer.category }}
-                        </div>
+                            <!-- Icono dinámico según la categoría -->
+                            <i :class="getIconClass(jobOffer.category)" class="mr-1 text-[#193CB8]"></i>
+                            <!-- Etiqueta dinámica según la categoría -->
+                            {{ getCategoryLabel(jobOffer.category) }}
+                          </div>
                     </div>
                 </div>
             </div>

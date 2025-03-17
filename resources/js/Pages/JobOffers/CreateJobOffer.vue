@@ -21,6 +21,7 @@ const form = ref({
   deadline: '',
   file: null,
   job_type: '',
+  category: '',
 })
 
 const skills = ref(['Vue.js', 'Laravel', 'PHP', 'MySQL', 'Git', 'JavaScript', 'HTML', 'CSS', 'React', 'Node.js'])
@@ -33,15 +34,18 @@ const newBenefit = ref('')
 
 const formProgress = computed(() => {
   let filled = 0;
-  let total = 9; // Campos obligatorios (increased from 7 to include new required fields)
+  let total = 13; // Campos obligatorios (increased from 7 to include new required fields)
 
   if (form.value.title) filled++;
   if (form.value.description) filled++;
+  if (form.value.location) filled++;
+  if (form.value.category) filled++;
   if (form.value.requirements) filled++;
   if (form.value.min_experience) filled++;
   if (form.value.min_studies) filled++;
   if (form.value.vacancies) filled++;
   if (form.value.work_mode) filled++;
+  if (form.value.experience) filled++;
   if (form.value.skills.length > 0) filled++;
   if (form.value.deadline) filled++;
 
@@ -251,6 +255,21 @@ const prevSection = () => {
                 <p class="mt-1 text-sm text-gray-500">
                   Indica la ciudad o localidad donde se desarrollará el trabajo
                 </p>
+              </div>
+              <div class="relative">
+                <label for="category" class="block text-sm font-medium text-gray-700 mb-1">
+                  Categoría <span class="text-red-500">*</span>
+                </label>
+                <select id="category" v-model="form.category" required
+                  class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#193CB8] focus:border-[#193CB8] bg-white appearance-none">
+                  <option value="">Selecciona la categoría de la oferta</option>
+                  <option value="it">Informática</option>
+                  <option value="marketing">Marketing</option>
+                  <option value="automotive">Automoción</option>
+                </select>
+                <div class="absolute bottom-4 right-0 flex items-center pr-3 pointer-events-none">
+                  <i class="bx bx-chevron-down text-gray-400"></i>
+                </div>
               </div>
 
               <!-- Deadline -->

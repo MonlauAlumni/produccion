@@ -7,6 +7,8 @@ use Inertia\Inertia;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\JobApplication;
+use Illuminate\Support\Facades\Auth;
 
 class JobOfferController extends Controller
 {
@@ -62,7 +64,7 @@ class JobOfferController extends Controller
             'expires_at' => $request->expires_at,
             'deadline' => $request->deadline,
             'status' => 'active',
-            'category' => $request->category ?? 'it',
+            'category' => $request->category,
         ]);
     
         // Si se sube un archivo, manejarlo
@@ -73,6 +75,40 @@ class JobOfferController extends Controller
         }
     
         return redirect()->route('home');
+    }
+
+
+    public function myOffers(Request $request)
+    {
+        $user = Auth::user();
+        $tab = $request->input('tab', 'applied');
+        $status = $request->input('status');
+        
+        // Get applied job offers with pagination
+        $appliedOffersQuery = JobApplication::with(['jobOffer', 'jobOffer.company'])
+            ->where('user_id', $user->id)
+            ->orderBy('created_at', 'desc');
+            
+        // Filter by status if provided
+        if ($status && $status !== 'all') {
+            $appliedOffersQuery->where('status', $status);
+        }
+        
+        $appliedOffers = $appliedOffersQuery->paginate(5)->withQueryString();
+        
+        // // Get saved job offers with pagination
+        // $savedOffers = $user->savedJobOffers()
+        //     ->with('company')
+        //     ->orderBy('created_at', 'desc')
+        //     ->paginate(5)
+        //     ->withQueryString();
+        
+        return Inertia::render('JobOffers/MyJobOffers', [
+            'appliedOffers' => $appliedOffers,
+           // 'savedOffers' => $savedOffers,
+            'activeTab' => $tab,
+            'activeStatus' => $status ?? 'all'
+        ]);
     }
 
   

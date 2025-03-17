@@ -38,27 +38,29 @@ class AppServiceProvider extends ServiceProvider
 {
     Inertia::share([
         'user' => function () {
+       
             $user = auth()->user();
-    
+
             if (!$user) {
                 return null;
             }
-    
+
+        
+
             // Solo pasar los campos necesarios
             return [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'profile_picture' => optional($user->profile)->profile_picture,
+                'profile' => optional($user->profile)->only(['profile_picture', 'slang']),
                 'company' => optional($user->company)->only(['company_name', 'id', 'profile_picture']),
             ];
         },
     ]);
     
-    
-
     Profile::observe(ProfileObserver::class);
 }
+
 
 }
 
