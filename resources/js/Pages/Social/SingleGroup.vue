@@ -1,14 +1,16 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import Layout from '@/Components/Layout.vue';
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
+import { QuillEditor } from '@vueup/vue-quill';
+import DOMPurify from 'dompurify';
 
 const props = defineProps({
     group: Object,
     isAdmin: Boolean,
     isMember: Boolean,
 });
-
 
 const page = usePage();
 const auth = computed(() => page.props.auth);
@@ -22,6 +24,24 @@ const isUploading = ref(false);
 
 const content = ref('');
 const image = ref(null);
+const imagePreview = ref(null);
+const fileInputRef = ref(null);
+const quillEditorRef = ref(null);
+
+const editorOptions = {
+    modules: {
+        toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            [{ 'indent': '-1' }, { 'indent': '+1' }],
+            [{ 'align': [] }],
+            ['link'],
+            ['clean']
+        ]
+    },
+    placeholder: 'Comparte algo con el grupo...',
+    theme: 'snow'
+};
 
 const joinGroup = () => {
     router.post(`/grupos/${props.group.slug}/join`, {}, {
@@ -45,22 +65,50 @@ const inviteMember = () => {
 };
 
 const submitPost = () => {
+    const sanitizedContent = DOMPurify.sanitize(content.value);
+
     const formData = new FormData();
-    formData.append('content', content.value);
+    formData.append('content', sanitizedContent);
     if (image.value) {
         formData.append('image', image.value);
     }
-
     router.post(`/grupos/${props.group.id}/posts`, formData, {
         onSuccess: () => {
             content.value = '';
             image.value = null;
+            imagePreview.value = null;
+            fileInputRef.value.value = '';
+            quillEditorRef.value.clear();
+            nextTick(() => {
+            window.scrollTo(0, 0);
+            });
         }
     });
 };
 
 const handleFileChange = (event) => {
-    image.value = event.target.files[0];
+    const file = event.target.files[0];
+    if (!file) {
+        image.value = null;
+        imagePreview.value = null;
+        return;
+    }
+
+    image.value = file;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        imagePreview.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+};
+
+const removeImage = () => {
+    image.value = null;
+    imagePreview.value = null;
+    if (fileInputRef.value) {
+        fileInputRef.value.value = '';
+    }
 };
 
 const uploadBanner = (e) => {
@@ -121,7 +169,9 @@ const formatDate = (dateString) => {
     });
 };
 
-
+const sanitizeHTML = (html) => {
+    return DOMPurify.sanitize(html);
+};
 </script>
 
 <template>
@@ -144,7 +194,6 @@ const formatDate = (dateString) => {
 
             <main class="flex flex-col items-center justify-center -mt-16 relative z-10 px-4">
                 <div class="flex flex-col space-y-6 w-full max-w-5xl">
-                    <!-- Cabecera del grupo -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                         <div class="p-6 pt-20 relative">
 
@@ -156,7 +205,6 @@ const formatDate = (dateString) => {
                                             :alt="group.group_name + ' logo'" class="w-full h-full object-cover" />
                                     </div>
 
-                                    <!-- Logo upload button para administradores -->
                                     <label v-if="isAdmin"
                                         class="absolute -bottom-2 -right-2 cursor-pointer bg-white hover:bg-gray-50 text-[#193CB8] p-1.5 rounded-full shadow-md transition-all">
                                         <i class='bx bx-camera text-lg'></i>
@@ -183,26 +231,22 @@ const formatDate = (dateString) => {
                                 </div>
 
                                 <div class="mt-4 md:mt-0 flex items-center gap-3">
-                                    <!-- Botón para unirse al grupo (si no es miembro) -->
                                     <button v-if="!isMember && group.privacy === 'public'" @click="joinGroup"
                                         class="px-4 py-2 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors flex items-center">
                                         <i class='bx bx-user-plus mr-1'></i> Unirse al grupo
                                     </button>
 
-                                    <!-- Botón para solicitar unirse (si es privado) -->
                                     <button v-if="!isMember && group.privacy === 'private'"
                                         @click="showJoinModal = true"
                                         class="px-4 py-2 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors flex items-center">
                                         <i class='bx bx-envelope mr-1'></i> Solicitar unirse
                                     </button>
 
-                                    <!-- Botón para invitar (si es miembro) -->
                                     <button v-if="isMember" @click="showInviteModal = true"
                                         class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center">
                                         <i class='bx bx-user-plus mr-1'></i> Invitar
                                     </button>
 
-                                    <!-- Botón para editar (si es admin) -->
                                     <button v-if="isAdmin" @click="showEditModal = true"
                                         class="p-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
                                         <i class='bx bx-edit-alt'></i>
@@ -210,10 +254,8 @@ const formatDate = (dateString) => {
                                 </div>
                             </div>
 
-                            <!-- Descripción del grupo -->
                             <p class="text-gray-600 mt-4">{{ group.description }}</p>
 
-                            <!-- Etiquetas -->
                             <div v-if="group.tags && group.tags.length > 0" class="flex flex-wrap gap-2 mt-4">
                                 <span v-for="(tag, index) in group.tags" :key="index"
                                     class="px-2 py-1 bg-[#193CB8]/10 text-[#193CB8] rounded-full text-xs">
@@ -221,7 +263,6 @@ const formatDate = (dateString) => {
                                 </span>
                             </div>
 
-                            <!-- Tabs de navegación -->
                             <div class="flex border-b border-gray-200 mt-6">
                                 <button @click="activeTab = 'publicaciones'"
                                     class="px-4 py-2 font-medium text-sm transition-colors"
@@ -247,55 +288,65 @@ const formatDate = (dateString) => {
                         </div>
                     </div>
 
-                    <!-- Contenido según la tab activa -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Columna principal -->
                         <div class="md:col-span-2 space-y-6">
-                            <!-- Tab de Publicaciones -->
                             <div v-if="activeTab === 'publicaciones'">
-                                <!-- Formulario para crear publicación (si es miembro) -->
                                 <div v-if="isMember" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                     <div class="flex items-start gap-3">
                                         <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                                            <img v-if="auth.user.profile.profile_picture" :src="auth.user.profile?.profile_picture || '/images/default-avatar.jpg'"
+                                            <img v-if="auth.user.profile.profile_picture"
+                                                :src="auth.user.profile?.profile_picture || '/images/default-avatar.jpg'"
                                                 alt="Tu avatar" class="w-full h-full object-cover" />
-
                                         </div>
                                         <div class='flex-1'>
-                                            <textarea v-model='content' placeholder='Comparte algo con el grupo...'
-                                                class='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] outline-none transition-colors resize-none'
-                                                rows='3'></textarea>
+                                            <div class="mb-3">
+                                                <QuillEditor ref="quillEditorRef" v-model:content="content"
+                                                    :options="editorOptions" contentType="html" theme="snow" />
+                                            </div>
+
+                                            <div v-if="imagePreview" class="mt-3 mb-3 relative">
+                                                <img :src="imagePreview" alt="Vista previa"
+                                                    class="rounded-lg max-h-48 object-contain" />
+                                                <button @click="removeImage"
+                                                    class="absolute top-2 right-2 bg-gray-800/70 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-gray-900/70 transition-colors">
+                                                    <i class='bx bx-x'></i>
+                                                </button>
+                                            </div>
+
                                             <div class='flex justify-between items-center mt-3'>
                                                 <div class='flex gap-2'>
                                                     <input type='file' @change='handleFileChange' class='hidden'
-                                                        id='fileUpload'>
+                                                        id='fileUpload' ref="fileInputRef" accept="image/*">
                                                     <label for='fileUpload'
                                                         class='p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors cursor-pointer'>
                                                         <i class='bx bx-image-alt'></i>
                                                     </label>
                                                 </div>
-                                                <button @click='submitPost'
-                                                    class='px-4 py-1.5 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm'>Publicar</button>
+                                                <button @click='submitPost' :disabled="!content && !image"
+                                                    :class="{ 'opacity-50 cursor-not-allowed': !content && !image }"
+                                                    class='px-4 py-1.5 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm'>
+                                                    Publicar
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Lista de publicaciones -->
                                 <div v-if="group.posts && group.posts.length > 0" class="space-y-4 mt-4">
                                     <div v-for="post in group.posts" :key="post.id"
                                         class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                         <div class="flex items-start gap-3">
                                             <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                                                <img :src="post.user.profile.profile_picture || '/images/default-avatar.jpg'"
-                                                    :alt="post.user.profile.profile_picture" class="w-full h-full object-cover" />
+                                                <img  :src="post.user.profile.profile_picture || '/images/default-avatar.jpg'"
+                                                    :alt="post.user.profile.profile_picture"
+                                                    class="w-full h-full object-cover" />
                                             </div>
                                             <div class="flex-1">
                                                 <div class="flex items-center justify-between">
                                                     <div>
                                                         <h3 class="font-medium text-gray-800">{{ post.user.name }}</h3>
                                                         <p class="text-xs text-gray-500">{{ formatDate(post.created_at)
-                                                            }}</p>
+                                                        }}</p>
                                                     </div>
 
                                                     <button class="p-1 text-gray-400 hover:text-gray-600">
@@ -304,15 +355,14 @@ const formatDate = (dateString) => {
                                                 </div>
 
                                                 <div class="mt-2">
-                                                    <p class="text-gray-700">{{ post.content }}</p>
+                                                    <div class="text-gray-700 post-content"
+                                                        v-html="sanitizeHTML(post.content)"></div>
 
-                                                    <!-- Imagen de la publicación si existe -->
                                                     <img v-if="post.image" :src="post.image"
                                                         alt="Imagen de la publicación"
                                                         class="mt-3 rounded-lg w-full object-cover max-h-96" />
                                                 </div>
 
-                                                <!-- Acciones de la publicación -->
                                                 <div class="flex items-center gap-4 mt-4 pt-2 border-t border-gray-100">
                                                     <button
                                                         class="flex items-center gap-1 text-gray-500 hover:text-[#193CB8]">
@@ -331,7 +381,6 @@ const formatDate = (dateString) => {
                                                     </button>
                                                 </div>
 
-                                                <!-- Comentarios -->
                                                 <div v-if="post.comments && post.comments.length > 0"
                                                     class="mt-4 pt-2 border-t border-gray-100 space-y-3">
                                                     <div v-for="comment in post.comments" :key="comment.id"
@@ -353,10 +402,9 @@ const formatDate = (dateString) => {
                                                     </div>
                                                 </div>
 
-                                                <!-- Formulario para comentar -->
                                                 <div v-if="isMember" class="mt-3 flex items-center gap-2">
                                                     <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-                                                        <img :src="auth.user.profile_photo_url || '/images/default-avatar.jpg'"
+                                                        <img :src="auth.user.profile.profile_picture || '/images/default-avatar.jpg'"
                                                             alt="Tu avatar" class="w-full h-full object-cover" />
                                                     </div>
                                                     <div class="flex-1 relative">
@@ -373,9 +421,8 @@ const formatDate = (dateString) => {
                                     </div>
                                 </div>
 
-                                <!-- Mensaje si no hay publicaciones -->
                                 <div v-else
-                                    class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
+                                    class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center mt-4">
                                     <div class="py-8">
                                         <i class='bx bx-message-square-detail text-5xl text-gray-300 mb-2'></i>
                                         <h3 class="text-lg font-medium text-gray-700 mb-1">No hay publicaciones aún</h3>
@@ -384,20 +431,18 @@ const formatDate = (dateString) => {
                                 </div>
                             </div>
 
-                            <!-- Tab de Miembros -->
                             <div v-if="activeTab === 'miembros'"
                                 class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                 <h2 class="text-xl font-semibold mb-4">Miembros del grupo</h2>
 
-                                <!-- Administradores -->
                                 <div class="mb-6">
                                     <h3 class="text-sm font-medium text-gray-500 mb-3">Administradores</h3>
 
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div v-for="member in adminMembers" :key="member.id"
-                                            class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                                        <div v-for="member in adminMembers" :key="member.id" @click="router.get('/perfil/' + member.user.profile.slang)"
+                                            class="flex items-center gap-3 p-3 cursor-pointer border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
                                             <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-                                                <img :src="member.user.profile_photo_url || '/images/default-avatar.jpg'"
+                                                <img :src="member.user.profile.profile_picture || '/images/default-avatar.jpg'"
                                                     :alt="member.user.name" class="w-full h-full object-cover" />
                                             </div>
                                             <div>
@@ -408,7 +453,6 @@ const formatDate = (dateString) => {
                                     </div>
                                 </div>
 
-                                <!-- Miembros regulares -->
                                 <div>
                                     <h3 class="text-sm font-medium text-gray-500 mb-3">Miembros</h3>
 
@@ -425,7 +469,6 @@ const formatDate = (dateString) => {
                                                     formatDate(member.created_at) }}</p>
                                             </div>
 
-                                            <!-- Opciones para administradores -->
                                             <div v-if="isAdmin" class="flex-shrink-0">
                                                 <button class="p-1 text-gray-400 hover:text-gray-600">
                                                     <i class='bx bx-dots-vertical-rounded'></i>
@@ -436,7 +479,6 @@ const formatDate = (dateString) => {
                                 </div>
                             </div>
 
-                            <!-- Tab de Eventos -->
                             <div v-if="activeTab === 'eventos'"
                                 class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                 <div class="flex items-center justify-between mb-4">
@@ -448,12 +490,10 @@ const formatDate = (dateString) => {
                                     </button>
                                 </div>
 
-                                <!-- Lista de eventos -->
                                 <div v-if="group.events && group.events.length > 0" class="space-y-4">
                                     <!-- Aquí irían los eventos -->
                                 </div>
 
-                                <!-- Mensaje si no hay eventos -->
                                 <div v-else class="text-center py-8">
                                     <i class='bx bx-calendar-event text-5xl text-gray-300 mb-2'></i>
                                     <h3 class="text-lg font-medium text-gray-700 mb-1">No hay eventos programados</h3>
@@ -461,7 +501,6 @@ const formatDate = (dateString) => {
                                 </div>
                             </div>
 
-                            <!-- Tab de Archivos -->
                             <div v-if="activeTab === 'archivos'"
                                 class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                 <div class="flex items-center justify-between mb-4">
@@ -473,12 +512,10 @@ const formatDate = (dateString) => {
                                     </button>
                                 </div>
 
-                                <!-- Lista de archivos -->
                                 <div v-if="group.files && group.files.length > 0" class="space-y-4">
                                     <!-- Aquí irían los archivos -->
                                 </div>
 
-                                <!-- Mensaje si no hay archivos -->
                                 <div v-else class="text-center py-8">
                                     <i class='bx bx-file text-5xl text-gray-300 mb-2'></i>
                                     <h3 class="text-lg font-medium text-gray-700 mb-1">No hay archivos compartidos</h3>
@@ -487,9 +524,7 @@ const formatDate = (dateString) => {
                             </div>
                         </div>
 
-                        <!-- Columna lateral -->
                         <div class="space-y-6">
-                            <!-- Información del grupo -->
                             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                                 <h2 class="text-xl font-semibold mb-4">Información</h2>
                                 <hr class="border-t border-[#193CB8] mb-4" />
@@ -528,7 +563,6 @@ const formatDate = (dateString) => {
                                 </div>
                             </div>
 
-                            <!-- Próximos eventos -->
                             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                                 <h2 class="text-xl font-semibold mb-4">Próximos eventos</h2>
                                 <hr class="border-t border-[#193CB8] mb-4" />
@@ -542,7 +576,6 @@ const formatDate = (dateString) => {
                                 </div>
                             </div>
 
-                            <!-- Miembros destacados -->
                             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                                 <h2 class="text-xl font-semibold mb-4">Miembros destacados</h2>
                                 <hr class="border-t border-[#193CB8] mb-4" />
@@ -574,7 +607,6 @@ const formatDate = (dateString) => {
             </main>
         </div>
 
-        <!-- Modal para solicitar unirse -->
         <div v-if="showJoinModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-xl shadow-xl max-w-md w-full">
                 <div class="p-4 border-b border-gray-200 flex justify-between items-center">
@@ -612,7 +644,6 @@ const formatDate = (dateString) => {
             </div>
         </div>
 
-        <!-- Modal para invitar miembros -->
         <div v-if="showInviteModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-xl shadow-xl max-w-md w-full">
                 <div class="p-4 border-b border-gray-200 flex justify-between items-center">
@@ -670,5 +701,65 @@ const formatDate = (dateString) => {
 
 .animate-spin {
     animation: spin 1s linear infinite;
+}
+
+:deep(.ql-editor) {
+    min-height: 100px;
+}
+
+:deep(.ql-toolbar) {
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    border-color: #d1d5db;
+}
+
+:deep(.ql-container) {
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    border-color: #d1d5db;
+}
+
+:deep(.ql-toolbar .ql-stroke) {
+    stroke: #6b7280;
+}
+
+:deep(.ql-toolbar .ql-fill) {
+    fill: #6b7280;
+}
+
+:deep(.ql-toolbar .ql-picker) {
+    color: #6b7280;
+}
+
+:deep(.ql-toolbar button:hover .ql-stroke) {
+    stroke: #193CB8;
+}
+
+:deep(.ql-toolbar button.ql-active .ql-stroke) {
+    stroke: #193CB8;
+}
+
+:deep(.ql-toolbar button:hover .ql-fill) {
+    fill: #193CB8;
+}
+
+:deep(.ql-toolbar button.ql-active .ql-fill) {
+    fill: #193CB8;
+}
+
+:deep(.ql-toolbar .ql-picker-label:hover) {
+    color: #193CB8;
+}
+
+:deep(.ql-toolbar .ql-picker-label.ql-active) {
+    color: #193CB8;
+}
+
+:deep(.ql-toolbar .ql-picker-item:hover) {
+    color: #193CB8;
+}
+
+:deep(.ql-toolbar .ql-picker-item.ql-selected) {
+    color: #193CB8;
 }
 </style>
