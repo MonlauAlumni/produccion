@@ -1,14 +1,17 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import Layout from '@/Components/Layout.vue';
 
 const props = defineProps({
     group: Object,
     isAdmin: Boolean,
     isMember: Boolean,
-    auth: Object,
 });
+
+
+const page = usePage();
+const auth = computed(() => page.props.auth);
 
 const activeTab = ref('publicaciones');
 const showJoinModal = ref(false);
@@ -254,7 +257,7 @@ const formatDate = (dateString) => {
                                 <div v-if="isMember" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                     <div class="flex items-start gap-3">
                                         <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                                            <img :src="auth.user.profile?.profile_picture || '/images/default-avatar.jpg'"
+                                            <img v-if="auth.user.profile.profile_picture" :src="auth.user.profile?.profile_picture || '/images/default-avatar.jpg'"
                                                 alt="Tu avatar" class="w-full h-full object-cover" />
 
                                         </div>
@@ -284,8 +287,13 @@ const formatDate = (dateString) => {
                                         class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                         <div class="flex items-start gap-3">
                                             <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                                                <img :src="post.user.profile?.profile_picture || '/images/default-avatar.jpg'"
-                                                    :alt="post.user.name" class="w-full h-full object-cover" />
+                                                <img
+                                                    :src="post.user?.profile?.profile_picture
+                                                        ? `/storage/${post.user.profile.profile_picture}`
+                                                        : '/images/default-avatar.jpg'"
+                                                    :alt="post.user?.name"
+                                                    class="w-full h-full object-cover"
+                                                />
                                             </div>
                                             <div class="flex-1">
                                                 <div class="flex items-center justify-between">
