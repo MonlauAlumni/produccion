@@ -126,6 +126,7 @@ class ProfileController extends Controller
         $user->settings()->create();
         $user->profile()->create();
         $user->profile()->update(['profile_picture' => $microsoftUser['profile_photo_path'] ? $microsoftUser['profile_photo_path'] : null,]);
+    
         $request->session()->regenerate();
 
         // Limpiar los datos de la sesión
@@ -216,7 +217,7 @@ class ProfileController extends Controller
 
         $path = $request->file('profile_picture')->store('profile_picture', 'public');
 
-        $user->profile->update(['profile_picture' => '/storage/' . $path]);
+        $user->profile->update(['profile_picture' => $path]);
 
         return redirect()->route('perfil.show', ['slang' => $user->profile->slang]);
     }
