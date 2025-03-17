@@ -12,15 +12,22 @@
     }
   });
 
-  const isJobConfirmationModalOpen = ref(false);  
+  const isJobConfirmationModalOpen = ref(false);
+  const selectedJobId = ref(null);
 
+  const getJobOffer = (id) => {
+    return jobOffersList.value.find(job => job.id === id);
+  };
   const openJobConfirmationModal = (jobId) => {
-    isJobConfirmationModalOpen.value = true;
-  };
+  selectedJobId.value = jobId; // Guardamos el jobId seleccionado
+  isJobConfirmationModalOpen.value = true; // Abrimos el modal
+};
 
-  const closeJobConfirmationModal = () => {
-    isJobConfirmationModalOpen.value = false;
-  };
+// Función para cerrar el modal
+const closeJobConfirmationModal = () => {
+  isJobConfirmationModalOpen.value = false;
+  selectedJobId.value = null; // Limpiamos el jobId al cerrar el modal
+};
 
   // Extraer los datos de las ofertas de trabajo
   const jobOffersList = ref(props.jobOffers.data || []);
@@ -36,18 +43,18 @@
   const showScrollTopButton = ref(false);
   const showFilters = ref(false);
   const searchQuery = ref('');
-  
+
   // Estado para interacciones
   const savedJobs = ref(new Set());
   const likedJobs = ref(new Set());
   const viewedJobs = ref(new Set());
-  
+
   // Estado para filtros
   const activeFilter = ref('all');
   const activeCategory = ref('all');
   const activeJobType = ref('all');
   const activeSalaryRange = ref('all');
-  
+
   // Categorías destacadas
   const featuredCategories = [
     { id: 'all', name: 'Todas', icon: 'bx-globe', color: '#193CB8' },
@@ -56,7 +63,7 @@
     { id: 'automotion', name: 'Automoción', icon: 'bx-car', color: '#FF7C43' },
 
   ];
-  
+
   // Tipos de trabajo
   const jobTypes = [
     { id: 'all', name: 'Todos' },
@@ -64,7 +71,7 @@
     { id: 'onsite', name: 'Presencial' },
     { id: 'hybrid', name: 'Híbrido' }
   ];
-  
+
   // Rangos salariales
   const salaryRanges = [
     { id: 'all', name: 'Todos' },
@@ -72,7 +79,7 @@
     { id: '30k-50k', name: '30.000€ - 50.000€' },
     { id: 'over50k', name: 'Más de 50.000€' }
   ];
-  
+
   // Estadísticas del mercado (datos de ejemplo)
   const marketStats = {
     topRoles: [
@@ -90,7 +97,7 @@
       trend: 5
     }
   };
-  
+
   // Cargar más ofertas (paginación)
   const loadMoreJobs = async () => {
     if (isLoading.value || pagination.value.currentPage >= pagination.value.lastPage) return;
@@ -101,8 +108,8 @@
       // Usar Inertia para cargar la siguiente página
       const nextPage = pagination.value.currentPage + 1;
       await router.get(
-        '/ofertas', 
-        { 
+        '/ofertas',
+        {
           page: nextPage,
           filter: activeFilter.value !== 'all' ? activeFilter.value : undefined,
           category: activeCategory.value !== 'all' ? activeCategory.value : undefined,
@@ -110,7 +117,7 @@
           salary_range: activeSalaryRange.value !== 'all' ? activeSalaryRange.value : undefined,
           search: searchQuery.value || undefined
         },
-        { 
+        {
           preserveState: true,
           preserveScroll: true,
           only: ['jobOffers'],
@@ -171,7 +178,7 @@
   // Aplicar a oferta
   const applyToJob = (jobId) => {
     viewedJobs.value.add(jobId);
-    router.get(`/ofertas/${jobId}/aplicar`);
+    openJobConfirmationModal(jobId);
   };
 
   // Compartir oferta
@@ -202,44 +209,44 @@
     activeFilter.value = filter;
     applyFilters();
   };
-  
+
   // Cambiar categoría activa
   const setCategory = (category) => {
     activeCategory.value = category;
     applyFilters();
   };
-  
+
   // Cambiar tipo de trabajo activo
   const setJobType = (jobType) => {
     activeJobType.value = jobType;
     applyFilters();
   };
-  
+
   // Cambiar rango salarial activo
   const setSalaryRange = (range) => {
     activeSalaryRange.value = range;
     applyFilters();
   };
-  
+
   // Aplicar filtros
   const applyFilters = () => {
     // Navegar a la ruta con los filtros aplicados
-    router.get('/ofertas', { 
+    router.get('/ofertas', {
       filter: activeFilter.value !== 'all' ? activeFilter.value : undefined,
       category: activeCategory.value !== 'all' ? activeCategory.value : undefined,
       job_type: activeJobType.value !== 'all' ? activeJobType.value : undefined,
       salary_range: activeSalaryRange.value !== 'all' ? activeSalaryRange.value : undefined,
       search: searchQuery.value || undefined
-    }, { 
-      preserveScroll: true 
+    }, {
+      preserveScroll: true
     });
   };
-  
+
   // Buscar ofertas
   const searchJobs = () => {
     applyFilters();
   };
-  
+
   // Formatear número
   const formatNumber = (number) => {
     return number.toLocaleString();
@@ -249,12 +256,12 @@
 
 
   // Cambiar tipo de trabajo activo
- 
+
   // Aplicar filtros
-  
+
 
   // Buscar ofertas
- 
+
 
   // Inicializar
   onMounted(() => {
@@ -265,7 +272,7 @@
       window.removeEventListener('scroll', handleScroll);
     };
   });
-  
+
   // Observar cambios en la búsqueda
   watch(searchQuery, (newValue, oldValue) => {
     if (newValue === '' && oldValue !== '') {
@@ -273,196 +280,167 @@
       applyFilters();
     }
   });
-  </script>
-  
-  <template>
-    <Layout>
-      <div class="min-h-screen bg-gray-50 flex flex-col">
-        <!-- Hero Section -->
-        <div class="bg-[#193CB8] text-white py-8">
-          <div class="max-w-6xl mx-auto px-4">
-            <div class="flex flex-col md:flex-row items-center mx-auto justify-between">
-              <div class="mb-6 md:mb-0 md:mr-8">
-                <h1 class="text-3xl font-bold mb-2">Encuentra tu próxima oportunidad</h1>
-                <p class="text-blue-100 mb-4">Explora las mejores ofertas de trabajo adaptadas a tu perfil</p>
-                
-                <!-- Search Bar -->
-                <div class="relative max-w-xl">
-                  <div class="flex">
-                    <input 
-                      v-model="searchQuery"
-                      type="text" 
-                      placeholder="Buscar por título, empresa o ubicación..." 
-                      class="w-full px-4 py-3 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 text-white placeholder-gray-200 focus:ring-blue-300 border-1 border-white"
-                      @keyup.enter="searchJobs"
-                    />
-                    <button 
-                      @click="searchJobs"
-                      class="bg-[#193CB8] hover:bg-[#142d8c] px-4 py-3 rounded-r-lg border-1 border-white flex items-center justify-center transition-colors"
-                    >
-                      <i class='bx bx-search text-xl'></i>
-                    </button>
-                  </div>
-                  
-                  <button 
-                    @click="showFilters = !showFilters"
-                    class="absolute right-16 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                  >
+</script>
+
+<template>
+  <Layout>
+    <div class="min-h-screen bg-gray-50 flex flex-col">
+      <!-- Hero Section -->
+      <div class="bg-[#193CB8] text-white py-8">
+        <div class="max-w-6xl mx-auto px-4">
+          <div class="flex flex-col md:flex-row items-center mx-auto justify-between">
+            <div class="mb-6 md:mb-0 md:mr-8">
+              <h1 class="text-3xl font-bold mb-2">Encuentra tu próxima oportunidad</h1>
+              <p class="text-blue-100 mb-4">Explora las mejores ofertas de trabajo adaptadas a tu perfil</p>
+
+              <!-- Search Bar -->
+              <div class="relative max-w-xl">
+                <div class="flex">
+                  <input v-model="searchQuery" type="text" placeholder="Buscar por título, empresa o ubicación..."
+                    class="w-full px-4 py-3 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 text-white placeholder-gray-200 focus:ring-blue-300 border-1 border-white"
+                    @keyup.enter="searchJobs" />
+                  <button @click="searchJobs"
+                    class="bg-[#193CB8] hover:bg-[#142d8c] px-4 py-3 rounded-r-lg border-1 border-white flex items-center justify-center transition-colors">
+                    <i class='bx bx-search text-xl'></i>
                   </button>
                 </div>
+
+                <button @click="showFilters = !showFilters"
+                  class="absolute right-16 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                </button>
               </div>
-              
-              <!-- Stats -->
-              <div class="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20 text-center">
-                <div class="text-3xl font-bold">{{ formatNumber(pagination.total || 0) }}</div>
-                <div class="text-blue-100">Ofertas disponibles</div>
-              </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20 text-center">
+              <div class="text-3xl font-bold">{{ formatNumber(pagination.total || 0) }}</div>
+              <div class="text-blue-100">Ofertas disponibles</div>
             </div>
           </div>
         </div>
-        
-        <!-- Main Content -->
-        <div class="flex-1 py-6">
-          <div class="max-w-6xl mx-auto px-4">
-            <div class="flex flex-col md:flex-row gap-6">
-              <!-- Main Feed -->
-              <div class="flex-1">
-                <!-- Feed Items -->
-                <div class="space-y-6">
-                    <JobCard 
-                    v-for="job in jobOffersList.slice().reverse()" 
-                    :key="job.id"
-                    :jobOffer="job"
-                    :isLiked="likedJobs.has(job.id)"
-                    :isSaved="savedJobs.has(job.id)"
-                    class="job-card"
-                    @view="viewJobOffer"
-                    @apply="applyToJob"
-                    @save="toggleSaveJob"
-                    @like="toggleLikeJob"
-                    @share="shareJob"
-                    />
-                  
-                  <!-- Loading Indicator -->
-                  <div v-if="isLoading" class="flex justify-center py-4">
-                    <div class="animate-pulse flex space-x-2">
-                      <div class="w-2 h-2 bg-[#193CB8] rounded-full"></div>
-                      <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-200"></div>
-                      <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-400"></div>
-                    </div>
-                  </div>
-                  
-                  <!-- End of Results -->
-                  <div v-if="pagination.currentPage >= pagination.lastPage && !isLoading && jobOffersList.length > 0" class="text-center py-8">
-                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <i class='bx bx-check-circle text-3xl text-[#193CB8]'></i>
-                    </div>
-                    <h3 class="text-lg font-medium text-gray-800 mb-2">¡Has visto todas las ofertas!</h3>
-                    <p class="text-gray-500 mb-4">Vuelve más tarde para descubrir nuevas oportunidades</p>
-                    <button 
-                      @click="scrollToTop"
-                      class="text-[#193CB8] font-medium hover:underline flex items-center justify-center mx-auto"
-                    >
-                      <i class='bx bx-chevron-up mr-1'></i>
-                      Volver arriba
-                    </button>
-                  </div>
-                  
-                  <!-- No Results -->
-                  <div v-if="jobOffersList.length === 0 && !isLoading" class="text-center py-8">
-                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <i class='bx bx-search-alt text-3xl text-[#193CB8]'></i>
-                    </div>
-                    <h3 class="text-lg font-medium text-gray-800 mb-2">No se encontraron ofertas</h3>
-                    <p class="text-gray-500 mb-4">Prueba con otros filtros o vuelve más tarde</p>
+      </div>
+
+      <!-- Main Content -->
+      <div class="flex-1 py-6">
+        <div class="max-w-6xl mx-auto px-4">
+          <div class="flex flex-col md:flex-row gap-6">
+            <!-- Main Feed -->
+            <div class="flex-1">
+              <!-- Feed Items -->
+              <div class="space-y-6">
+                <JobCard v-for="job in jobOffersList.slice().reverse()" :key="job.id" :jobOffer="job"
+                  :isLiked="likedJobs.has(job.id)" :isSaved="savedJobs.has(job.id)" class="job-card"
+                  @view="viewJobOffer" @apply="applyToJob" @save="toggleSaveJob" @like="toggleLikeJob"
+                  @share="shareJob" />
+
+                <!-- Loading Indicator -->
+                <div v-if="isLoading" class="flex justify-center py-4">
+                  <div class="animate-pulse flex space-x-2">
+                    <div class="w-2 h-2 bg-[#193CB8] rounded-full"></div>
+                    <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-200"></div>
+                    <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-400"></div>
                   </div>
                 </div>
+
+                <!-- End of Results -->
+                <div v-if="pagination.currentPage >= pagination.lastPage && !isLoading && jobOffersList.length > 0"
+                  class="text-center py-8">
+                  <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class='bx bx-check-circle text-3xl text-[#193CB8]'></i>
+                  </div>
+                  <h3 class="text-lg font-medium text-gray-800 mb-2">¡Has visto todas las ofertas!</h3>
+                  <p class="text-gray-500 mb-4">Vuelve más tarde para descubrir nuevas oportunidades</p>
+                  <button @click="scrollToTop"
+                    class="text-[#193CB8] font-medium hover:underline flex items-center justify-center mx-auto">
+                    <i class='bx bx-chevron-up mr-1'></i>
+                    Volver arriba
+                  </button>
+                </div>
+
+                <!-- No Results -->
+                <div v-if="jobOffersList.length === 0 && !isLoading" class="text-center py-8">
+                  <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class='bx bx-search-alt text-3xl text-[#193CB8]'></i>
+                  </div>
+                  <h3 class="text-lg font-medium text-gray-800 mb-2">No se encontraron ofertas</h3>
+                  <p class="text-gray-500 mb-4">Prueba con otros filtros o vuelve más tarde</p>
+                </div>
               </div>
-              
-              <!-- Sidebar (Desktop) -->
-              <div class="hidden md:block w-80 shrink-0">
-                <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-200 sticky top-20">
-                  <h2 class="text-lg font-bold text-gray-800 mb-3">Categorías</h2>
-                  
-                  <div class="space-y-2">
-                    <button 
-                      v-for="category in featuredCategories" 
-                      :key="category.id"
-                      @click="setCategory(category.id)"
-                      :class="[
+            </div>
+
+            <!-- Sidebar (Desktop) -->
+            <div class="hidden md:block w-80 shrink-0">
+              <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-200 sticky top-20">
+                <h2 class="text-lg font-bold text-gray-800 mb-3">Categorías</h2>
+
+                <div class="space-y-2">
+                  <button v-for="category in featuredCategories" :key="category.id" @click="setCategory(category.id)"
+                    :class="[
                         'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
                         activeCategory === category.id
                           ? 'bg-[#193CB8]/10 text-[#193CB8]'
                           : 'hover:bg-gray-100 text-gray-700'
-                      ]"
-                    >
-                      <i :class="['bx mr-2', category.icon]" :style="{ color: category.color }"></i>
-                      {{ category.name }}
-                    </button>
-                  </div>
-                  
-                  <div class="border-t border-gray-200 my-4"></div>
-                  
-                  <h2 class="text-lg font-bold text-gray-800 mb-3">Tipo de trabajo</h2>
-                  
-                  <div class="space-y-2">
-                    <button 
-                      v-for="type in jobTypes" 
-                      :key="type.id"
-                      @click="setJobType(type.id)"
-                      :class="[
+                      ]">
+                    <i :class="['bx mr-2', category.icon]" :style="{ color: category.color }"></i>
+                    {{ category.name }}
+                  </button>
+                </div>
+
+                <div class="border-t border-gray-200 my-4"></div>
+
+                <h2 class="text-lg font-bold text-gray-800 mb-3">Tipo de trabajo</h2>
+
+                <div class="space-y-2">
+                  <button v-for="type in jobTypes" :key="type.id" @click="setJobType(type.id)" :class="[
                         'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
                         activeJobType === type.id
                           ? 'bg-[#193CB8]/10 text-[#193CB8]'
                           : 'hover:bg-gray-100 text-gray-700'
-                      ]"
-                    >
-                      {{ type.name }}
-                    </button>
-                  </div>
-                  
-                  <div class="border-t border-gray-200 my-4"></div>
-                  
-                  <h2 class="text-lg font-bold text-gray-800 mb-3">Rango salarial</h2>
-                  
-                  <div class="space-y-2">
-                    <button 
-                      v-for="range in salaryRanges" 
-                      :key="range.id"
-                      @click="setSalaryRange(range.id)"
-                      :class="[
+                      ]">
+                    {{ type.name }}
+                  </button>
+                </div>
+
+                <div class="border-t border-gray-200 my-4"></div>
+
+                <h2 class="text-lg font-bold text-gray-800 mb-3">Rango salarial</h2>
+
+                <div class="space-y-2">
+                  <button v-for="range in salaryRanges" :key="range.id" @click="setSalaryRange(range.id)" :class="[
                         'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
                         activeSalaryRange === range.id
                           ? 'bg-[#193CB8]/10 text-[#193CB8]'
                           : 'hover:bg-gray-100 text-gray-700'
-                      ]"
-                    >
-                      {{ range.name }}
-                    </button>
-                  </div>
+                      ]">
+                    {{ range.name }}
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-  
-        <!-- Scroll to Top Button -->
-        <button v-show="showScrollTopButton" @click="scrollToTop"
-          class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#193CB8] text-white shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300 z-50 animate-fade-in">
-          <i class='bx bx-chevron-up text-xl'></i>
-        </button>
-  
-        <!-- Floating Action Button (Mobile) -->
-        <div class="md:hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
-          <button @click="router.get('/ofertas/crear')"
-            class="bg-[#193CB8] text-white px-6 py-3 rounded-full shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300">
-            <i class='bx bx-plus-circle mr-2'></i>
-            Publicar oferta
-          </button>
-        </div>
       </div>
-    </Layout>
-  </template>
+
+      <!-- Scroll to Top Button -->
+      <button v-show="showScrollTopButton" @click="scrollToTop"
+        class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#193CB8] text-white shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300 z-50 animate-fade-in">
+        <i class='bx bx-chevron-up text-xl'></i>
+      </button>
+
+      <!-- Floating Action Button (Mobile) -->
+      <div class="md:hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+        <button @click="router.get('/ofertas/crear')"
+          class="bg-[#193CB8] text-white px-6 py-3 rounded-full shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300">
+          <i class='bx bx-plus-circle mr-2'></i>
+          Publicar oferta
+        </button>
+      </div>
+    </div>
+    <JobConfirmationModal v-model="isJobConfirmationModalOpen" @close="closeJobConfirmationModal"
+      :is-open="isJobConfirmationModalOpen"
+      :job-offer="getJobOffer(selectedJobId)" />
+  </Layout>
+</template>
 
 <style>
   /* Estilos básicos */
@@ -527,13 +505,13 @@
   .job-card {
     animation: slide-up 0.5s ease-out;
   }
-  
+
   /* Delays para animaciones */
   .animation-delay-200 {
     animation-delay: 0.2s;
   }
-  
+
   .animation-delay-400 {
     animation-delay: 0.4s;
   }
-  </style>
+</style>

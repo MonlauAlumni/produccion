@@ -7,28 +7,30 @@ import StandardButton from '@/Components/StandardButton.vue';
 
 const user = computed(() => usePage().props.auth.user);
 
+const pfp = computed(() => user.value?.profile?.profile_picture ?? null);
+
 const props = defineProps({
     settings: {
         type: Array,
         required: true
-    }
+    },
 });
 const username = ref(user.value.name);
 const email = ref(user.value.email);
 
 const t = (key) => {
-  const keys = key.split('.');
-  let value = usePage().props.translations;
-  
-  for (const k of keys) {
-    if (value && typeof value === 'object' && k in value) {
-      value = value[k];
-    } else {
-      return key; 
+    const keys = key.split('.');
+    let value = usePage().props.translations;
+
+    for (const k of keys) {
+        if (value && typeof value === 'object' && k in value) {
+            value = value[k];
+        } else {
+            return key;
+        }
     }
-  }
-  
-  return value;
+
+    return value;
 };
 
 const selectedLanguage = ref(props.settings.language);
@@ -291,9 +293,19 @@ const triggerFileInput = () => {
 
 const uploadProfilePicture = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-        // TODO: Upload file using axios
-        console.log('Uploading:', file);
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('profile_picture', file);
+
+    try {
+        await axios.post('/user/upload-profile-picture', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        // Optionally trigger a page refresh or update the user object
+        console.log('Profile picture uploaded successfully');
+    } catch (error) {
+        console.error('Error uploading profile picture:', error);
     }
 };
 
@@ -421,21 +433,18 @@ const terminateAllSessions = () => {
                 <!-- Profile Picture Section -->
                 <div class="flex items-center mt-4">
                     <div class="relative">
-                        <img v-if="user.profile_picture" :src="profilePictureSrc"
-                            @error="profilePictureSrc = '/images/placeholder.png'"
-                            class="w-24 h-24 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600" />
-
+                        <img v-if="pfp" :src="pfp"
+                            class="w-16 h-16 rounded-full object-cover" alt="Profile Picture" />
                         <div v-else
-                            class="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                            <i class="bx bxs-user text-5xl text-gray-500"></i>
+                            class="w-16 h-16 bg-gray-200 text-gray-500 flex items-center justify-center rounded-full">
+                            <i class="bx bxs-user text-2xl"></i>
                         </div>
                         <div @click="triggerFileInput"
-                            class="absolute bottom-0 right-0 bg-gray-800 text-white p-1 rounded-full cursor-pointer">
-                            <i class="bx bx-camera"></i>
+                            class="absolute inset-0 flex items-center justify-center bg-black/10 hover:bg-black/20 text-white font-semibold rounded-full cursor-pointer opacity-0 hover:opacity-100">
+                            Cambiar
                         </div>
                     </div>
                     <input type="file" ref="fileInputRef" @change="uploadProfilePicture" class="hidden" />
-
                     <div class="ml-4">
                         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Foto de Perfil</h2>
                         <p class="text-gray-600 dark:text-gray-400">Personaliza tu foto de perfil.</p>
@@ -513,7 +522,8 @@ const terminateAllSessions = () => {
                         </h3>
                         <div class="p-4 bg-gray-100 dark:bg-gray-900 rounded-lg shadow-inner">
                             <p class="text-sm text-gray-700 dark:text-gray-300" :style="{ fontSize: fontSize + 'px' }">
-                                Esta es una previsualización del <span class="font-bold" :style="{ color: highlightColor }">tema seleccionado</span>. Cambia las opciones de
+                                Esta es una previsualización del <span class="font-bold"
+                                    :style="{ color: highlightColor }">tema seleccionado</span>. Cambia las opciones de
                                 personalización y
                                 observa cómo se transforma el entorno de tu aplicación.
                             </p>
@@ -842,7 +852,8 @@ const terminateAllSessions = () => {
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-6 px-4 border-t pt-4">SEGURIDAD</h1>
         <p class="px-4 mt-4 dark:text-gray-300">Añade una capa extra de seguridad a tu cuenta.</p>
         <div class="p-4 grid grid-cols-2 gap-4">
-            <div class="bg-white dark:bg-gray-900 p-6 rounded-lg border border-gray-200 text-gray-700 dark:text-gray-300 shadow-xl">
+            <div
+                class="bg-white dark:bg-gray-900 p-6 rounded-lg border border-gray-200 text-gray-700 dark:text-gray-300 shadow-xl">
                 <p class="text-xl font-bold">Autenticación de Dos Factores (2FA)</p>
                 <p class="mt-2 text-justify">
                     La Autenticación de Dos Factores añade una capa extra de seguridad a tu cuenta.
@@ -871,7 +882,8 @@ const terminateAllSessions = () => {
             </div>
 
             <!-- Login History -->
-            <div class="bg-white border border-gray-200 dark:bg-gray-900 p-6 rounded-lg text-gray-700 dark:text-gray-300 shadow-xl">
+            <div
+                class="bg-white border border-gray-200 dark:bg-gray-900 p-6 rounded-lg text-gray-700 dark:text-gray-300 shadow-xl">
                 <p class="text-xl font-bold">Historial de Inicio de Sesión</p>
                 <p class="mt-2 text-justify">
                     Revisa tu historial de inicio de sesión para detectar actividades sospechosas.

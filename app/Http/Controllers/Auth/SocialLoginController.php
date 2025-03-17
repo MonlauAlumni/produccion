@@ -72,7 +72,7 @@ class SocialLoginController extends Controller
                 'microsoft_id' => $microsoftUser->getId(),
                 'password' => bcrypt(Str::random(16)),
                 'role' => 'student',
-                'profile_photo_path' => isset($filename) ? $filename : null,
+                'profile_photo_path' => isset($filename) ? '/storage'.$filename : null,
             ]);
         
             return redirect('/complete-profile');

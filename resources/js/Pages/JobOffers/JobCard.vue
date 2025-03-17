@@ -34,6 +34,8 @@ const emit = defineEmits([
 
 // Formatear rango salarial
 const formatSalaryRange = (min, max) => {
+    min = parseInt(min, 10);
+    max = parseInt(max, 10);
     if (!min && !max) return 'No especificado';
     if (min && max) return `${min.toLocaleString()}€ - ${max.toLocaleString()}€`;
     return min ? `Desde ${min.toLocaleString()}€` : `Hasta ${max.toLocaleString()}€`;

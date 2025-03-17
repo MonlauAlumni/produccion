@@ -15,13 +15,13 @@
     })
     
     const emit = defineEmits(['close'])
-    console.log(props.jobOffer.id)
+   
     const isSubmitting = ref(false)
     
     const applyToJob = () => {
       isSubmitting.value = true
       
-      router.post(`${props.jobOffer.id}/aplicar`), {
+      router.post(`/ofertas/${props.jobOffer.id}/aplicar`), {
         onSuccess: () => {
           isSubmitting.value = false
           closeModal()
