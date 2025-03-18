@@ -370,7 +370,8 @@ const sanitizeHTML = (html) => {
                                             <div class="w-12 h-12 rounded-full flex-shrink-0 relative">
                                                 <img v-if="member.user.profile.profile_picture"
                                                     :src="member.user.profile.profile_picture || '/images/default-avatar.jpg'"
-                                                    :alt="member.user.name" class="w-full h-full object-cover" />
+                                                    :alt="member.user.name"
+                                                    class="w-full h-full object-cover rounded-full" />
                                                 <div v-else
                                                     class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
                                                     <i class='bx bxs-user text-xl'></i>
@@ -380,7 +381,11 @@ const sanitizeHTML = (html) => {
                                                     style="transform: rotate(-30deg);"></i>
                                             </div>
                                             <div>
-                                                <h4 class="font-medium text-gray-800">{{ member.user.name }}</h4>
+                                                <h4>
+                                                    {{ member.user.name + ' ' + member.user.last_name_1 + (' ' +
+                                                        member.user.last_name_2 ?? '') }}
+
+                                                </h4>
                                                 <p class="text-xs text-gray-500">Administrador</p>
                                             </div>
                                         </div>
@@ -392,7 +397,8 @@ const sanitizeHTML = (html) => {
 
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div v-for="member in regularMembers" :key="member.id"
-                                            class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                                          @click="router.get('/perfil/' + member.user.profile.slang)"
+                                            class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
                                             <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
                                                 <img v-if="member.user.profile_photo_url"
                                                     :src="member.user.profile_photo_url || '/images/default-avatar.jpg'"
@@ -403,7 +409,8 @@ const sanitizeHTML = (html) => {
                                                 </div>
                                             </div>
                                             <div class="flex-1">
-                                                <h4 class="font-medium text-gray-800">{{ member.user.name }}</h4>
+                                                {{ member.user.name + ' ' + member.user.last_name_1 + (' ' +
+                                                    member.user.last_name_2 ?? '') }}
                                                 <p class="text-xs text-gray-500">Miembro desde {{
                                                     formatDate(member.created_at) }}</p>
                                             </div>
@@ -524,8 +531,8 @@ const sanitizeHTML = (html) => {
                                         class="flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer"
                                         @click="router.get('/perfil/' + member.user.profile.slang)">
                                         <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                                            <img v-if="member.user.profile_picture"
-                                                :src="member.user.profile_picture || '/images/default-avatar.jpg'"
+                                            <img v-if="member.user.profile.profile_picture"
+                                                :src="member.user.profile.profile_picture || '/images/default-avatar.jpg'"
                                                 :alt="member.user.name" class="w-full h-full object-cover" />
                                             <div v-else
                                                 class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
