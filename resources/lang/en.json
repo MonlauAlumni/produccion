@@ -1,0 +1,135 @@
+{
+    "account": {
+      "title": "ACCOUNT",
+      "description": "Manage your account information.",
+      "update_info": "Update Information",
+      "updating": "Updating...",
+      "change_password": "Change Password",
+      "info_updated": "Information successfully updated.",
+      "username": "Username",
+      "email": "Email",
+      "profile_picture": {
+        "title": "Profile Picture",
+        "description": "Customize your profile picture."
+      }
+    },
+    "appearance": {
+      "title": "APPEARANCE",
+      "theme": "THEME",
+      "description": "Customize your experience by choosing the display mode and configuring additional options that suit your style.",
+      "dark_mode": "Dark Mode",
+      "advanced": {
+        "title": "Advanced Customization",
+        "description": "Explore additional options to configure your interface, such as accent color selection and font settings to improve readability.",
+        "updated": "Appearance successfully updated.",
+        "accent_color": "Accent Color",
+        "font_size": "Post Font Size",
+        "reset": "Reset",
+        "preview": {
+          "title": "Theme Preview",
+          "description": "This is a preview of the selected theme. Change the customization options and observe how your application environment transforms.",
+          "example": "Example",
+          "update": "Update appearance"
+        },
+        "colors": {
+          "black": "Black",
+          "blue": "Blue",
+          "red": "Red",
+          "green": "Green",
+          "purple": "Purple"
+        }
+      }
+    },
+    "language": {
+      "title": "LANGUAGE",
+      "description": "Select your language:"
+    },
+    "social": {
+      "title": "SOCIAL",
+      "email_notifications": {
+        "title": "Email Notifications",
+        "allow_emails": "Allow emails",
+        "mentions": "Mentions",
+        "comments": "Comments",
+        "direct_messages": "Direct messages",
+        "system_updates": "System updates"
+      },
+      "profiles": {
+        "title": "Social Profiles",
+        "description": "Connect your social profiles to share content and enhance your experience.",
+        "linkedin_placeholder": "LinkedIn URL",
+        "github_placeholder": "GitHub Username",
+        "website_placeholder": "Personal website"
+      },
+      "connected_accounts": {
+        "title": "Connected Accounts",
+        "description": "Connect your accounts for easier login.",
+        "connect": "Connect",
+        "disconnect": "Disconnect"
+      }
+    },
+    "privacy": {
+      "title": "PRIVACY",
+      "settings": {
+        "title": "Privacy Settings",
+        "description": "Control who can see your information and how it's used.",
+        "profile_visibility": "Profile Visibility",
+        "visibility_options": {
+          "public": "Public - Visible to everyone",
+          "contacts": "Contacts - Only visible to contacts",
+          "private": "Private - Only visible to you"
+        },
+        "show_email": "Show email",
+        "show_activity": "Show recent activity",
+        "allow_tagging": "Allow tagging"
+      },
+      "sessions": {
+        "title": "Active Sessions",
+        "description": "Manage your active sessions and log out from remote devices.",
+        "current": "Current",
+        "last_activity": "Last activity",
+        "close": "Close",
+        "close_all": "Close all other sessions"
+      }
+    },
+    "security": {
+      "title": "SECURITY",
+      "description": "Add an extra layer of security to your account.",
+      "2fa": {
+        "title": "Two-Factor Authentication (2FA)",
+        "description": "Two-Factor Authentication adds an extra layer of security to your account. By requiring a second form of verification, it helps prevent unauthorized access, even if someone knows your password.",
+        "description2": "Once enabled, you'll be asked for a verification code sent to your device each time you log in. You can use an authenticator app to complete this process.",
+        "enable": "ENABLE 2FA",
+        "disable": "DISABLE 2FA (NOT RECOMMENDED)",
+        "qr_code": {
+          "title": "Scan this QR Code",
+          "description": "Use your authenticator app to scan the code and enable 2FA",
+          "cancel": "Cancel",
+          "confirm": "Confirm"
+        },
+        "disable_warning": {
+          "title": "WARNING: Disable 2FA",
+          "not_recommended": "This action is not recommended",
+          "description1": "Disabling Two-Factor Authentication will significantly reduce the security of your account. Without 2FA, your account will be more vulnerable to unauthorized access.",
+          "description2": "We strongly recommend keeping 2FA enabled to protect your personal information and data.",
+          "cancel": "Cancel",
+          "wait": "Wait",
+          "seconds": "s",
+          "confirm": "I understand, disable 2FA"
+        }
+      },
+      "login_history": {
+        "title": "Login History",
+        "description": "Review your login history to detect suspicious activities. If you observe logins you don't recognize, change your password immediately and enable two-factor authentication.",
+        "success": "Successful",
+        "failed": "Failed",
+        "view_all": "View Complete History"
+      }
+    },
+    "errors": {
+      "general": "An error occurred while updating your information.",
+      "appearance": "Unexpected error updating appearance."
+    }
+  }
+  
+  

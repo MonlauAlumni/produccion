@@ -39,9 +39,15 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
             'training_area' => $request->training_area,
         ]);
+
+        $user->settings()->create();
+        $user->profile()->create();
+
+     
+
         Auth::login($user);
         $user->assignRole('alumne');
-  
+     
         return redirect('/home')->with('success', 'Perfil completado con éxito. ¡Por favor, inicia sesión!');
     }
 }

@@ -8,12 +8,15 @@
       </a>
     </div>
     <ul class="flex gap-4 items-center">
-      <li v-if="!$page.props.auth.user">
-        <a href="/login" class="text-white text-lg font-semibold">Iniciar Sesión</a>
+      <li v-if="!auth?.user">
+        <a href="/login-monlau" class="text-white hover:text-white/90 transition-colors font-medium flex items-center">
+          <i class='bx bx-log-in mr-1'></i> Iniciar Sesión
+        </a>
       </li>
-      <li v-if="!$page.props.auth.user">
-        <a href="/register"
-          class="text-white text-lg p-2 border-solid border-2 border-white rounded-3xl font-semibold">Registrarse</a>
+      <li v-if="!auth?.user">
+        <a href="/register" class="bg-white text-black px-4 py-2 rounded-md shadow-sm hover:bg-blue-50 transition-colors font-medium flex items-center">
+          <i class='bx bx-user-plus mr-1'></i> Registrarse
+        </a>
       </li>
     </ul>
   </nav>
