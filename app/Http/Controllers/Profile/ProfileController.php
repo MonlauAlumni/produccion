@@ -17,17 +17,19 @@ class ProfileController extends Controller
 
     public function profile($slang)
     {
-
         $user = User::whereHas('profile', function ($query) use ($slang) {
             $query->where('slang', $slang);
         })->with('profile')->first();
+
+        
+    
 
         if (!$user) {
             return Inertia::render('404_page');
         }
 
         $authUserId = auth()->user()->id;
-        $user = User::with('profile')->find($authUserId);
+      
 
         $authUser = Auth::user();
 
