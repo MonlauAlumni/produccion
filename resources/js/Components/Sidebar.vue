@@ -87,16 +87,8 @@ export default {
                   <i class='bx bxs-user text-xl'></i>
                 </div>
             </div>
-            
-
-            
-
-
-
             <div v-if="user?.company"
               class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white"></div>
-
-
           </div>
           <div>
               <p @click.prevent="navigateTo(`/empresa/${user.company.slang}`)" v-if="user.company" class="font-semibold text-gray-800 hover:underline cursor-pointer">{{ user.company.company_name }}</p>

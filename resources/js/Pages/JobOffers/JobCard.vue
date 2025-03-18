@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps, defineEmits, computed } from 'vue';
-import { usePage } from '@inertiajs/vue3';
+import { usePage, router } from '@inertiajs/vue3';
 const page = usePage()
 const settings = computed(() => page.props.auth.user_settings)
 
@@ -77,7 +77,8 @@ const applyToJob = (id) => {
 };
 
 const toggleSaveJob = (id) => {
-    emit('save', id);
+   emit('save', id);
+    
 };
 
 const toggleLikeJob = (id) => {
@@ -215,10 +216,7 @@ const getCategoryLabel = (category) => {
                     ]">
                         <i :class="[isSaved ? 'bx bxs-bookmark' : 'bx bx-bookmark']"></i>
                     </button>
-                    <button @click="shareJob(jobOffer.id)"
-                        class="p-2 flex justify-center items-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors">
-                        <i class='bx bx-share-alt'></i>
-                    </button>
+                   
                 </div>
             </div>
 
