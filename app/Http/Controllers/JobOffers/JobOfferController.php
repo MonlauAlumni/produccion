@@ -52,7 +52,7 @@ class JobOfferController extends Controller
 
     public function store(Request $request)
     {
-        dd("asada");
+
         // Crear la oferta de trabajo
         $jobOffer = JobOffer::create([
             'company_id' => auth()->user()->company->id,
@@ -104,16 +104,17 @@ class JobOfferController extends Controller
         
         $appliedOffers = $appliedOffersQuery->paginate(5)->withQueryString();
         
-        // // Get saved job offers with pagination
-        // $savedOffers = $user->savedJobOffers()
-        //     ->with('company')
-        //     ->orderBy('created_at', 'desc')
-        //     ->paginate(5)
-        //     ->withQueryString();
+        // // // Get saved job offers with pagination
+     $savedOffers = $user->savedJobOffers()
+            ->with('company')
+          ->orderBy('created_at', 'desc')
+         ->paginate(5)
+           ->withQueryString();
+         
         
         return Inertia::render('JobOffers/MyJobOffers', [
             'appliedOffers' => $appliedOffers,
-           // 'savedOffers' => $savedOffers,
+            'savedOffers' => $savedOffers,
             'activeTab' => $tab,
             'activeStatus' => $status ?? 'all'
         ]);
