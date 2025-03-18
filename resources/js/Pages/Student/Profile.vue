@@ -51,7 +51,7 @@
   
 
   // Default banner if none is provided
-  const defaultBanner = "/images/default-student-banner.jpg";
+  const defaultBanner = "/public/images/default-banner.jpg";
   </script>
   
   <template>
@@ -62,6 +62,10 @@
           <img v-if="profile.banner_url"
             :src="profile.banner_url || defaultBanner" 
             :alt="profile.banner_url" 
+            class="w-full h-full object-cover opacity-80"
+          />
+          <img v-else
+            src="/public/images/default-banner.jpg" 
             class="w-full h-full object-cover opacity-80"
           />
           <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
