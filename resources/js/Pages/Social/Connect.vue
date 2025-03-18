@@ -1,6 +1,6 @@
 <script setup>
 import { ref, defineProps } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import Layout from '@/Components/Layout.vue';
 import GroupCard from '@/Components/Social/GroupCard.vue';
 
@@ -8,6 +8,7 @@ import GroupCard from '@/Components/Social/GroupCard.vue';
 const searchQuery = ref('');
 const activeTab = ref('descubrir');
 const showMobileMenu = ref(false);
+const user = usePage().props.auth.user;
 
 const trendingTopics = [
     { id: 1, name: 'Eventos de networking', count: 28 },
@@ -26,7 +27,8 @@ const props = defineProps({
     popularGroups: {
         type: Array,
         user: Object,
-    }
+    },
+
 });
 
 const groups = ref(props.groups);
@@ -180,6 +182,13 @@ const suggestedConnections = [
         mutual_connections: 3
     }
 ];
+const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        console.log('File selected:', file.name);
+    }
+};
+
 </script>
 
 <template>
@@ -254,7 +263,7 @@ const suggestedConnections = [
                                                     <img :src="story.user.profile_picture" :alt="story.user.name"
                                                         class="w-8 h-8 rounded-full object-cover mr-2" />
                                                     <span class="text-sm font-medium text-gray-800">{{ story.user.name
-                                                        }}</span>
+                                                    }}</span>
                                                 </div>
                                                 <h3 class="font-bold text-gray-800 mb-2">{{ story.title }}</h3>
                                                 <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ story.preview }}
@@ -343,29 +352,32 @@ const suggestedConnections = [
                                 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                                     <div class="p-4">
                                         <div class="flex items-center">
-                                            <img :src="'/placeholder.svg?height=40&width=40'" alt="Tu perfil"
+                                            <img :src="user.profile.profile_picture" alt="Tu perfil"
                                                 class="w-10 h-10 rounded-full object-cover mr-3" />
-                                            <div
-                                                class="flex-1 bg-gray-100 rounded-full px-4 py-2 text-gray-500 cursor-pointer hover:bg-gray-200 transition-colors">
-                                                ¿Qué quieres compartir hoy?
-                                            </div>
+                                            <input v-model="searchQuery" type="text"
+                                                placeholder="¿Qué quieres compartir hoy?"
+                                                class="flex-1 bg-gray-100 rounded-full px-4 py-2 text-gray-500 focus:outline-none hover:bg-gray-200 transition-colors" />
                                         </div>
                                         <div class="flex mt-3 border-t border-gray-100 pt-3">
-                                            <button
+                                            <label
                                                 class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
                                                 <i class='bx bx-image-alt mr-1 text-blue-500'></i> Foto
-                                            </button>
-                                            <button
+                                                <input type="file" class="hidden" @change="handleFileUpload" />
+                                            </label>
+                                            <label
                                                 class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
                                                 <i class='bx bx-video mr-1 text-green-500'></i> Video
-                                            </button>
+                                                <input type="file" class="hidden" @change="handleFileUpload" />
+                                            </label>
                                             <button
                                                 class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
                                                 <i class='bx bx-calendar-event mr-1 text-orange-500'></i> Evento
+                                                <input type="text" class="hidden" @change="handleEventInput" />
                                             </button>
                                             <button
                                                 class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
                                                 <i class='bx bx-news mr-1 text-purple-500'></i> Artículo
+                                                <input type="text" class="hidden" @change="handleArticleInput" />
                                             </button>
                                         </div>
                                     </div>
@@ -406,21 +418,25 @@ const suggestedConnections = [
                             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                                 <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                                     <h2 class="text-lg font-bold text-gray-800">Grupos Populares</h2>
-                                    <a @click="activeTab = 'grupos'" class="text-[#193CB8] text-sm hover:underline cursor-ponter">Ver todos</a>
+                                    <a @click="activeTab = 'grupos'"
+                                        class="text-[#193CB8] text-sm hover:underline cursor-ponter">Ver todos</a>
                                 </div>
                                 <div class="p-4">
-                                    <div v-for="group in popularGroups" :key="group.id" @click="router.get('/grupos/' + group.slug)"
+                                    <div v-for="group in popularGroups" :key="group.id"
+                                        @click="router.get('/grupos/' + group.slug)"
                                         class="flex items-center gap-3 py-3 border-b border-gray-100 cursor-pointer hover:bg-gray-100 last:border-0 ">
                                         <img v-if="group.group_logo" :src="group.group_logo" :alt="group.name"
                                             class="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
 
-                                        <div v-else class="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center text-gray-500">
+                                        <div v-else
+                                            class="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center text-gray-500">
                                             <i class='bx bx-group text-xl'></i>
                                         </div>
                                         <div class="flex-1">
                                             <h3 class="font-bold text-gray-800">{{ group.name }}</h3>
                                             <div class="flex items-center justify-between text-gray-500 text-sm mt-1">
-                                                <span>{{ group.members_count }} {{ group.members_count == 1 ? 'miembro' : 'miembros' }}</span>
+                                                <span>{{ group.members_count }} {{ group.members_count == 1 ? 'miembro'
+                                                    : 'miembros' }}</span>
                                                 <span
                                                     class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">
                                                     {{ group.category }}

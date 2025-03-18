@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, computed, onMounted, nextTick, onUnmounted, watch } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import Layout from '@/Components/Layout.vue';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
@@ -11,6 +11,20 @@ const props = defineProps({
     group: Object,
     isAdmin: Boolean,
     isMember: Boolean,
+    currentPage: {
+        type: Number,
+        default: 1
+    }
+});
+
+const currentPage = ref(1);
+const isLoadingMore = ref(false);
+const loadMoreTrigger = ref(null);
+const observer = ref(null);
+const hasMorePosts = ref(true);
+
+const displayedPosts = computed(() => {
+    return props.group.posts || [];
 });
 
 const page = usePage();
@@ -172,6 +186,70 @@ const formatDate = (dateString) => {
 
 const sanitizeHTML = (html) => {
     return DOMPurify.sanitize(html);
+};
+
+watch(() => props.group, (newGroup) => {
+    if (newGroup) {
+        hasMorePosts.value = newGroup.has_more_posts === true;
+    }
+}, { immediate: true });
+
+onMounted(() => {
+    nextTick(() => {
+        setupIntersectionObserver();
+    });
+});
+
+onUnmounted(() => {
+    if (observer.value) {
+        observer.value.disconnect();
+    }
+});
+
+const setupIntersectionObserver = () => {
+    if (observer.value) {
+        observer.value.disconnect();
+    }
+    
+    observer.value = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && !isLoadingMore.value && hasMorePosts.value) {
+            loadMorePosts();
+        }
+    }, { threshold: 0.1 });
+    
+    if (loadMoreTrigger.value) {
+        observer.value.observe(loadMoreTrigger.value);
+    }
+};
+
+const loadMorePosts = () => {
+    if (isLoadingMore.value || !hasMorePosts.value) return;
+    
+    isLoadingMore.value = true;
+    const nextPage = currentPage.value + 1;
+    
+    fetch(`/grupos/${props.group.slug}/posts?page=${nextPage}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.posts && data.posts.length > 0) {
+                props.group.posts = data.posts;
+                hasMorePosts.value = data.has_more_posts;
+                currentPage.value = nextPage;
+            } else {
+                hasMorePosts.value = false;
+            }
+            
+            isLoadingMore.value = false;
+            nextTick(() => {
+                if (loadMoreTrigger.value && observer.value) {
+                    observer.value.observe(loadMoreTrigger.value);
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error loading more posts:', error);
+            isLoadingMore.value = false;
+        });
 };
 </script>
 
@@ -340,10 +418,16 @@ const sanitizeHTML = (html) => {
                                     </div>
                                 </div>
 
-                                <div v-if="group.posts && group.posts.length > 0" class="space-y-4 mt-4">
-                                    <PostCard v-for="post in group.posts" :key="post.id" :post="post"
+                                <div v-if="displayedPosts.length > 0" class="space-y-4 mt-4">
+                                    <PostCard v-for="post in displayedPosts" :key="post.id" :post="post"
                                         :formatDate="formatDate" :sanitizeHTML="sanitizeHTML" :isMember="isMember"
                                         :auth="auth" />
+
+                                    <div v-if="isLoadingMore" class="text-center py-4">
+                                        <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#193CB8] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+                                    </div>
+
+                                    <div ref="loadMoreTrigger" class="h-10"></div>
                                 </div>
 
                                 <div v-else
@@ -397,7 +481,7 @@ const sanitizeHTML = (html) => {
 
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div v-for="member in regularMembers" :key="member.id"
-                                          @click="router.get('/perfil/' + member.user.profile.slang)"
+                                            @click="router.get('/perfil/' + member.user.profile.slang)"
                                             class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
                                             <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
                                                 <img v-if="member.user.profile_photo_url"
@@ -715,3 +799,4 @@ const sanitizeHTML = (html) => {
     color: #193CB8;
 }
 </style>
+

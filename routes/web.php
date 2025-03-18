@@ -93,6 +93,7 @@ Route::middleware('auth')->group(function() {
     Route::post('/grupos/{slug}/join', [App\Http\Controllers\Social\GroupController::class, 'joinGroup'])->name('groups.join');
     Route::post('/grupos/{slug}/invite', [App\Http\Controllers\Social\GroupController::class, 'inviteMember'])->name('groups.invite');
     Route::post('/grupos/{groupId}/posts', [GroupController::class, 'storePost'])->name('group.storePost');
+    Route::get('/grupos/{slug}/posts', [GroupController::class, 'loadMorePosts'])->name('grupos.load-more-posts');
     Route::post('/grupos/{groupId}/posts/{postId}/comment', [GroupController::class, 'postComment'])->name('group.postComment');
 
 
