@@ -55,8 +55,8 @@
         <div v-if="post.comments && post.comments.length > 0" class="mt-4 pt-2 border-t border-gray-100 space-y-3">
           <div v-for="comment in post.comments" :key="comment.id" class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-              <img v-if="comment.user.profile_picture"
-                :src="comment.user.profile_picture || '/images/default-avatar.jpg'" :alt="comment.user.name"
+              <img v-if="comment.user.profile.profile_picture"
+                :src="comment.user.profile.profile_picture || '/images/default-avatar.jpg'" :alt="comment.user.name"
                 class="w-full h-full object-cover" />
               <div v-else
                 class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
