@@ -150,24 +150,22 @@ const closeJobConfirmationModal = () => {
     }
   };
 
-  // Guardar oferta
+
   const toggleSaveJob = (jobId) => {
-    if (savedJobs.value.has(jobId)) {
-      savedJobs.value.delete(jobId);
-    } else {
-      savedJobs.value.add(jobId);
-      // Mostrar notificación o animación
-    }
+    router.post(`ofertas/${jobId}/guardar`), {
+        onSuccess: () => {
+          if (savedJobs.value.has(jobId)) {
+            savedJobs.value.delete(jobId);
+          } else {
+            savedJobs.value.add(jobId);
+          }
+          console.log(savedJobs.value);
+        },
+
+    };
   };
 
-  // Like a una oferta
-  const toggleLikeJob = (jobId) => {
-    if (likedJobs.value.has(jobId)) {
-      likedJobs.value.delete(jobId);
-    } else {
-      likedJobs.value.add(jobId);
-    }
-  };
+ 
 
   // Ver detalle de oferta
   const viewJobOffer = (jobId) => {
@@ -252,16 +250,7 @@ const closeJobConfirmationModal = () => {
     return number.toLocaleString();
   };
 
-  // Cambiar categoría activa
-
-
-  // Cambiar tipo de trabajo activo
-
-  // Aplicar filtros
-
-
-  // Buscar ofertas
-
+  
 
   // Inicializar
   onMounted(() => {
@@ -329,7 +318,7 @@ const closeJobConfirmationModal = () => {
               <!-- Feed Items -->
               <div class="space-y-6">
                 <JobCard v-for="job in jobOffersList.slice().reverse()" :key="job.id" :jobOffer="job"
-                  :isLiked="likedJobs.has(job.id)" :isSaved="savedJobs.has(job.id)" class="job-card"
+                  :isSaved="savedJobs.has(job.id)" class="job-card"
                   @view="viewJobOffer" @apply="applyToJob" @save="toggleSaveJob" @like="toggleLikeJob"
                   @share="shareJob" />
 

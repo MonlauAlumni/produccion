@@ -19,19 +19,22 @@
   const isSubmitting = ref(false)
 
   const applyToJob = () => {
-    isSubmitting.value = true
+    isSubmitting.value = true;
+    console.log(props.jobOffer.id);
 
-    router.post(`/ofertas/${props.jobOffer.id}/aplicar`), {
-      onSuccess: () => {
-        isSubmitting.value = false
-        closeModal()
-      },
-      onError: () => {
-        isSubmitting.value = false
-      }
-    }
+    // Aquí hemos corregido la sintaxis de la solicitud POST
+    router.post(`/ofertas/${props.jobOffer.id}/aplicar`, {}, {
+        onSuccess: () => {
+            isSubmitting.value = false;
+            closeModal(); // Cerrar el modal después de que la solicitud sea exitosa
+        },
+        onError: () => {
+            isSubmitting.value = false;
+            closeModal(); // Cerrar el modal en caso de error también
+        }
+    });
+}
 
-  }
 
   const closeModal = () => {
 
