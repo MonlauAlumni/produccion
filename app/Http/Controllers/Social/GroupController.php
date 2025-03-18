@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Group;
 use App\Models\GroupUser;
 use App\Models\GroupPost;
+use App\Models\GroupPostComment;
 use Mews\Purifier\Facades\Purifier;
 use Illuminate\Support\Facades\Auth;
 
@@ -136,10 +137,31 @@ class GroupController extends Controller
             'group_id' => $groupId,
             'user_id' => Auth::id(),
             'content' => $sanitizedContent,
-            'image' => '/storage/'.$imagePath,
+            'image' => $imagePath ? '/storage/'.$imagePath : null,
         ]);
 
         return redirect()->back()->with('success', 'Post creado con éxito!');
+    }
+
+    public function postComment(Request $request){
+
+        $request->validate([
+            'comment' => 'required|string',
+        ]);
+        $post = GroupPost::findOrFail($request->postId);
+        $post->comments_count++;
+        $post->save();
+
+        $comment = GroupPostComment::create([
+            'group_post_id' => $request->postId,
+            'user_id' => Auth::id(),
+            'content' => $request->comment,
+            'created_at' => now(),
+            'updated_at' => now(),
+            'deleted_at' => null,
+        ]);
+
+        return redirect()->back()->with('success', 'Comentario creado con éxito!');
     }
 
     public function joinGroup(Request $request) {

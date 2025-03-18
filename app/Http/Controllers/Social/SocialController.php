@@ -11,10 +11,14 @@ class SocialController extends Controller
 {
     public function show()
     {
+        $popularGroups = Group::where('privacy', 'public')
+            ->orderBy('members_count', 'desc')
+            ->take(3)
+            ->get();
         return Inertia::render('Social/Connect', [
             'groups' => Group::paginate(10)->items(),
+            'popularGroups' => $popularGroups,
         ]);
         
     }
-
 }

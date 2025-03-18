@@ -179,7 +179,9 @@ const sanitizeHTML = (html) => {
     <Layout :auth="auth">
         <div class="min-h-screen bg-gray-50 flex flex-col">
             <div class="relative w-full h-64 md:h-80 bg-gradient-to-r from-[#193CB8] to-[#2748c6] overflow-hidden">
-                <img :src="group.group_banner || '/storage/images/default-banner.jpg'" :alt="group.name + ' banner'"
+                <img v-if="group.group_banner" :src="group.group_banner || '/storage/images/default-banner.jpg'"
+                    :alt="group.name + ' banner'" class="w-full h-full object-cover opacity-80" />
+                <img v-else src="/public/images/default-group-banner.jpg"
                     class="w-full h-full object-cover opacity-80" />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
 
@@ -202,8 +204,13 @@ const sanitizeHTML = (html) => {
                                 <div class="relative">
                                     <div
                                         class="w-24 h-24 rounded-xl overflow-hidden border-4 border-white bg-white shadow-md">
-                                        <img :src="group.group_logo || '/images/default-logo.jpg'"
+                                        <img v-if="group.group_logo"
+                                            :src="group.group_logo || '/images/default-logo.jpg'"
                                             :alt="group.group_name + ' logo'" class="w-full h-full object-cover" />
+                                        <div v-else
+                                            class="w-full h-full rounded-lg bg-gray-200 flex items-center justify-center text-gray-500">
+                                            <i class='bx bx-group text-4xl'></i>
+                                        </div>
                                     </div>
 
                                     <label v-if="isAdmin"
@@ -359,10 +366,18 @@ const sanitizeHTML = (html) => {
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div v-for="member in adminMembers" :key="member.id"
                                             @click="router.get('/perfil/' + member.user.profile.slang)"
-                                            class="flex items-center gap-3 p-3 cursor-pointer border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
-                                            <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-                                                <img :src="member.user.profile.profile_picture || '/images/default-avatar.jpg'"
+                                            class="flex items-center gap-3 p-3 cursor-pointer border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors relative">
+                                            <div class="w-12 h-12 rounded-full flex-shrink-0 relative">
+                                                <img v-if="member.user.profile.profile_picture"
+                                                    :src="member.user.profile.profile_picture || '/images/default-avatar.jpg'"
                                                     :alt="member.user.name" class="w-full h-full object-cover" />
+                                                <div v-else
+                                                    class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
+                                                    <i class='bx bxs-user text-xl'></i>
+                                                </div>
+                                                <i v-if="member.role === 'admin'"
+                                                    class='bx bxs-crown text-yellow-500 absolute -top-2 text-xl'
+                                                    style="transform: rotate(-30deg);"></i>
                                             </div>
                                             <div>
                                                 <h4 class="font-medium text-gray-800">{{ member.user.name }}</h4>
@@ -379,8 +394,13 @@ const sanitizeHTML = (html) => {
                                         <div v-for="member in regularMembers" :key="member.id"
                                             class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
                                             <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-                                                <img :src="member.user.profile_photo_url || '/images/default-avatar.jpg'"
+                                                <img v-if="member.user.profile_photo_url"
+                                                    :src="member.user.profile_photo_url || '/images/default-avatar.jpg'"
                                                     :alt="member.user.name" class="w-full h-full object-cover" />
+                                                <div v-else
+                                                    class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
+                                                    <i class='bx bxs-user text-xl'></i>
+                                                </div>
                                             </div>
                                             <div class="flex-1">
                                                 <h4 class="font-medium text-gray-800">{{ member.user.name }}</h4>
@@ -501,10 +521,16 @@ const sanitizeHTML = (html) => {
 
                                 <div class="space-y-3">
                                     <div v-for="member in adminMembers.slice(0, 3)" :key="member.id"
-                                        class="flex items-center gap-3">
+                                        class="flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer"
+                                        @click="router.get('/perfil/' + member.user.profile.slang)">
                                         <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                                            <img :src="member.user.profile_photo_url || '/images/default-avatar.jpg'"
+                                            <img v-if="member.user.profile_picture"
+                                                :src="member.user.profile_picture || '/images/default-avatar.jpg'"
                                                 :alt="member.user.name" class="w-full h-full object-cover" />
+                                            <div v-else
+                                                class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
+                                                <i class='bx bxs-user text-xl'></i>
+                                            </div>
                                         </div>
                                         <div>
                                             <h4 class="font-medium text-gray-800">{{ member.user.name }}</h4>
@@ -515,7 +541,7 @@ const sanitizeHTML = (html) => {
 
                                 <div class="mt-4 text-center">
                                     <button @click="activeTab = 'miembros'"
-                                        class="text-sm text-[#193CB8] hover:underline">
+                                        class="text-sm text-[#193CB8] hover:underline cursor-pointer">
                                         Ver todos los miembros
                                     </button>
                                 </div>

@@ -191,7 +191,7 @@ const submitForm = () => {
 
 // Cancelar y volver
 const cancelAndReturn = () => {
-    router.visit('/alumni-connect');
+    router.visit('/connect');
 };
 </script>
 

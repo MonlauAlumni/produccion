@@ -22,10 +22,15 @@ const props = defineProps({
         type: Array,
         user: Object,
 
+    },
+    popularGroups: {
+        type: Array,
+        user: Object,
     }
 });
 
 const groups = ref(props.groups);
+const popularGroups = ref(props.popularGroups);
 
 const upcomingEvents = [
     {
@@ -48,29 +53,6 @@ const upcomingEvents = [
     }
 ];
 
-const popularGroups = [
-    {
-        id: 1,
-        name: 'Emprendedores Alumni',
-        members: 156,
-        activity: 'Alta',
-        image: '/placeholder.svg?height=60&width=60'
-    },
-    {
-        id: 2,
-        name: 'Tech & Innovación',
-        members: 124,
-        activity: 'Media',
-        image: '/placeholder.svg?height=60&width=60'
-    },
-    {
-        id: 3,
-        name: 'Marketing Digital',
-        members: 98,
-        activity: 'Alta',
-        image: '/placeholder.svg?height=60&width=60'
-    }
-];
 
 const alumniProfiles = [
     {
@@ -424,20 +406,24 @@ const suggestedConnections = [
                             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                                 <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                                     <h2 class="text-lg font-bold text-gray-800">Grupos Populares</h2>
-                                    <a href="#" class="text-[#193CB8] text-sm hover:underline">Ver todos</a>
+                                    <a @click="activeTab = 'grupos'" class="text-[#193CB8] text-sm hover:underline cursor-ponter">Ver todos</a>
                                 </div>
-                                <div class="p-4 space-y-4">
-                                    <div v-for="group in popularGroups" :key="group.id"
-                                        class="flex items-center gap-3 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
-                                        <img :src="group.image" :alt="group.name"
+                                <div class="p-4">
+                                    <div v-for="group in popularGroups" :key="group.id" @click="router.get('/grupos/' + group.slug)"
+                                        class="flex items-center gap-3 py-3 border-b border-gray-100 cursor-pointer hover:bg-gray-100 last:border-0 ">
+                                        <img v-if="group.group_logo" :src="group.group_logo" :alt="group.name"
                                             class="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
+
+                                        <div v-else class="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center text-gray-500">
+                                            <i class='bx bx-group text-xl'></i>
+                                        </div>
                                         <div class="flex-1">
                                             <h3 class="font-bold text-gray-800">{{ group.name }}</h3>
                                             <div class="flex items-center justify-between text-gray-500 text-sm mt-1">
-                                                <span>{{ group.members }} miembros</span>
+                                                <span>{{ group.members_count }} {{ group.members_count == 1 ? 'miembro' : 'miembros' }}</span>
                                                 <span
                                                     class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">
-                                                    Actividad {{ group.activity }}
+                                                    {{ group.category }}
                                                 </span>
                                             </div>
                                         </div>
