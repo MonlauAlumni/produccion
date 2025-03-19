@@ -244,7 +244,6 @@ const loadMorePosts = () => {
     router.visit(`/grupos/${groupSlug.value}?page=${nextPage}`, {
         preserveState: true,
         preserveScroll: true,
-        only: ['group.posts', 'group.has_more_posts'],
         replace: true,
         onBefore: () => {
             return true;
