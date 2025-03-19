@@ -6,6 +6,8 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import { QuillEditor } from '@vueup/vue-quill';
 import DOMPurify from 'dompurify';
 import PostCard from '@/Components/Social/PostCard.vue';
+import GroupPostTab from '@/Components/Social/GroupPostTab.vue';
+
 
 const props = defineProps({
     group: Object,
@@ -396,79 +398,8 @@ const loadMorePosts = () => {
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="md:col-span-2 space-y-6">
-                            <div v-if="activeTab === 'publicaciones'">
-                                <div v-if="isMember" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                                    <div class="flex items-start gap-3">
-                                        <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                                            <img v-if="auth.user.profile && auth.user.profile.profile_picture"
-                                                :src="auth.user.profile.profile_picture || '/images/default-avatar.jpg'"
-                                                alt="Tu avatar" class="w-full h-full object-cover" />
-                                        </div>
-                                        <div class='flex-1'>
-                                            <div class="mb-3">
-                                                <QuillEditor ref="quillEditorRef" v-model:content="content"
-                                                    :options="editorOptions" contentType="html" theme="snow" />
-                                            </div>
-
-                                            <div v-if="imagePreview" class="mt-3 mb-3 relative">
-                                                <img :src="imagePreview" alt="Vista previa"
-                                                    class="rounded-lg max-h-48 object-contain" />
-                                                <button @click="removeImage"
-                                                    class="absolute top-2 right-2 bg-gray-800/70 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-gray-900/70 transition-colors">
-                                                    <i class='bx bx-x'></i>
-                                                </button>
-                                            </div>
-
-                                            <div class='flex justify-between items-center mt-3'>
-                                                <div class='flex gap-2'>
-                                                    <input type='file' @change='handleFileChange' class='hidden'
-                                                        id='fileUpload' ref="fileInputRef" accept="image/*">
-                                                    <label for='fileUpload'
-                                                        class='p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors cursor-pointer'>
-                                                        <i class='bx bx-image-alt'></i>
-                                                    </label>
-                                                </div>
-                                                <button @click='submitPost' :disabled="!content && !image"
-                                                    :class="{ 'opacity-50 cursor-not-allowed': !content && !image }"
-                                                    class='px-4 py-1.5 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm'>
-                                                    Publicar
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div v-if="displayedPosts.length > 0" class="space-y-4 mt-4">
-                                    <PostCard v-for="post in displayedPosts" :key="post.id" :post="post"
-                                        :formatDate="formatDate" :sanitizeHTML="sanitizeHTML" :isMember="isMember"
-                                        :auth="auth" />
-
-                                    <div v-if="isLoadingMore" class="text-center py-4">
-                                        <div
-                                            class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#193CB8] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]">
-                                        </div>
-                                    </div>
-
-                                    <div ref="loadMoreTrigger" class="h-10"></div>
-
-                                    <div v-if="!hasMorePosts" class="text-center pb-4">
-                                        <p class="text-gray-500 text-lg font-semibold">No hay más publicaciones. <span
-                                                @click="scrollToTop"
-                                                class="text-[#193CB8] underline cursor-pointer">¡Publica algo!</span>
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div v-else
-                                    class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center mt-4">
-                                    <div class="py-8">
-                                        <i class='bx bx-message-square-detail text-5xl text-gray-300 mb-2'></i>
-                                        <h3 class="text-lg font-medium text-gray-700 mb-1">No hay publicaciones aún
-                                        </h3>
-                                        <p class="text-gray-500">Sé el primero en compartir algo con el grupo</p>
-                                    </div>
-                                </div>
-                            </div>
+                            <GroupPostTab v-if="activeTab === 'publicaciones'" :auth="auth" :isMember="isMember"
+                                :group="group" />
 
                             <div v-if="activeTab === 'miembros'"
                                 class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
