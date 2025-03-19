@@ -277,19 +277,20 @@ const loadMorePosts = () => {
     <Layout :auth="auth">
         <div class="min-h-screen bg-gray-50 flex flex-col">
             <div class="relative w-full h-64 md:h-80 bg-gradient-to-r from-[#193CB8] to-[#2748c6] overflow-hidden">
+                <div v-if="isAdmin" class="absolute bottom-4 right-4 z-11">
+                    <label for="bannerUpload"
+                        class="bg-white/90 cursor-pointer hover:bg-gray-100 text-[#193CB8] px-3 py-2 rounded-md shadow-md flex items-center gap-2 transition-all">
+                        <i class='bx bx-image-add'></i>
+                        <span class="text-sm font-medium">Cambiar Banner</span>
+                    </label>
+                    <input id="bannerUpload" type="file" @change="uploadBanner" class="hidden" accept="image/*">
+                </div>
                 <img v-if="group.group_banner" :src="group.group_banner || '/storage/images/default-banner.jpg'"
                     :alt="group.name + ' banner'" class="w-full h-full object-cover opacity-80" />
                 <img v-else src="/public/images/default-group-banner.jpg"
                     class="w-full h-full object-cover opacity-80" />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                <div v-if="isAdmin" class="absolute bottom-4 right-4">
-                    <label
-                        class="bg-white/90 hover:bg-white text-[#193CB8] px-3 py-2 rounded-md shadow-md flex items-center gap-2 transition-all cursor-pointer">
-                        <i class='bx bx-image-add'></i>
-                        <span class="text-sm font-medium">Cambiar Banner</span>
-                        <input type="file" @change="uploadBanner" class="hidden" accept="image/*">
-                    </label>
-                </div>
+
             </div>
 
             <main class="flex flex-col items-center justify-center -mt-16 relative z-10 px-4">
