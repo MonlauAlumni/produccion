@@ -53,7 +53,6 @@ class GroupController extends Controller
             $counter++;
         }
 
-        // Crear el grupo
         $group = new Group();
         $group->name = $request->name;
         $group->description = $request->description;
@@ -97,18 +96,14 @@ class GroupController extends Controller
     public function show($slug)
     {
         $page = request()->input('page', 1);
-
+    
         $group = Group::where('slug', $slug)
             ->with(['members.user.profile'])
             ->firstOrFail();
-
+    
         $postsPerPage = 5;
-        $postsToLoad = $postsPerPage;
-
-        if (request()->ajax()) {
-            $postsToLoad = $postsPerPage * $page;
-        }
-
+        $postsToLoad = $postsPerPage * $page;
+    
         $posts = $group->posts()
             ->with('user.profile')
             ->with([
@@ -119,61 +114,33 @@ class GroupController extends Controller
             ->latest()
             ->take($postsToLoad)
             ->get();
-
+    
         $totalPosts = $group->posts()->count();
-
+    
         $group->posts = $posts;
         $group->total_posts = $totalPosts;
         $group->has_more_posts = $postsToLoad < $totalPosts;
-
+    
         $isAdmin = false;
         $isMember = false;
-
+    
         if (Auth::check()) {
             $member = $group->members()->where('user_id', Auth::id())->first();
-
+    
             if ($member) {
                 $isAdmin = $member->role === 'admin';
                 $isMember = true;
             }
         }
-
+    
         return Inertia::render('Social/SingleGroup', [
             'group' => $group,
             'isAdmin' => $isAdmin,
             'isMember' => $isMember,
-            'currentPage' => 1,
+            'currentPage' => (int)$page,
         ]);
     }
-
-    public function loadMorePosts($slug)
-    {
-        $page = request()->input('page', 1);
-
-        $group = Group::where('slug', $slug)
-            ->firstOrFail();
-
-        $postsPerPage = 5;
-        $postsToLoad = $postsPerPage * $page;
-
-        $posts = $group->posts()
-            ->with('user.profile')
-            ->with([
-                'comments' => function ($query) {
-                    $query->with('user.profile')->limit(3);
-                }
-            ])
-            ->latest()
-            ->take($postsToLoad)
-            ->get();
-
-        $totalPosts = $group->posts()->count();
-
-        return response()->json([
-            'posts' => $posts,
-            'has_more_posts' => $postsToLoad < $totalPosts
-        ]);
-    }
+   
     public function storePost(Request $request, $groupId)
     {
         $request->validate([
