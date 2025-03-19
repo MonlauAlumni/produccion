@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps, defineEmits, computed } from 'vue';
-import { usePage } from '@inertiajs/vue3';
+import { usePage, router } from '@inertiajs/vue3';
 const page = usePage()
 const settings = computed(() => page.props.auth.user_settings)
 
@@ -23,6 +23,7 @@ const props = defineProps({
     }
 });
 
+const MAX_CHARACTERS = 300;
 
 const emit = defineEmits([
     'view',
@@ -31,6 +32,12 @@ const emit = defineEmits([
     'like',
     'share'
 ]);
+
+const truncatedDescription = computed(() => {
+  return props.jobOffer.description.length > MAX_CHARACTERS
+    ? props.jobOffer.description.substring(0, MAX_CHARACTERS) + '...'
+    : props.jobOffer.description;
+});
 
 // Formatear rango salarial
 const formatSalaryRange = (min, max) => {
@@ -77,7 +84,8 @@ const applyToJob = (id) => {
 };
 
 const toggleSaveJob = (id) => {
-    emit('save', id);
+   emit('save', id);
+    
 };
 
 const toggleLikeJob = (id) => {
@@ -160,7 +168,7 @@ const getCategoryLabel = (category) => {
 
                         <!-- Expires Badge -->
                         <div v-if="jobOffer.deadline"
-                            class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-1 rounded-full flex items-center">
+                            class="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1  w-40 rounded-full flex items-center">
                             <i class='bx bx-calendar-exclamation mr-1'></i>
                             Expira: {{ new Date(jobOffer.deadline).toLocaleDateString() }}
                         </div>
@@ -191,8 +199,8 @@ const getCategoryLabel = (category) => {
             </div>
 
             <!-- Description -->
-            <div class="mt-4 text-gray-700" :style="{ fontSize: settings.font_size + 'px' }">
-                {{ jobOffer.description }}
+            <div class="mt-4 text-gray-700" v-html="truncatedDescription " :style="{ fontSize: settings.font_size + 'px' }">
+              
             </div>
 
             <!-- Stats & Engagement -->
@@ -215,10 +223,7 @@ const getCategoryLabel = (category) => {
                     ]">
                         <i :class="[isSaved ? 'bx bxs-bookmark' : 'bx bx-bookmark']"></i>
                     </button>
-                    <button @click="shareJob(jobOffer.id)"
-                        class="p-2 flex justify-center items-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors">
-                        <i class='bx bx-share-alt'></i>
-                    </button>
+                   
                 </div>
             </div>
 

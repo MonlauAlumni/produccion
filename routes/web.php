@@ -21,6 +21,7 @@ use App\Http\Middleware\IsStudent;
 use Laravel\Fortify\Http\Controllers\TwoFactorAuthenticationController;
 use Laravel\Fortify\Http\Controllers\TwoFactorQrCodeController;
 use Illuminate\Support\Facades\Auth;    
+use App\Http\Controllers\CalendarController;
 
 
 Route::fallback(function () {
@@ -76,6 +77,8 @@ Route::middleware('auth')->group(function() {
     Route::get('/ofertas', [JobOfferController::class, 'index'])->name('ofertas.index');
     Route::get('/ofertas/{id}', [JobOfferController::class, 'show'])->name('job-offers.show');
 
+    Route::post('/ofertas/{id}/guardar', [JobOfferController::class, 'toggleSave'])->name('job-offers.toggleSave');
+
     Route::post('/ofertas/{id}/aplicar', [JobApplicationController::class, 'store'])->name('job-application.store');
 
     Route::get('/mis-ofertas', [JobOfferController::class, 'myOffers'])->name('my-offers.index');
@@ -91,8 +94,9 @@ Route::middleware('auth')->group(function() {
     Route::post('/grupos/{slug}/join', [App\Http\Controllers\Social\GroupController::class, 'joinGroup'])->name('groups.join');
     Route::post('/grupos/{slug}/invite', [App\Http\Controllers\Social\GroupController::class, 'inviteMember'])->name('groups.invite');
     Route::post('/grupos/{groupId}/posts', [GroupController::class, 'storePost'])->name('group.storePost');
+    Route::post('/grupos/{groupId}/posts/{postId}/comment', [GroupController::class, 'postComment'])->name('group.postComment');
 
-
+    Route::get('/calendario', [CalendarController::class, 'index'])->name('calendar.index');
 
     Route::get('/configuracion', [SettingsController::class, 'show'])->name('settings.show');
     Route::get('/configuracion/cambiar-contraseña', [SettingsController::class, 'changePassword'])->name('change.password');
@@ -130,5 +134,5 @@ Route::middleware(['guest'])->group(function () {
 
 Route::get('logout' , function() {
     Auth::logout(); 
-    return redirect('/login'); 
+    return redirect('/login-monlau'); 
 });

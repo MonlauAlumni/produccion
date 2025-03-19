@@ -166,17 +166,19 @@
                       {{ getJobTypeLabel(item.work_mode) }}
                     </div>
                     
-                    <div class="flex items-center text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-md">
+                    <div class="flex  items-center text-xs bg-gray-100 line-clamp- text-gray-700 px-2 py-1 rounded-md">
                       <i class='bx bx-map-pin mr-1'></i>
                       {{ item.location }}
                     </div>
                     
-                    <div v-if="item.experience" class="flex items-center text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-md">
-                      <i class='bx bx-user-pin mr-1'></i>
-                      {{ item.experience }}
-                    </div>
-                  </div>
                   
+                  </div>
+                  <div class="mt-3 flex items-center px-2 ">
+                   
+                  <p class="text-sm text-gray-600 line-clamp-3 flex-1">
+                    {{ item.description }}
+                  </p>
+                </div>
                   <!-- Skills/Tags -->
                   <div v-if="item.skills && item.skills.length" class="mt-3 flex flex-wrap gap-1.5">
                     <span v-for="(skill, skillIndex) in item.skills.slice(0, 3)" :key="skillIndex"
@@ -188,25 +190,7 @@
                     </span>
                   </div>
                   
-                  <!-- Descripción y acciones -->
-                  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mt-3 pt-3 border-t border-gray-100">
-                    <!-- Descripción truncada -->
-                    <p class="text-xs text-gray-600 line-clamp-2 flex-1">
-                      {{ item.description }}
-                    </p>
-                    
-                    <!-- Botones de acción -->
-                    <div class="flex gap-2 self-end">
-                      <button @click="viewJobOffer(item.id)" 
-                        class="bg-white border border-[#193CB8] text-[#193CB8] hover:bg-blue-50 text-xs cursor-pointer px-3 py-1.5 rounded-md transition-colors whitespace-nowrap">
-                        Detalles
-                      </button>
-                      <button @click="viewJobOffer(item.id)" 
-                        class="bg-[#193CB8] hover:bg-[#2748c6] text-white text-xs px-3 py-1.5 rounded-md transition-colors whitespace-nowrap">
-                        Aplicar
-                      </button>
-                    </div>
-                  </div>
+                
                 </div>
               </div>
             </div>

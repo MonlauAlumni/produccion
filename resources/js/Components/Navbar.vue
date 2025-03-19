@@ -1,15 +1,12 @@
 <template>
   <nav class="bg-[#193CB8] w-full py-3 px-4">
     <div class=" mx-10 flex justify-between items-center">
-      <!-- Logo y nombre -->
       <div class="flex items-center">
-        <a href="/" class="text-white font-bold flex items-center gap-3"> 
-          <img src="../../../public/images/monlau-logo.png" alt="Alumni" class="w-8 h-8">
+        <a href="/" class=" text-white font-bold flex items-center gap-3"> 
+          <img src="../../../public/images/logoMonlau.jpg" alt="Alumni" class="w-9 h-8">
           <span class="text-xl">Alumni</span>
         </a>
-      </div>
-      <!-- Botones de autenticación -->
-      
+      </div>      
     </div>    
   </nav>
 </template>

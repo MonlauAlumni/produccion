@@ -46,7 +46,6 @@ class Profile extends Model
     {
         static::creating(function ($profile) {
             $profile->slang = $profile->getSlangAttribute();
-            $profile->banner_url = '/storage/banners/default.jpg';
             $user = $profile->user()->first();
             $profile->profile_picture = $user ? $user->profile_picture : null;
         });

@@ -54,7 +54,7 @@ export default {
   <div>
     <!-- Botón menú mobile -->
     <button @click="toggleSidebar"
-      class="md:hidden fixed top-4 left-4 z-50 bg-[#193CB8] text-white p-2 rounded-md shadow-md">
+      class="md:hidden fixed top-4 left-4  bg-[#193CB8] z-100 text-white p-2 rounded-md shadow-md">
       <i class='bx bx-menu text-xl'></i>
     </button>
 
@@ -87,16 +87,8 @@ export default {
                   <i class='bx bxs-user text-xl'></i>
                 </div>
             </div>
-            
-
-            
-
-
-
             <div v-if="user?.company"
               class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white"></div>
-
-
           </div>
           <div>
               <p @click.prevent="navigateTo(`/empresa/${user.company.slang}`)" v-if="user.company" class="font-semibold text-gray-800 hover:underline cursor-pointer">{{ user.company.company_name }}</p>

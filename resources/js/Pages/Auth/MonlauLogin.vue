@@ -3,7 +3,7 @@
         <div class="bg-white w-full max-w-md shadow-xl rounded-lg p-8 mx-4 sm:mx-0">
             <div>
                 <div class="flex justify-center">
-                    <img src="../../../../public/images/monlau-logo.png" class="w-40" />
+                    <img src="../../../../public/images/logoMonlau.jpg" class="w-40" />
                 </div>
                 <h1 class="text-2xl font-semibold text-gray-800 mb-6 mt-4 text-center">
                     Acceso para miembros de Monlau </h1>

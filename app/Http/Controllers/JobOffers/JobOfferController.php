@@ -16,11 +16,32 @@ class JobOfferController extends Controller
     
     public function index(Request $request)
     {
-        // dd(JobOffer::all());
-
+      
+        $user = Auth::user();
         $page = $request->input('page', 1);
         $offers = JobOffer::with('company')->paginate(10);
-                
+        
+        $category = $request->input('categoria');
+        $workMode = $request->input('trabajo');
+
+        $offersQuery = JobOffer::with('company')->orderBy('created_at', 'desc');
+
+        if ($category) {
+            $offersQuery->where('category', 'like', '%' . $category . '%');
+        }
+        if ($workMode) {
+            $offersQuery->where('work_mode', 'like', '%' . $workMode . '%');
+        }
+        
+        $offers->getCollection()->transform(function ($offer) use ($user) {
+            $offer->isSaved = $user->savedJobOffers->contains($offer);
+            
+            return $offer;
+        });
+
+        $offers = $offersQuery->paginate(10);
+
+
         return Inertia::render('Home', [
             'jobOffers' => $offers
         ]);
@@ -45,6 +66,7 @@ class JobOfferController extends Controller
 
     public function store(Request $request)
     {
+
         // Crear la oferta de trabajo
         $jobOffer = JobOffer::create([
             'company_id' => auth()->user()->company->id,
@@ -66,7 +88,7 @@ class JobOfferController extends Controller
             'status' => 'active',
             'category' => $request->category,
         ]);
-    
+       
         // Si se sube un archivo, manejarlo
         if ($request->hasFile('file')) {
             $filePath = $request->file('file')->store('job_offers', 'public');
@@ -96,19 +118,35 @@ class JobOfferController extends Controller
         
         $appliedOffers = $appliedOffersQuery->paginate(5)->withQueryString();
         
-        // // Get saved job offers with pagination
-        // $savedOffers = $user->savedJobOffers()
-        //     ->with('company')
-        //     ->orderBy('created_at', 'desc')
-        //     ->paginate(5)
-        //     ->withQueryString();
+        // // // Get saved job offers with pagination
+     $savedOffers = $user->savedJobOffers()
+            ->with('company')
+          ->orderBy('created_at', 'desc')
+         ->paginate(5)
+           ->withQueryString();
+         
         
         return Inertia::render('JobOffers/MyJobOffers', [
             'appliedOffers' => $appliedOffers,
-           // 'savedOffers' => $savedOffers,
+            'savedOffers' => $savedOffers,
             'activeTab' => $tab,
             'activeStatus' => $status ?? 'all'
         ]);
+    }
+
+    public function toggleSave(Request $request, $id)
+    {
+        $user = Auth::user();
+        $jobOffer = JobOffer::findOrFail($id);
+        
+        if ($user->savedJobOffers->contains($jobOffer)) {
+            $user->savedJobOffers()->detach($jobOffer);
+            return redirect()->route('ofertas.index');
+        }
+        $user->savedJobOffers()->syncWithoutDetaching($jobOffer);
+        
+    
+        return redirect()->route('ofertas.index');
     }
 
   

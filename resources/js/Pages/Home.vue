@@ -58,9 +58,9 @@ const closeJobConfirmationModal = () => {
   // Categorías destacadas
   const featuredCategories = [
     { id: 'all', name: 'Todas', icon: 'bx-globe', color: '#193CB8' },
-    { id: 'tech', name: 'Tecnología', icon: 'bx-code-alt', color: '#4285F4' },
+    { id: 'it', name: 'Tecnología', icon: 'bx-code-alt', color: '#4285F4' },
     { id: 'marketing', name: 'Marketing', icon: 'bx-line-chart', color: '#EA4335' },
-    { id: 'automotion', name: 'Automoción', icon: 'bx-car', color: '#FF7C43' },
+    { id: 'automotive', name: 'Automoción', icon: 'bx-car', color: '#FF7C43' },
 
   ];
 
@@ -150,24 +150,22 @@ const closeJobConfirmationModal = () => {
     }
   };
 
-  // Guardar oferta
+
   const toggleSaveJob = (jobId) => {
-    if (savedJobs.value.has(jobId)) {
-      savedJobs.value.delete(jobId);
-    } else {
-      savedJobs.value.add(jobId);
-      // Mostrar notificación o animación
-    }
+    router.post(`ofertas/${jobId}/guardar`), {
+        onSuccess: () => {
+          if (savedJobs.value.has(jobId)) {
+            savedJobs.value.delete(jobId);
+          } else {
+            savedJobs.value.add(jobId);
+          }
+          console.log(savedJobs.value);
+        },
+
+    };
   };
 
-  // Like a una oferta
-  const toggleLikeJob = (jobId) => {
-    if (likedJobs.value.has(jobId)) {
-      likedJobs.value.delete(jobId);
-    } else {
-      likedJobs.value.add(jobId);
-    }
-  };
+ 
 
   // Ver detalle de oferta
   const viewJobOffer = (jobId) => {
@@ -231,10 +229,10 @@ const closeJobConfirmationModal = () => {
   // Aplicar filtros
   const applyFilters = () => {
     // Navegar a la ruta con los filtros aplicados
-    router.get('/ofertas', {
+    router.get('/home', {
       filter: activeFilter.value !== 'all' ? activeFilter.value : undefined,
-      category: activeCategory.value !== 'all' ? activeCategory.value : undefined,
-      job_type: activeJobType.value !== 'all' ? activeJobType.value : undefined,
+      categoria: activeCategory.value !== 'all' ? activeCategory.value : undefined,
+      trabajo: activeJobType.value !== 'all' ? activeJobType.value : undefined,
       salary_range: activeSalaryRange.value !== 'all' ? activeSalaryRange.value : undefined,
       search: searchQuery.value || undefined
     }, {
@@ -252,16 +250,7 @@ const closeJobConfirmationModal = () => {
     return number.toLocaleString();
   };
 
-  // Cambiar categoría activa
-
-
-  // Cambiar tipo de trabajo activo
-
-  // Aplicar filtros
-
-
-  // Buscar ofertas
-
+  
 
   // Inicializar
   onMounted(() => {
@@ -329,7 +318,7 @@ const closeJobConfirmationModal = () => {
               <!-- Feed Items -->
               <div class="space-y-6">
                 <JobCard v-for="job in jobOffersList.slice().reverse()" :key="job.id" :jobOffer="job"
-                  :isLiked="likedJobs.has(job.id)" :isSaved="savedJobs.has(job.id)" class="job-card"
+                  :isSaved="savedJobs.has(job.id)" class="job-card"
                   @view="viewJobOffer" @apply="applyToJob" @save="toggleSaveJob" @like="toggleLikeJob"
                   @share="shareJob" />
 

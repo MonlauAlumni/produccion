@@ -41,4 +41,14 @@ class JobOffer extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function applicants()
+    {
+        return $this->belongsToMany(User::class, 'job_offer_applications');
+    }
+
+    public function savedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'saved_job_offers');
+    }
 }

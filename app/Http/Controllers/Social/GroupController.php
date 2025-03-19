@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Group;
 use App\Models\GroupUser;
 use App\Models\GroupPost;
+use App\Models\GroupPostComment;
 use Mews\Purifier\Facades\Purifier;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,7 +21,7 @@ class GroupController extends Controller
     public function index()
     {
         $groups = Group::with('members')->get();
-        
+
         return Inertia::render('Social/Groups', [
             'groups' => $groups
         ]);
@@ -42,42 +43,42 @@ class GroupController extends Controller
             'logo' => 'nullable|image|max:2048',
             'banner' => 'nullable|image|max:2048',
         ]);
-        
+
         $slug = Str::slug($request->name);
         $uniqueSlug = $slug;
         $counter = 1;
-        
+
         while (Group::where('slug', $uniqueSlug)->exists()) {
             $uniqueSlug = $slug . '-' . $counter;
             $counter++;
         }
-        
-        // Crear el grupo
+
         $group = new Group();
         $group->name = $request->name;
         $group->description = $request->description;
         $group->category = $request->category;
         $group->privacy = $request->privacy;
+        $group->members_count = 1;
         $group->slug = $uniqueSlug;
         $group->creator_id = $request->user()->id;
-        
+
         if ($request->has('tags')) {
             $tags = json_decode($request->tags);
             $group->tags = $tags;
         }
-        
+
         if ($request->hasFile('logo')) {
             $logoPath = $request->file('logo')->store('groups/logos', 'public');
             $group->group_logo = Storage::url($logoPath);
         }
-        
+
         if ($request->hasFile('banner')) {
             $bannerPath = $request->file('banner')->store('groups/banners', 'public');
             $group->group_banner = Storage::url($bannerPath);
         }
-        
+
         $group->save();
-        
+
         GroupUser::create([
             'group_id' => $group->id,
             'user_id' => Auth::id(),
@@ -86,38 +87,101 @@ class GroupController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        
-        return Inertia::render('Social/SingleGroup', [
-            'group' => $group->load('members.user'),
-            'isAdmin' => true,
-        ]);
+
+        return $this->show($group->slug);
     }
 
     public function show($slug)
     {
+        $page = request()->input('page', 1);
+    
         $group = Group::where('slug', $slug)
-            ->with(['members.user.profile', 'posts.user.profile', 'posts.comments.user.profile'])
+            ->with(['members.user.profile'])
             ->firstOrFail();
-        
+    
+        $postsPerPage = 5;
+        $postsToLoad = $postsPerPage * $page;
+    
+        $posts = $group->posts()
+            ->with('user.profile')
+            ->with([
+                'comments' => function ($query) {
+                    $query->with('user.profile')->limit(3);
+                }
+            ])
+            ->latest()
+            ->take($postsToLoad)
+            ->get();
+    
+        $totalPosts = $group->posts()->count();
+    
+        $group->posts = $posts;
+        $group->total_posts = $totalPosts;
+        $group->has_more_posts = $postsToLoad < $totalPosts;
+    
         $isAdmin = false;
         $isMember = false;
-        
+    
         if (Auth::check()) {
             $member = $group->members()->where('user_id', Auth::id())->first();
-            
+    
             if ($member) {
                 $isAdmin = $member->role === 'admin';
                 $isMember = true;
             }
         }
-        
+    
         return Inertia::render('Social/SingleGroup', [
             'group' => $group,
             'isAdmin' => $isAdmin,
             'isMember' => $isMember,
+            'currentPage' => (int)$page,
         ]);
     }
 
+    public function updateLogo(Request $request, $slug)
+    {
+        $request->validate([
+            'logo' => 'required|image|max:2048',
+        ]);
+
+        $group = Group::where('slug', $slug)->firstOrFail();
+
+        if ($request->hasFile('logo')) {
+            if ($group->group_logo) {
+                $oldLogoPath = str_replace('/storage/', '', $group->group_logo);
+                Storage::disk('public')->delete($oldLogoPath);
+            }
+
+            $logoPath = $request->file('logo')->store('groups/logos', 'public');
+            $group->group_logo = Storage::url($logoPath);
+            $group->save();
+        }
+
+        return redirect()->back()->with('success', 'Logo actualizado con éxito!');
+    }
+
+    public function updateBanner(Request $request, $slug) {
+        $request->validate([
+            'banner' => 'required|image|max:2048',
+        ]);
+
+        $group = Group::where('slug', $slug)->firstOrFail();
+
+        if ($request->hasFile('banner')) {
+            if ($group->group_banner) {
+                $oldBannerPath = str_replace('/storage/', '', $group->group_banner);
+                Storage::disk('public')->delete($oldBannerPath);
+            }
+
+            $bannerPath = $request->file('banner')->store('groups/banners', 'public');
+            $group->group_banner = Storage::url($bannerPath);
+            $group->save();
+        }
+
+        return redirect()->back()->with('success', 'Banner actualizado con éxito!');
+    }
+   
     public function storePost(Request $request, $groupId)
     {
         $request->validate([
@@ -136,13 +200,36 @@ class GroupController extends Controller
             'group_id' => $groupId,
             'user_id' => Auth::id(),
             'content' => $sanitizedContent,
-            'image' => '/storage/'.$imagePath,
+            'image' => $imagePath ? '/storage/' . $imagePath : null,
         ]);
 
         return redirect()->back()->with('success', 'Post creado con éxito!');
     }
 
-    public function joinGroup(Request $request) {
+    public function postComment(Request $request)
+    {
+
+        $request->validate([
+            'comment' => 'required|string',
+        ]);
+        $post = GroupPost::findOrFail($request->postId);
+        $post->comments_count++;
+        $post->save();
+
+        $comment = GroupPostComment::create([
+            'group_post_id' => $request->postId,
+            'user_id' => Auth::id(),
+            'content' => $request->comment,
+            'created_at' => now(),
+            'updated_at' => now(),
+            'deleted_at' => null,
+        ]);
+
+        return redirect()->back()->with('success', 'Comentario creado con éxito!');
+    }
+
+    public function joinGroup(Request $request)
+    {
 
         $group = Group::where('slug', $request->slug)->firstOrFail();
         if ($group->privacy === 'private') {

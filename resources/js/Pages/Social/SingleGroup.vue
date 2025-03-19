@@ -1,16 +1,32 @@
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, computed, onMounted, nextTick, onUnmounted, watch } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import Layout from '@/Components/Layout.vue';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import { QuillEditor } from '@vueup/vue-quill';
 import DOMPurify from 'dompurify';
 import PostCard from '@/Components/Social/PostCard.vue';
+import GroupPostTab from '@/Components/Social/GroupPostTab.vue';
+
 
 const props = defineProps({
     group: Object,
     isAdmin: Boolean,
     isMember: Boolean,
+    currentPage: {
+        type: Number,
+        default: 1
+    }
+});
+
+const currentPage = ref(props.currentPage || 1);
+const isLoadingMore = ref(false);
+const loadMoreTrigger = ref(null);
+const observer = ref(null);
+const hasMorePosts = ref(true);
+
+const displayedPosts = computed(() => {
+    return props.group.posts || [];
 });
 
 const page = usePage();
@@ -173,24 +189,110 @@ const formatDate = (dateString) => {
 const sanitizeHTML = (html) => {
     return DOMPurify.sanitize(html);
 };
-</script>
 
+const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+watch(() => props.group, (newGroup) => {
+    if (newGroup) {
+        hasMorePosts.value = newGroup.has_more_posts === true;
+    }
+}, { immediate: true });
+
+onMounted(() => {
+    nextTick(() => {
+        setupIntersectionObserver();
+    });
+});
+
+onUnmounted(() => {
+    if (observer.value) {
+        observer.value.disconnect();
+    }
+});
+
+const setupIntersectionObserver = () => {
+    if (observer.value) {
+        observer.value.disconnect();
+    }
+
+    observer.value = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && !isLoadingMore.value && hasMorePosts.value) {
+            loadMorePosts();
+        }
+    }, { threshold: 0.1 });
+
+    if (loadMoreTrigger.value) {
+        observer.value.observe(loadMoreTrigger.value);
+    }
+};
+
+const groupSlug = ref('');
+
+watch(() => props.group, (newGroup) => {
+    if (newGroup && newGroup.slug) {
+        groupSlug.value = newGroup.slug;
+    }
+}, { immediate: true });
+
+
+const loadMorePosts = () => {
+    if (isLoadingMore.value || !hasMorePosts.value || !groupSlug.value) return;
+
+    isLoadingMore.value = true;
+    const nextPage = currentPage.value + 1;
+
+    router.visit(`/grupos/${groupSlug.value}?page=${nextPage}`, {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true,
+        onBefore: () => {
+            return true;
+        },
+        onSuccess: () => {
+            currentPage.value = nextPage;
+            isLoadingMore.value = false;
+
+            setTimeout(() => {
+                window.history.replaceState({}, '', `/grupos/${groupSlug.value}`);
+            }, 0);
+
+            nextTick(() => {
+                if (loadMoreTrigger.value && observer.value) {
+                    observer.value.observe(loadMoreTrigger.value);
+                }
+            });
+        },
+        onError: (errors) => {
+            console.error('Error loading more posts:', errors);
+            isLoadingMore.value = false;
+            setTimeout(() => {
+                window.history.replaceState({}, '', `/grupos/${groupSlug.value}`);
+            }, 0);
+        }
+    });
+
+};
+</script>
 <template>
     <Layout :auth="auth">
         <div class="min-h-screen bg-gray-50 flex flex-col">
             <div class="relative w-full h-64 md:h-80 bg-gradient-to-r from-[#193CB8] to-[#2748c6] overflow-hidden">
-                <img :src="group.group_banner || '/storage/images/default-banner.jpg'" :alt="group.name + ' banner'"
+                <div v-if="isAdmin" class="absolute bottom-4 right-4 z-11">
+                    <label for="bannerUpload"
+                        class="bg-white/90 cursor-pointer hover:bg-gray-100 text-[#193CB8] px-3 py-2 rounded-md shadow-md flex items-center gap-2 transition-all">
+                        <i class='bx bx-image-add'></i>
+                        <span class="text-sm font-medium">Cambiar Banner</span>
+                    </label>
+                    <input id="bannerUpload" type="file" @change="uploadBanner" class="hidden" accept="image/*">
+                </div>
+                <img v-if="group.group_banner" :src="group.group_banner || '/storage/images/default-banner.jpg'"
+                    :alt="group.name + ' banner'" class="w-full h-full object-cover opacity-80" />
+                <img v-else src="/public/images/default-group-banner.jpg"
                     class="w-full h-full object-cover opacity-80" />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
 
-                <div v-if="isAdmin" class="absolute bottom-4 right-4">
-                    <label
-                        class="bg-white/90 hover:bg-white text-[#193CB8] px-3 py-2 rounded-md shadow-md flex items-center gap-2 transition-all cursor-pointer">
-                        <i class='bx bx-image-add'></i>
-                        <span class="text-sm font-medium">Cambiar Banner</span>
-                        <input type="file" @change="uploadBanner" class="hidden" accept="image/*">
-                    </label>
-                </div>
             </div>
 
             <main class="flex flex-col items-center justify-center -mt-16 relative z-10 px-4">
@@ -202,8 +304,13 @@ const sanitizeHTML = (html) => {
                                 <div class="relative">
                                     <div
                                         class="w-24 h-24 rounded-xl overflow-hidden border-4 border-white bg-white shadow-md">
-                                        <img :src="group.group_logo || '/images/default-logo.jpg'"
+                                        <img v-if="group.group_logo"
+                                            :src="group.group_logo || '/images/default-logo.jpg'"
                                             :alt="group.group_name + ' logo'" class="w-full h-full object-cover" />
+                                        <div v-else
+                                            class="w-full h-full rounded-lg bg-gray-200 flex items-center justify-center text-gray-500">
+                                            <i class='bx bx-group text-4xl'></i>
+                                        </div>
                                     </div>
 
                                     <label v-if="isAdmin"
@@ -291,63 +398,8 @@ const sanitizeHTML = (html) => {
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="md:col-span-2 space-y-6">
-                            <div v-if="activeTab === 'publicaciones'">
-                                <div v-if="isMember" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                                    <div class="flex items-start gap-3">
-                                        <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                                            <img v-if="auth.user.profile && auth.user.profile.profile_picture"
-                                                :src="auth.user.profile.profile_picture || '/images/default-avatar.jpg'"
-                                                alt="Tu avatar" class="w-full h-full object-cover" />
-                                        </div>
-                                        <div class='flex-1'>
-                                            <div class="mb-3">
-                                                <QuillEditor ref="quillEditorRef" v-model:content="content"
-                                                    :options="editorOptions" contentType="html" theme="snow" />
-                                            </div>
-
-                                            <div v-if="imagePreview" class="mt-3 mb-3 relative">
-                                                <img :src="imagePreview" alt="Vista previa"
-                                                    class="rounded-lg max-h-48 object-contain" />
-                                                <button @click="removeImage"
-                                                    class="absolute top-2 right-2 bg-gray-800/70 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-gray-900/70 transition-colors">
-                                                    <i class='bx bx-x'></i>
-                                                </button>
-                                            </div>
-
-                                            <div class='flex justify-between items-center mt-3'>
-                                                <div class='flex gap-2'>
-                                                    <input type='file' @change='handleFileChange' class='hidden'
-                                                        id='fileUpload' ref="fileInputRef" accept="image/*">
-                                                    <label for='fileUpload'
-                                                        class='p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors cursor-pointer'>
-                                                        <i class='bx bx-image-alt'></i>
-                                                    </label>
-                                                </div>
-                                                <button @click='submitPost' :disabled="!content && !image"
-                                                    :class="{ 'opacity-50 cursor-not-allowed': !content && !image }"
-                                                    class='px-4 py-1.5 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm'>
-                                                    Publicar
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div v-if="group.posts && group.posts.length > 0" class="space-y-4 mt-4">
-                                    <PostCard v-for="post in group.posts" :key="post.id" :post="post"
-                                        :formatDate="formatDate" :sanitizeHTML="sanitizeHTML" :isMember="isMember"
-                                        :auth="auth" />
-                                </div>
-
-                                <div v-else
-                                    class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center mt-4">
-                                    <div class="py-8">
-                                        <i class='bx bx-message-square-detail text-5xl text-gray-300 mb-2'></i>
-                                        <h3 class="text-lg font-medium text-gray-700 mb-1">No hay publicaciones aún</h3>
-                                        <p class="text-gray-500">Sé el primero en compartir algo con el grupo</p>
-                                    </div>
-                                </div>
-                            </div>
+                            <GroupPostTab v-if="activeTab === 'publicaciones'" :auth="auth" :isMember="isMember"
+                                :group="group" />
 
                             <div v-if="activeTab === 'miembros'"
                                 class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -359,13 +411,26 @@ const sanitizeHTML = (html) => {
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div v-for="member in adminMembers" :key="member.id"
                                             @click="router.get('/perfil/' + member.user.profile.slang)"
-                                            class="flex items-center gap-3 p-3 cursor-pointer border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
-                                            <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-                                                <img :src="member.user.profile.profile_picture || '/images/default-avatar.jpg'"
-                                                    :alt="member.user.name" class="w-full h-full object-cover" />
+                                            class="flex items-center gap-3 p-3 cursor-pointer border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors relative">
+                                            <div class="w-12 h-12 rounded-full flex-shrink-0 relative">
+                                                <img v-if="member.user.profile.profile_picture"
+                                                    :src="member.user.profile.profile_picture || '/images/default-avatar.jpg'"
+                                                    :alt="member.user.name"
+                                                    class="w-full h-full object-cover rounded-full" />
+                                                <div v-else
+                                                    class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
+                                                    <i class='bx bxs-user text-xl'></i>
+                                                </div>
+                                                <i v-if="member.role === 'admin'"
+                                                    class='bx bxs-crown text-yellow-500 absolute -top-2 text-xl'
+                                                    style="transform: rotate(-30deg);"></i>
                                             </div>
                                             <div>
-                                                <h4 class="font-medium text-gray-800">{{ member.user.name }}</h4>
+                                                <h4>
+                                                    {{ member.user.name + ' ' + member.user.last_name_1 + (' ' +
+                                                        member.user.last_name_2 ?? '') }}
+
+                                                </h4>
                                                 <p class="text-xs text-gray-500">Administrador</p>
                                             </div>
                                         </div>
@@ -377,13 +442,20 @@ const sanitizeHTML = (html) => {
 
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div v-for="member in regularMembers" :key="member.id"
-                                            class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                                            @click="router.get('/perfil/' + member.user.profile.slang)"
+                                            class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
                                             <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-                                                <img :src="member.user.profile_photo_url || '/images/default-avatar.jpg'"
+                                                <img v-if="member.user.profile_photo_url"
+                                                    :src="member.user.profile_photo_url || '/images/default-avatar.jpg'"
                                                     :alt="member.user.name" class="w-full h-full object-cover" />
+                                                <div v-else
+                                                    class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
+                                                    <i class='bx bxs-user text-xl'></i>
+                                                </div>
                                             </div>
                                             <div class="flex-1">
-                                                <h4 class="font-medium text-gray-800">{{ member.user.name }}</h4>
+                                                {{ member.user.name + ' ' + member.user.last_name_1 + (' ' +
+                                                    member.user.last_name_2 ?? '') }}
                                                 <p class="text-xs text-gray-500">Miembro desde {{
                                                     formatDate(member.created_at) }}</p>
                                             </div>
@@ -410,12 +482,13 @@ const sanitizeHTML = (html) => {
                                 </div>
 
                                 <div v-if="group.events && group.events.length > 0" class="space-y-4">
-                                    <!-- Aquí irían los eventos -->
+                                    &lt;!-- Aquí irían los eventos -->
                                 </div>
 
                                 <div v-else class="text-center py-8">
                                     <i class='bx bx-calendar-event text-5xl text-gray-300 mb-2'></i>
-                                    <h3 class="text-lg font-medium text-gray-700 mb-1">No hay eventos programados</h3>
+                                    <h3 class="text-lg font-medium text-gray-700 mb-1">No hay eventos programados
+                                    </h3>
                                     <p class="text-gray-500">Los eventos del grupo aparecerán aquí</p>
                                 </div>
                             </div>
@@ -432,13 +505,15 @@ const sanitizeHTML = (html) => {
                                 </div>
 
                                 <div v-if="group.files && group.files.length > 0" class="space-y-4">
-                                    <!-- Aquí irían los archivos -->
+                                    &lt;!-- Aquí irían los archivos -->
                                 </div>
 
                                 <div v-else class="text-center py-8">
                                     <i class='bx bx-file text-5xl text-gray-300 mb-2'></i>
-                                    <h3 class="text-lg font-medium text-gray-700 mb-1">No hay archivos compartidos</h3>
-                                    <p class="text-gray-500">Los archivos compartidos en el grupo aparecerán aquí</p>
+                                    <h3 class="text-lg font-medium text-gray-700 mb-1">No hay archivos compartidos
+                                    </h3>
+                                    <p class="text-gray-500">Los archivos compartidos en el grupo aparecerán aquí
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -487,7 +562,7 @@ const sanitizeHTML = (html) => {
                                 <hr class="border-t border-[#193CB8] mb-4" />
 
                                 <div v-if="group.events && group.events.length > 0" class="space-y-4">
-                                    <!-- Aquí irían los eventos próximos -->
+                                    &lt;!-- Aquí irían los eventos próximos -->
                                 </div>
 
                                 <div v-else class="text-center py-4">
@@ -501,10 +576,16 @@ const sanitizeHTML = (html) => {
 
                                 <div class="space-y-3">
                                     <div v-for="member in adminMembers.slice(0, 3)" :key="member.id"
-                                        class="flex items-center gap-3">
+                                        class="flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer"
+                                        @click="router.get('/perfil/' + member.user.profile.slang)">
                                         <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                                            <img :src="member.user.profile_photo_url || '/images/default-avatar.jpg'"
+                                            <img v-if="member.user.profile.profile_picture"
+                                                :src="member.user.profile.profile_picture || '/images/default-avatar.jpg'"
                                                 :alt="member.user.name" class="w-full h-full object-cover" />
+                                            <div v-else
+                                                class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
+                                                <i class='bx bxs-user text-xl'></i>
+                                            </div>
                                         </div>
                                         <div>
                                             <h4 class="font-medium text-gray-800">{{ member.user.name }}</h4>
@@ -515,7 +596,7 @@ const sanitizeHTML = (html) => {
 
                                 <div class="mt-4 text-center">
                                     <button @click="activeTab = 'miembros'"
-                                        class="text-sm text-[#193CB8] hover:underline">
+                                        class="text-sm text-[#193CB8] hover:underline cursor-pointer">
                                         Ver todos los miembros
                                     </button>
                                 </div>
