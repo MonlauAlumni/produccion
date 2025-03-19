@@ -85,7 +85,7 @@ const { auth, appName } = usePage().props;
             <div class="flex items-center">
                 <a href="/" class="text-white font-bold flex items-center gap-3">
 
-                    <img src="../../../../../public/images/monlau-logo.png" alt="Alumni" class="w-8 h-8">
+                    <img src="../../../../../public/images/logoMonlau.jpg" alt="Alumni" class="w-8 h-8">
 
                     <span class="text-xl">Alumni</span>
                 </a>
