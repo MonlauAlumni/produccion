@@ -23,6 +23,7 @@ const props = defineProps({
     }
 });
 
+const MAX_CHARACTERS = 150;
 
 const emit = defineEmits([
     'view',
@@ -31,6 +32,12 @@ const emit = defineEmits([
     'like',
     'share'
 ]);
+
+const truncatedDescription = computed(() => {
+  return props.jobOffer.description.length > MAX_CHARACTERS
+    ? props.jobOffer.description.substring(0, MAX_CHARACTERS) + '...'
+    : props.jobOffer.description;
+});
 
 // Formatear rango salarial
 const formatSalaryRange = (min, max) => {
@@ -192,8 +199,8 @@ const getCategoryLabel = (category) => {
             </div>
 
             <!-- Description -->
-            <div class="mt-4 text-gray-700" :style="{ fontSize: settings.font_size + 'px' }">
-                {{ jobOffer.description }}
+            <div class="mt-4 text-gray-700" v-html="truncatedDescription " :style="{ fontSize: settings.font_size + 'px' }">
+              
             </div>
 
             <!-- Stats & Engagement -->

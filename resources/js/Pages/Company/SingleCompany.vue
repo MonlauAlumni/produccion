@@ -35,7 +35,7 @@
   };
 
   
-  
+  const defaultBanner = "/public/images/default-company-banner.jpg";
   </script>
   
   <template>
