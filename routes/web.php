@@ -21,6 +21,7 @@ use App\Http\Middleware\IsStudent;
 use Laravel\Fortify\Http\Controllers\TwoFactorAuthenticationController;
 use Laravel\Fortify\Http\Controllers\TwoFactorQrCodeController;
 use Illuminate\Support\Facades\Auth;    
+use App\Http\Controllers\CalendarController;
 
 
 Route::fallback(function () {
@@ -95,7 +96,7 @@ Route::middleware('auth')->group(function() {
     Route::post('/grupos/{groupId}/posts', [GroupController::class, 'storePost'])->name('group.storePost');
     Route::post('/grupos/{groupId}/posts/{postId}/comment', [GroupController::class, 'postComment'])->name('group.postComment');
 
-
+    Route::get('/calendario', [CalendarController::class, 'index'])->name('calendar.index');
 
     Route::get('/configuracion', [SettingsController::class, 'show'])->name('settings.show');
     Route::get('/configuracion/cambiar-contraseña', [SettingsController::class, 'changePassword'])->name('change.password');
