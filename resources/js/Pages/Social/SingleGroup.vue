@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, computed, onMounted, nextTick, onUnmounted, watch } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import Layout from '@/Components/Layout.vue';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
@@ -11,6 +11,20 @@ const props = defineProps({
     group: Object,
     isAdmin: Boolean,
     isMember: Boolean,
+    currentPage: {
+        type: Number,
+        default: 1
+    }
+});
+
+const currentPage = ref(props.currentPage || 1);
+const isLoadingMore = ref(false);
+const loadMoreTrigger = ref(null);
+const observer = ref(null);
+const hasMorePosts = ref(true);
+
+const displayedPosts = computed(() => {
+    return props.group.posts || [];
 });
 
 const page = usePage();
@@ -173,8 +187,92 @@ const formatDate = (dateString) => {
 const sanitizeHTML = (html) => {
     return DOMPurify.sanitize(html);
 };
-</script>
 
+const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+watch(() => props.group, (newGroup) => {
+    if (newGroup) {
+        hasMorePosts.value = newGroup.has_more_posts === true;
+    }
+}, { immediate: true });
+
+onMounted(() => {
+    nextTick(() => {
+        setupIntersectionObserver();
+    });
+});
+
+onUnmounted(() => {
+    if (observer.value) {
+        observer.value.disconnect();
+    }
+});
+
+const setupIntersectionObserver = () => {
+    if (observer.value) {
+        observer.value.disconnect();
+    }
+
+    observer.value = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && !isLoadingMore.value && hasMorePosts.value) {
+            loadMorePosts();
+        }
+    }, { threshold: 0.1 });
+
+    if (loadMoreTrigger.value) {
+        observer.value.observe(loadMoreTrigger.value);
+    }
+};
+
+const groupSlug = ref('');
+
+watch(() => props.group, (newGroup) => {
+    if (newGroup && newGroup.slug) {
+        groupSlug.value = newGroup.slug;
+    }
+}, { immediate: true });
+
+
+const loadMorePosts = () => {
+    if (isLoadingMore.value || !hasMorePosts.value || !groupSlug.value) return;
+
+    isLoadingMore.value = true;
+    const nextPage = currentPage.value + 1;
+
+    router.visit(`/grupos/${groupSlug.value}?page=${nextPage}`, {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true,
+        onBefore: () => {
+            return true;
+        },
+        onSuccess: () => {
+            currentPage.value = nextPage;
+            isLoadingMore.value = false;
+
+            setTimeout(() => {
+                window.history.replaceState({}, '', `/grupos/${groupSlug.value}`);
+            }, 0);
+
+            nextTick(() => {
+                if (loadMoreTrigger.value && observer.value) {
+                    observer.value.observe(loadMoreTrigger.value);
+                }
+            });
+        },
+        onError: (errors) => {
+            console.error('Error loading more posts:', errors);
+            isLoadingMore.value = false;
+            setTimeout(() => {
+                window.history.replaceState({}, '', `/grupos/${groupSlug.value}`);
+            }, 0);
+        }
+    });
+
+};
+</script>
 <template>
     <Layout :auth="auth">
         <div class="min-h-screen bg-gray-50 flex flex-col">
@@ -184,7 +282,6 @@ const sanitizeHTML = (html) => {
                 <img v-else src="/public/images/default-group-banner.jpg"
                     class="w-full h-full object-cover opacity-80" />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-
                 <div v-if="isAdmin" class="absolute bottom-4 right-4">
                     <label
                         class="bg-white/90 hover:bg-white text-[#193CB8] px-3 py-2 rounded-md shadow-md flex items-center gap-2 transition-all cursor-pointer">
@@ -340,17 +437,33 @@ const sanitizeHTML = (html) => {
                                     </div>
                                 </div>
 
-                                <div v-if="group.posts && group.posts.length > 0" class="space-y-4 mt-4">
-                                    <PostCard v-for="post in group.posts" :key="post.id" :post="post"
+                                <div v-if="displayedPosts.length > 0" class="space-y-4 mt-4">
+                                    <PostCard v-for="post in displayedPosts" :key="post.id" :post="post"
                                         :formatDate="formatDate" :sanitizeHTML="sanitizeHTML" :isMember="isMember"
                                         :auth="auth" />
+
+                                    <div v-if="isLoadingMore" class="text-center py-4">
+                                        <div
+                                            class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#193CB8] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]">
+                                        </div>
+                                    </div>
+
+                                    <div ref="loadMoreTrigger" class="h-10"></div>
+
+                                    <div v-if="!hasMorePosts" class="text-center pb-4">
+                                        <p class="text-gray-500 text-lg font-semibold">No hay más publicaciones. <span
+                                                @click="scrollToTop"
+                                                class="text-[#193CB8] underline cursor-pointer">¡Publica algo!</span>
+                                        </p>
+                                    </div>
                                 </div>
 
                                 <div v-else
                                     class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center mt-4">
                                     <div class="py-8">
                                         <i class='bx bx-message-square-detail text-5xl text-gray-300 mb-2'></i>
-                                        <h3 class="text-lg font-medium text-gray-700 mb-1">No hay publicaciones aún</h3>
+                                        <h3 class="text-lg font-medium text-gray-700 mb-1">No hay publicaciones aún
+                                        </h3>
                                         <p class="text-gray-500">Sé el primero en compartir algo con el grupo</p>
                                     </div>
                                 </div>
@@ -397,7 +510,7 @@ const sanitizeHTML = (html) => {
 
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div v-for="member in regularMembers" :key="member.id"
-                                          @click="router.get('/perfil/' + member.user.profile.slang)"
+                                            @click="router.get('/perfil/' + member.user.profile.slang)"
                                             class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
                                             <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
                                                 <img v-if="member.user.profile_photo_url"
@@ -437,12 +550,13 @@ const sanitizeHTML = (html) => {
                                 </div>
 
                                 <div v-if="group.events && group.events.length > 0" class="space-y-4">
-                                    <!-- Aquí irían los eventos -->
+                                    &lt;!-- Aquí irían los eventos -->
                                 </div>
 
                                 <div v-else class="text-center py-8">
                                     <i class='bx bx-calendar-event text-5xl text-gray-300 mb-2'></i>
-                                    <h3 class="text-lg font-medium text-gray-700 mb-1">No hay eventos programados</h3>
+                                    <h3 class="text-lg font-medium text-gray-700 mb-1">No hay eventos programados
+                                    </h3>
                                     <p class="text-gray-500">Los eventos del grupo aparecerán aquí</p>
                                 </div>
                             </div>
@@ -459,13 +573,15 @@ const sanitizeHTML = (html) => {
                                 </div>
 
                                 <div v-if="group.files && group.files.length > 0" class="space-y-4">
-                                    <!-- Aquí irían los archivos -->
+                                    &lt;!-- Aquí irían los archivos -->
                                 </div>
 
                                 <div v-else class="text-center py-8">
                                     <i class='bx bx-file text-5xl text-gray-300 mb-2'></i>
-                                    <h3 class="text-lg font-medium text-gray-700 mb-1">No hay archivos compartidos</h3>
-                                    <p class="text-gray-500">Los archivos compartidos en el grupo aparecerán aquí</p>
+                                    <h3 class="text-lg font-medium text-gray-700 mb-1">No hay archivos compartidos
+                                    </h3>
+                                    <p class="text-gray-500">Los archivos compartidos en el grupo aparecerán aquí
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -514,7 +630,7 @@ const sanitizeHTML = (html) => {
                                 <hr class="border-t border-[#193CB8] mb-4" />
 
                                 <div v-if="group.events && group.events.length > 0" class="space-y-4">
-                                    <!-- Aquí irían los eventos próximos -->
+                                    &lt;!-- Aquí irían los eventos próximos -->
                                 </div>
 
                                 <div v-else class="text-center py-4">
