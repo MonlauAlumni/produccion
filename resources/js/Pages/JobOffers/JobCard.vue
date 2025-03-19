@@ -23,7 +23,7 @@ const props = defineProps({
     }
 });
 
-const MAX_CHARACTERS = 150;
+const MAX_CHARACTERS = 300;
 
 const emit = defineEmits([
     'view',
@@ -168,7 +168,7 @@ const getCategoryLabel = (category) => {
 
                         <!-- Expires Badge -->
                         <div v-if="jobOffer.deadline"
-                            class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-1 rounded-full flex items-center">
+                            class="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1  w-40 rounded-full flex items-center">
                             <i class='bx bx-calendar-exclamation mr-1'></i>
                             Expira: {{ new Date(jobOffer.deadline).toLocaleDateString() }}
                         </div>
