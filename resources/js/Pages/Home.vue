@@ -58,9 +58,9 @@ const closeJobConfirmationModal = () => {
   // Categorías destacadas
   const featuredCategories = [
     { id: 'all', name: 'Todas', icon: 'bx-globe', color: '#193CB8' },
-    { id: 'tech', name: 'Tecnología', icon: 'bx-code-alt', color: '#4285F4' },
+    { id: 'it', name: 'Tecnología', icon: 'bx-code-alt', color: '#4285F4' },
     { id: 'marketing', name: 'Marketing', icon: 'bx-line-chart', color: '#EA4335' },
-    { id: 'automotion', name: 'Automoción', icon: 'bx-car', color: '#FF7C43' },
+    { id: 'automotive', name: 'Automoción', icon: 'bx-car', color: '#FF7C43' },
 
   ];
 
@@ -229,10 +229,10 @@ const closeJobConfirmationModal = () => {
   // Aplicar filtros
   const applyFilters = () => {
     // Navegar a la ruta con los filtros aplicados
-    router.get('/ofertas', {
+    router.get('/home', {
       filter: activeFilter.value !== 'all' ? activeFilter.value : undefined,
-      category: activeCategory.value !== 'all' ? activeCategory.value : undefined,
-      job_type: activeJobType.value !== 'all' ? activeJobType.value : undefined,
+      categoria: activeCategory.value !== 'all' ? activeCategory.value : undefined,
+      trabajo: activeJobType.value !== 'all' ? activeJobType.value : undefined,
       salary_range: activeSalaryRange.value !== 'all' ? activeSalaryRange.value : undefined,
       search: searchQuery.value || undefined
     }, {

@@ -20,13 +20,27 @@ class JobOfferController extends Controller
         $user = Auth::user();
         $page = $request->input('page', 1);
         $offers = JobOffer::with('company')->paginate(10);
-            
+        
+        $category = $request->input('categoria');
+        $workMode = $request->input('trabajo');
+
+        $offersQuery = JobOffer::with('company')->orderBy('created_at', 'desc');
+
+        if ($category) {
+            $offersQuery->where('category', 'like', '%' . $category . '%');
+        }
+        if ($workMode) {
+            $offersQuery->where('work_mode', 'like', '%' . $workMode . '%');
+        }
         
         $offers->getCollection()->transform(function ($offer) use ($user) {
             $offer->isSaved = $user->savedJobOffers->contains($offer);
             
             return $offer;
         });
+
+        $offers = $offersQuery->paginate(10);
+
 
         return Inertia::render('Home', [
             'jobOffers' => $offers
