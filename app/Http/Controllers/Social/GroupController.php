@@ -58,6 +58,7 @@ class GroupController extends Controller
         $group->description = $request->description;
         $group->category = $request->category;
         $group->privacy = $request->privacy;
+        $group->members_count = 1;
         $group->slug = $uniqueSlug;
         $group->creator_id = $request->user()->id;
 
@@ -87,10 +88,7 @@ class GroupController extends Controller
             'updated_at' => now(),
         ]);
 
-        return Inertia::render('Social/SingleGroup', [
-            'group' => $group->load('members.user'),
-            'isAdmin' => true,
-        ]);
+        return $this->show($group->slug);
     }
 
     public function show($slug)
@@ -139,6 +137,49 @@ class GroupController extends Controller
             'isMember' => $isMember,
             'currentPage' => (int)$page,
         ]);
+    }
+
+    public function updateLogo(Request $request, $slug)
+    {
+        $request->validate([
+            'logo' => 'required|image|max:2048',
+        ]);
+
+        $group = Group::where('slug', $slug)->firstOrFail();
+
+        if ($request->hasFile('logo')) {
+            if ($group->group_logo) {
+                $oldLogoPath = str_replace('/storage/', '', $group->group_logo);
+                Storage::disk('public')->delete($oldLogoPath);
+            }
+
+            $logoPath = $request->file('logo')->store('groups/logos', 'public');
+            $group->group_logo = Storage::url($logoPath);
+            $group->save();
+        }
+
+        return redirect()->back()->with('success', 'Logo actualizado con éxito!');
+    }
+
+    public function updateBanner(Request $request, $slug) {
+        $request->validate([
+            'banner' => 'required|image|max:2048',
+        ]);
+
+        $group = Group::where('slug', $slug)->firstOrFail();
+
+        if ($request->hasFile('banner')) {
+            if ($group->group_banner) {
+                $oldBannerPath = str_replace('/storage/', '', $group->group_banner);
+                Storage::disk('public')->delete($oldBannerPath);
+            }
+
+            $bannerPath = $request->file('banner')->store('groups/banners', 'public');
+            $group->group_banner = Storage::url($bannerPath);
+            $group->save();
+        }
+
+        return redirect()->back()->with('success', 'Banner actualizado con éxito!');
     }
    
     public function storePost(Request $request, $groupId)

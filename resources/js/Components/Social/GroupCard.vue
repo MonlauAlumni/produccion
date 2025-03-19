@@ -15,7 +15,7 @@
                         <div class="flex items-center text-xs text-white/80">
                             <span class="flex items-center mr-3">
                                 <i class='bx bx-user-circle mr-1'></i>
-                                {{ group.members ? group.members.length : 0 }} miembros
+                                {{ group.members_count }} miembro{{ group.members_count === 1 ? '' : 's' }}
                             </span>
                             <span class="flex items-center">
                                 <i class='bx bx-lock-open-alt mr-1' v-if="group.privacy === 'public'"></i>
@@ -43,7 +43,7 @@
         </div>
 
         <div class="p-5 pt-10">
-            <p class="text-gray-600 mb-4 line-clamp-2 text-sm">
+            <p class="text-gray-600 text-justify mb-4 line-clamp-2 text-sm mx-25">
                 {{ group.description }}
             </p>
 
@@ -58,7 +58,7 @@
 
             <div class="flex items-center justify-between">
                 <button
-                    class="px-4 py-2 rounded-lg bg-[#193CB8] text-white hover:bg-[#142d8c] transition-colors flex items-center gap-1 text-sm font-medium"
+                    class="px-4 cursor-pointer py-2 rounded-lg bg-[#193CB8] text-white hover:bg-[#142d8c] transition-colors flex items-center gap-1 text-sm font-medium"
                     @click="navigateToGroup">
                     <i class='bx bx-show'></i> Ver grupo
                 </button>
