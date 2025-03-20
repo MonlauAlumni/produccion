@@ -15,6 +15,7 @@ const props = defineProps({
 const quillEditorRef = ref(null);
 const fileInputRef = ref(null);
 const loadMoreTrigger = ref(null);
+const windowScrollY = ref(0);
 
 const content = ref("");
 const image = ref(null);
@@ -24,6 +25,11 @@ const isLoadingMore = ref(false);
 const observer = ref(null);
 const hasMorePosts = ref(true);
 const groupSlug = ref('');
+
+
+const updateScroll = () => {
+    windowScrollY.value = window.scrollY;
+};
 
 const displayedPosts = computed(() => {
     return props.group.posts || [];
@@ -41,7 +47,7 @@ watch(() => props.group, (newGroup) => {
 
 // Register custom link format for Quill
 onMounted(() => {
-    // Register the custom link format
+    window.addEventListener('scroll', updateScroll);
     const Link = Quill.import('formats/link');
     class CustomLink extends Link {
         static create(value) {
@@ -53,7 +59,7 @@ onMounted(() => {
         }
     }
     Quill.register('formats/link', CustomLink, true);
-    
+
     nextTick(() => {
         setupIntersectionObserver();
     });
@@ -91,8 +97,23 @@ const scrollToTop = () => {
         quillEditorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
         setTimeout(() => {
             highlightQuillEditor();
-        }, 500);
+            router.visit(`/grupos/${groupSlug.value}`, {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true
+            });
+        }, 1000);
+
     }
+};
+
+const goUp = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    router.visit(`/grupos/${groupSlug.value}`, {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true
+    });
 };
 
 const highlightQuillEditor = () => {
@@ -136,10 +157,10 @@ const submitPost = () => {
         ALLOWED_ATTR: ['href', 'target', 'style', 'rel'],
         ADD_ATTR: ['target', 'rel']
     };
-    
+
     // Sanitize with the configuration
     let sanitizedContent = DOMPurify.sanitize(content.value, purifyConfig);
-    
+
     // Verificar si el contenido está vacío o si no hay imagen
     if (!sanitizedContent.trim() && !image.value) return;
 
@@ -220,6 +241,7 @@ const loadMorePosts = () => {
 };
 
 onUnmounted(() => {
+    window.removeEventListener('scroll', updateScroll);
     if (observer.value) {
         observer.value.disconnect();
     }
@@ -227,6 +249,10 @@ onUnmounted(() => {
 </script>
 
 <template>
+    <button v-show="windowScrollY > 200" @click="goUp"
+        class="fixed cursor-pointer bottom-6 right-6 w-12 h-12 rounded-full bg-[#193CB8] text-white shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300 z-50 animate-fade-in">
+        <i class='bx bx-chevron-up text-xl'></i>
+    </button>
     <div class="tab-content">
         <div v-if="isMember" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 quill-editor-container">
             <div class="flex items-start gap-3 ">
