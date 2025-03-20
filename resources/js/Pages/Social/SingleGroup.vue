@@ -317,7 +317,7 @@ watch(() => props.group, (newGroup) => {
             </div>
         </div>
 
-        <div v-if="showInviteModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div v-show="showInviteModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-xl shadow-xl max-w-md w-full">
                 <div class="p-4 border-b border-gray-200 flex justify-between items-center">
                     <h3 class="font-bold text-gray-800">Invitar a nuevos miembros</h3>

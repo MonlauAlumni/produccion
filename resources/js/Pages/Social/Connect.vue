@@ -217,7 +217,7 @@ const handleFileUpload = (event) => {
                         <div class="flex bg-white/20 backdrop-blur-sm rounded-full p-1 border border-white/30">
                             <input v-model="searchQuery" type="text" placeholder="Buscar personas, grupos, eventos..."
                                 class="w-full px-5 py-3 bg-transparent text-white placeholder-blue-100 focus:outline-none rounded-full" />
-                            <button
+                            <button @click="router.get('/connect/search?q=' + searchQuery)"
                                 class="bg-white text-[#193CB8] hover:bg-blue-50 px-5 py-3 rounded-full flex items-center justify-center transition-colors">
                                 <i class='bx bx-search text-xl'></i>
                             </button>
