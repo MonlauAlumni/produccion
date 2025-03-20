@@ -7,7 +7,8 @@ import { QuillEditor } from '@vueup/vue-quill';
 import DOMPurify from 'dompurify';
 import PostCard from '@/Components/Social/PostCard.vue';
 import GroupPostTab from '@/Components/Social/GroupPostTab.vue';
-
+import GroupHeader from '@/Components/Social/GroupHeader.vue';
+import GroupMembersTab from '@/Components/Social/GroupMembersTab.vue';
 
 const props = defineProps({
     group: Object,
@@ -19,15 +20,7 @@ const props = defineProps({
     }
 });
 
-const currentPage = ref(props.currentPage || 1);
-const isLoadingMore = ref(false);
-const loadMoreTrigger = ref(null);
-const observer = ref(null);
 const hasMorePosts = ref(true);
-
-const displayedPosts = computed(() => {
-    return props.group.posts || [];
-});
 
 const page = usePage();
 const auth = computed(() => page.props.auth);
@@ -38,27 +31,6 @@ const showInviteModal = ref(false);
 const showEditModal = ref(false);
 const inviteEmail = ref('');
 const isUploading = ref(false);
-
-const content = ref('');
-const image = ref(null);
-const imagePreview = ref(null);
-const fileInputRef = ref(null);
-const quillEditorRef = ref(null);
-
-const editorOptions = {
-    modules: {
-        toolbar: [
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            [{ 'indent': '-1' }, { 'indent': '+1' }],
-            [{ 'align': [] }],
-            ['link'],
-            ['clean']
-        ]
-    },
-    placeholder: 'Comparte algo con el grupo...',
-    theme: 'snow'
-};
 
 const joinGroup = () => {
     router.post(`/grupos/${props.group.slug}/join`, {}, {
@@ -81,53 +53,6 @@ const inviteMember = () => {
     });
 };
 
-const submitPost = () => {
-    const sanitizedContent = DOMPurify.sanitize(content.value);
-
-    const formData = new FormData();
-    formData.append('content', sanitizedContent);
-    if (image.value) {
-        formData.append('image', image.value);
-    }
-    router.post(`/grupos/${props.group.id}/posts`, formData, {
-        onSuccess: () => {
-            content.value = '';
-            image.value = null;
-            imagePreview.value = null;
-            fileInputRef.value.value = '';
-            quillEditorRef.value.clear();
-            nextTick(() => {
-                window.scrollTo(0, 0);
-            });
-        }
-    });
-};
-
-const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (!file) {
-        image.value = null;
-        imagePreview.value = null;
-        return;
-    }
-
-    image.value = file;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        imagePreview.value = e.target.result;
-    };
-    reader.readAsDataURL(file);
-};
-
-const removeImage = () => {
-    image.value = null;
-    imagePreview.value = null;
-    if (fileInputRef.value) {
-        fileInputRef.value.value = '';
-    }
-};
-
 const uploadBanner = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -138,25 +63,6 @@ const uploadBanner = (e) => {
     isUploading.value = true;
 
     router.post(`/grupos/${props.group.slug}/update-banner`, formData, {
-        onSuccess: () => {
-            isUploading.value = false;
-        },
-        onError: () => {
-            isUploading.value = false;
-        }
-    });
-};
-
-const uploadLogo = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('logo', file);
-
-    isUploading.value = true;
-
-    router.post(`/grupos/${props.group.slug}/update-logo`, formData, {
         onSuccess: () => {
             isUploading.value = false;
         },
@@ -186,47 +92,13 @@ const formatDate = (dateString) => {
     });
 };
 
-const sanitizeHTML = (html) => {
-    return DOMPurify.sanitize(html);
-};
 
-const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-};
 
 watch(() => props.group, (newGroup) => {
     if (newGroup) {
         hasMorePosts.value = newGroup.has_more_posts === true;
     }
 }, { immediate: true });
-
-onMounted(() => {
-    nextTick(() => {
-        setupIntersectionObserver();
-    });
-});
-
-onUnmounted(() => {
-    if (observer.value) {
-        observer.value.disconnect();
-    }
-});
-
-const setupIntersectionObserver = () => {
-    if (observer.value) {
-        observer.value.disconnect();
-    }
-
-    observer.value = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && !isLoadingMore.value && hasMorePosts.value) {
-            loadMorePosts();
-        }
-    }, { threshold: 0.1 });
-
-    if (loadMoreTrigger.value) {
-        observer.value.observe(loadMoreTrigger.value);
-    }
-};
 
 const groupSlug = ref('');
 
@@ -236,44 +108,6 @@ watch(() => props.group, (newGroup) => {
     }
 }, { immediate: true });
 
-
-const loadMorePosts = () => {
-    if (isLoadingMore.value || !hasMorePosts.value || !groupSlug.value) return;
-
-    isLoadingMore.value = true;
-    const nextPage = currentPage.value + 1;
-
-    router.visit(`/grupos/${groupSlug.value}?page=${nextPage}`, {
-        preserveState: true,
-        preserveScroll: true,
-        replace: true,
-        onBefore: () => {
-            return true;
-        },
-        onSuccess: () => {
-            currentPage.value = nextPage;
-            isLoadingMore.value = false;
-
-            setTimeout(() => {
-                window.history.replaceState({}, '', `/grupos/${groupSlug.value}`);
-            }, 0);
-
-            nextTick(() => {
-                if (loadMoreTrigger.value && observer.value) {
-                    observer.value.observe(loadMoreTrigger.value);
-                }
-            });
-        },
-        onError: (errors) => {
-            console.error('Error loading more posts:', errors);
-            isLoadingMore.value = false;
-            setTimeout(() => {
-                window.history.replaceState({}, '', `/grupos/${groupSlug.value}`);
-            }, 0);
-        }
-    });
-
-};
 </script>
 <template>
     <Layout :auth="auth">
@@ -297,178 +131,17 @@ const loadMorePosts = () => {
 
             <main class="flex flex-col items-center justify-center -mt-16 relative z-10 px-4">
                 <div class="flex flex-col space-y-6 w-full max-w-5xl">
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                        <div class="p-6 pt-20 relative">
-
-                            <div class="absolute left-6 -top-12">
-                                <div class="relative">
-                                    <div
-                                        class="w-24 h-24 rounded-xl overflow-hidden border-4 border-white bg-white shadow-md">
-                                        <img v-if="group.group_logo"
-                                            :src="group.group_logo || '/images/default-logo.jpg'"
-                                            :alt="group.group_name + ' logo'" class="w-full h-full object-cover" />
-                                        <div v-else
-                                            class="w-full h-full rounded-lg bg-gray-200 flex items-center justify-center text-gray-500">
-                                            <i class='bx bx-group text-4xl'></i>
-                                        </div>
-                                    </div>
-
-                                    <label v-if="isAdmin"
-                                        class="absolute -bottom-2 -right-2 cursor-pointer bg-white hover:bg-gray-50 text-[#193CB8] p-1.5 rounded-full shadow-md transition-all">
-                                        <i class='bx bx-camera text-lg'></i>
-                                        <input type="file" @change="uploadLogo" class="hidden" accept="image/*">
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                                <div>
-                                    <h1 class="text-2xl font-bold text-gray-800">{{ group.name }}</h1>
-
-                                    <div class="flex items-center text-gray-500 text-sm mt-2">
-                                        <span class="flex items-center mr-4">
-                                            <i class='bx bx-user-circle mr-1'></i> {{ group.members ?
-                                                group.members.length : 0 }} miembros
-                                        </span>
-                                        <span class="flex items-center">
-                                            <i class='bx bx-lock-open-alt mr-1' v-if="group.privacy === 'public'"></i>
-                                            <i class='bx bx-lock-alt mr-1' v-else></i>
-                                            {{ group.privacy === 'public' ? 'Grupo público' : 'Grupo privado' }}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div class="mt-4 md:mt-0 flex items-center gap-3">
-                                    <button v-if="!isMember && group.privacy === 'public'" @click="joinGroup"
-                                        class="px-4 py-2 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors flex items-center">
-                                        <i class='bx bx-user-plus mr-1'></i> Unirse al grupo
-                                    </button>
-
-                                    <button v-if="!isMember && group.privacy === 'private'"
-                                        @click="showJoinModal = true"
-                                        class="px-4 py-2 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors flex items-center">
-                                        <i class='bx bx-envelope mr-1'></i> Solicitar unirse
-                                    </button>
-
-                                    <button v-if="isAdmin" @click="showInviteModal = true"
-                                        class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center">
-                                        <i class='bx bx-user-plus mr-1'></i> Invitar
-                                    </button>
-
-                                    <button v-if="isAdmin" @click="showEditModal = true"
-                                        class="p-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                                        <i class='bx bx-edit-alt'></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <p class="text-gray-600 mt-4">{{ group.description }}</p>
-
-                            <div v-if="group.tags && group.tags.length > 0" class="flex flex-wrap gap-2 mt-4">
-                                <span v-for="(tag, index) in group.tags" :key="index"
-                                    class="px-2 py-1 bg-[#193CB8]/10 text-[#193CB8] rounded-full text-xs">
-                                    #{{ tag }}
-                                </span>
-                            </div>
-
-                            <div class="flex border-b border-gray-200 mt-6">
-                                <button @click="activeTab = 'publicaciones'"
-                                    class="px-4 py-2 font-medium text-sm transition-colors"
-                                    :class="activeTab === 'publicaciones' ? 'text-[#193CB8] border-b-2 border-[#193CB8]' : 'text-gray-500 hover:text-gray-700'">
-                                    Publicaciones
-                                </button>
-                                <button @click="activeTab = 'miembros'"
-                                    class="px-4 py-2 font-medium text-sm transition-colors"
-                                    :class="activeTab === 'miembros' ? 'text-[#193CB8] border-b-2 border-[#193CB8]' : 'text-gray-500 hover:text-gray-700'">
-                                    Miembros
-                                </button>
-                                <button @click="activeTab = 'eventos'"
-                                    class="px-4 py-2 font-medium text-sm transition-colors"
-                                    :class="activeTab === 'eventos' ? 'text-[#193CB8] border-b-2 border-[#193CB8]' : 'text-gray-500 hover:text-gray-700'">
-                                    Eventos
-                                </button>
-                                <button @click="activeTab = 'archivos'"
-                                    class="px-4 py-2 font-medium text-sm transition-colors"
-                                    :class="activeTab === 'archivos' ? 'text-[#193CB8] border-b-2 border-[#193CB8]' : 'text-gray-500 hover:text-gray-700'">
-                                    Archivos
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <GroupHeader :group="group" :isAdmin="isAdmin" :isMember="isMember" :activeTab="activeTab"
+                        @update:activeTab="activeTab = $event" @request-join="showJoinModal = true"
+                        @invite-members="showInviteModal = true" @edit-group="showEditModal = true" />
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="md:col-span-2 space-y-6">
                             <GroupPostTab v-if="activeTab === 'publicaciones'" :auth="auth" :isMember="isMember"
                                 :group="group" />
 
-                            <div v-if="activeTab === 'miembros'"
-                                class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                                <h2 class="text-xl font-semibold mb-4">Miembros del grupo</h2>
-
-                                <div class="mb-6">
-                                    <h3 class="text-sm font-medium text-gray-500 mb-3">Administradores</h3>
-
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div v-for="member in adminMembers" :key="member.id"
-                                            @click="router.get('/perfil/' + member.user.profile.slang)"
-                                            class="flex items-center gap-3 p-3 cursor-pointer border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors relative">
-                                            <div class="w-12 h-12 rounded-full flex-shrink-0 relative">
-                                                <img v-if="member.user.profile.profile_picture"
-                                                    :src="member.user.profile.profile_picture || '/images/default-avatar.jpg'"
-                                                    :alt="member.user.name"
-                                                    class="w-full h-full object-cover rounded-full" />
-                                                <div v-else
-                                                    class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
-                                                    <i class='bx bxs-user text-xl'></i>
-                                                </div>
-                                                <i v-if="member.role === 'admin'"
-                                                    class='bx bxs-crown text-yellow-500 absolute -top-2 text-xl'
-                                                    style="transform: rotate(-30deg);"></i>
-                                            </div>
-                                            <div>
-                                                <h4>
-                                                    {{ member.user.name + ' ' + member.user.last_name_1 + (' ' +
-                                                        member.user.last_name_2 ?? '') }}
-
-                                                </h4>
-                                                <p class="text-xs text-gray-500">Administrador</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h3 class="text-sm font-medium text-gray-500 mb-3">Miembros</h3>
-
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div v-for="member in regularMembers" :key="member.id"
-                                            @click="router.get('/perfil/' + member.user.profile.slang)"
-                                            class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                                            <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-                                                <img v-if="member.user.profile_photo_url"
-                                                    :src="member.user.profile_photo_url || '/images/default-avatar.jpg'"
-                                                    :alt="member.user.name" class="w-full h-full object-cover" />
-                                                <div v-else
-                                                    class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
-                                                    <i class='bx bxs-user text-xl'></i>
-                                                </div>
-                                            </div>
-                                            <div class="flex-1">
-                                                {{ member.user.name + ' ' + member.user.last_name_1 + (' ' +
-                                                    member.user.last_name_2 ?? '') }}
-                                                <p class="text-xs text-gray-500">Miembro desde {{
-                                                    formatDate(member.created_at) }}</p>
-                                            </div>
-
-                                            <div v-if="isAdmin" class="flex-shrink-0">
-                                                <button class="p-1 text-gray-400 hover:text-gray-600">
-                                                    <i class='bx bx-dots-vertical-rounded'></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <GroupMembersTab v-if="activeTab === 'miembros'" :activeTab="activeTab" :adminMembers="adminMembers"
+                                :regularMembers="regularMembers" :isAdmin="isAdmin" />
 
                             <div v-if="activeTab === 'eventos'"
                                 class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

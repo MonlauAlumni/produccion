@@ -1,11 +1,11 @@
-`
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { router, usePage } from '@inertiajs/vue3';
-import { QuillEditor } from "@vueup/vue-quill";
+import { QuillEditor, Quill } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import DOMPurify from "dompurify";
 import PostCard from "@/Components/Social/PostCard.vue";
+
 const props = defineProps({
     auth: Object,
     isMember: Boolean,
@@ -33,15 +33,31 @@ const displayedPosts = computed(() => {
 watch(() => props.group, (newGroup) => {
     if (newGroup) {
         hasMorePosts.value = newGroup.has_more_posts === true;
-
-
         if (newGroup.slug) {
             groupSlug.value = newGroup.slug;
         }
-
-
     }
 }, { immediate: true });
+
+// Register custom link format for Quill
+onMounted(() => {
+    // Register the custom link format
+    const Link = Quill.import('formats/link');
+    class CustomLink extends Link {
+        static create(value) {
+            const node = super.create(value);
+            node.setAttribute('style', 'text-decoration: underline; color: #007bff;');
+            node.setAttribute('target', '_blank');
+            node.setAttribute('rel', 'noopener noreferrer'); // Security best practice
+            return node;
+        }
+    }
+    Quill.register('formats/link', CustomLink, true);
+    
+    nextTick(() => {
+        setupIntersectionObserver();
+    });
+});
 
 // Editor options
 const editorOptions = {
@@ -69,12 +85,24 @@ const formatDate = (dateString) => {
     });
 };
 
-const sanitizeHTML = (html) => {
-    return DOMPurify.sanitize(html);
+const scrollToTop = () => {
+    const quillEditorDiv = document.querySelector('.quill-editor-container');
+    if (quillEditorDiv) {
+        quillEditorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => {
+            highlightQuillEditor();
+        }, 500);
+    }
 };
 
-const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+const highlightQuillEditor = () => {
+    const quillEditorDiv = document.querySelector('.quill-editor-container');
+    if (quillEditorDiv) {
+        quillEditorDiv.classList.add('ring-highlight', 'ring-active');
+        setTimeout(() => {
+            quillEditorDiv.classList.remove('ring-active');
+        }, 1650);
+    }
 };
 
 const handleFileChange = (event) => {
@@ -103,8 +131,16 @@ const removeImage = () => {
 };
 
 const submitPost = () => {
-    const sanitizedContent = DOMPurify.sanitize(content.value);
-
+    // Configure DOMPurify to allow style attributes and target="_blank"
+    const purifyConfig = {
+        ALLOWED_ATTR: ['href', 'target', 'style', 'rel'],
+        ADD_ATTR: ['target', 'rel']
+    };
+    
+    // Sanitize with the configuration
+    let sanitizedContent = DOMPurify.sanitize(content.value, purifyConfig);
+    
+    // Verificar si el contenido está vacío o si no hay imagen
     if (!sanitizedContent.trim() && !image.value) return;
 
     const formData = new FormData();
@@ -113,8 +149,10 @@ const submitPost = () => {
         formData.append('image', image.value);
     }
 
+    // Enviar el post
     router.post(`/grupos/${props.group.id}/posts`, formData, {
         onSuccess: () => {
+            // Limpiar campos después de éxito
             content.value = '';
             image.value = null;
             imagePreview.value = null;
@@ -130,7 +168,6 @@ const submitPost = () => {
         }
     });
 };
-
 
 const setupIntersectionObserver = () => {
     if (observer.value) {
@@ -162,7 +199,6 @@ const loadMorePosts = () => {
             currentPage.value = nextPage;
             isLoadingMore.value = false;
 
-
             setTimeout(() => {
                 window.history.replaceState({}, '', `/grupos/${groupSlug.value}`);
             }, 0);
@@ -180,16 +216,8 @@ const loadMorePosts = () => {
                 window.history.replaceState({}, '', `/grupos/${groupSlug.value}`);
             }, 0);
         }
-
-
     });
 };
-
-onMounted(() => {
-    nextTick(() => {
-        setupIntersectionObserver();
-    });
-});
 
 onUnmounted(() => {
     if (observer.value) {
@@ -200,8 +228,8 @@ onUnmounted(() => {
 
 <template>
     <div class="tab-content">
-        <div v-if="isMember" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div class="flex items-start gap-3">
+        <div v-if="isMember" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 quill-editor-container">
+            <div class="flex items-start gap-3 ">
                 <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
                     <img v-if="auth.user.profile && auth.user.profile.profile_picture"
                         :src="auth.user.profile.profile_picture || '/images/default-avatar.jpg'" alt="Tu avatar"
@@ -245,7 +273,7 @@ onUnmounted(() => {
 
         <div v-if="displayedPosts.length > 0" class="space-y-4 mt-4">
             <PostCard v-for="post in displayedPosts" :key="post.id" :post="post" :formatDate="formatDate"
-                :sanitizeHTML="sanitizeHTML" :isMember="isMember" :auth="auth" />
+                :isMember="isMember" :auth="auth" />
 
             <div v-if="isLoadingMore" class="text-center py-4">
                 <div
@@ -272,10 +300,9 @@ onUnmounted(() => {
                 <p class="text-gray-500">Sé el primero en compartir algo con el grupo</p>
             </div>
         </div>
-
-
     </div>
 </template>
+
 <style scoped>
 :deep(.ql-editor) {
     min-height: 100px;
@@ -337,6 +364,11 @@ onUnmounted(() => {
     color: #193CB8;
 }
 
+:deep(.ql-editor a) {
+    color: #007bff;
+    text-decoration: underline;
+}
+
 @keyframes spin {
     from {
         transform: rotate(0deg);
@@ -349,5 +381,14 @@ onUnmounted(() => {
 
 .animate-spin {
     animation: spin 1s linear infinite;
+}
+
+.ring-highlight {
+    box-shadow: 0 0 0px 0px rgba(25, 60, 184, 0);
+    transition: box-shadow 0.4s ease-in-out;
+}
+
+.ring-active {
+    box-shadow: 0 0 12px 5px rgba(25, 60, 184, 0.6);
 }
 </style>
