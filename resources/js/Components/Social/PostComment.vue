@@ -27,7 +27,7 @@ const formatDate = (date) => {
         </div>
         <div class="flex-1 bg-gray-50 p-2 rounded-lg">
             <div class="flex items-center justify-between">
-                <h4 class="font-medium text-sm text-gray-800">{{ comment.user.name }}</h4>
+                <h4 class="font-medium text-sm text-gray-800">{{ comment.user.name + ' ' + comment.user.last_name_1 + ' ' + comment.user.last_name_2 ?? null }}</h4>
                 <p class="text-xs text-gray-500">{{ formatDate(comment.created_at) }}</p>
             </div>
             <p class="text-sm text-gray-700" v-html="comment.content"></p>
