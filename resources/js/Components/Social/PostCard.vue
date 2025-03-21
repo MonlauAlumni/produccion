@@ -32,41 +32,32 @@
 
           <!-- Image Carousel -->
           <div v-if="post.images && post.images.length > 0" class="mt-3 relative">
-            <div class="image-carousel">
-              <!-- Image Counter -->
-              <div v-if="post.images.length > 1"
-                class="image-counter absolute top-3 right-3 bg-black/60 text-white px-2 py-1 rounded-md text-xs z-10">
-                {{ currentImageIndex + 1 }}/{{ post.images.length }}
+            <div class="image-carousel overflow-hidden relative w-full h-[300px]">
+              <div class="flex transition-transform duration-500 h-full"
+                :style="{ transform: `translateX(-${currentImageIndex * 100}%)` }">
+                <img v-for="(image, index) in post.images" :key="index" :src="image.image_path" alt="Post image"
+                  class="flex-shrink-0 object-cover mx-auto min-w-full" />
               </div>
-
-              <!-- Current Image -->
-              <div class="image-container relative overflow-hidden rounded-lg">
-                <img :src="post.images[currentImageIndex].image_path" alt="Post image"
-                  class="w-full h-full object-cover" :style="{
-                    height: post.images.length === 1 ? '400px' : '300px',
-                    objectFit: 'cover'
-                  }" />
-              </div>
-
-              <!-- Navigation Arrows -->
-              <template v-if="post.images.length > 1">
-                <button @click="prevImage"
-                  class="nav-arrow left-arrow absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full w-8 h-8 flex items-center justify-center shadow-md transition-colors">
-                  <i class="bx bx-chevron-left text-xl"></i>
-                </button>
-                <button @click="nextImage"
-                  class="nav-arrow right-arrow absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full w-8 h-8 flex items-center justify-center shadow-md transition-colors">
-                  <i class="bx bx-chevron-right text-xl"></i>
-                </button>
-
-                <!-- Image Dots Indicator -->
-                <div class="image-dots absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-1.5">
-                  <button v-for="(_, index) in post.images" :key="index" @click="currentImageIndex = index"
-                    class="w-2 h-2 rounded-full transition-all duration-200"
-                    :class="currentImageIndex === index ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/70'"></button>
-                </div>
-              </template>
             </div>
+
+            <!-- Flechas de navegación -->
+            <template v-if="post.images.length > 1">
+              <button @click="prevImage"
+                class="nav-arrow absolute cursor-pointer left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full w-8 h-8 flex items-center justify-center shadow-md">
+                <i class="bx bx-chevron-left text-xl"></i>
+              </button>
+              <button @click="nextImage"
+                class="nav-arrow absolute cursor-pointer right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full w-8 h-8 flex items-center justify-center shadow-md">
+                <i class="bx bx-chevron-right text-xl"></i>
+              </button>
+
+              <!-- Indicadores (dots) -->
+              <div class="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-1.5">
+                <button v-for="(image, index) in post.images" :key="index" @click="setImage(index)"
+                  class="w-2 h-2 rounded-full transition-all duration-200 cursor-pointer"
+                  :class="currentImageIndex === index ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/70'"></button>
+              </div>
+            </template>
           </div>
         </div>
 
@@ -130,6 +121,7 @@ const commentText = ref('');
 const commentInput = ref(null);
 const isLiked = ref(props.post.is_liked);
 const currentImageIndex = ref(0);
+const slideDirection = ref('slide-right');
 
 // Reset current image index when post changes
 watch(() => props.post.id, () => {
@@ -151,32 +143,24 @@ const sanitizeHTML = (html) => {
 
 const nextImage = () => {
   if (!props.post.images || props.post.images.length <= 1) return;
+  slideDirection.value = 'slide-left';
+
+  if (currentImageIndex.value === props.post.images.length - 1) {
+    slideDirection.value = 'slide-right';
+  }
   currentImageIndex.value = (currentImageIndex.value + 1) % props.post.images.length;
 };
 
 const prevImage = () => {
   if (!props.post.images || props.post.images.length <= 1) return;
+  slideDirection.value = 'slide-right';
+
+  if (currentImageIndex.value === 0) {
+    slideDirection.value = 'slide-left';
+  }
   currentImageIndex.value = (currentImageIndex.value - 1 + props.post.images.length) % props.post.images.length;
 };
 
-// Add keyboard navigation for images
-onMounted(() => {
-  const handleKeyDown = (e) => {
-    if (props.post.images && props.post.images.length > 1) {
-      if (e.key === 'ArrowRight') {
-        nextImage();
-      } else if (e.key === 'ArrowLeft') {
-        prevImage();
-      }
-    }
-  };
-
-  window.addEventListener('keydown', handleKeyDown);
-
-  return () => {
-    window.removeEventListener('keydown', handleKeyDown);
-  };
-});
 
 const addComment = () => {
   if (!commentText.value.trim()) return;
@@ -209,6 +193,10 @@ const likePost = () => {
   });
 };
 
+const setImage = (index) => {
+  currentImageIndex.value = index;
+};
+
 const focusCommentInput = () => {
   if (commentInput.value) {
     commentInput.value.focus();
@@ -218,15 +206,7 @@ const focusCommentInput = () => {
 
 <style scoped>
 .image-carousel {
-  position: relative;
-  width: 100%;
   border-radius: 0.5rem;
-  overflow: hidden;
-}
-
-.image-container {
-  width: 100%;
-  transition: transform 0.3s ease;
 }
 
 .nav-arrow {
@@ -237,24 +217,5 @@ const focusCommentInput = () => {
 
 .nav-arrow:hover {
   opacity: 1;
-}
-
-.image-counter {
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.image-dots {
-  z-index: 10;
-}
-
-.image-carousel:has(.image-container:only-child) .image-container {
-  height: 400px;
-}
-
-@media (max-width: 640px) {
-  .image-carousel:has(.image-container:only-child) .image-container {
-    height: 300px;
-  }
 }
 </style>
