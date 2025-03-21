@@ -16,16 +16,16 @@ const quillEditorRef = ref(null);
 const fileInputRef = ref(null);
 const loadMoreTrigger = ref(null);
 const windowScrollY = ref(0);
+const newPostId = ref(null); // Track the ID of the newly created post
 
 const content = ref("");
-const image = ref(null);
-const imagePreview = ref(null);
+const images = ref([]); // Array to store multiple images
+const imagePreviews = ref([]); // Array to store multiple image previews
 const currentPage = ref(1);
 const isLoadingMore = ref(false);
 const observer = ref(null);
 const hasMorePosts = ref(true);
 const groupSlug = ref('');
-
 
 const updateScroll = () => {
     windowScrollY.value = window.scrollY;
@@ -65,16 +65,11 @@ onMounted(() => {
     });
 });
 
-// Editor options
 const editorOptions = {
     modules: {
         toolbar: [
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            [{ 'indent': '-1' }, { 'indent': '+1' }],
-            [{ 'align': [] }],
+            ['bold', 'italic', 'underline'],
             ['link'],
-            ['clean']
         ]
     },
     placeholder: 'Comparte algo con el grupo...',
@@ -87,7 +82,9 @@ const formatDate = (dateString) => {
     return date.toLocaleDateString('es-ES', {
         year: 'numeric',
         month: 'long',
-        day: 'numeric'
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric'
     });
 };
 
@@ -103,7 +100,6 @@ const scrollToTop = () => {
                 replace: true
             });
         }, 1000);
-
     }
 };
 
@@ -126,65 +122,109 @@ const highlightQuillEditor = () => {
     }
 };
 
-const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (!file) {
-        image.value = null;
-        imagePreview.value = null;
-        return;
+const highlightNewPost = () => {
+    if (!newPostId.value) return;
+
+    const newPostElement = document.querySelector(`[data-post-id="${newPostId.value}"]`);
+    if (newPostElement) {
+        newPostElement.classList.add('ring-highlight', 'ring-active');
+        setTimeout(() => {
+            newPostElement.classList.remove('ring-active');
+        }, 1650);
     }
-
-    image.value = file;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        imagePreview.value = e.target.result;
-    };
-    reader.readAsDataURL(file);
 };
 
-const removeImage = () => {
-    image.value = null;
-    imagePreview.value = null;
+const handleFileChange = (event) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    
+    // Process each image file
+    Array.from(files).forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+        
+        // Add to images array
+        images.value.push(file);
+        
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imagePreviews.value.push({
+                id: Date.now() + Math.random().toString(36).substr(2, 9), // Generate unique ID
+                src: e.target.result,
+                file: file
+            });
+        };
+        reader.readAsDataURL(file);
+    });
+    
+    // Reset the input to allow selecting the same file again
     if (fileInputRef.value) {
         fileInputRef.value.value = '';
     }
 };
 
+const removeImage = (index) => {
+    imagePreviews.value.splice(index, 1);
+    images.value.splice(index, 1);
+};
+
 const submitPost = () => {
-    // Configure DOMPurify to allow style attributes and target="_blank"
     const purifyConfig = {
         ALLOWED_ATTR: ['href', 'target', 'style', 'rel'],
         ADD_ATTR: ['target', 'rel']
     };
 
-    // Sanitize with the configuration
     let sanitizedContent = DOMPurify.sanitize(content.value, purifyConfig);
 
-    // Verificar si el contenido está vacío o si no hay imagen
-    if (!sanitizedContent.trim() && !image.value) return;
+    if (!sanitizedContent.trim() && images.value.length === 0) return;
 
     const formData = new FormData();
     formData.append('content', sanitizedContent);
-    if (image.value) {
-        formData.append('image', image.value);
+    
+    // Add group_id if we're in a group
+    if (props.group && props.group.id) {
+        formData.append('group_id', props.group.id);
+    }
+    
+    // Append all images to the form data
+    if (images.value.length > 0) {
+        images.value.forEach((image, index) => {
+            formData.append(`images[]`, image);
+        });
     }
 
-    // Enviar el post
-    router.post(`/grupos/${props.group.id}/posts`, formData, {
-        onSuccess: () => {
-            // Limpiar campos después de éxito
+    // Use the new route for posts
+    const postUrl = props.group && props.group.id 
+        ? `/posts/group/${props.group.id}` 
+        : '/posts';
+        
+    router.post(postUrl, formData, {
+        onSuccess: (page) => {
+            // Reset form
             content.value = '';
-            image.value = null;
-            imagePreview.value = null;
+            images.value = [];
+            imagePreviews.value = [];
             if (fileInputRef.value) {
                 fileInputRef.value.value = '';
             }
             if (quillEditorRef.value) {
                 quillEditorRef.value.setHTML('');
             }
+
+            // Get the ID of the newly created post (assuming it's the first post in the list)
+            if (page.props.group && page.props.group.posts && page.props.group.posts.length > 0) {
+                newPostId.value = page.props.group.posts[0].id;
+            }
+
+            // Wait for the DOM to update with the new post
             nextTick(() => {
-                window.scrollTo(0, 0);
+                // Scroll to the new post
+                const newPostElement = document.querySelector(`[data-post-id="${newPostId.value}"]`);
+                if (newPostElement) {
+                    newPostElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Highlight the new post
+                    highlightNewPost();
+                }
             });
         }
     });
@@ -255,7 +295,7 @@ onUnmounted(() => {
     </button>
     <div class="tab-content">
         <div v-if="isMember" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 quill-editor-container">
-            <div class="flex items-start gap-3 ">
+            <div class="flex items-start gap-3">
                 <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
                     <img v-if="auth.user.profile && auth.user.profile.profile_picture"
                         :src="auth.user.profile.profile_picture || '/images/default-avatar.jpg'" alt="Tu avatar"
@@ -270,25 +310,41 @@ onUnmounted(() => {
                         <QuillEditor ref="quillEditorRef" v-model:content="content" :options="editorOptions"
                             contentType="html" />
                     </div>
-                    <div v-if="imagePreview" class="mt-3 mb-3 relative">
-                        <img :src="imagePreview" alt="Vista previa" class="rounded-lg max-h-48 object-contain" />
-                        <button @click="removeImage"
-                            class="absolute top-2 right-2 bg-gray-800/70 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-gray-900/70 transition-colors">
-                            <i class="bx bx-x"></i>
-                        </button>
+                    
+                    <!-- Image previews grid -->
+                    <div v-if="imagePreviews.length > 0" class="mt-3 mb-3">
+                        <div class="image-preview-grid">
+                            <div v-for="(preview, index) in imagePreviews" :key="preview.id" class="image-preview-item">
+                                <img :src="preview.src" alt="Vista previa" class="rounded-lg object-cover w-full h-full" />
+                                <button @click="removeImage(index)"
+                                    class="absolute top-2 right-2 bg-gray-800/70 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-gray-900/70 transition-colors">
+                                    <i class="bx bx-x"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="flex justify-between items-center mt-3">
-                        <div class="flex gap-2">
-                            <input type="file" @change="handleFileChange" class="hidden" id="fileUpload"
-                                ref="fileInputRef" accept="image/*" />
-                            <label for="fileUpload"
-                                class="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors cursor-pointer">
-                                <i class="bx bx-image-alt"></i>
+                        <div class="flex gap-3">
+                            <label
+                                class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                                <i class='bx bx-image-alt mr-1 text-blue-500'></i> Foto
+                                <input type="file" class="hidden" ref="fileInputRef" @change="handleFileChange"
+                                    accept="image/*" multiple />
                             </label>
+                            <label
+                                class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                                <i class='bx bx-video mr-1 text-green-500'></i> Video
+                                <input type="file" class="hidden" @change="handleFileChange" accept="video/*" />
+                            </label>
+                            <button
+                                class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                                <i class='bx bx-calendar-event mr-1 text-orange-500'></i> Evento
+                            </button>
                         </div>
-                        <button @click="submitPost" :disabled="!content && !image"
-                            :class="{ 'opacity-50 cursor-not-allowed': !content && !image }"
+
+                        <button @click="submitPost" :disabled="!content && imagePreviews.length === 0"
+                            :class="{ 'opacity-50 cursor-not-allowed': !content && imagePreviews.length === 0 }"
                             class="px-4 py-1.5 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm">
                             Publicar
                         </button>
@@ -299,7 +355,7 @@ onUnmounted(() => {
 
         <div v-if="displayedPosts.length > 0" class="space-y-4 mt-4">
             <PostCard v-for="post in displayedPosts" :key="post.id" :post="post" :formatDate="formatDate"
-                :isMember="isMember" :auth="auth" />
+                :isMember="isMember" :auth="auth" :data-post-id="post.id" />
 
             <div v-if="isLoadingMore" class="text-center py-4">
                 <div
@@ -395,6 +451,20 @@ onUnmounted(() => {
     text-decoration: underline;
 }
 
+/* Image preview grid */
+.image-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+}
+
+.image-preview-item {
+    position: relative;
+    height: 120px;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
 @keyframes spin {
     from {
         transform: rotate(0deg);
@@ -416,5 +486,23 @@ onUnmounted(() => {
 
 .ring-active {
     box-shadow: 0 0 12px 5px rgba(25, 60, 184, 0.6);
+}
+
+@keyframes highlight-pulse {
+    0% {
+        background-color: transparent;
+    }
+
+    50% {
+        background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+[data-post-id].ring-active {
+    animation: highlight-pulse 1.65s ease-in-out;
 }
 </style>

@@ -261,7 +261,7 @@ watch(() => props.group, (newGroup) => {
                                             </div>
                                         </div>
                                         <div>
-                                            <h4 class="font-medium text-gray-800">{{ member.user.name }}</h4>
+                                            <h4 class="font-medium text-gray-800">{{ member.user.name + ' ' + member.user.last_name_1 + ' ' + member.user.last_name_2 ?? null }}</h4>
                                             <p class="text-xs text-gray-500">Administrador</p>
                                         </div>
                                     </div>

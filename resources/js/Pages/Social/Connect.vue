@@ -383,11 +383,6 @@ const handleFileUpload = (event) => {
                                                 <i class='bx bx-calendar-event mr-1 text-orange-500'></i> Evento
                                                 <input type="text" class="hidden" @change="handleEventInput" />
                                             </button>
-                                            <button
-                                                class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                                                <i class='bx bx-news mr-1 text-purple-500'></i> Artículo
-                                                <input type="text" class="hidden" @change="handleArticleInput" />
-                                            </button>
                                         </div>
                                     </div>
                                 </div>

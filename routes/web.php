@@ -15,6 +15,7 @@ use App\Http\Controllers\JobOffers\JobOfferController;
 use App\Http\Controllers\JobOffers\JobApplicationController;
 use App\Http\Controllers\Social\SocialController;
 use App\Http\Controllers\Social\GroupController;
+use App\Http\Controllers\Social\PostController;
 use App\Http\Middleware\IsAdministrator;
 use App\Http\Middleware\IsCompany;
 use App\Http\Middleware\IsStudent;
@@ -95,8 +96,14 @@ Route::middleware('auth')->group(function() {
     Route::post('/grupos/{slug}/update-logo', [App\Http\Controllers\Social\GroupController::class, 'updateLogo'])->name('groups.update-logo');
     Route::post('/grupos/{slug}/join', [App\Http\Controllers\Social\GroupController::class, 'joinGroup'])->name('groups.join');
     Route::post('/grupos/{slug}/invite', [App\Http\Controllers\Social\GroupController::class, 'inviteMember'])->name('groups.invite');
-    Route::post('/grupos/{groupId}/posts', [GroupController::class, 'storePost'])->name('group.storePost');
-    Route::post('/grupos/{groupId}/posts/{postId}/comment', [GroupController::class, 'postComment'])->name('group.postComment');
+    Route::post('/grupos/{groupId}/posts/{postId}/comment', [PostController::class, 'addCommentInGroup'])->name('group.postComment');    
+
+    Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+    Route::post('/posts/{post}/comment', [PostController::class, 'addComment'])->name('posts.comment');
+    Route::post('/posts/{post}/like', [PostController::class, 'toggleLike'])->name('posts.like');
+    Route::post('/posts/group/{groupId}', [PostController::class, 'storeInGroup'])->name('group.storePost');
+    Route::post('/posts/{post}/like', [PostController::class, 'toggleLike'])->name('posts.like');
+
 
     Route::get('/calendario', [CalendarController::class, 'index'])->name('calendar.index');
 
