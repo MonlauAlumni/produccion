@@ -111,7 +111,7 @@ watch(() => props.group, (newGroup) => {
 </script>
 <template>
     <Layout :auth="auth">
-        <div class="min-h-screen bg-gray-50 flex flex-col">
+        <div class="min-h-screen bg-gray-50 flex flex-col relative">
             <div class="relative w-full h-64 md:h-80 bg-gradient-to-r from-[#193CB8] to-[#2748c6] overflow-hidden">
                 <div v-if="isAdmin" class="absolute bottom-4 right-4 z-11">
                     <label for="bannerUpload"
@@ -129,19 +129,19 @@ watch(() => props.group, (newGroup) => {
 
             </div>
 
-            <main class="flex flex-col items-center justify-center -mt-16 relative z-10 px-4">
+            <main class="flex flex-col items-center justify-center -mt-16 z-10 px-4">
                 <div class="flex flex-col space-y-6 w-full max-w-5xl">
                     <GroupHeader :group="group" :isAdmin="isAdmin" :isMember="isMember" :activeTab="activeTab"
                         @update:activeTab="activeTab = $event" @request-join="showJoinModal = true"
                         @invite-members="showInviteModal = true" @edit-group="showEditModal = true" />
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
                         <div class="md:col-span-2 space-y-6">
                             <GroupPostTab v-if="activeTab === 'publicaciones'" :auth="auth" :isMember="isMember"
                                 :group="group" />
 
-                            <GroupMembersTab v-if="activeTab === 'miembros'" :activeTab="activeTab" :adminMembers="adminMembers"
-                                :regularMembers="regularMembers" :isAdmin="isAdmin" />
+                            <GroupMembersTab v-if="activeTab === 'miembros'" :activeTab="activeTab"
+                                :adminMembers="adminMembers" :regularMembers="regularMembers" :isAdmin="isAdmin" />
 
                             <div v-if="activeTab === 'eventos'"
                                 class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -224,7 +224,8 @@ watch(() => props.group, (newGroup) => {
                                         <div>
                                             <p class="text-sm text-gray-500">Miembros</p>
                                             <p class="text-gray-700">{{ group.members ? group.members.length : 0 }}
-                                                miembros</p>
+                                                {{ group.members && group.members.length === 1 ? 'miembro' : 'miembros'
+                                                }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -261,7 +262,8 @@ watch(() => props.group, (newGroup) => {
                                             </div>
                                         </div>
                                         <div>
-                                            <h4 class="font-medium text-gray-800">{{ member.user.name + ' ' + member.user.last_name_1 + ' ' + member.user.last_name_2 ?? null }}</h4>
+                                            <h4 class="font-medium text-gray-800">{{ member.user.name + ' ' +
+                                                member.user.last_name_1 + ' ' + member.user.last_name_2 ?? null }}</h4>
                                             <p class="text-xs text-gray-500">Administrador</p>
                                         </div>
                                     </div>

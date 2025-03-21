@@ -21,14 +21,14 @@
             </h3>
             <p class="text-xs text-gray-500">{{ formatDate(post.created_at) }}</p>
           </div>
-          <button class="p-1 text-gray-400 hover:text-gray-600">
+          <button class="p-1 text-gray-400 hover:text-gray-600 cursor-pointer" @click="showPostOptions">
             <i class="bx bx-dots-horizontal-rounded"></i>
           </button>
         </div>
 
         <!-- Post Content -->
         <div class="mt-2">
-          <div class="text-gray-700 post-content" v-html="sanitizeHTML(post.content)"></div>
+          <div class="text-gray-700 post-content" v-html="sanitizeHTML(post.content)" :style="{ fontSize: user_settings.font_size + 'px' }"></div>
 
           <!-- Image Carousel -->
           <div v-if="post.images && post.images.length > 0" class="mt-3 relative">
@@ -63,16 +63,16 @@
 
         <!-- Post Actions -->
         <div class="flex items-center gap-4 mt-4 pt-2 border-t border-gray-100">
-          <button @click="likePost" class="flex items-center gap-1"
+          <button @click="likePost" class="flex items-center gap-1 cursor-pointer"
             :class="isLiked ? 'text-[#193CB8]' : 'text-gray-500 hover:text-[#193CB8]'">
             <i class="bx" :class="isLiked ? 'bxs-like' : 'bx-like'"></i>
             <span class="text-sm">{{ post.likes_count }}</span>
           </button>
-          <button class="flex items-center gap-1 text-gray-500 hover:text-[#193CB8]" @click="focusCommentInput">
+          <button class="flex items-center gap-1 text-gray-500 hover:text-[#193CB8] cursor-pointer" @click="focusCommentInput">
             <i class="bx bx-comment"></i>
             <span class="text-sm">{{ post.comments_count }}</span>
           </button>
-          <button class="flex items-center gap-1 text-gray-500 hover:text-[#193CB8]">
+          <button class="flex items-center gap-1 text-gray-500 hover:text-[#193CB8] cursor-pointer">
             <i class="bx bx-share"></i>
             <span class="text-sm">Compartir</span>
           </button>
@@ -105,8 +105,8 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted, watch } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { ref, nextTick, onMounted, watch} from 'vue';
+import { router, usePage } from '@inertiajs/vue3';
 import DOMPurify from 'dompurify';
 import PostComment from './PostComment.vue';
 
@@ -117,11 +117,16 @@ const props = defineProps({
   auth: Object
 });
 
+const page = usePage();
+
+const user_settings = page.props.auth.user_settings;
+
 const commentText = ref('');
 const commentInput = ref(null);
 const isLiked = ref(props.post.is_liked);
 const currentImageIndex = ref(0);
 const slideDirection = ref('slide-right');
+const postOptionsModal = ref(false);
 
 // Reset current image index when post changes
 watch(() => props.post.id, () => {
@@ -201,6 +206,10 @@ const focusCommentInput = () => {
   if (commentInput.value) {
     commentInput.value.focus();
   }
+};
+
+const showPostOptions = () => {
+  postOptionsModal.value = true;
 };
 </script>
 

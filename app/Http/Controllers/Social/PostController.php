@@ -25,6 +25,8 @@ class PostController extends Controller
 
         $sanitizedContent = Purifier::clean($request->content);
 
+        $sanitizedContent = preg_replace('/<a\s+href="([^"]+)"/i', '<a href="$1" class="underline text-blue-600"', $sanitizedContent);
+
         // Create the post
         $post = Post::create([
             'user_id' => Auth::id(),
@@ -73,6 +75,10 @@ class PostController extends Controller
         
         $commentContent = $request->input('content', $request->input('comment'));
         $sanitizedContent = Purifier::clean($commentContent);
+
+        if (empty($sanitizedContent)) {
+            return redirect()->back()->with('error', 'El comentario no puede estar vacío.');
+        }
         
         $comment = PostComment::create([
             'post_id' => $post->id,
