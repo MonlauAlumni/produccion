@@ -1,0 +1,495 @@
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { router } from '@inertiajs/vue3';
+import Layout from '@/Components/Layout.vue';
+import CandidateCard from '@/Pages/Company/CandidateManagement/CandidateCard.vue';
+import CandidateDetailModal from '@/Pages/Company/CandidateManagement/CandidateDetailModal.vue';
+import StatusUpdateModal from '@/Pages/Company/CandidateManagement/StatusUpdateModal.vue';
+
+const props = defineProps({
+  jobOffers: {
+    type: Object,
+    required: true
+  },
+  applications: {
+    type: Object,
+    default: () => ({
+      data: [],
+      current_page: 1,
+      last_page: 1,
+      from: null,
+      to: null,
+      total: 0
+    })
+  }
+});
+
+
+
+// Estado para la interfaz
+const isLoading = ref(false);
+const showScrollTopButton = ref(false);
+const searchQuery = ref('');
+const selectedJobOffer = ref('all');
+const selectedStatus = ref('all');
+const selectedCandidate = ref(null);
+const showCandidateModal = ref(false);
+const showStatusModal = ref(false);
+const applicationToUpdate = ref(null);
+
+// Extraer datos de las aplicaciones
+const applicationsList = ref(props.applications || []);
+
+const jobOffersList = ref(props.jobOffers || []);
+
+// Paginación
+const pagination = computed(() => ({
+  currentPage: props.applications.current_page,
+  lastPage: props.applications.last_page,
+  from: props.applications.from,
+  to: props.applications.to,
+  total: props.applications.total || 0
+}));
+
+// Filtros de estado
+const statusFilters = [
+  { id: 'all', name: 'Todos los estados', icon: 'bx-list-ul', color: 'text-gray-700' },
+  { id: 'pending', name: 'Pendientes', icon: 'bx-time', color: 'text-yellow-600' },
+  { id: 'in_process', name: 'En proceso', icon: 'bx-loader', color: 'text-blue-600' },
+  { id: 'interview', name: 'Entrevista', icon: 'bx-calendar-check', color: 'text-purple-600' },
+  { id: 'accepted', name: 'Aceptados', icon: 'bx-check-circle', color: 'text-green-600' },
+  { id: 'rejected', name: 'Rechazados', icon: 'bx-x-circle', color: 'text-red-600' }
+];
+
+// Estadísticas
+const stats = computed(() => {
+  const total = applicationsList.value.length;
+  const pending = applicationsList.value.filter(app => app.status === 'pending').length;
+  const inProcess = applicationsList.value.filter(app => app.status === 'in_process').length;
+  const interview = applicationsList.value.filter(app => app.status === 'interview').length;
+  const accepted = applicationsList.value.filter(app => app.status === 'accepted').length;
+  const rejected = applicationsList.value.filter(app => app.status === 'rejected').length;
+  
+  return {
+    total,
+    pending,
+    inProcess,
+    interview,
+    accepted,
+    rejected,
+    conversionRate: total > 0 ? Math.round((accepted / total) * 100) : 0
+  };
+});
+
+// Cargar más aplicaciones (paginación)
+const loadMoreApplications = async () => {
+  if (isLoading.value || pagination.value.currentPage >= pagination.value.lastPage) return;
+
+  isLoading.value = true;
+
+  try {
+    const nextPage = pagination.value.currentPage + 1;
+    await router.get(
+      '/gestion-candidatos',
+      {
+        page: nextPage,
+        job_offer: selectedJobOffer.value !== 'all' ? selectedJobOffer.value : undefined,
+        status: selectedStatus.value !== 'all' ? selectedStatus.value : undefined,
+        search: searchQuery.value || undefined
+      },
+      {
+        preserveState: true,
+        preserveScroll: true,
+        only: ['applications'],
+        onSuccess: (page) => {
+          if (page.props.applications && page.props.applications.data) {
+            applicationsList.value = [...applicationsList.value, ...page.props.applications.data];
+          }
+        }
+      }
+    );
+  } catch (error) {
+    console.error('Error al cargar más aplicaciones:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Manejar scroll infinito
+const handleScroll = () => {
+  const scrollPosition = window.scrollY + window.innerHeight;
+  const pageHeight = document.documentElement.scrollHeight;
+
+  // Mostrar/ocultar botón para volver arriba
+  showScrollTopButton.value = window.scrollY > 500;
+
+  // Cargar más aplicaciones cuando estamos cerca del final
+  if (scrollPosition > pageHeight - 500 && !isLoading.value && pagination.value.currentPage < pagination.value.lastPage) {
+    loadMoreApplications();
+  }
+};
+
+// Volver al inicio de la página
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+};
+
+// Aplicar filtros
+const applyFilters = () => {
+  router.get('/gestion-candidatos', {
+    job_offer: selectedJobOffer.value !== 'all' ? selectedJobOffer.value : undefined,
+    status: selectedStatus.value !== 'all' ? selectedStatus.value : undefined,
+    search: searchQuery.value || undefined
+  }, {
+    preserveScroll: true,
+    only: ['applications']
+  });
+};
+
+// Buscar candidatos
+const searchCandidates = () => {
+  applyFilters();
+};
+
+// Ver detalle del candidato
+const viewCandidate = (candidate) => {
+  selectedCandidate.value = candidate;
+  showCandidateModal.value = true;
+};
+
+// Cerrar modal de candidato
+const closeCandidateModal = () => {
+  showCandidateModal.value = false;
+  selectedCandidate.value = null;
+};
+
+// Abrir modal para actualizar estado
+const openStatusModal = (application) => {
+  applicationToUpdate.value = application;
+  showStatusModal.value = true;
+};
+
+// Cerrar modal de actualización de estado
+const closeStatusModal = () => {
+  showStatusModal.value = false;
+  applicationToUpdate.value = null;
+};
+
+// Actualizar estado de la aplicación
+const updateApplicationStatus = (applicationId, newStatus, feedback = '') => {
+  router.patch(route('job-applications.update-status', applicationId), {
+    status: newStatus,
+    feedback: feedback
+  }, {
+    preserveScroll: true,
+    only: ['applications'],
+    onSuccess: () => {
+      // Actualizar el estado localmente
+      const application = applicationsList.value.find(app => app.id === applicationId);
+      if (application) {
+        application.status = newStatus;
+        if (feedback) {
+          application.feedback = feedback;
+        }
+      }
+      closeStatusModal();
+    }
+  });
+};
+
+// Enviar mensaje al candidato
+const messageCandidate = (candidateId) => {
+  router.get(`/mensajes/nuevo/${candidateId}`);
+};
+
+// Formatear fecha
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+
+// Inicializar
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll);
+
+  // Limpiar al desmontar
+  return () => {
+    window.removeEventListener('scroll', handleScroll);
+  };
+});
+</script>
+
+<template>
+  <Layout>
+    <div class="min-h-screen bg-gray-50 flex flex-col">
+      <!-- Header Section -->
+      <div class="bg-[#193CB8] text-white py-8">
+        <div class="max-w-6xl mx-auto px-4">
+          <div class="flex flex-col md:flex-row items-start justify-between">
+            <div class="mb-6 md:mb-0">
+              <h1 class="text-3xl font-bold mb-2">Gestión de Candidatos</h1>
+              <p class="text-blue-100 mb-4">Administra las aplicaciones a tus ofertas de trabajo</p>
+
+              <!-- Search Bar -->
+              <div class="relative max-w-xl">
+                <div class="flex">
+                  <input 
+                    v-model="searchQuery" 
+                    type="text" 
+                    placeholder="Buscar por nombre, habilidades o experiencia..." 
+                    class="w-full px-4 py-3 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300 border-0"
+                    @keyup.enter="searchCandidates"
+                  />
+                  <button 
+                    @click="searchCandidates"
+                    class="bg-white text-[#193CB8] hover:bg-blue-50 px-4 py-3 rounded-r-lg flex items-center justify-center transition-colors"
+                  >
+                    <i class='bx bx-search text-xl'></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div class="bg-white/10 backdrop-blur-sm p-3 rounded-lg border border-white/20 text-center">
+                <div class="text-2xl font-bold">{{ stats.total }}</div>
+                <div class="text-blue-100 text-sm">Total candidatos</div>
+              </div>
+              <div class="bg-white/10 backdrop-blur-sm p-3 rounded-lg border border-white/20 text-center">
+                <div class="text-2xl font-bold">{{ stats.pending }}</div>
+                <div class="text-blue-100 text-sm">Pendientes</div>
+              </div>
+              <div class="bg-white/10 backdrop-blur-sm p-3 rounded-lg border border-white/20 text-center">
+                <div class="text-2xl font-bold">{{ stats.conversionRate }}%</div>
+                <div class="text-blue-100 text-sm">Tasa de conversión</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="flex-1 py-6">
+        <div class="max-w-6xl mx-auto px-4">
+          <div class="flex flex-col md:flex-row gap-6">
+            <!-- Sidebar (Filters) -->
+            <div class="md:w-64 shrink-0">
+              <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-200 sticky top-20">
+                <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                  <i class='bx bx-filter mr-2 text-[#193CB8]'></i>
+                  Filtros
+                </h2>
+                
+                <!-- Filtro por oferta -->
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Oferta de trabajo</label>
+                  <select 
+                    v-model="selectedJobOffer"
+                    @change="applyFilters"
+                    class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-transparent"
+                  >
+                    <option value="all">Todas las ofertas</option>
+                    <option v-for="offer in jobOffersList" :key="offer.id" :value="offer.id">
+                      {{ offer.title }}
+                    </option>
+                  </select>
+                </div>
+                
+                <!-- Filtro por estado -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                  <div class="space-y-2">
+                    <button 
+                      v-for="filter in statusFilters" 
+                      :key="filter.id"
+                      @click="selectedStatus = filter.id; applyFilters()"
+                      :class="[
+                        'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
+                        selectedStatus === filter.id
+                          ? 'bg-[#193CB8]/10 text-[#193CB8]'
+                          : 'hover:bg-gray-100 text-gray-700'
+                      ]"
+                    >
+                      <i :class="['bx mr-2', filter.icon, filter.color]"></i>
+                      {{ filter.name }}
+                      <span v-if="filter.id === 'all'" class="ml-auto bg-gray-200 text-gray-800 text-xs rounded-full px-2 py-0.5">
+                        {{ stats.total }}
+                      </span>
+                      <span v-else-if="filter.id === 'pending'" class="ml-auto bg-yellow-100 text-yellow-800 text-xs rounded-full px-2 py-0.5">
+                        {{ stats.pending }}
+                      </span>
+                      <span v-else-if="filter.id === 'in_process'" class="ml-auto bg-blue-100 text-blue-800 text-xs rounded-full px-2 py-0.5">
+                        {{ stats.inProcess }}
+                      </span>
+                      <span v-else-if="filter.id === 'interview'" class="ml-auto bg-purple-100 text-purple-800 text-xs rounded-full px-2 py-0.5">
+                        {{ stats.interview }}
+                      </span>
+                      <span v-else-if="filter.id === 'accepted'" class="ml-auto bg-green-100 text-green-800 text-xs rounded-full px-2 py-0.5">
+                        {{ stats.accepted }}
+                      </span>
+                      <span v-else-if="filter.id === 'rejected'" class="ml-auto bg-red-100 text-red-800 text-xs rounded-full px-2 py-0.5">
+                        {{ stats.rejected }}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="border-t border-gray-200 my-4"></div>
+                
+                <!-- Consejos -->
+                <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-[#193CB8]">
+                  <h3 class="font-semibold text-[#193CB8] mb-2">Consejo</h3>
+                  <p class="text-sm text-gray-700">Responde rápidamente a los candidatos para mejorar la experiencia de reclutamiento.</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Main Feed -->
+            <div class="flex-1">
+              <!-- Candidates List -->
+              <div class="space-y-6">
+                <CandidateCard 
+                  v-for="application in applicationsList" 
+                  :key="application.id"
+                  :application="application"
+                  class="candidate-card"
+                  @view="viewCandidate"
+                  @update-status="openStatusModal"
+                  @message="messageCandidate"
+                />
+                
+                <!-- Loading Indicator -->
+                <div v-if="isLoading" class="flex justify-center py-4">
+                  <div class="animate-pulse flex space-x-2">
+                    <div class="w-2 h-2 bg-[#193CB8] rounded-full"></div>
+                    <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-200"></div>
+                    <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-400"></div>
+                  </div>
+                </div>
+                
+                <!-- End of Results -->
+                <div v-if="pagination.currentPage >= pagination.lastPage && !isLoading && applicationsList.length > 0" class="text-center py-8">
+                  <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class='bx bx-check-circle text-3xl text-[#193CB8]'></i>
+                  </div>
+                  <h3 class="text-lg font-medium text-gray-800 mb-2">¡Has visto todos los candidatos!</h3>
+                  <p class="text-gray-500 mb-4">Vuelve más tarde para ver nuevas aplicaciones</p>
+                  <button 
+                    @click="scrollToTop"
+                    class="text-[#193CB8] font-medium hover:underline flex items-center justify-center mx-auto"
+                  >
+                    <i class='bx bx-chevron-up mr-1'></i>
+                    Volver arriba
+                  </button>
+                </div>
+                
+                <!-- No Results -->
+                <div v-if="applicationsList.length === 0 && !isLoading" class="text-center py-8">
+                  <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class='bx bx-user-x text-3xl text-[#193CB8]'></i>
+                  </div>
+                  <h3 class="text-lg font-medium text-gray-800 mb-2">No hay candidatos</h3>
+                  <p class="text-gray-500 mb-4">Aún no has recibido aplicaciones o no hay resultados para los filtros seleccionados</p>
+                  <button 
+                    @click="router.get('/ofertas/crear')"
+                    class="bg-[#193CB8] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#142d8c] transition-colors"
+                  >
+                    Crear nueva oferta
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Scroll to Top Button -->
+      <button 
+        v-show="showScrollTopButton" 
+        @click="scrollToTop"
+        class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#193CB8] text-white shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300 z-50 animate-fade-in"
+      >
+        <i class='bx bx-chevron-up text-xl'></i>
+      </button>
+      
+      <!-- Candidate Detail Modal -->
+      <CandidateDetailModal 
+        :is-open="showCandidateModal"
+        :candidate="selectedCandidate"
+        @close="closeCandidateModal"
+        @update-status="openStatusModal"
+        @message="messageCandidate"
+      />
+      
+      <!-- Status Update Modal -->
+      <StatusUpdateModal 
+        :is-open="showStatusModal"
+        :application="applicationToUpdate"
+        @close="closeStatusModal"
+        @update="updateApplicationStatus"
+      />
+    </div>
+  </Layout>
+</template>
+
+<style scoped>
+/* Animaciones para hacer la experiencia más adictiva */
+.candidate-card {
+  transform: translateY(0);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.candidate-card:hover {
+  transform: translateY(-3px);
+}
+
+/* Animación para el botón de scroll to top */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+/* Animación para los elementos que aparecen al hacer scroll */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.candidate-card {
+  animation: slide-up 0.5s ease-out;
+}
+
+/* Delays para animaciones */
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animation-delay-400 {
+  animation-delay: 0.4s;
+}
+</style>

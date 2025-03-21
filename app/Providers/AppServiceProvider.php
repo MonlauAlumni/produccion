@@ -45,13 +45,17 @@ class AppServiceProvider extends ServiceProvider
                 return null;
             }
 
-        
+            $role = $user->roles->first();
+         
+           
+          
 
             // Solo pasar los campos necesarios
             return [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'role' => $role ? $role->name : null,
                 'profile' => optional($user->profile)->only(['profile_picture', 'slang']),
                 'company' => optional($user->company)->only(['company_name', 'id', 'profile_picture']),
             ];

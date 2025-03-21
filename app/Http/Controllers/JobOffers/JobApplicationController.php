@@ -4,6 +4,7 @@ namespace App\Http\Controllers\JobOffers;
 use App\Models\JobApplication;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use App\Models\JobOffer;
 
@@ -38,5 +39,16 @@ class JobApplicationController extends Controller
 
       
         return redirect()->route('home');
+    }
+
+    public function index()
+    {
+        $jobOffers = JobOffer::where('company_id', Auth::user()->company->id)->get();
+        $applications = JobApplication::whereIn('job_offer_id', $jobOffers->pluck('id'))->get();
+
+        return Inertia::render('Company/CandidateManagement/Index', [
+            'applications' => $applications,
+            'jobOffers' => $jobOffers,
+        ]);
     }
 }
