@@ -21,6 +21,17 @@ const props = defineProps({
       to: null,
       total: 0
     })
+  },
+  stats: {
+    type: Object,
+    default: () => ({
+      total: 0,
+      pending: 0,
+      rejected: 0,
+      accepted: 0,
+      interview: 0,
+      inProcess: 0,
+    })
   }
 });
 
@@ -237,23 +248,7 @@ onMounted(() => {
               <p class="text-blue-100 mb-4">Administra las aplicaciones a tus ofertas de trabajo</p>
 
               <!-- Search Bar -->
-              <div class="relative max-w-xl">
-                <div class="flex">
-                  <input 
-                    v-model="searchQuery" 
-                    type="text" 
-                    placeholder="Buscar por nombre, habilidades o experiencia..." 
-                    class="w-full px-4 py-3 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 placeholder:text-gray-200 focus:ring-blue-300 border-0"
-                    @keyup.enter="searchCandidates"
-                  />
-                  <button 
-                    @click="searchCandidates"
-                    class="bg-white text-[#193CB8] hover:bg-blue-50 px-4 py-3 rounded-r-lg flex items-center justify-center transition-colors"
-                  >
-                    <i class='bx bx-search text-xl'></i>
-                  </button>
-                </div>
-              </div>
+          
             </div>
 
             <!-- Stats Cards -->
@@ -287,7 +282,16 @@ onMounted(() => {
                   Filtros
                 </h2>
                 
-                <!-- Filtro por oferta -->
+                <div v-if="selectedStatus || selectedJobOffer" class="mb-4">
+                  <button class="bg-red-100 text-red-800 px-5 w-full py-1 rounded-lg text-sm font-medium hover:bg-red-200 transition-colors" @click=" selectedJobOffer = 'all'; selectedStatus = 'all'; applyFilters()">
+                    <div class="flex items-center jusity-center text-center">
+                    <i class='bx bx-x-circle mr-2 text-red-600 mt-1 '></i>
+                    <div>
+                    Borrar Filtros
+                      </div>  
+                  </div>
+                  </button>
+                </div>
                 <div class="mb-4">
                   <label class="block text-sm font-medium text-gray-700 mb-2">Oferta de trabajo</label>
                   <select 

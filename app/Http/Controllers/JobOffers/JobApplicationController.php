@@ -41,19 +41,43 @@ class JobApplicationController extends Controller
         return redirect()->route('home');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $jobOffers = JobOffer::where('company_id', Auth::user()->company->id)->get();
-        $applications = JobApplication::whereIn('job_offer_id', $jobOffers->pluck('id'))
-            ->with(['jobOffer.company', 'student.profile.education', 'student.profile.experience'])
-            ->get();
+        $status = $request->status;
+        if ($request->job_offer)
+        {
+            $jobOffers = JobOffer::find($request->job_offer);
+            $applications = JobApplication::where('job_offer_id', $jobOffers->id)
+                ->with(['jobOffer.company', 'student.profile.education', 'student.profile.experience'])
+                ->get();
+        } else {
+            $jobOffers = JobOffer::where('company_id', Auth::user()->company->id)->get();
+            $applications = JobApplication::whereIn('job_offer_id', $jobOffers->pluck('id'))
+                ->with(['jobOffer.company', 'student.profile.education', 'student.profile.experience'])
+                ->get();
+        }
+
+        if ($status) {
+            $applications = $applications->where('status', $status);
+        }
+
+    
+        $stats = JobApplication::selectRaw('status, count(*) as count')
+        ->groupBy('status')
+        ->pluck('count', 'status')
+        ->toArray();
+        
+  
            
 
         return Inertia::render('Company/CandidateManagement/AllCandidates', [
+            'stats' => $stats,
             'applications' => $applications,
             'jobOffers' => $jobOffers,
         ]);
     }
+
+    
 
     public function changeStatus(Request $request, $id)
     {

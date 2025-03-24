@@ -113,8 +113,8 @@ const downloadCV = () => {
       </div>
       
       <div class="text-sm">
-        <i class='bx bx-calendar'></i>
-        <span>Aplicó el {{ formatDate(application.created_at) }}</span>
+        <i class='bx bx-calendar '></i>
+        <span class="ml-2">Aplicó el {{ formatDate(application.created_at) }}</span>
       </div>
     </div>
 
@@ -228,11 +228,20 @@ const downloadCV = () => {
         </button>
         
         <button 
+          v-if="application.status !== 'rejected'"
           @click="messageCandidate"
           class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-2 rounded-lg transition-colors flex items-center cursor-pointer justify-center"
         >
           <i class='bx bx-envelope mr-1'></i>
           Contactar
+        </button>
+        <button 
+          v-else
+          @click="messageCandidate"
+          class="border border-gray-300 text-white bg-red-600  hover:bg-red-500 font-medium py-2 rounded-lg transition-colors flex items-center cursor-pointer justify-center"
+        >
+          <i class='bx bx-trash mr-1'></i>
+          Eliminar
         </button>
       </div>
     </div>
