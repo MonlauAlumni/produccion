@@ -224,7 +224,7 @@ const downloadCV = () => {
           class="bg-[#193CB8] text-white font-medium py-2 rounded-lg cursor-pointer hover:bg-[#142d8c] transition-colors flex items-center justify-center"
         >
           <i class='bx bx-edit mr-1'></i>
-          Cambiar estado
+          Cambiar estado 
         </button>
         
         <button 

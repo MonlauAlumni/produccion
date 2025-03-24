@@ -54,4 +54,16 @@ class JobApplicationController extends Controller
             'jobOffers' => $jobOffers,
         ]);
     }
+
+    public function changeStatus(Request $request, $id)
+    {
+        $application = JobApplication::find($id);
+        $application->status = $request->status;
+        $application->save();
+
+        return Inertia::location(route('job-applications.index'));
+
+    }
+
+    
 }

@@ -185,26 +185,18 @@ const closeStatusModal = () => {
 };
 
 // Actualizar estado de la aplicación
-const updateApplicationStatus = (applicationId, newStatus, feedback = '') => {
-  router.patch(route('job-applications.update-status', applicationId), {
-    status: newStatus,
-    feedback: feedback
+const updateApplicationStatus = (applicationId, newStatus) => {
+  router.post(`/gestion-candidatos/${applicationId}/change-status`, {
+    status: newStatus
   }, {
     preserveScroll: true,
     only: ['applications'],
     onSuccess: () => {
-      // Actualizar el estado localmente
-      const application = applicationsList.value.find(app => app.id === applicationId);
-      if (application) {
-        application.status = newStatus;
-        if (feedback) {
-          application.feedback = feedback;
-        }
-      }
-      closeStatusModal();
+      showStatusModal.value = false;
+      applicationToUpdate.value = null;
     }
   });
-};
+};  
 
 // Enviar mensaje al candidato
 const messageCandidate = (candidateId) => {

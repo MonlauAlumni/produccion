@@ -84,7 +84,7 @@ Route::middleware('auth')->group(function() {
         Route::post('/ofertas/crear', [JobOfferController::class, 'store'])->name('ofertas.store'); 
 
         Route::get('/gestion-candidatos', [JobApplicationController::class, 'index'])->name('job-applications.index');
-        
+        Route::post('/gestion-candidatos/{applicationId}/change-status', [JobApplicationController::class, 'changeStatus'])->name('job-applications.changeStatus');
     });
     
     Route::get('/home', [JobOfferController::class, 'index'])->name('home');
