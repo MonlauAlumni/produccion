@@ -154,6 +154,11 @@ const searchCandidates = () => {
   applyFilters();
 };
 
+const downloadCV = (candidate) => {
+
+  window.location.href = `/perfil/${candidate}/download-cv/`;
+};
+
 // Ver detalle del candidato
 const viewCandidate = (candidate) => {
   selectedCandidate.value = candidate;
@@ -168,6 +173,7 @@ const closeCandidateModal = () => {
 
 // Abrir modal para actualizar estado
 const openStatusModal = (application) => {
+  console.log(application)
   applicationToUpdate.value = application;
   showStatusModal.value = true;
 };
@@ -245,7 +251,7 @@ onMounted(() => {
                     v-model="searchQuery" 
                     type="text" 
                     placeholder="Buscar por nombre, habilidades o experiencia..." 
-                    class="w-full px-4 py-3 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300 border-0"
+                    class="w-full px-4 py-3 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 placeholder:text-gray-200 focus:ring-blue-300 border-0"
                     @keyup.enter="searchCandidates"
                   />
                   <button 
@@ -365,6 +371,7 @@ onMounted(() => {
                   @view="viewCandidate"
                   @update-status="openStatusModal"
                   @message="messageCandidate"
+                  @download-cv="downloadCV"
                 />
                 
                 <!-- Loading Indicator -->

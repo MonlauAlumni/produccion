@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\WorkExperience;
+use App\Models\Education;
+use App\Models\User;
 
 class Profile extends Model
 {
@@ -25,6 +28,16 @@ class Profile extends Model
         'banner_url',
 
     ];
+
+    public function experience()
+    {
+        return $this->hasMany(WorkExperience::class, 'user_id', 'user_id');
+    }
+
+    public function education()
+    {
+        return $this->hasMany(Education::class, 'user_id', 'user_id');
+    }
 
     public function user()
     {

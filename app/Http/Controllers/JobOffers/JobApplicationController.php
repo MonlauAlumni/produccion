@@ -44,9 +44,12 @@ class JobApplicationController extends Controller
     public function index()
     {
         $jobOffers = JobOffer::where('company_id', Auth::user()->company->id)->get();
-        $applications = JobApplication::whereIn('job_offer_id', $jobOffers->pluck('id'))->get();
+        $applications = JobApplication::whereIn('job_offer_id', $jobOffers->pluck('id'))
+            ->with(['jobOffer.company', 'student.profile.education', 'student.profile.experience'])
+            ->get();
+           
 
-        return Inertia::render('Company/CandidateManagement/Index', [
+        return Inertia::render('Company/CandidateManagement/AllCandidates', [
             'applications' => $applications,
             'jobOffers' => $jobOffers,
         ]);

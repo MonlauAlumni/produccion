@@ -1,5 +1,6 @@
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+import { defineProps, defineEmits, ref } from 'vue';
+
 
 const props = defineProps({
   application: {
@@ -8,10 +9,13 @@ const props = defineProps({
   }
 });
 
+const isExpanded = ref(false);
+
 const emit = defineEmits([
   'view',
   'update-status',
-  'message'
+  'message',
+  'download-cv'
 ]);
 
 // Obtener información de estado de la aplicación
@@ -88,6 +92,10 @@ const updateStatus = () => {
 const messageCandidate = () => {
   emit('message', props.application.user_id);
 };
+
+const downloadCV = () => {
+  emit('download-cv', props.application.student.profile.slang);
+};
 </script>
 
 <template>
@@ -111,14 +119,14 @@ const messageCandidate = () => {
     </div>
 
     <div class="p-5">
-      <!-- Header -->
+      <!-- Header with Download CV Button -->
       <div class="flex items-start gap-4">
         <!-- Candidate Avatar -->
         <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center shrink-0 border border-gray-200 overflow-hidden">
           <img 
-            v-if="application.user && application.user.profile && application.user.profile.profile_picture" 
-            :src="application.user.profile.profile_picture" 
-            :alt="application.user.name" 
+            v-if="application.student && application.student.profile && application.student.profile.profile_picture" 
+            :src="application.student.profile.profile_picture" 
+            :alt="application.student.name" 
             class="w-full h-full object-cover"
           />
           <i v-else class='bx bx-user text-3xl text-gray-400'></i>
@@ -129,34 +137,43 @@ const messageCandidate = () => {
           <div class="flex items-start justify-between">
             <div>
               <h2 class="font-bold text-lg text-[#193CB8] hover:underline cursor-pointer" @click="viewCandidate">
-                {{ application.user ? `${application.user.name} ${application.user.last_name_1 || ''}` : 'Candidato' }}
+                {{ application.student ? `${application.student.name} ${application.student.last_name_1 || ''}` : 'Candidato' }}
               </h2>
               <div class="text-gray-700">
-                {{ application.user && application.user.profile ? application.user.profile.title || 'Sin título profesional' : 'Sin información' }}
+                {{ application.student && application.student.profile ? application.student.profile.job_title || 'Sin título profesional' : 'Sin información' }}
               </div>
             </div>
 
-            <!-- Match Score -->
-            <div class="bg-[#193CB8]/10 text-[#193CB8] text-sm font-bold px-3 py-1 rounded-full flex items-center">
-              <i class='bx bx-badge  text-sm font-bold px-3 py-1 rounded-full flex items-center'></i>
+            <!-- Download CV Button - Now prominently placed -->
+            <button 
+              @click="downloadCV"
+              class=" bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-lg font-medium py-2 px-5 gap-3 rounded-lg transition-all flex items-center justify-center cursor-pointer"
+            >
+              <i class='bx bx-download text-lg'></i>
+              <span>Descargar CV</span>
+            </button>
+          </div>
+
+          <!-- Match Score and Job Details -->
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            <div class="bg-[#193CB8]/10 text-[#193CB8] text-sm font-bold px-3 py-1 rounded-full flex items-center mr-2">
               <i class='bx bx-badge-check mr-1'></i>
               Match 85%
             </div>
-          </div>
-
-          <!-- Job Details -->
-          <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm mt-3">
-            <div class="flex items-center text-gray-600">
-              <i class='bx bx-briefcase mr-1 text-[#193CB8]'></i>
-              {{ application.job_offer ? application.job_offer.title : 'Oferta no disponible' }}
-            </div>
-            <div class="flex items-center text-gray-600">
-              <i class='bx bx-map-pin mr-1 text-[#193CB8]'></i>
-              {{ application.user && application.user.profile ? application.user.profile.location || 'Sin ubicación' : 'Sin ubicación' }}
-            </div>
-            <div class="flex items-center text-gray-600">
-              <i class='bx bx-time-five mr-1 text-[#193CB8]'></i>
-              {{ getDaysSinceApplication(application.created_at) }} días desde la aplicación
+            
+            <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm">
+              <div class="flex items-center text-gray-600">
+                <i class='bx bx-briefcase mr-1 text-[#193CB8]'></i>
+                {{ application.job_offer ? application.job_offer.title : 'Oferta no disponible' }}
+              </div>
+              <div class="flex items-center text-gray-600">
+                <i class='bx bx-map-pin mr-1 text-[#193CB8]'></i>
+                {{ application.student && application.student.profile ? application.student.profile.location || 'Sin ubicación' : 'Sin ubicación' }}
+              </div>
+              <div class="flex items-center text-gray-600">
+                <i class='bx bx-time-five mr-1 text-[#193CB8]'></i>
+                {{ getDaysSinceApplication(application.created_at) }} días desde la aplicación
+              </div>
             </div>
           </div>
         </div>
@@ -164,29 +181,39 @@ const messageCandidate = () => {
 
       <!-- Skills & Experience -->
       <div class="mt-4 pt-4 border-t border-gray-100">
+        <h3 class="text-sm font-semibold text-gray-700 mb-2">Habilidades</h3>
         <div class="flex flex-wrap gap-2 mb-3">
           <span 
-            v-for="(skill, index) in application.user && application.user.profile ? application.user.profile.skills || [] : []" 
+            v-for="(skill, index) in application.student && application.student.profile ? application.student.profile.skills || [] : []" 
             :key="index"
             class="px-2 py-1 bg-[#193CB8]/10 text-[#193CB8] rounded-md text-xs font-medium"
           >
             {{ skill }}
           </span>
-          <span v-if="!application.user || !application.user.profile || !application.user.profile.skills || application.user.profile.skills.length === 0" class="text-gray-500 text-sm">
+          <span v-if="!application.student || !application.student.profile || !application.student.profile.skills || application.student.profile.skills.length === 0" class="text-gray-500 text-sm">
             No hay habilidades registradas
           </span>
         </div>
         
-        <p class="text-gray-700 text-sm line-clamp-2">
-          {{ application.cover_letter || 'No hay carta de presentación' }}
-        </p>
+        <h3 class="text-sm font-semibold text-gray-700 mb-2">Carta de presentación</h3>
+        <p class="text-gray-700 text-sm bg-gray-50 p-2 whitespace-pre-line rounded-md">
+  {{ isExpanded ? (application.cover_letter || 'No hay carta de presentación') : (application.cover_letter ? application.cover_letter.slice(0, 150) + '...' : 'No hay carta de presentación') }}
+  <button 
+    v-if="application.cover_letter && application.cover_letter.length > 150"
+    @click="isExpanded = !isExpanded"
+    class="text-[#193CB8] cursor-pointer font-medium ml-1"
+  >
+    {{ isExpanded ? 'Ver menos' : 'Ver más' }}
+  </button>
+</p>
+
       </div>
 
       <!-- Actions -->
-      <div class="mt-4 flex flex-wrap gap-2">
+      <div class="mt-4 grid grid-cols-3 gap-2">
         <button 
           @click="viewCandidate"
-          class="flex-1 bg-white border border-[#193CB8] text-[#193CB8] hover:bg-blue-50 font-medium py-2 rounded-lg transition-colors flex items-center justify-center"
+          class="bg-white border border-[#193CB8] text-[#193CB8] cursor-pointer hover:bg-blue-50 font-medium py-2 rounded-lg transition-colors flex items-center justify-center"
         >
           <i class='bx bx-user-detail mr-1'></i>
           Ver perfil
@@ -194,7 +221,7 @@ const messageCandidate = () => {
         
         <button 
           @click="updateStatus"
-          class="flex-1 bg-[#193CB8] text-white font-medium py-2 rounded-lg hover:bg-[#142d8c] transition-colors flex items-center justify-center"
+          class="bg-[#193CB8] text-white font-medium py-2 rounded-lg cursor-pointer hover:bg-[#142d8c] transition-colors flex items-center justify-center"
         >
           <i class='bx bx-edit mr-1'></i>
           Cambiar estado
@@ -202,7 +229,7 @@ const messageCandidate = () => {
         
         <button 
           @click="messageCandidate"
-          class="flex-1 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-2 rounded-lg transition-colors flex items-center justify-center"
+          class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-2 rounded-lg transition-colors flex items-center cursor-pointer justify-center"
         >
           <i class='bx bx-envelope mr-1'></i>
           Contactar

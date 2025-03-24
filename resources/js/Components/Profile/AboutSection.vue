@@ -18,8 +18,10 @@
         </div>
         <hr class="border-t border-[#193CB8] mb-4" />
         
-        <div v-html="profile.description" v-if="profile && profile.description" class="text-gray-600 leading-relaxed">
-        
+        <div  v-if="profile && profile.description" class="text-gray-600 whitespace-pre-line leading-relaxed">
+          <p> 
+            {{ profile.description }}
+          </p>
         </div>
         <div v-else class="bg-gray-50 p-4 rounded-md border border-dashed border-gray-300 text-gray-500 text-center">
           <i class='bx bx-info-circle text-2xl mb-2'></i>

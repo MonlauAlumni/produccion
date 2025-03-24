@@ -18,6 +18,8 @@
   </div>
 </template>
 
+
+
 <script>
 import Navbar from '@/Components/Navbar.vue';
 import Sidebar from '@/Components/Sidebar.vue';
