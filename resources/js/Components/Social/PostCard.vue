@@ -2,8 +2,10 @@
   <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6" :data-post-id="post.id">
     <div class="flex items-start gap-3">
       <!-- Avatar -->
-      <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-        <img v-if="post.user.profile && post.user.profile.profile_picture"
+      <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 cursor-pointer"
+      @click="router.get(`/perfil/${post.user.profile.slang}`)"
+      >
+        <img v-if="post.user.profile && post.user.profile.profile_picture" 
           :src="post.user.profile.profile_picture || '/images/default-avatar.jpg'" :alt="post.user.name"
           class="w-full h-full object-cover" />
         <div v-else
@@ -16,7 +18,7 @@
         <!-- Post Header -->
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="font-medium text-gray-800">
+            <h3 class="font-medium text-gray-800 hover:underline cursor-pointer" @click="router.get(`/perfil/${post.user.profile.slang}`)">
               {{ post.user.name }} {{ post.user.last_name_1 }} {{ post.user.last_name_2 ? post.user.last_name_2 : '' }}
             </h3>
             <p class="text-xs text-gray-500">{{ formatDate(post.created_at) }}</p>

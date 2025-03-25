@@ -1,15 +1,18 @@
 <script setup>
-import { ref, defineProps } from 'vue';
+import { ref, defineProps, computed } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import Layout from '@/Components/Layout.vue';
 import GroupCard from '@/Components/Social/GroupCard.vue';
-
+import PostCreator from '@/Components/Social/PostCreator.vue';
+import PostCard from "@/Components/Social/PostCard.vue";
 
 const searchQuery = ref('');
 const activeTab = ref('descubrir');
 const showMobileMenu = ref(false);
-const user = usePage().props.auth.user;
-
+const auth = usePage().props.auth;
+const displayedPosts = computed(() => {
+    return props.posts || [];
+});
 const scrollToShareInput = () => {
     const shareInput = document.getElementById('shareInput');
     shareInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -18,6 +21,19 @@ const scrollToShareInput = () => {
         shareInput.classList.remove('ring-2', 'ring-[#193CB8]');
     }, 2000);
 };
+
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric'
+    });
+};
+
 
 const trendingTopics = [
     { id: 1, name: 'Eventos de networking', count: 28 },
@@ -37,6 +53,9 @@ const props = defineProps({
         type: Array,
         user: Object,
     },
+    posts: {
+        type: Array,
+    }
 
 });
 
@@ -137,36 +156,7 @@ const featuredStories = [
     }
 ];
 
-const recentPosts = [
-    {
-        id: 1,
-        user: {
-            id: 1,
-            name: 'María Gómez',
-            profile_picture: 'https://i.pinimg.com/736x/f9/a2/b9/f9a2b906b0164ad5bee5d1df391648bf.jpg',
-            headline: 'Marketing Manager'
-        },
-        content: 'Acabo de publicar un artículo sobre las tendencias de marketing para 2025. ¡Me encantaría conocer vuestras opiniones! #Marketing #Tendencias2025',
-        image: 'https://incae.edu/wp-content/uploads/2023/10/tendencias-de-marketing-para-2022.jpg',
-        likes: 34,
-        comments: 8,
-        time: 'hace 3 horas'
-    },
-    {
-        id: 2,
-        user: {
-            id: 2,
-            name: 'Pablo Ruiz',
-            profile_picture: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLXJQDzz8-mfF6J2E_32clcMDMzKcRK1xxxQ&s',
-            headline: 'Desarrollador Full Stack'
-        },
-        content: '¡Emocionado de anunciar que me uno al equipo de desarrollo de @TechInnovation! Nuevos retos y proyectos apasionantes por delante. #NuevoEmpleo #Desarrollo',
-        image: null,
-        likes: 56,
-        comments: 15,
-        time: 'hace 1 día'
-    }
-];
+const recentPosts = props.posts;
 
 const suggestedConnections = [
     {
@@ -272,7 +262,7 @@ const handleFileUpload = (event) => {
                                                     <img :src="story.user.profile_picture" :alt="story.user.name"
                                                         class="w-8 h-8 rounded-full object-cover mr-2" />
                                                     <span class="text-sm font-medium text-gray-800">{{ story.user.name
-                                                    }}</span>
+                                                        }}</span>
                                                 </div>
                                                 <h3 class="font-bold text-gray-800 mb-2">{{ story.title }}</h3>
                                                 <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ story.preview }}
@@ -305,87 +295,20 @@ const handleFileUpload = (event) => {
                             <div class="space-y-6">
                                 <h2 class="text-xl font-bold text-gray-800 px-2">Publicaciones Recientes</h2>
 
-                                <div v-for="post in recentPosts" :key="post.id"
-                                    class="bg-white rounded-xl shadow-sm overflow-hidden">
-                                    <div class="p-4">
-                                        <div class="flex items-start mb-3">
-                                            <img :src="post.user.profile_picture" :alt="post.user.name"
-                                                class="w-10 h-10 rounded-full object-cover mr-3" />
-                                            <div>
-                                                <h3 class="font-bold text-gray-800">{{ post.user.name }}</h3>
-                                                <p class="text-gray-500 text-sm">{{ post.user.headline }}</p>
-                                                <p class="text-gray-400 text-xs">{{ post.time }}</p>
-                                            </div>
-                                        </div>
+                                <PostCard v-for="post in recentPosts" :key="post.id" :post="post"
+                                    :formatDate="formatDate" :auth="auth"
+                                    :data-post-id="post.id"
+                                    :isMember="true" />
 
-                                        <!-- Contenido de la publicación -->
-                                        <p class="text-gray-700 mb-4">{{ post.content }}</p>
-
-                                        <img v-if="post.image" :src="post.image" alt="Imagen de la publicación"
-                                            class="w-full h-auto rounded-lg mb-4" />
-
-                                        <div
-                                            class="flex items-center justify-between text-gray-500 text-sm border-t border-gray-100 pt-3">
-                                            <div class="flex items-center">
-                                                <span class="flex items-center mr-4">
-                                                    <i class='bx bx-heart mr-1'></i> {{ post.likes }}
-                                                </span>
-                                                <span class="flex items-center">
-                                                    <i class='bx bx-message-rounded mr-1'></i> {{ post.comments }}
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span class="flex items-center">
-                                                    <i class='bx bx-share-alt mr-1'></i> Compartir
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex border-t border-gray-100">
-                                        <button
-                                            class="flex-1 py-3 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-colors">
-                                            <i class='bx bx-heart mr-1'></i> Me gusta
-                                        </button>
-                                        <button
-                                            class="flex-1 py-3 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-colors">
-                                            <i class='bx bx-message-rounded mr-1'></i> Comentar
-                                        </button>
-                                        <button
-                                            class="flex-1 py-3 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-colors">
-                                            <i class='bx bx-share-alt mr-1'></i> Compartir
-                                        </button>
-                                    </div>
+                                <div class="text-center pb-4">
+                                    <p class="text-gray-500 text-lg font-semibold">
+                                        <span class="text-[#193CB8] underline cursor-pointer">
+                                            Cargar más publicaciones
+                                        </span>
+                                    </p>
                                 </div>
 
-                                <div class="bg-white rounded-xl shadow-sm overflow-hidden" id="shareInput">
-                                    <div class="p-4">
-                                        <div class="flex items-center">
-                                            <img :src="user.profile.profile_picture" alt="Tu perfil"
-                                                class="w-10 h-10 rounded-full object-cover mr-3" />
-                                            <input v-model="searchQuery" type="text"
-                                                placeholder="¿Qué quieres compartir hoy?"
-                                                class="flex-1 bg-gray-100 rounded-full px-4 py-2 text-gray-500 focus:outline-none hover:bg-gray-200 transition-colors" />
-                                        </div>
-                                        <div class="flex mt-3 border-t border-gray-100 pt-3">
-                                            <label
-                                                class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                                                <i class='bx bx-image-alt mr-1 text-blue-500'></i> Foto
-                                                <input type="file" class="hidden" @change="handleFileUpload" />
-                                            </label>
-                                            <label
-                                                class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                                                <i class='bx bx-video mr-1 text-green-500'></i> Video
-                                                <input type="file" class="hidden" @change="handleFileUpload" />
-                                            </label>
-                                            <button
-                                                class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                                                <i class='bx bx-calendar-event mr-1 text-orange-500'></i> Evento
-                                                <input type="text" class="hidden" @change="handleEventInput" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                                <PostCreator :auth="auth" @postCreated="handlePostCreated" />
                             </div>
                         </div>
 

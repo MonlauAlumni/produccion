@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Group;
 use Inertia\Inertia;
 use App\Models\User;
+use App\Models\Post;
 
 
 class SocialController extends Controller
@@ -17,9 +18,26 @@ class SocialController extends Controller
             ->orderBy('members_count', 'desc')
             ->take(3)
             ->get();
+
+        $page = request()->input('page', 1);
+        $postsPerPage = 5;
+        $postsToLoad = $postsPerPage * $page;
+        $posts = Post::with('user.profile')
+            ->with('images')
+            ->with([
+            'comments' => function ($query) {
+                $query->with('user.profile')->limit(3);
+            }
+            ])
+            ->whereNull('group_id')
+            ->latest()
+            ->take($postsToLoad)
+            ->get();
+
         return Inertia::render('Social/Connect', [
             'groups' => Group::paginate(10)->items(),
             'popularGroups' => $popularGroups,
+            'posts' => $posts,
         ]);
         
     }

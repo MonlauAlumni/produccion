@@ -5,6 +5,7 @@ import { QuillEditor, Quill } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import DOMPurify from "dompurify";
 import PostCard from "@/Components/Social/PostCard.vue";
+import PostCreator from '@/Components/Social/PostCreator.vue';
 
 const props = defineProps({
     auth: Object,
@@ -16,11 +17,11 @@ const quillEditorRef = ref(null);
 const fileInputRef = ref(null);
 const loadMoreTrigger = ref(null);
 const windowScrollY = ref(0);
-const newPostId = ref(null); // Track the ID of the newly created post
+const newPostId = ref(null);
 
 const content = ref("");
-const images = ref([]); // Array to store multiple images
-const imagePreviews = ref([]); // Array to store multiple image previews
+const images = ref([]);
+const imagePreviews = ref([]);
 const currentPage = ref(1);
 const isLoadingMore = ref(false);
 const observer = ref(null);
@@ -35,7 +36,6 @@ const displayedPosts = computed(() => {
     return props.group.posts || [];
 });
 
-// Watch para actualizar el estado
 watch(() => props.group, (newGroup) => {
     if (newGroup) {
         hasMorePosts.value = newGroup.has_more_posts === true;
@@ -45,7 +45,6 @@ watch(() => props.group, (newGroup) => {
     }
 }, { immediate: true });
 
-// Register custom link format for Quill
 onMounted(() => {
     window.addEventListener('scroll', updateScroll);
     const Link = Quill.import('formats/link');
@@ -137,14 +136,14 @@ const highlightNewPost = () => {
 const handleFileChange = (event) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
-    
+
     // Process each image file
     Array.from(files).forEach(file => {
         if (!file.type.startsWith('image/')) return;
-        
+
         // Add to images array
         images.value.push(file);
-        
+
         // Create preview
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -156,7 +155,7 @@ const handleFileChange = (event) => {
         };
         reader.readAsDataURL(file);
     });
-    
+
     // Reset the input to allow selecting the same file again
     if (fileInputRef.value) {
         fileInputRef.value.value = '';
@@ -180,12 +179,12 @@ const submitPost = () => {
 
     const formData = new FormData();
     formData.append('content', sanitizedContent);
-    
+
     // Add group_id if we're in a group
     if (props.group && props.group.id) {
         formData.append('group_id', props.group.id);
     }
-    
+
     // Append all images to the form data
     if (images.value.length > 0) {
         images.value.forEach((image, index) => {
@@ -194,10 +193,10 @@ const submitPost = () => {
     }
 
     // Use the new route for posts
-    const postUrl = props.group && props.group.id 
-        ? `/posts/group/${props.group.id}` 
+    const postUrl = props.group && props.group.id
+        ? `/posts/group/${props.group.id}`
         : '/posts';
-        
+
     router.post(postUrl, formData, {
         onSuccess: (page) => {
             // Reset form
@@ -294,64 +293,12 @@ onUnmounted(() => {
         <i class='bx bx-chevron-up text-xl'></i>
     </button>
     <div class="tab-content">
-        <div v-if="isMember" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 quill-editor-container">
-            <div class="flex items-start gap-3">
-                <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                    <img v-if="auth.user.profile && auth.user.profile.profile_picture"
-                        :src="auth.user.profile.profile_picture || '/images/default-avatar.jpg'" alt="Tu avatar"
-                        class="w-full h-full object-cover" />
-                    <div v-else
-                        class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8]">
-                        <i class='bx bx-user'></i>
-                    </div>
-                </div>
-                <div class="flex-1">
-                    <div class="mb-3">
-                        <QuillEditor ref="quillEditorRef" v-model:content="content" :options="editorOptions"
-                            contentType="html" />
-                    </div>
-                    
-                    <!-- Image previews grid -->
-                    <div v-if="imagePreviews.length > 0" class="mt-3 mb-3">
-                        <div class="image-preview-grid">
-                            <div v-for="(preview, index) in imagePreviews" :key="preview.id" class="image-preview-item">
-                                <img :src="preview.src" alt="Vista previa" class="rounded-lg object-cover w-full h-full" />
-                                <button @click="removeImage(index)"
-                                    class="absolute top-2 right-2 bg-gray-800/70 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-gray-900/70 transition-colors">
-                                    <i class="bx bx-x"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="flex justify-between items-center mt-3">
-                        <div class="flex gap-3">
-                            <label
-                                class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                                <i class='bx bx-image-alt mr-1 text-blue-500'></i> Foto
-                                <input type="file" class="hidden" ref="fileInputRef" @change="handleFileChange"
-                                    accept="image/*" multiple />
-                            </label>
-                            <label
-                                class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                                <i class='bx bx-video mr-1 text-green-500'></i> Video
-                                <input type="file" class="hidden" @change="handleFileChange" accept="video/*" />
-                            </label>
-                            <button
-                                class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                                <i class='bx bx-calendar-event mr-1 text-orange-500'></i> Evento
-                            </button>
-                        </div>
-
-                        <button @click="submitPost" :disabled="!content && imagePreviews.length === 0"
-                            :class="{ 'opacity-50 cursor-not-allowed': !content && imagePreviews.length === 0 }"
-                            class="px-4 py-1.5 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm">
-                            Publicar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <PostCreator v-if="isMember"
+         :auth="auth" 
+         :group="group" 
+         @postCreated="handlePostCreated" 
+         />
 
         <div v-if="displayedPosts.length > 0" class="space-y-4 mt-4">
             <PostCard v-for="post in displayedPosts" :key="post.id" :post="post" :formatDate="formatDate"

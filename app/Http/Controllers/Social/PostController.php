@@ -25,7 +25,7 @@ class PostController extends Controller
 
         $sanitizedContent = Purifier::clean($request->content);
 
-        $sanitizedContent = preg_replace('/<a\s+href="([^"]+)"/i', '<a href="$1" class="underline text-blue-600"', $sanitizedContent);
+        $sanitizedContent = preg_replace('/<a\s+href="([^"]+)"/i', '<a href="$1" style="text-decoration: underline; color: #2563eb;"', $sanitizedContent);
 
         // Create the post
         $post = Post::create([

@@ -104,7 +104,7 @@ class GroupController extends Controller
 
         $posts = $group->posts()
             ->with('user.profile')
-            ->with('images') // Add this line to load the post images
+            ->with('images') 
             ->with([
                 'comments' => function ($query) {
                     $query->with('user.profile')->limit(3);
@@ -183,68 +183,6 @@ class GroupController extends Controller
         return redirect()->back()->with('success', 'Banner actualizado con éxito!');
     }
    
-    // public function storePost(Request $request, $groupId)
-    // {
-    //     $request->validate([
-    //         'content' => 'required|string',
-    //         'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-    //     ]);
-
-    //     $sanitizedContent = Purifier::clean($request->content);
-
-    //     // Create the post first
-    //     $post = GroupPost::create([
-    //         'group_id' => $groupId,
-    //         'user_id' => Auth::id(),
-    //         'content' => $sanitizedContent,
-    //         // Keep the image field for backward compatibility
-    //         'image' => null,
-    //     ]);
-
-    //     // Handle multiple images if they exist
-    //     if ($request->hasFile('images')) {
-    //         $order = 0;
-    //         foreach ($request->file('images') as $image) {
-    //             $imagePath = $image->store('groups/group_posts', 'public');
-                
-    //             // Create a new image record
-    //             GroupPostImage::create([
-    //                 'group_post_id' => $post->id,
-    //                 'image_path' => '/storage/' . $imagePath,
-    //                 'order' => $order++
-    //             ]);
-                
-    //             if ($order === 1) {
-    //                 $post->update(['image' => '/storage/' . $imagePath]);
-    //             }
-    //         }
-    //     }
-
-    //     return redirect()->back()->with('success', 'Post creado con éxito!');
-    // }
-
-    // public function postComment(Request $request)
-    // {
-
-    //     $request->validate([
-    //         'comment' => 'required|string',
-    //     ]);
-    //     $post = GroupPost::findOrFail($request->postId);
-    //     $post->comments_count++;
-    //     $post->save();
-
-    //     $comment = GroupPostComment::create([
-    //         'group_post_id' => $request->postId,
-    //         'user_id' => Auth::id(),
-    //         'content' => $request->comment,
-    //         'created_at' => now(),
-    //         'updated_at' => now(),
-    //         'deleted_at' => null,
-    //     ]);
-
-    //     return redirect()->back()->with('success', 'Comentario creado con éxito!');
-    // }
-
     public function joinGroup(Request $request)
     {
 
