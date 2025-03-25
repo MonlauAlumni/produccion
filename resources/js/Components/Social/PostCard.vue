@@ -172,8 +172,13 @@ const prevImage = () => {
 const addComment = () => {
   if (!commentText.value.trim()) return;
 
+  const sanitizedContent = DOMPurify.sanitize(commentText.value, {
+    ALLOWED_TAGS: [],
+    ALLOWED_ATTR: []
+  });
+
   const formData = new FormData();
-  formData.append('content', commentText.value);
+  formData.append('content', sanitizedContent);
 
   const commentUrl = props.post.group_id
     ? `/grupos/${props.post.group_id}/posts/${props.post.id}/comment`
