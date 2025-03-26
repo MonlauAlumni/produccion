@@ -137,6 +137,7 @@ class SocialController extends Controller
                 
                 ->paginate(10)->items();                
             $posts = Post::where('content', 'like', "%{$query}%")
+                ->whereNull('group_id')
                 ->with(['user.profile', 'images', 'comments' => function ($query) {
                     $query->with('user.profile')->limit(3);
                 }])
