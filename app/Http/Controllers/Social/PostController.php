@@ -12,9 +12,7 @@ use App\Http\Controllers\Controller;
 
 class PostController extends Controller
 {
-    /**
-     * Store a new post.
-     */
+
     public function store(Request $request)
     {
         $request->validate([
@@ -27,20 +25,17 @@ class PostController extends Controller
 
         $sanitizedContent = preg_replace('/<a\s+href="([^"]+)"/i', '<a href="$1" style="text-decoration: underline; color: #2563eb;"', $sanitizedContent);
 
-        // Create the post
         $post = Post::create([
             'user_id' => Auth::id(),
             'group_id' => $request->group_id,
             'content' => $sanitizedContent,
         ]);
 
-        // Handle multiple images if they exist
         if ($request->hasFile('images')) {
             $order = 0;
             foreach ($request->file('images') as $image) {
                 $imagePath = $image->store('posts/images', 'public');
                 
-                // Create a new image record
                 PostImage::create([
                     'post_id' => $post->id,
                     'image_path' => '/storage/' . $imagePath,
@@ -53,19 +48,12 @@ class PostController extends Controller
 
     }
 
-    /**
-     * Store a new post in a group.
-     * This maintains compatibility with the old route: /grupos/{groupId}/posts
-     */
     public function storeInGroup(Request $request, $groupId)
     {
         $request->merge(['group_id' => $groupId]);
         return $this->store($request);
     }
 
-    /**
-     * Add a comment to a post.
-     */
     public function addComment(Request $request, Post $post)
     {
         $request->validate([
@@ -87,10 +75,6 @@ class PostController extends Controller
         ]);
         
         $post->increment('comments_count');
-        
-        if ($post->group_id) {
-            return redirect()->back()->with('success', 'Comentario añadido con éxito!');
-        }
         
         return redirect()->back()->with('success', 'Comentario añadido con éxito!');
     }
