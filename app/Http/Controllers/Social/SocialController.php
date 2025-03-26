@@ -89,7 +89,9 @@ class SocialController extends Controller
         
         $results = [
             'users' => [],
-            'groups' => []
+            'groups' => [],
+            'events' => [],
+            'posts' => []
         ];
 
         $id = $request->user()->id;
@@ -120,8 +122,38 @@ class SocialController extends Controller
                 ->withCount('members')
                 ->paginate(20)->items();
             
+            $events = Event::where('title', 'like', "%{$query}%")
+                ->orWhere('description', 'like', "%{$query}%")
+                ->orWhere('location', 'like', "%{$query}%")
+                ->with(['photos', 'attendees.user.profile'])
+                ->where(function ($q) use ($id) { 
+                    $q->where('is_private', false)
+                        ->orWhereHas('group', function ($query) use ($id) {
+                            $query->whereHas('members', function ($q) use ($id) {
+                                $q->where('user_id', $id);
+                            });
+                        });
+                })
+                
+                ->paginate(10)->items();                
+            $posts = Post::where('content', 'like', "%{$query}%")
+                ->with(['user.profile', 'images', 'comments' => function ($query) {
+                    $query->with('user.profile')->limit(3);
+                }])
+                ->where(function ($q) use ($id) {
+                    $q->whereNull('group_id')
+                      ->orWhereHas('group', function ($query) use ($id) {
+                          $query->whereHas('members', function ($q) use ($id) {
+                              $q->where('user_id', $id);
+                          });
+                      });
+                })
+                ->paginate(10)->items();
+            
             $results['users'] = $users;
             $results['groups'] = $groups;
+            $results['events'] = $events;
+            $results['posts'] = $posts;
         }
         
         return Inertia::render('Social/Search', [

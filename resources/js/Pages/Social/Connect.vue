@@ -308,7 +308,7 @@ const loadMorePosts = () => {
                             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                                 <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                                     <h2 class="text-lg font-bold text-gray-800">Próximos Eventos</h2>
-                                    <a href="#" class="text-[#193CB8] text-sm hover:underline">Ver todos</a>
+                                    <a @click="activeTab = 'eventos'" class="text-[#193CB8] text-sm hover:underline cursor-pointer">Ver todos</a>
                                 </div>
                                 <div class="p-4 space-y-4">
                                     <div v-for="event in upcomingEvents" :key="event.id"
