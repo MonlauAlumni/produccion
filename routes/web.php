@@ -16,6 +16,7 @@ use App\Http\Controllers\JobOffers\JobApplicationController;
 use App\Http\Controllers\Social\SocialController;
 use App\Http\Controllers\Social\GroupController;
 use App\Http\Controllers\Social\PostController;
+use App\Http\Controllers\Social\EventController;
 use App\Http\Middleware\IsAdministrator;
 use App\Http\Middleware\IsCompany;
 use App\Http\Middleware\IsStudent;
@@ -103,6 +104,17 @@ Route::middleware('auth')->group(function() {
     Route::post('/posts/{post}/like', [PostController::class, 'toggleLike'])->name('posts.like');
     Route::post('/posts/group/{groupId}', [PostController::class, 'storeInGroup'])->name('group.storePost');
     Route::post('/posts/{post}/like', [PostController::class, 'toggleLike'])->name('posts.like');
+
+    Route::get('/eventos', [EventController::class, 'index'])->name('events.index');
+    Route::get('/eventos/nuevo', [EventController::class, 'create'])->name('events.create');
+    Route::post('/eventos/nuevo', [EventController::class, 'store'])->name('events.store');
+    Route::get('/eventos/{slug}', [EventController::class, 'show'])->name('events.show');
+    Route::get('/eventos/{slug}/editar', [EventController::class, 'edit'])->name('events.edit');
+    Route::put('/eventos/{slug}', [EventController::class, 'update'])->name('events.update');
+    Route::delete('/eventos/{slug}', [EventController::class, 'destroy'])->name('events.destroy');
+    Route::post('/eventos/{slug}/attend', [EventController::class, 'attend'])->name('events.attend');
+    Route::post('/eventos/{slug}/cancel-attendance', [EventController::class, 'cancelAttendance'])->name('events.cancel-attendance');
+    Route::post('/eventos/{slug}/remove-photo', [EventController::class, 'removePhoto'])->name('events.remove-photo');
 
 
     Route::get('/calendario', [CalendarController::class, 'index'])->name('calendar.index');

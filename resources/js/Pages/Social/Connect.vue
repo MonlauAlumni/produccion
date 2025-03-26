@@ -350,7 +350,7 @@ const loadMorePosts = () => {
                                 <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                                     <h2 class="text-lg font-bold text-gray-800">Grupos Populares</h2>
                                     <a @click="activeTab = 'grupos'"
-                                        class="text-[#193CB8] text-sm hover:underline cursor-ponter">Ver todos</a>
+                                        class="text-[#193CB8] text-sm hover:underline cursor-pointer">Ver todos</a>
                                 </div>
                                 <div class="p-4">
                                     <div v-for="group in popularGroups" :key="group.id"
