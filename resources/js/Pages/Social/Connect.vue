@@ -55,7 +55,10 @@ const props = defineProps({
     },
     posts: {
         type: Array,
-    }
+    },
+    featuredStories: {
+        type: Array,
+    },
 
 });
 
@@ -131,30 +134,7 @@ const alumniProfiles = [
     }
 ];
 
-const featuredStories = [
-    {
-        id: 1,
-        user: {
-            name: 'Elena Sánchez',
-            profile_picture: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMOAIGPabXqkJdwsTMZz28liHzBlFpioGmsg&s'
-        },
-        title: 'Mi experiencia como emprendedora',
-        preview: 'Después de graduarme, decidí lanzar mi propio proyecto...',
-        likes: 45,
-        comments: 12
-    },
-    {
-        id: 2,
-        user: {
-            name: 'Javier López',
-            profile_picture: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUIq63KhI4KOEIyTpz6AmUyVeWAgGALLpoZ9edOyO_AkqWsg_AME-GpTmJn7jR4Oars1A&usqp=CAU'
-        },
-        title: 'Trabajando en Silicon Valley',
-        preview: 'Mi viaje desde Alumni hasta una empresa tecnológica en EE.UU...',
-        likes: 78,
-        comments: 23
-    }
-];
+const featuredStories = props.featuredStories;
 
 const recentPosts = props.posts;
 
@@ -258,21 +238,27 @@ const handleFileUpload = (event) => {
                                         <div v-for="story in featuredStories" :key="story.id"
                                             class="flex-shrink-0 w-64 bg-gradient-to-br from-[#193CB8]/5 to-[#2748c6]/10 rounded-lg overflow-hidden border border-[#193CB8]/20 cursor-pointer hover:shadow-md transition-shadow">
                                             <div class="p-4">
-                                                <div class="flex items-center mb-3">
-                                                    <img :src="story.user.profile_picture" :alt="story.user.name"
-                                                        class="w-8 h-8 rounded-full object-cover mr-2" />
-                                                    <span class="text-sm font-medium text-gray-800">{{ story.user.name
-                                                        }}</span>
+                                                <div class="flex items-center mb-3 gap-2">
+                                                    <img v-if="story.user.profile && story.user.profile.profile_picture"
+                                                        :src="story.user.profile.profile_picture || '/images/default-avatar.jpg'"
+                                                        :alt="story.user.name" class="w-8 h-8 object-cover" />
+                                                    <div v-else
+                                                        class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
+                                                        <i class='bx bxs-user text-xl'></i>
+                                                    </div>
+                                                    <span class="text-sm font-medium text-gray-800">{{ story.user.name +
+                                                        ' ' + story.user.last_name_1 + ' ' + story.user.last_name_2 ??
+                                                        null }}</span>
                                                 </div>
-                                                <h3 class="font-bold text-gray-800 mb-2">{{ story.title }}</h3>
-                                                <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ story.preview }}
-                                                </p>
+                                                <p class="text-gray-600 text-sm mb-3 line-clamp-2"
+                                                    v-html="story.content"></p>
                                                 <div class="flex items-center text-gray-500 text-xs">
                                                     <span class="flex items-center mr-3">
-                                                        <i class='bx bx-heart mr-1'></i> {{ story.likes }}
+                                                        <i class='bx bx-heart mr-1'></i> {{ story.likes_count }}
                                                     </span>
                                                     <span class="flex items-center">
-                                                        <i class='bx bx-message-rounded mr-1'></i> {{ story.comments }}
+                                                        <i class='bx bx-message-rounded mr-1'></i> {{
+                                                            story.comments_count }}
                                                     </span>
                                                 </div>
                                             </div>
@@ -296,9 +282,7 @@ const handleFileUpload = (event) => {
                                 <h2 class="text-xl font-bold text-gray-800 px-2">Publicaciones Recientes</h2>
 
                                 <PostCard v-for="post in recentPosts" :key="post.id" :post="post"
-                                    :formatDate="formatDate" :auth="auth"
-                                    :data-post-id="post.id"
-                                    :isMember="true" />
+                                    :formatDate="formatDate" :auth="auth" :data-post-id="post.id" :isMember="true" />
 
                                 <div class="text-center pb-4">
                                     <p class="text-gray-500 text-lg font-semibold">

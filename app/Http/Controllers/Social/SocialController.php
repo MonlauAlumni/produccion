@@ -19,6 +19,15 @@ class SocialController extends Controller
             ->take(3)
             ->get();
 
+        $featuredStories = Post::with('user.profile')
+            ->with('images')
+            ->whereNull('group_id')
+            ->where('created_at', '>=', now()->subDays(7))
+            ->orderBy('likes_count', 'desc')
+            ->take(2)
+            ->get();
+
+
         $page = request()->input('page', 1);
         $postsPerPage = 5;
         $postsToLoad = $postsPerPage * $page;
@@ -38,6 +47,7 @@ class SocialController extends Controller
             'groups' => Group::paginate(10)->items(),
             'popularGroups' => $popularGroups,
             'posts' => $posts,
+            'featuredStories' => $featuredStories
         ]);
         
     }
