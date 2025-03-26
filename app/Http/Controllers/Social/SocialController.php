@@ -12,8 +12,9 @@ use App\Models\Post;
 
 class SocialController extends Controller
 {
-    public function show()
+    public function show(Request $request)
     {
+        $totalPosts = Post::whereNull('group_id')->count();
         $popularGroups = Group::where('privacy', 'public')
             ->orderBy('members_count', 'desc')
             ->take(3)
@@ -40,6 +41,9 @@ class SocialController extends Controller
         $page = request()->input('page', 1);
         $postsPerPage = 5;
         $postsToLoad = $postsPerPage * $page;
+
+        $has_more_posts = $postsToLoad < $totalPosts;
+
         $posts = Post::with('user.profile')
             ->with('images')
             ->with([
@@ -57,7 +61,8 @@ class SocialController extends Controller
             'popularGroups' => $popularGroups,
             'posts' => $posts,
             'featuredStories' => $featuredStories,
-            'trendingTopics' => $trendingTopics
+            'trendingTopics' => $trendingTopics,
+            'hasMorePosts' => $has_more_posts,
         ]);
         
     }

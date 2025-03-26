@@ -56,6 +56,9 @@ const props = defineProps({
     trendingTopics: {
         type: Array,
     },
+    hasMorePosts: {
+        type: Boolean,
+    },
 
 });
 
@@ -136,6 +139,7 @@ const alumniProfiles = [
 const featuredStories = props.featuredStories;
 
 const recentPosts = props.posts;
+const loading = ref(false);
 
 const suggestedConnections = [
     {
@@ -165,6 +169,16 @@ const handleFileUpload = (event) => {
     if (file) {
         console.log('File selected:', file.name);
     }
+};
+
+const loadMorePosts = () => {
+    loading.value = true;
+    router.get('/connect', { page: 2 }, {
+        preserveScroll: true,
+        onSuccess: () => {
+            loading.value = false;
+        }
+    });
 };
 
 </script>
@@ -285,9 +299,16 @@ const handleFileUpload = (event) => {
 
                                 <div class="text-center pb-4">
                                     <p class="text-gray-500 text-lg font-semibold">
-                                        <span class="text-[#193CB8] underline cursor-pointer">
+                                        <span v-if="!loading && props.hasMorePosts"
+                                            class="text-[#193CB8] underline cursor-pointer" @click="loadMorePosts">
                                             Cargar más publicaciones
                                         </span>
+                                    <div v-else-if="loading"
+                                        class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#193CB8] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]">
+                                    </div>
+                                    <div v-else class="text-[#193CB8] text-lg font-semibold">
+                                        ¡Has llegado al final!
+                                    </div>
                                     </p>
                                 </div>
 
@@ -369,12 +390,9 @@ const handleFileUpload = (event) => {
                                 </div>
                                 <div class="p-4">
                                     <div class="flex flex-wrap gap-2">
-                                        <span
-                                            v-for="topic in trendingTopics"
-                                            :key="topic.word"
+                                        <span v-for="topic in trendingTopics" :key="topic.word"
                                             @click="router.get('/connect/search?q=' + topic.word)"
-                                            class="px-3 py-1.5 bg-[#193CB8]/10 text-[#193CB8] rounded-full text-sm flex items-center cursor-pointer hover:bg-[#193CB8]/20 transition-colors"
-                                        >
+                                            class="px-3 py-1.5 bg-[#193CB8]/10 text-[#193CB8] rounded-full text-sm flex items-center cursor-pointer hover:bg-[#193CB8]/20 transition-colors">
                                             #{{ topic.word }}
                                             <span class="ml-1 text-xs bg-[#193CB8] text-white rounded-full px-1.5">
                                                 {{ topic.count }}
