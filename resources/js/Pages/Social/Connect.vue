@@ -5,6 +5,7 @@ import Layout from '@/Components/Layout.vue';
 import GroupCard from '@/Components/Social/GroupCard.vue';
 import PostCreator from '@/Components/Social/PostCreator.vue';
 import PostCard from "@/Components/Social/PostCard.vue";
+import EventsTab from '../../Components/Social/EventsTab.vue';
 
 const searchQuery = ref('');
 const activeTab = ref('descubrir');
@@ -59,6 +60,12 @@ const props = defineProps({
     hasMorePosts: {
         type: Boolean,
     },
+    events: {
+        type: Array,
+    },
+    upcomingEvents: {
+        type: Array,
+    },
 
 });
 
@@ -67,27 +74,8 @@ const trendingTopics = props.trendingTopics;
 const groups = ref(props.groups);
 const popularGroups = ref(props.popularGroups);
 
-const upcomingEvents = [
-    {
-        id: 1,
-        title: 'Conferencia Monlau 2025',
-        date: '15 Abr 2025',
-        time: '18:00',
-        location: 'La Sagrera, Barcelona',
-        attendees: 87,
-        image: 'data:image/png;base64,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'
-    },
-    {
-        id: 2,
-        title: 'Workshop: Liderazgo Creativo',
-        date: '22 Mar 2025',
-        time: '10:00',
-        location: 'Pl. Espanya, Barcelona',
-        attendees: 45,
-        image: 'https://www.creativefabrica.com/wp-content/uploads/2021/08/21/workshop-logo-Graphics-16131907-1.jpg'
-    }
-];
-
+const events = props.events;
+const upcomingEvents = props.upcomingEvents;
 
 const alumniProfiles = [
     {
@@ -325,13 +313,19 @@ const loadMorePosts = () => {
                                 <div class="p-4 space-y-4">
                                     <div v-for="event in upcomingEvents" :key="event.id"
                                         class="flex gap-3 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
-                                        <img :src="event.image" :alt="event.title"
+                                        <img v-if="event.photos && event.photos[0]" :src="event.photos[0].photo_path"
+                                            :alt="event.title"
                                             class="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
+                                        <div v-else
+                                            class="w-16 h-16 rounded-lg bg-gray-200 flex items-center justify-center text-gray-500">
+                                            <i class='bx bx-flag text-xl'></i>
+                                        </div>
                                         <div>
-                                            <h3 class="font-bold text-gray-800">{{ event.title }}</h3>
+                                            <h3 class="font-bold text-gray-800 hover:underline cursor-pointer"
+                                                @click="router.get('/eventos/' + event.slug)">{{ event.title }}</h3>
                                             <div class="flex items-center text-gray-500 text-sm mt-1">
                                                 <i class='bx bx-calendar mr-1'></i>
-                                                <span>{{ event.date }} · {{ event.time }}</span>
+                                                <span>{{ formatDate(event.event_date) }}</span>
                                             </div>
                                             <div class="flex items-center text-gray-500 text-sm mt-1">
                                                 <i class='bx bx-map mr-1'></i>
@@ -339,7 +333,8 @@ const loadMorePosts = () => {
                                             </div>
                                             <div class="flex items-center text-gray-500 text-sm mt-1">
                                                 <i class='bx bx-user mr-1'></i>
-                                                <span>{{ event.attendees }} asistentes</span>
+                                                <span>{{ event.attendees_count }} {{ event.attendees_count === 1 ?
+                                                    'asistente' : 'asistentes' }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -503,15 +498,8 @@ const loadMorePosts = () => {
                         </p>
                     </div>
 
-                    <div v-if="activeTab === 'eventos'" class="text-center py-12">
-                        <div
-                            class="w-20 h-20 bg-[#193CB8]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class='bx bx-calendar-event text-4xl text-[#193CB8]'></i>
-                        </div>
-                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Eventos para Alumni</h2>
-                        <p class="text-gray-600 max-w-md mx-auto">
-                            Descubre eventos exclusivos, networking y oportunidades de desarrollo profesional.
-                        </p>
+                    <div v-if="activeTab === 'eventos'">
+                        <EventsTab :events="events" />
                     </div>
 
                     <div v-if="activeTab === 'grupos'" class="text-center py-12">

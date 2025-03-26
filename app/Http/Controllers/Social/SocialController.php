@@ -8,6 +8,7 @@ use App\Models\Group;
 use Inertia\Inertia;
 use App\Models\User;
 use App\Models\Post;
+use App\Models\Event;
 
 
 class SocialController extends Controller
@@ -56,10 +57,25 @@ class SocialController extends Controller
             ->take($postsToLoad)
             ->get();
 
+        $upcomingEvents = Event::with('photos')
+            ->whereBetween('event_date', [now(), now()->addMonth()])
+            ->where('is_private', false)
+            ->orderBy('attendees_count', 'desc')
+            ->take(3)
+            ->get();
+
+        $events = Event::with('photos')
+            ->where('is_private', false)
+            ->where('event_date', '>=', now())
+            ->orderBy('event_date')
+            ->get();
+
         return Inertia::render('Social/Connect', [
             'groups' => Group::paginate(10)->items(),
             'popularGroups' => $popularGroups,
             'posts' => $posts,
+            'events' => $events,
+            'upcomingEvents' => $upcomingEvents,
             'featuredStories' => $featuredStories,
             'trendingTopics' => $trendingTopics,
             'hasMorePosts' => $has_more_posts,
