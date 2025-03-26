@@ -23,9 +23,18 @@ class SocialController extends Controller
             ->with('images')
             ->whereNull('group_id')
             ->where('created_at', '>=', now()->subDays(7))
-            ->orderBy('likes_count', 'desc')
+            ->orderByRaw('(likes_count + comments_count) desc')
             ->take(2)
             ->get();
+
+        $allContents = Post::whereNull('group_id')
+        ->where('created_at', '>=', now()->subDays(7))
+        ->pluck('content')->implode(' ');
+
+        $words = preg_split('/\s+/', mb_strtolower(preg_replace('/[^\p{L}\p{N}\s]+/u', '', $allContents)), -1, PREG_SPLIT_NO_EMPTY);
+        $counts = array_count_values($words);
+        arsort($counts);
+        $trendingTopics = array_slice(array_map(fn($w,$c)=>['word'=>$w,'count'=>$c],array_keys($counts),$counts),0,5);
 
 
         $page = request()->input('page', 1);
@@ -47,7 +56,8 @@ class SocialController extends Controller
             'groups' => Group::paginate(10)->items(),
             'popularGroups' => $popularGroups,
             'posts' => $posts,
-            'featuredStories' => $featuredStories
+            'featuredStories' => $featuredStories,
+            'trendingTopics' => $trendingTopics
         ]);
         
     }

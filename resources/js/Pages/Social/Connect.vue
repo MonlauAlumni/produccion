@@ -35,13 +35,7 @@ const formatDate = (dateString) => {
 };
 
 
-const trendingTopics = [
-    { id: 1, name: 'Eventos de networking', count: 28 },
-    { id: 2, name: 'Desarrollo profesional', count: 24 },
-    { id: 3, name: 'Emprendimiento', count: 19 },
-    { id: 4, name: 'Tecnología', count: 17 },
-    { id: 5, name: 'Sostenibilidad', count: 15 }
-];
+
 
 const props = defineProps({
     groups: {
@@ -59,8 +53,13 @@ const props = defineProps({
     featuredStories: {
         type: Array,
     },
+    trendingTopics: {
+        type: Array,
+    },
 
 });
+
+const trendingTopics = props.trendingTopics;
 
 const groups = ref(props.groups);
 const popularGroups = ref(props.popularGroups);
@@ -370,11 +369,16 @@ const handleFileUpload = (event) => {
                                 </div>
                                 <div class="p-4">
                                     <div class="flex flex-wrap gap-2">
-                                        <span v-for="topic in trendingTopics" :key="topic.id"
-                                            class="px-3 py-1.5 bg-[#193CB8]/10 text-[#193CB8] rounded-full text-sm flex items-center cursor-pointer hover:bg-[#193CB8]/20 transition-colors">
-                                            #{{ topic.name }}
-                                            <span class="ml-1 text-xs bg-[#193CB8] text-white rounded-full px-1.5">{{
-                                                topic.count }}</span>
+                                        <span
+                                            v-for="topic in trendingTopics"
+                                            :key="topic.word"
+                                            @click="router.get('/connect/search?q=' + topic.word)"
+                                            class="px-3 py-1.5 bg-[#193CB8]/10 text-[#193CB8] rounded-full text-sm flex items-center cursor-pointer hover:bg-[#193CB8]/20 transition-colors"
+                                        >
+                                            #{{ topic.word }}
+                                            <span class="ml-1 text-xs bg-[#193CB8] text-white rounded-full px-1.5">
+                                                {{ topic.count }}
+                                            </span>
                                         </span>
                                     </div>
                                 </div>
