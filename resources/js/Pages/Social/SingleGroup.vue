@@ -17,7 +17,7 @@ const props = defineProps({
     currentPage: {
         type: Number,
         default: 1
-    }
+    },
 });
 
 const hasMorePosts = ref(true);
@@ -148,14 +148,46 @@ watch(() => props.group, (newGroup) => {
                                 <div class="flex items-center justify-between mb-4">
                                     <h2 class="text-xl font-semibold">Eventos del grupo</h2>
 
-                                    <button v-if="isAdmin || isMember"
-                                        class="px-3 py-1.5 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm flex items-center">
+                                    <button v-if="isAdmin || isMember" @click="router.get('/eventos/nuevo')"
+                                        class="px-3 py-1.5 bg-[#193CB8] cursor-pointer text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm flex items-center">
                                         <i class='bx bx-plus mr-1'></i> Crear evento
                                     </button>
                                 </div>
 
                                 <div v-if="group.events && group.events.length > 0" class="space-y-4">
-                                    &lt;!-- Aquí irían los eventos -->
+                                    <div v-for="event in group.events.filter(e => new Date(e.event_date) >= new Date()).slice(0, 3)"
+                                        :key="event.id" @click="router.visit(`/eventos/${event.slug}`)"
+                                        class="flex gap-3 p-2 hover:bg-gray-100 rounded-lg cursor-pointer">
+                                        <div
+                                            class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-[#193CB8] flex-shrink-0">
+                                            <i class='bx bx-calendar-event text-xl'></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-medium text-gray-800 line-clamp-1">{{ event.title }}
+                                            </h4>
+                                            <div class="flex items-center text-gray-500 text-xs">
+                                                <i class='bx bx-calendar mr-1'></i>
+                                                {{ new Date(event.event_date).toLocaleDateString('es-ES', {
+                                                    day: 'numeric',
+                                                    month: 'short'
+                                                }) }}
+                                                <span class="mx-1">·</span>
+                                                <i class='bx bx-time mr-1'></i>
+                                                {{ new Date(event.event_date).toLocaleTimeString('es-ES', {
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                }) }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div v-if="group.events.filter(e => new Date(e.event_date) >= new Date()).length > 3"
+                                        class="text-center mt-2">
+                                        <button @click="activeTab = 'eventos'"
+                                            class="text-sm text-[#193CB8] hover:underline">
+                                            Ver todos los eventos
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div v-else class="text-center py-8">
@@ -178,7 +210,7 @@ watch(() => props.group, (newGroup) => {
                                 </div>
 
                                 <div v-if="group.files && group.files.length > 0" class="space-y-4">
-                                    &lt;!-- Aquí irían los archivos -->
+                                    <!-- Aquí irían los archivos -->
                                 </div>
 
                                 <div v-else class="text-center py-8">
@@ -228,19 +260,6 @@ watch(() => props.group, (newGroup) => {
                                                 }}</p>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                                <h2 class="text-xl font-semibold mb-4">Próximos eventos</h2>
-                                <hr class="border-t border-[#193CB8] mb-4" />
-
-                                <div v-if="group.events && group.events.length > 0" class="space-y-4">
-                                    &lt;!-- Aquí irían los eventos próximos -->
-                                </div>
-
-                                <div v-else class="text-center py-4">
-                                    <p class="text-gray-500">No hay eventos programados</p>
                                 </div>
                             </div>
 

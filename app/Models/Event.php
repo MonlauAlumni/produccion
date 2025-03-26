@@ -27,41 +27,26 @@ class Event extends Model
         'is_private' => 'boolean',
     ];
 
-    /**
-     * Get the organizer of the event.
-     */
     public function organizer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'organizer_id');
     }
 
-    /**
-     * Get the group associated with the event.
-     */
     public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
     }
 
-    /**
-     * Get the photos for the event.
-     */
     public function photos(): HasMany
     {
         return $this->hasMany(EventPhoto::class);
     }
 
-    /**
-     * Get the attendees for the event.
-     */
     public function attendees(): HasMany
     {
         return $this->hasMany(EventAttendee::class);
     }
 
-    /**
-     * Check if a user is attending the event.
-     */
     public function isAttendingBy(User $user): bool
     {
         return $this->attendees()->where('user_id', $user->id)->exists();

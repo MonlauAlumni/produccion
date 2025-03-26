@@ -15,32 +15,9 @@ use Inertia\Inertia;
 
 class EventController extends Controller
 {
-    /**
-     * Display a listing of the events.
-     */
-    public function index()
-    {
-        $events = Event::with(['organizer', 'group'])
-            ->where('is_private', false)
-            ->orWhereHas('group', function ($query) {
-                $query->whereHas('members', function ($q) {
-                    $q->where('user_id', Auth::id());
-                });
-            })
-            ->latest()
-            ->paginate(10);
 
-        return Inertia::render('Social/Events', [
-            'events' => $events
-        ]);
-    }
-
-    /**
-     * Show the form for creating a new event.
-     */
     public function create()
     {
-        // Get groups where the user is the creator
         $userGroups = Group::where('creator_id', Auth::id())->get();
 
         return Inertia::render('Social/CreateEvent', [
@@ -48,9 +25,6 @@ class EventController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created event in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -63,7 +37,6 @@ class EventController extends Controller
             'photos.*' => 'nullable|image|max:2048',
         ]);
 
-        // Create a unique slug
         $slug = Str::slug($request->title);
         $uniqueSlug = $slug;
         $counter = 1;
@@ -73,7 +46,6 @@ class EventController extends Controller
             $counter++;
         }
 
-        // Create the event
         $event = Event::create([
             'title' => $request->title,
             'description' => $request->description,
@@ -85,13 +57,11 @@ class EventController extends Controller
             'slug' => $uniqueSlug,
         ]);
 
-        // Handle photos if they exist
         if ($request->hasFile('photos')) {
             $order = 0;
             foreach ($request->file('photos') as $photo) {
                 $photoPath = $photo->store('events/photos', 'public');
                 
-                // Create a new photo record
                 EventPhoto::create([
                     'event_id' => $event->id,
                     'photo_path' => Storage::url($photoPath),
@@ -100,23 +70,19 @@ class EventController extends Controller
             }
         }
 
-        // Add the creator as an attendee
         EventAttendee::create([
             'event_id' => $event->id,
             'user_id' => Auth::id(),
             'status' => 'attending',
         ]);
 
-        // Update attendees count
         $event->attendees_count = 1;
         $event->save();
 
         return redirect()->route('events.show', $event->slug)->with('success', 'Evento creado con éxito!');
     }
 
-    /**
-     * Display the specified event.
-     */
+
     public function show($slug)
     {
         $event = Event::where('slug', $slug)
@@ -126,7 +92,6 @@ class EventController extends Controller
         $isOrganizer = Auth::id() === $event->organizer_id;
         $isAttending = $event->isAttendingBy(Auth::user());
 
-        // Check if user can view this event
         if ($event->is_private && $event->group) {
             $isMember = $event->group->members()->where('user_id', Auth::id())->exists();
             if (!$isMember && !$isOrganizer) {
@@ -141,19 +106,14 @@ class EventController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified event.
-     */
     public function edit($slug)
     {
         $event = Event::where('slug', $slug)->firstOrFail();
 
-        // Check if user is the organizer
         if (Auth::id() !== $event->organizer_id) {
             return redirect()->route('events.show', $event->slug)->with('error', 'No tienes permiso para editar este evento.');
         }
 
-        // Get groups where the user is the creator
         $userGroups = Group::where('creator_id', Auth::id())->get();
 
         return Inertia::render('Social/EditEvent', [
@@ -162,14 +122,10 @@ class EventController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified event in storage.
-     */
     public function update(Request $request, $slug)
     {
         $event = Event::where('slug', $slug)->firstOrFail();
 
-        // Check if user is the organizer
         if (Auth::id() !== $event->organizer_id) {
             return redirect()->route('events.show', $event->slug)->with('error', 'No tienes permiso para editar este evento.');
         }
@@ -184,7 +140,6 @@ class EventController extends Controller
             'photos.*' => 'nullable|image|max:2048',
         ]);
 
-        // Update the event
         $event->update([
             'title' => $request->title,
             'description' => $request->description,
@@ -194,13 +149,11 @@ class EventController extends Controller
             'group_id' => $request->is_private ? $request->group_id : null,
         ]);
 
-        // Handle photos if they exist
         if ($request->hasFile('photos')) {
             $order = $event->photos()->max('order') + 1;
             foreach ($request->file('photos') as $photo) {
                 $photoPath = $photo->store('events/photos', 'public');
                 
-                // Create a new photo record
                 EventPhoto::create([
                     'event_id' => $event->id,
                     'photo_path' => Storage::url($photoPath),
@@ -212,38 +165,28 @@ class EventController extends Controller
         return redirect()->route('events.show', $event->slug)->with('success', 'Evento actualizado con éxito!');
     }
 
-    /**
-     * Remove the specified event from storage.
-     */
     public function destroy($slug)
     {
         $event = Event::where('slug', $slug)->firstOrFail();
 
-        // Check if user is the organizer
         if (Auth::id() !== $event->organizer_id) {
             return redirect()->route('events.show', $event->slug)->with('error', 'No tienes permiso para eliminar este evento.');
         }
 
-        // Delete photos from storage
         foreach ($event->photos as $photo) {
             $path = str_replace('/storage/', '', $photo->photo_path);
             Storage::disk('public')->delete($path);
         }
 
-        // Delete the event
         $event->delete();
 
         return redirect()->route('events.index')->with('success', 'Evento eliminado con éxito!');
     }
 
-    /**
-     * Attend an event.
-     */
     public function attend($slug)
     {
         $event = Event::where('slug', $slug)->firstOrFail();
 
-        // Check if user can attend this event
         if ($event->is_private && $event->group) {
             $isMember = $event->group->members()->where('user_id', Auth::id())->exists();
             if (!$isMember) {
@@ -251,51 +194,39 @@ class EventController extends Controller
             }
         }
 
-        // Check if user is already attending
         if ($event->isAttendingBy(Auth::user())) {
             return redirect()->route('events.show', $event->slug)->with('info', 'Ya estás asistiendo a este evento.');
         }
 
-        // Add user as an attendee
         EventAttendee::create([
             'event_id' => $event->id,
             'user_id' => Auth::id(),
             'status' => 'attending',
         ]);
 
-        // Update attendees count
         $event->attendees_count = $event->attendees()->count();
         $event->save();
 
         return redirect()->route('events.show', $event->slug)->with('success', 'Te has unido al evento!');
     }
 
-    /**
-     * Cancel attendance to an event.
-     */
     public function cancelAttendance($slug)
     {
         $event = Event::where('slug', $slug)->firstOrFail();
 
-        // Check if user is attending
         $attendance = $event->attendees()->where('user_id', Auth::id())->first();
         if (!$attendance) {
             return redirect()->route('events.show', $event->slug)->with('info', 'No estás asistiendo a este evento.');
         }
 
-        // Remove attendance
         $attendance->delete();
 
-        // Update attendees count
         $event->attendees_count = $event->attendees()->count();
         $event->save();
 
         return redirect()->route('events.show', $event->slug)->with('success', 'Has cancelado tu asistencia al evento.');
     }
 
-    /**
-     * Remove a photo from an event.
-     */
     public function removePhoto(Request $request, $slug)
     {
         $event = Event::where('slug', $slug)->firstOrFail();
@@ -310,16 +241,13 @@ class EventController extends Controller
 
         $photo = EventPhoto::findOrFail($request->photo_id);
 
-        // Check if photo belongs to this event
         if ($photo->event_id !== $event->id) {
             return redirect()->route('events.show', $event->slug)->with('error', 'La foto no pertenece a este evento.');
         }
 
-        // Delete photo from storage
         $path = str_replace('/storage/', '', $photo->photo_path);
         Storage::disk('public')->delete($path);
 
-        // Delete photo record
         $photo->delete();
 
         return redirect()->route('events.show', $event->slug)->with('success', 'Foto eliminada con éxito!');

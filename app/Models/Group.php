@@ -37,7 +37,7 @@ class Group extends Model
 
     public function events()
     {
-        return $this->hasMany(GroupEvent::class);
+        return $this->hasMany(Event::class);
     }
 
     public function files()

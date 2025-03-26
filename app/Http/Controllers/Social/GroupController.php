@@ -96,9 +96,9 @@ class GroupController extends Controller
         $page = request()->input('page', 1);
 
         $group = Group::where('slug', $slug)
-            ->with(['members.user.profile'])
+            ->with(['members.user.profile', 'events'])
             ->firstOrFail();
-
+        
         $postsPerPage = 5;
         $postsToLoad = $postsPerPage * $page;
 
