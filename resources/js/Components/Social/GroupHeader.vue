@@ -92,7 +92,6 @@ export default {
                 { label: 'Publicaciones', value: 'publicaciones' },
                 { label: 'Miembros', value: 'miembros' },
                 { label: 'Eventos', value: 'eventos' },
-                { label: 'Archivos', value: 'archivos' }
             ]
         };
     },

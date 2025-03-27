@@ -71,7 +71,7 @@ class User extends Authenticatable
         return $this->hasOne(UserSetting::class);
     }
 
-    public function mutual_connetios(User $user)
+    public function mutual_connections(User $user)
     {
         return $this->connections()->whereHas('connections', function ($q) use ($user) {
             $q->where('user_id', $user->id);

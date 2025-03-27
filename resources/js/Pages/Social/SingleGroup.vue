@@ -197,30 +197,7 @@ watch(() => props.group, (newGroup) => {
                                     <p class="text-gray-500">Los eventos del grupo aparecerán aquí</p>
                                 </div>
                             </div>
-
-                            <div v-if="activeTab === 'archivos'"
-                                class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                                <div class="flex items-center justify-between mb-4">
-                                    <h2 class="text-xl font-semibold">Archivos compartidos</h2>
-
-                                    <button v-if="isAdmin || isMember"
-                                        class="px-3 py-1.5 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm flex items-center">
-                                        <i class='bx bx-upload mr-1'></i> Subir archivo
-                                    </button>
-                                </div>
-
-                                <div v-if="group.files && group.files.length > 0" class="space-y-4">
-                                    <!-- Aquí irían los archivos -->
-                                </div>
-
-                                <div v-else class="text-center py-8">
-                                    <i class='bx bx-file text-5xl text-gray-300 mb-2'></i>
-                                    <h3 class="text-lg font-medium text-gray-700 mb-1">No hay archivos compartidos
-                                    </h3>
-                                    <p class="text-gray-500">Los archivos compartidos en el grupo aparecerán aquí
-                                    </p>
-                                </div>
-                            </div>
+               
                         </div>
 
                         <div class="space-y-6">
