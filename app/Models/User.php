@@ -71,11 +71,21 @@ class User extends Authenticatable
         return $this->hasOne(UserSetting::class);
     }
 
-    public function mutual_connections(User $user)
+    public function mutual_connections()
     {
-        return $this->connections()->whereHas('connections', function ($q) use ($user) {
-            $q->where('user_id', $user->id);
-        });
+        $myConnectionIds = auth()->user()->connections()
+            ->where('status', 'accepted')
+            ->pluck('connection_id')
+            ->merge(
+                auth()->user()->connectedUsers()
+                    ->where('status', 'accepted')
+                    ->pluck('user_id')
+            )
+            ->unique();
+        
+        return $this->connections()
+            ->where('status', 'accepted')
+            ->whereIn('connection_id', $myConnectionIds);
     }
 
     public function connections()
@@ -83,6 +93,11 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class, 'connections', 'user_id', 'connection_id')
                     ->withPivot('status');
     }
+
+    public function connectedUsers()
+{
+    return $this->hasMany(Connection::class, 'connection_id');
+}
 
    
   

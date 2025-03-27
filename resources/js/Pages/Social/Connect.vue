@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, computed } from 'vue';
+import { ref, defineProps, nextTick } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import Layout from '@/Components/Layout.vue';
 import GroupCard from '@/Components/Social/GroupCard.vue';
@@ -9,18 +9,18 @@ import EventsTab from '../../Components/Social/EventsTab.vue';
 
 const searchQuery = ref('');
 const activeTab = ref('descubrir');
-const showMobileMenu = ref(false);
 const auth = usePage().props.auth;
-const displayedPosts = computed(() => {
-    return props.posts || [];
-});
-const scrollToShareInput = () => {
-    const shareInput = document.getElementById('shareInput');
-    shareInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    shareInput.classList.add('ring-2', 'ring-[#193CB8]', 'transition-all', 'duration-500');
-    setTimeout(() => {
-        shareInput.classList.remove('ring-2', 'ring-[#193CB8]');
-    }, 2000);
+const shareInputRef = ref(null);
+
+const scrollToShareInput = async () => {
+    await nextTick();
+    if (shareInputRef.value) {
+        shareInputRef.value.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        shareInputRef.value.classList.add('ring-2', 'ring-[#193CB8]', 'transition-all', 'duration-500');
+        setTimeout(() => {
+            shareInputRef.value.classList.remove('ring-2', 'ring-[#193CB8]');
+        }, 2000);
+    }
 };
 
 const formatDate = (dateString) => {
@@ -34,9 +34,6 @@ const formatDate = (dateString) => {
         minute: 'numeric'
     });
 };
-
-
-
 
 const props = defineProps({
     groups: {
@@ -73,73 +70,15 @@ const props = defineProps({
 });
 
 const trendingTopics = props.trendingTopics;
-
 const groups = ref(props.groups);
 const popularGroups = ref(props.popularGroups);
-
 const events = props.events;
 const upcomingEvents = props.upcomingEvents;
-
-const alumniProfiles = [
-    {
-        id: 1,
-        name: 'Ana García',
-        profile_picture: 'https://media.istockphoto.com/id/1432226243/es/foto/feliz-joven-de-color-sonriendo-a-la-c%C3%A1mara-en-un-estudio.jpg?s=612x612&w=0&k=20&c=WZ13cFaGQF7Y062lW5RqoKSp47kdqmvb3EJvy5NZhV8=',
-        is_online: true,
-        headline: 'Creativa digital & Desarrolladora Frontend',
-        location: 'Madrid',
-        mutual_connections: 12,
-        interests: ['Diseño', 'Tecnología', 'Viajes'],
-        activity: 'Compartió un artículo sobre diseño UX hace 2 días'
-    },
-    {
-        id: 2,
-        name: 'Carlos Rodríguez',
-        profile_picture: 'data:image/jpeg;base64,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',
-        is_online: false,
-        headline: 'Fotógrafo & Marketing Digital',
-        location: 'Barcelona',
-        mutual_connections: 8,
-        interests: ['Fotografía', 'Marketing', 'Música'],
-        activity: 'Asistirá al evento "Workshop: Fotografía Creativa"'
-    },
-    {
-        id: 3,
-        name: 'Laura Martínez',
-        profile_picture: 'https://img.freepik.com/foto-gratis/mujer-sonriente-mirando-camara-sentada-frente-superficie-amarilla_23-2148204630.jpg',
-        is_online: true,
-        headline: 'Data Scientist & Entusiasta de IA',
-        location: 'Valencia',
-        mutual_connections: 5,
-        interests: ['Inteligencia Artificial', 'Ciencia de Datos', 'Lectura'],
-        activity: 'Publicó: "Cómo la IA está transformando nuestra forma de trabajar"'
-    },
-    {
-        id: 4,
-        name: 'Miguel Fernández',
-        profile_picture: 'https://caravacasonrie.com/wp-content/uploads/2021/10/Hombre-guapo-sonriendo-1-1.jpg',
-        is_online: false,
-        headline: 'Diseñador UX/UI & Ilustrador',
-        location: 'Madrid',
-        mutual_connections: 15,
-        interests: ['Diseño', 'Arte', 'Cine'],
-        activity: 'Compartió su nuevo proyecto de diseño'
-    }
-];
-
 const featuredStories = props.featuredStories;
-
 const recentPosts = props.posts;
-const loading = ref(false);
-
 const suggestedConnections = props.suggestedConnections;
 
-const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        console.log('File selected:', file.name);
-    }
-};
+const loading = ref(false);
 
 const loadMorePosts = () => {
     loading.value = true;
@@ -282,15 +221,16 @@ const loadMorePosts = () => {
                                     </p>
                                 </div>
 
-                                <PostCreator :auth="auth" @postCreated="handlePostCreated" />
+                                <PostCreator :auth="auth" @postCreated="handlePostCreated" ref="shareInputRef"/>
                             </div>
                         </div>
 
                         <div class="space-y-6">
-                            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                            <div class="bg-white rounded-xl shadow-sm overflow-hidden" v-if="upcomingEvents.length > 0">
                                 <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                                     <h2 class="text-lg font-bold text-gray-800">Próximos Eventos</h2>
-                                    <a @click="activeTab = 'eventos'" class="text-[#193CB8] text-sm hover:underline cursor-pointer">Ver todos</a>
+                                    <a @click="activeTab = 'eventos'"
+                                        class="text-[#193CB8] text-sm hover:underline cursor-pointer">Ver todos</a>
                                 </div>
                                 <div class="p-4 space-y-4">
                                     <div v-for="event in upcomingEvents" :key="event.id"
@@ -389,10 +329,16 @@ const loadMorePosts = () => {
                                         <img :src="connection.profile?.profile_picture" :alt="connection.name"
                                             class="w-12 h-12 rounded-full object-cover flex-shrink-0" />
                                         <div class="flex-1">
-                                            <h3 class="font-bold text-gray-800 hover:underline cursor-pointer">{{ connection.name + ' ' + connection.last_name_1 + ' ' + connection.last_name_2 ?? null}}</h3>
+                                            <h3 class="font-bold text-gray-800 hover:underline cursor-pointer">{{
+                                                connection.name + ' ' + connection.last_name_1 + ' ' +
+                                                connection.last_name_2 ?? null }}</h3>
                                             <p class="text-gray-500 text-sm">{{ connection.profile?.job_title }}</p>
-                                            <p class="text-gray-400 text-xs mt-1">{{ connection.mutual_connections }}
-                                                conexiones en común</p>
+                                            <p class="text-gray-400 text-xs mt-1">
+                                                {{ connection.mutual_connections.length }}
+                                                {{ connection.mutual_connections.length === 1 ? 'conexión' :
+                                                    'conexiones' }}
+                                                en común
+                                            </p>
                                         </div>
                                         <button
                                             class="px-3 py-1.5 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm cursor-pointer">
@@ -401,71 +347,6 @@ const loadMorePosts = () => {
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div v-if="activeTab === 'descubrir'" class="mt-8">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-6">Descubre Nuevas Personas</h2>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div v-for="profile in alumniProfiles" :key="profile.id"
-                                class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col justify-between">
-                                <div class="h-24 bg-gradient-to-r from-[#193CB8] to-[#2748c6] relative">
-                                    <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-10">
-                                        <div class="relative">
-                                            <img :src="profile.profile_picture" :alt="profile.name"
-                                                class="w-20 h-20 rounded-full object-cover border-4 border-white cursor-pointer" />
-                                            <div class="absolute bottom-1 right-1 w-4 h-4 rounded-full border-2 border-white"
-                                                :class="profile.is_online ? 'bg-green-500' : 'bg-gray-300'"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="pt-12 p-4 text-center">
-                                    <h3 class="text-xl font-bold text-gray-800">{{ profile.name }}</h3>
-                                    <p class="text-gray-600 mt-1">{{ profile.headline }}</p>
-
-                                    <div class="flex items-center justify-center text-gray-500 text-sm mt-2">
-                                        <i class='bx bx-map-pin mr-1'></i>
-                                        <span>{{ profile.location }}</span>
-                                    </div>
-
-                                    <div class="flex items-center justify-center text-gray-500 text-sm mt-1">
-                                        <i class='bx bx-link mr-1'></i>
-                                        <span>{{ profile.mutual_connections }} conexiones en común</span>
-                                    </div>
-
-                                    <div class="flex flex-wrap justify-center gap-1 mt-3">
-                                        <span v-for="(interest, index) in profile.interests" :key="index"
-                                            class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full text-xs">
-                                            {{ interest }}
-                                        </span>
-                                    </div>
-
-                                    <div class="mt-4 pt-4 border-t border-gray-100 text-sm text-gray-600">
-                                        <p class="line-clamp-2">{{ profile.activity }}</p>
-                                    </div>
-
-
-                                </div>
-                                <div class="flex mt-4 gap-2 justify-end p-4">
-                                    <button
-                                        class="flex-1 py-2 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm cursor-pointer">
-                                        <i class='bx bx-user-plus mr-1'></i> Conectar
-                                    </button>
-                                    <button
-                                        class="flex-1 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm cursor-pointer">
-                                        <i class='bx bx-user mr-1'></i> Ver Perfil
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-center mt-8">
-                            <button
-                                class="px-6 py-3 bg-[#193CB8]/10 text-[#193CB8] rounded-full hover:bg-[#193CB8]/20 transition-colors font-medium cursor-pointer">
-                                Descubrir más personas
-                            </button>
                         </div>
                     </div>
 

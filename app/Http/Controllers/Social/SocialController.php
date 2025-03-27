@@ -59,7 +59,7 @@ class SocialController extends Controller
 
 
         $suggestedConnections = User::where('id', '!=', $request->user()->id)
-        ->with('profile')
+        ->with(['profile', 'mutual_connections'])
 
             ->whereDoesntHave('connections', function($query) use ($request) {
                 $query->where(function($q) use ($request) {
@@ -94,10 +94,11 @@ class SocialController extends Controller
             ->where('event_date', '>=', now())
             ->orderBy('event_date')
             ->get();
-            
+        
+            $groups = Group::all();
 
         return Inertia::render('Social/Connect', [
-            'groups' => Group::paginate(10)->items(),
+            'groups' => $groups,
             'popularGroups' => $popularGroups,
             'posts' => $posts,
             'events' => $events,
