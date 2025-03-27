@@ -5,11 +5,13 @@ import { Inertia } from '@inertiajs/inertia';
 import NProgress from 'nprogress';
 
 import 'boxicons';
+import 'axios';
 import 'boxicons/css/boxicons.min.css'
 import '../css/app.css';
 
 
 window.Inertia = Inertia;
+
 
 createInertiaApp({
   resolve: name =>

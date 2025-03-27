@@ -36,18 +36,28 @@
   }
 
   const uploadBanner = (e) => {
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append("banner_url", file);
-    console.log(props.user.profile);
-    router.post(`/perfil/${props.user.profile.slang}/update-banner`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }).then((response) => {
+  const file = e.target.files[0];  // Obtienes el archivo desde el input
+  const formData = new FormData();  // Creamos un objeto FormData para enviar el archivo
+  formData.append("banner_url", file);  // Añadimos el archivo al FormData con la clave 'banner_url'
+  
+  console.log(props.user.profile);  // Solo para comprobar el perfil del usuario, si es necesario
+
+  // Hacemos el POST a la API para actualizar el banner
+  router.post(`/perfil/${props.user.profile.slang}/update-banner`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",  // Indica que se enviará un archivo
+    },
+    onSuccess: () => {
+      // Acción a realizar cuando el banner se haya actualizado correctamente
       props.profile.banner_url = response.data.banner_url;
-    });
-  }
+    },
+    onError: (errors) => {
+      // Acción a realizar si ocurre un error
+      
+  
+    }
+  });
+};
   
 
   // Default banner if none is provided
@@ -65,9 +75,10 @@
             class="w-full h-full object-cover opacity-80"
           />
           <img v-else
-            src="/public/images/default-banner.jpg" 
-            class="w-full h-full object-cover opacity-80"
-          />
+     src="/public/images/default-banner.jpg"
+     class="w-full h-full object-cover opacity-80"
+/>
+
           <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
           
           <!-- Banner upload button for user's own profile -->

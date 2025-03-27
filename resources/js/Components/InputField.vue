@@ -8,8 +8,9 @@
       </slot>
       <component
         :is="isSelect ? 'select' : 'input'"
-        v-model="modelValue"
+        :value="modelValue"
         :type="type"
+        @input="$emit('update:modelValue', $event)"
         :placeholder="placeholder"
         :class="inputClasses"
         :required="required"

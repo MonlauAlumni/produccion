@@ -3,7 +3,7 @@
     :class="isScrolled ? 'bg-blue-800/80' : 'bg-transparent'">
     <div class="flex gap-4 items-center">
       <a href="/" class="text-white text-3xl font-bold flex items-center gap-4">
-        <img href="/" src="/public/images/logo.png" alt="Alumni" class="w-17 h-16">
+        <img href="/" src="/public/images/logoMonlau.jpg" alt="Alumni" class="w-17 h-16">
         Alumni
       </a>
     </div>
