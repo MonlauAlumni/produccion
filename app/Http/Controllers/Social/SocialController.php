@@ -57,6 +57,31 @@ class SocialController extends Controller
             ->take($postsToLoad)
             ->get();
 
+
+        $suggestedConnections = User::where('id', '!=', $request->user()->id)
+        ->with('profile')
+
+            ->whereDoesntHave('connections', function($query) use ($request) {
+                $query->where(function($q) use ($request) {
+                    $q->where('user_id', $request->user()->id)
+                    ->orWhere('connection_id', $request->user()->id);
+                });
+            })
+            ->whereHas('connections', function($query) use ($request) {
+                $query->whereIn('connection_id', function($subquery) use ($request) {
+                    $subquery->select('connection_id')
+                            ->from('connections')
+                            ->where('user_id', $request->user()->id)
+                            ->where('status', 'accepted');
+                })
+                ->where('status', 'accepted');
+            })
+            ->inRandomOrder()
+            ->limit(5)
+            ->get();
+        
+        
+        
         $upcomingEvents = Event::with('photos')
             ->whereBetween('event_date', [now(), now()->addMonth()])
             ->where('is_private', false)
@@ -69,6 +94,7 @@ class SocialController extends Controller
             ->where('event_date', '>=', now())
             ->orderBy('event_date')
             ->get();
+            
 
         return Inertia::render('Social/Connect', [
             'groups' => Group::paginate(10)->items(),
@@ -79,6 +105,7 @@ class SocialController extends Controller
             'featuredStories' => $featuredStories,
             'trendingTopics' => $trendingTopics,
             'hasMorePosts' => $has_more_posts,
+            'suggestedConnections' => $suggestedConnections
         ]);
         
     }
@@ -134,8 +161,8 @@ class SocialController extends Controller
                             });
                         });
                 })
-                
-                ->paginate(10)->items();                
+                ->paginate(10)->items();  
+
             $posts = Post::where('content', 'like', "%{$query}%")
                 ->whereNull('group_id')
                 ->with(['user.profile', 'images', 'comments' => function ($query) {

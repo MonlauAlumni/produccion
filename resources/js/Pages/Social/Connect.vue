@@ -66,6 +66,9 @@ const props = defineProps({
     upcomingEvents: {
         type: Array,
     },
+    suggestedConnections: {
+        type: Array,
+    },
 
 });
 
@@ -129,29 +132,8 @@ const featuredStories = props.featuredStories;
 const recentPosts = props.posts;
 const loading = ref(false);
 
-const suggestedConnections = [
-    {
-        id: 1,
-        name: 'Sara Navarro',
-        profile_picture: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDGE8DADk8KW_A9xqtLkKQcqBmflJtJGN8Jw&s',
-        headline: 'Diseñadora Gráfica',
-        mutual_connections: 7
-    },
-    {
-        id: 2,
-        name: 'Daniel Torres',
-        profile_picture: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQBz5QgsYhzNkfnWhr10roi33vNXtF8gm3FQ&s',
-        headline: 'Ingeniero de Software',
-        mutual_connections: 5
-    },
-    {
-        id: 3,
-        name: 'Lucía Moreno',
-        profile_picture: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyPRXs4YhCJEqwOCyl9Vlt6pA4Zqfsu1aROA&s',
-        headline: 'Consultora de Marketing',
-        mutual_connections: 3
-    }
-];
+const suggestedConnections = props.suggestedConnections;
+
 const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -404,11 +386,11 @@ const loadMorePosts = () => {
                                 <div class="p-4 space-y-4">
                                     <div v-for="connection in suggestedConnections" :key="connection.id"
                                         class="flex items-center gap-3 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
-                                        <img :src="connection.profile_picture" :alt="connection.name"
+                                        <img :src="connection.profile?.profile_picture" :alt="connection.name"
                                             class="w-12 h-12 rounded-full object-cover flex-shrink-0" />
                                         <div class="flex-1">
-                                            <h3 class="font-bold text-gray-800">{{ connection.name }}</h3>
-                                            <p class="text-gray-500 text-sm">{{ connection.headline }}</p>
+                                            <h3 class="font-bold text-gray-800 hover:underline cursor-pointer">{{ connection.name + ' ' + connection.last_name_1 + ' ' + connection.last_name_2 ?? null}}</h3>
+                                            <p class="text-gray-500 text-sm">{{ connection.profile?.job_title }}</p>
                                             <p class="text-gray-400 text-xs mt-1">{{ connection.mutual_connections }}
                                                 conexiones en común</p>
                                         </div>

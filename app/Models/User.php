@@ -78,6 +78,12 @@ class User extends Authenticatable
         });
     }
 
+    public function connections()
+    {
+        return $this->belongsToMany(User::class, 'connections', 'user_id', 'connection_id')
+                    ->withPivot('status');
+    }
+
    
   
  }
