@@ -1,27 +1,23 @@
-<?php
+<?php 
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class GroupPostComment extends Model
+class Connection extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'user_id',
-        'group_post_id',
-        'content',
-    ];
+    protected $fillable = ['user_id', 'connection_id', 'status'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function post()
+    public function connection()
     {
-        return $this->belongsTo(GroupPost::class, 'group_post_id');
+        return $this->belongsTo(User::class, 'connection_id');
     }
 }

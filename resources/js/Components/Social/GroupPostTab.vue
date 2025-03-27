@@ -1,11 +1,12 @@
-`
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { router, usePage } from '@inertiajs/vue3';
-import { QuillEditor } from "@vueup/vue-quill";
+import { QuillEditor, Quill } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import DOMPurify from "dompurify";
 import PostCard from "@/Components/Social/PostCard.vue";
+import PostCreator from '@/Components/Social/PostCreator.vue';
+
 const props = defineProps({
     auth: Object,
     isMember: Boolean,
@@ -15,44 +16,59 @@ const props = defineProps({
 const quillEditorRef = ref(null);
 const fileInputRef = ref(null);
 const loadMoreTrigger = ref(null);
+const windowScrollY = ref(0);
+const newPostId = ref(null);
 
 const content = ref("");
-const image = ref(null);
-const imagePreview = ref(null);
+const images = ref([]);
+const imagePreviews = ref([]);
 const currentPage = ref(1);
 const isLoadingMore = ref(false);
 const observer = ref(null);
 const hasMorePosts = ref(true);
 const groupSlug = ref('');
 
+const updateScroll = () => {
+    windowScrollY.value = window.scrollY;
+};
+
 const displayedPosts = computed(() => {
     return props.group.posts || [];
 });
 
-// Watch para actualizar el estado
 watch(() => props.group, (newGroup) => {
     if (newGroup) {
         hasMorePosts.value = newGroup.has_more_posts === true;
-
-
         if (newGroup.slug) {
             groupSlug.value = newGroup.slug;
         }
-
-
     }
 }, { immediate: true });
 
-// Editor options
+onMounted(() => {
+    window.addEventListener('scroll', updateScroll);
+    const Link = Quill.import('formats/link');
+    class CustomLink extends Link {
+        static create(value) {
+            const node = super.create(value);
+            node.setAttribute('style', 'text-decoration: underline; color: #007bff;');
+            node.setAttribute('target', '_blank');
+            node.setAttribute('rel', 'noopener noreferrer'); // Security best practice
+            return node;
+        }
+    }
+    Quill.register('formats/link', CustomLink, true);
+
+    nextTick(() => {
+        setupIntersectionObserver();
+    });
+});
+
 const editorOptions = {
     modules: {
         toolbar: [
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            [{ 'indent': '-1' }, { 'indent': '+1' }],
-            [{ 'align': [] }],
+            ['bold', 'italic', 'underline'],
             ['link'],
-            ['clean']
         ]
     },
     placeholder: 'Comparte algo con el grupo...',
@@ -65,72 +81,153 @@ const formatDate = (dateString) => {
     return date.toLocaleDateString('es-ES', {
         year: 'numeric',
         month: 'long',
-        day: 'numeric'
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric'
     });
 };
 
-const sanitizeHTML = (html) => {
-    return DOMPurify.sanitize(html);
+const scrollToTop = () => {
+    const quillEditorDiv = document.querySelector('.quill-editor-container');
+    if (quillEditorDiv) {
+        quillEditorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => {
+            highlightQuillEditor();
+            router.visit(`/grupos/${groupSlug.value}`, {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true
+            });
+        }, 1000);
+    }
 };
 
-const scrollToTop = () => {
+const goUp = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    router.visit(`/grupos/${groupSlug.value}`, {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true
+    });
+};
+
+const highlightQuillEditor = () => {
+    const quillEditorDiv = document.querySelector('.quill-editor-container');
+    if (quillEditorDiv) {
+        quillEditorDiv.classList.add('ring-highlight', 'ring-active');
+        setTimeout(() => {
+            quillEditorDiv.classList.remove('ring-active');
+        }, 1650);
+    }
+};
+
+const highlightNewPost = () => {
+    if (!newPostId.value) return;
+
+    const newPostElement = document.querySelector(`[data-post-id="${newPostId.value}"]`);
+    if (newPostElement) {
+        newPostElement.classList.add('ring-highlight', 'ring-active');
+        setTimeout(() => {
+            newPostElement.classList.remove('ring-active');
+        }, 1650);
+    }
 };
 
 const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (!file) {
-        image.value = null;
-        imagePreview.value = null;
-        return;
-    }
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
 
-    image.value = file;
+    // Process each image file
+    Array.from(files).forEach(file => {
+        if (!file.type.startsWith('image/')) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        imagePreview.value = e.target.result;
-    };
-    reader.readAsDataURL(file);
-};
+        // Add to images array
+        images.value.push(file);
 
-const removeImage = () => {
-    image.value = null;
-    imagePreview.value = null;
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imagePreviews.value.push({
+                id: Date.now() + Math.random().toString(36).substr(2, 9), // Generate unique ID
+                src: e.target.result,
+                file: file
+            });
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // Reset the input to allow selecting the same file again
     if (fileInputRef.value) {
         fileInputRef.value.value = '';
     }
 };
 
-const submitPost = () => {
-    const sanitizedContent = DOMPurify.sanitize(content.value);
+const removeImage = (index) => {
+    imagePreviews.value.splice(index, 1);
+    images.value.splice(index, 1);
+};
 
-    if (!sanitizedContent.trim() && !image.value) return;
+const submitPost = () => {
+    const purifyConfig = {
+        ALLOWED_ATTR: ['href', 'target', 'style', 'rel'],
+        ADD_ATTR: ['target', 'rel']
+    };
+
+    let sanitizedContent = DOMPurify.sanitize(content.value, purifyConfig);
+
+    if (!sanitizedContent.trim() && images.value.length === 0) return;
 
     const formData = new FormData();
     formData.append('content', sanitizedContent);
-    if (image.value) {
-        formData.append('image', image.value);
+
+    // Add group_id if we're in a group
+    if (props.group && props.group.id) {
+        formData.append('group_id', props.group.id);
     }
 
-    router.post(`/grupos/${props.group.id}/posts`, formData, {
-        onSuccess: () => {
+    // Append all images to the form data
+    if (images.value.length > 0) {
+        images.value.forEach((image, index) => {
+            formData.append(`images[]`, image);
+        });
+    }
+
+    // Use the new route for posts
+    const postUrl = props.group && props.group.id
+        ? `/posts/group/${props.group.id}`
+        : '/posts';
+
+    router.post(postUrl, formData, {
+        onSuccess: (page) => {
+            // Reset form
             content.value = '';
-            image.value = null;
-            imagePreview.value = null;
+            images.value = [];
+            imagePreviews.value = [];
             if (fileInputRef.value) {
                 fileInputRef.value.value = '';
             }
             if (quillEditorRef.value) {
                 quillEditorRef.value.setHTML('');
             }
+
+            // Get the ID of the newly created post (assuming it's the first post in the list)
+            if (page.props.group && page.props.group.posts && page.props.group.posts.length > 0) {
+                newPostId.value = page.props.group.posts[0].id;
+            }
+
+            // Wait for the DOM to update with the new post
             nextTick(() => {
-                window.scrollTo(0, 0);
+                // Scroll to the new post
+                const newPostElement = document.querySelector(`[data-post-id="${newPostId.value}"]`);
+                if (newPostElement) {
+                    newPostElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Highlight the new post
+                    highlightNewPost();
+                }
             });
         }
     });
 };
-
 
 const setupIntersectionObserver = () => {
     if (observer.value) {
@@ -162,7 +259,6 @@ const loadMorePosts = () => {
             currentPage.value = nextPage;
             isLoadingMore.value = false;
 
-
             setTimeout(() => {
                 window.history.replaceState({}, '', `/grupos/${groupSlug.value}`);
             }, 0);
@@ -180,18 +276,11 @@ const loadMorePosts = () => {
                 window.history.replaceState({}, '', `/grupos/${groupSlug.value}`);
             }, 0);
         }
-
-
     });
 };
 
-onMounted(() => {
-    nextTick(() => {
-        setupIntersectionObserver();
-    });
-});
-
 onUnmounted(() => {
+    window.removeEventListener('scroll', updateScroll);
     if (observer.value) {
         observer.value.disconnect();
     }
@@ -199,53 +288,21 @@ onUnmounted(() => {
 </script>
 
 <template>
+    <button v-show="windowScrollY > 200" @click="goUp"
+        class="fixed cursor-pointer bottom-6 right-6 w-12 h-12 rounded-full bg-[#193CB8] text-white shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300 z-50 animate-fade-in">
+        <i class='bx bx-chevron-up text-xl'></i>
+    </button>
     <div class="tab-content">
-        <div v-if="isMember" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div class="flex items-start gap-3">
-                <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                    <img v-if="auth.user.profile && auth.user.profile.profile_picture"
-                        :src="auth.user.profile.profile_picture || '/images/default-avatar.jpg'" alt="Tu avatar"
-                        class="w-full h-full object-cover" />
-                    <div v-else
-                        class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8]">
-                        <i class='bx bx-user'></i>
-                    </div>
-                </div>
-                <div class="flex-1">
-                    <div class="mb-3">
-                        <QuillEditor ref="quillEditorRef" v-model:content="content" :options="editorOptions"
-                            contentType="html" />
-                    </div>
-                    <div v-if="imagePreview" class="mt-3 mb-3 relative">
-                        <img :src="imagePreview" alt="Vista previa" class="rounded-lg max-h-48 object-contain" />
-                        <button @click="removeImage"
-                            class="absolute top-2 right-2 bg-gray-800/70 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-gray-900/70 transition-colors">
-                            <i class="bx bx-x"></i>
-                        </button>
-                    </div>
 
-                    <div class="flex justify-between items-center mt-3">
-                        <div class="flex gap-2">
-                            <input type="file" @change="handleFileChange" class="hidden" id="fileUpload"
-                                ref="fileInputRef" accept="image/*" />
-                            <label for="fileUpload"
-                                class="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors cursor-pointer">
-                                <i class="bx bx-image-alt"></i>
-                            </label>
-                        </div>
-                        <button @click="submitPost" :disabled="!content && !image"
-                            :class="{ 'opacity-50 cursor-not-allowed': !content && !image }"
-                            class="px-4 py-1.5 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm">
-                            Publicar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <PostCreator v-if="isMember"
+         :auth="auth" 
+         :group="group" 
+         @postCreated="handlePostCreated" 
+         />
 
         <div v-if="displayedPosts.length > 0" class="space-y-4 mt-4">
             <PostCard v-for="post in displayedPosts" :key="post.id" :post="post" :formatDate="formatDate"
-                :sanitizeHTML="sanitizeHTML" :isMember="isMember" :auth="auth" />
+                :isMember="isMember" :auth="auth" :data-post-id="post.id" />
 
             <div v-if="isLoadingMore" class="text-center py-4">
                 <div
@@ -272,10 +329,9 @@ onUnmounted(() => {
                 <p class="text-gray-500">Sé el primero en compartir algo con el grupo</p>
             </div>
         </div>
-
-
     </div>
 </template>
+
 <style scoped>
 :deep(.ql-editor) {
     min-height: 100px;
@@ -337,6 +393,25 @@ onUnmounted(() => {
     color: #193CB8;
 }
 
+:deep(.ql-editor a) {
+    color: #007bff;
+    text-decoration: underline;
+}
+
+/* Image preview grid */
+.image-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+}
+
+.image-preview-item {
+    position: relative;
+    height: 120px;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
 @keyframes spin {
     from {
         transform: rotate(0deg);
@@ -349,5 +424,32 @@ onUnmounted(() => {
 
 .animate-spin {
     animation: spin 1s linear infinite;
+}
+
+.ring-highlight {
+    box-shadow: 0 0 0px 0px rgba(25, 60, 184, 0);
+    transition: box-shadow 0.4s ease-in-out;
+}
+
+.ring-active {
+    box-shadow: 0 0 12px 5px rgba(25, 60, 184, 0.6);
+}
+
+@keyframes highlight-pulse {
+    0% {
+        background-color: transparent;
+    }
+
+    50% {
+        background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+[data-post-id].ring-active {
+    animation: highlight-pulse 1.65s ease-in-out;
 }
 </style>

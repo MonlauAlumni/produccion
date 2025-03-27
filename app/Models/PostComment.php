@@ -6,31 +6,29 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class GroupPost extends Model
+class PostComment extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'group_id',
+        'post_id',
         'user_id',
         'content',
-        'image',
-        'likes_count',
-        'comments_count',
     ];
 
-    public function group()
+    /**
+     * Get the post that owns the comment.
+     */
+    public function post()
     {
-        return $this->belongsTo(Group::class);
+        return $this->belongsTo(Post::class);
     }
 
+    /**
+     * Get the user who created the comment.
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function comments()
-    {
-        return $this->hasMany(GroupPostComment::class);
     }
 }
