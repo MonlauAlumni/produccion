@@ -3,9 +3,8 @@
     <div class="flex items-start gap-3">
       <!-- Avatar -->
       <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 cursor-pointer"
-      @click="router.get(`/perfil/${post.user.profile.slang}`)"
-      >
-        <img v-if="post.user.profile && post.user.profile.profile_picture" 
+        @click="router.get(`/perfil/${post.user.profile.slang}`)">
+        <img v-if="post.user.profile && post.user.profile.profile_picture"
           :src="post.user.profile.profile_picture || '/images/default-avatar.jpg'" :alt="post.user.name"
           class="w-full h-full object-cover" />
         <div v-else
@@ -18,7 +17,8 @@
         <!-- Post Header -->
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="font-medium text-gray-800 hover:underline cursor-pointer" @click="router.get(`/perfil/${post.user.profile.slang}`)">
+            <h3 class="font-medium text-gray-800 hover:underline cursor-pointer"
+              @click="router.get(`/perfil/${post.user.profile.slang}`)">
               {{ post.user.name }} {{ post.user.last_name_1 }} {{ post.user.last_name_2 ? post.user.last_name_2 : '' }}
             </h3>
             <p class="text-xs text-gray-500">{{ formatDate(post.created_at) }}</p>
@@ -30,7 +30,8 @@
 
         <!-- Post Content -->
         <div class="mt-2">
-          <div class="text-gray-700 post-content" v-html="sanitizeHTML(post.content)" :style="{ fontSize: user_settings.font_size + 'px' }"></div>
+          <div class="text-gray-700 post-content" v-html="sanitizeHTML(post.content)"
+            :style="{ fontSize: user_settings.font_size + 'px' }"></div>
 
           <!-- Image Carousel -->
           <div v-if="post.images && post.images.length > 0" class="mt-3 relative">
@@ -70,7 +71,8 @@
             <i class="bx" :class="isLiked ? 'bxs-like' : 'bx-like'"></i>
             <span class="text-sm">{{ post.likes_count }}</span>
           </button>
-          <button class="flex items-center gap-1 text-gray-500 hover:text-[#193CB8] cursor-pointer" @click="focusCommentInput">
+          <button class="flex items-center gap-1 text-gray-500 hover:text-[#193CB8] cursor-pointer"
+            @click="focusCommentInput">
             <i class="bx bx-comment"></i>
             <span class="text-sm">{{ post.comments_count }}</span>
           </button>
@@ -107,7 +109,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted, watch} from 'vue';
+import { ref, nextTick, onMounted, watch } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import DOMPurify from 'dompurify';
 import PostComment from './PostComment.vue';

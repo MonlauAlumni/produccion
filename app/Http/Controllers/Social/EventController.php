@@ -139,7 +139,8 @@ class EventController extends Controller
             'group_id' => 'nullable|exists:groups,id',
             'photos.*' => 'nullable|image|max:2048',
         ]);
-
+        $newDate = (new \DateTime($request->event_date))->modify('-2 hours');
+        $request->merge(['event_date' => $newDate->format('Y-m-d H:i:s')]);
         $event->update([
             'title' => $request->title,
             'description' => $request->description,
