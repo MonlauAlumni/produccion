@@ -71,6 +71,34 @@ class User extends Authenticatable
         return $this->hasOne(UserSetting::class);
     }
 
+    public function mutual_connections()
+    {
+        $myConnectionIds = auth()->user()->connections()
+            ->where('status', 'accepted')
+            ->pluck('connection_id')
+            ->merge(
+                auth()->user()->connectedUsers()
+                    ->where('status', 'accepted')
+                    ->pluck('user_id')
+            )
+            ->unique();
+        
+        return $this->connections()
+            ->where('status', 'accepted')
+            ->whereIn('connection_id', $myConnectionIds);
+    }
+
+    public function connections()
+    {
+        return $this->belongsToMany(User::class, 'connections', 'user_id', 'connection_id')
+                    ->withPivot('status');
+    }
+
+    public function connectedUsers()
+{
+    return $this->hasMany(Connection::class, 'connection_id');
+}
+
    
   
  }

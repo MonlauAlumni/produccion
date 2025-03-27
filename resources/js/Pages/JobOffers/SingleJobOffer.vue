@@ -171,46 +171,51 @@ const closeConfirmationModal = () => {
             
             <!-- Requirements Section -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div class="border-b border-gray-200 p-4 flex items-center">
-                <i class='bx bx-list-check text-xl text-[#193CB8] mr-2'></i>
-                <h2 class="text-lg font-bold text-gray-800">Requisitos</h2>
-              </div>
-              <div class="p-5">
-                <div class="grid md:grid-cols-2 gap-5 mb-5">
-                  <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-[#193CB8]">
-                    <h3 class="font-semibold mb-2 flex items-center text-gray-800">
-                      <i class='bx bx-book text-[#193CB8] mr-2'></i>
-                      Estudios mínimos
-                    </h3>
-                    <p class="text-gray-700">{{ jobOffer.requirements }}</p>
-                  </div>
-                  <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-[#193CB8]">
-                    <h3 class="font-semibold mb-2 flex items-center text-gray-800">
-                      <i class='bx bx-time text-[#193CB8] mr-2'></i>
-                      Experiencia mínima
-                    </h3>
-                    <p class="text-gray-700">{{ jobOffer.experience }}</p>
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 class="font-semibold mb-3 flex items-center text-gray-800">
-                    <i class='bx bx-code-alt text-[#193CB8] mr-2'></i>
-                    Conocimientos requeridos
-                  </h3>
-                  <div class="flex flex-wrap gap-2 mt-2">
-                    <span 
-                      v-for="skill in skills" 
-                      :key="skill"
-                      class="px-3 py-1.5 bg-[#193CB8]/10 text-[#193CB8] rounded-md text-sm font-medium flex items-center border border-[#193CB8]/20"
-                    >
-                      <i class='bx bx-check mr-1'></i>
-                      {{ skill }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+  <div class="border-b border-gray-200 p-4 flex items-center">
+    <i class='bx bx-list-check text-xl text-[#193CB8] mr-2'></i>
+    <h2 class="text-lg font-bold text-gray-800">Requisitos</h2>
+  </div>
+  <div class="p-5">
+    <!-- Requirements in a more flexible layout -->
+    <div class="space-y-4">
+      <!-- Education requirements -->
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <h3 class="font-semibold flex items-center text-gray-800 border-b border-gray-200 pb-2 mb-3">
+          <i class='bx bx-book text-[#193CB8] mr-2'></i>
+          Estudios mínimos
+        </h3>
+        <div v-html="jobOffer.requirements" class="text-gray-700"></div>
+      </div>
+      
+      <!-- Experience requirements -->
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <h3 class="font-semibold flex items-center text-gray-800 border-b border-gray-200 pb-2 mb-3">
+          <i class='bx bx-time text-[#193CB8] mr-2'></i>
+          Experiencia mínima
+        </h3>
+        <div v-html="jobOffer.experience" class="text-gray-700"></div>
+      </div>
+      
+      <!-- Skills section -->
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <h3 class="font-semibold flex items-center text-gray-800 border-b border-gray-200 pb-2 mb-3">
+          <i class='bx bx-code-alt text-[#193CB8] mr-2'></i>
+          Conocimientos requeridos
+        </h3>
+        <div class="flex flex-wrap gap-2 mt-3">
+          <span 
+            v-for="skill in skills" 
+            :key="skill"
+            class="px-3 py-1.5 bg-[#193CB8]/10 text-[#193CB8] rounded-md text-sm font-medium flex items-center border border-[#193CB8]/20"
+          >
+            <i class='bx bx-check mr-1'></i>
+            {{ skill }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
             
             <!-- Benefits Section -->
             <div v-if="jobOffer.benefits" class="bg-white rounded-lg shadow-sm border border-gray-200">

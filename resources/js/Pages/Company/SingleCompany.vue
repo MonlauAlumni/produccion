@@ -35,7 +35,6 @@
   };
 
   
-  
   </script>
   
   <template>
@@ -43,7 +42,19 @@
       <div class="min-h-screen bg-gray-50 flex flex-col">
         <!-- Company Banner -->
         <div class="relative w-full h-64 md:h-80 bg-gradient-to-r from-[#193CB8] to-[#2748c6] overflow-hidden">
+          
+      
+            <img 
+              src="/public/images/default-company-banner.jpg" 
+              alt="Default company banner" 
+              class="w-full h-full object-cover opacity-80"
+              v-if="!company.banner_url"
+            />
+
+
+      
           <img 
+            v-if="company.banner_url"
             :src="company.banner_url || defaultBanner" 
             :alt="company.name + ' banner'"
             class="w-full h-full object-cover opacity-80"

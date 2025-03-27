@@ -54,7 +54,7 @@ export default {
   <div>
     <!-- Botón menú mobile -->
     <button @click="toggleSidebar"
-      class="md:hidden fixed top-4 left-4 z-50 bg-[#193CB8] text-white p-2 rounded-md shadow-md">
+      class="md:hidden fixed top-4 left-4  bg-[#193CB8] z-100 text-white p-2 rounded-md shadow-md">
       <i class='bx bx-menu text-xl'></i>
     </button>
 

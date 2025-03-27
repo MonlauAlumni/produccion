@@ -21,7 +21,6 @@ const props = defineProps({
     }
 });
 
-// Estado del formulario
 const form = ref({
     name: '',
     description: '',
@@ -32,20 +31,16 @@ const form = ref({
     banner: null
 });
 
-// Errores de validación
 const errors = ref({});
 
-// Previsualización de imágenes
 const logoPreview = ref(null);
 const bannerPreview = ref(null);
 
 const isUploading = ref(false);
 
-// Contador de caracteres para la descripción
 const descriptionLength = computed(() => form.value.description.length);
 const maxDescriptionLength = 500;
 
-// Manejar cambio de logo
 const handleLogoChange = (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -62,7 +57,6 @@ const handleLogoChange = (event) => {
 
     form.value.logo = file;
 
-    // Crear URL para previsualización
     if (logoPreview.value) {
         URL.revokeObjectURL(logoPreview.value);
     }
@@ -70,7 +64,6 @@ const handleLogoChange = (event) => {
     errors.value.logo = null;
 };
 
-// Manejar cambio de banner
 const handleBannerChange = (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -87,7 +80,6 @@ const handleBannerChange = (event) => {
 
     form.value.banner = file;
 
-    // Crear URL para previsualización
     if (bannerPreview.value) {
         URL.revokeObjectURL(bannerPreview.value);
     }
@@ -96,7 +88,6 @@ const handleBannerChange = (event) => {
     errors.value.banner = null;
 };
 
-// Eliminar logo
 const removeLogo = () => {
     form.value.logo = null;
     if (logoPreview.value) {
@@ -105,7 +96,6 @@ const removeLogo = () => {
     }
 };
 
-// Eliminar banner
 const removeBanner = () => {
     form.value.banner = null;
     if (bannerPreview.value) {
@@ -114,7 +104,6 @@ const removeBanner = () => {
     }
 };
 
-// Convertir tags de string a array
 const processedTags = computed(() => {
     if (!form.value.tags) return [];
     return form.value.tags.split(',')
@@ -122,11 +111,9 @@ const processedTags = computed(() => {
         .filter(tag => tag.length > 0);
 });
 
-// Enviar formulario
 const submitForm = () => {
     if (isUploading.value) return;
 
-    // Validación básica
     errors.value = {};
 
     if (!form.value.name) {
@@ -142,7 +129,6 @@ const submitForm = () => {
     }
 
     if (Object.keys(errors.value).length > 0) {
-        // Scroll al primer error
         const firstError = document.querySelector('.error-message');
         if (firstError) {
             firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -152,7 +138,6 @@ const submitForm = () => {
 
     isUploading.value = true;
 
-    // Crear FormData para enviar archivos
     const formData = new FormData();
     formData.append('name', form.value.name);
     formData.append('description', form.value.description);
@@ -171,16 +156,12 @@ const submitForm = () => {
         formData.append('banner', form.value.banner);
     }
 
-    // Enviar a través de Inertia
     router.post('/grupos/nuevo', formData, {
         onSuccess: (page) => {
-            // Redirigir a la página del grupo recién creado
-            const groupId = page.props.group.id;
-            router.visit(`/grupos/${groupId}`);
+
         },
         onError: (newErrors) => {
             isUploading.value = false;
-            // Mostrar errores de validación del servidor
             errors.value = newErrors;
         },
         onFinish: () => {
@@ -189,7 +170,6 @@ const submitForm = () => {
     });
 };
 
-// Cancelar y volver
 const cancelAndReturn = () => {
     router.visit('/connect');
 };
@@ -198,12 +178,11 @@ const cancelAndReturn = () => {
 <template>
     <Layout :auth="auth">
         <div class="min-h-screen bg-gray-50 flex flex-col">
-            <!-- Cabecera -->
             <div class="bg-[#193CB8] text-white py-6">
                 <div class="max-w-4xl mx-auto px-4">
                     <div class="flex items-center">
                         <button @click="cancelAndReturn"
-                            class="mr-4 hover:bg-white/10 p-2 rounded-full transition-colors">
+                            class="cursor-pointer flex justify-center mr-4 hover:bg-white/10 p-2 rounded-full transition-colors">
                             <i class='bx bx-arrow-back text-xl'></i>
                         </button>
                         <h1 class="text-2xl font-bold">Crear un nuevo grupo</h1>
@@ -347,14 +326,14 @@ const cancelAndReturn = () => {
                                 <!-- Banner del grupo -->
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        Banner del grupo
+                                        Encabezado del grupo
                                     </label>
 
                                     <div v-if="!bannerPreview"
                                         class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                                         <div class="flex flex-col items-center">
                                             <i class='bx bx-image-add text-4xl text-gray-400 mb-2'></i>
-                                            <p class="text-gray-500 mb-4">Añade un banner para tu grupo</p>
+                                            <p class="text-gray-500 mb-4">Añade un encabezado para tu grupo</p>
                                             <label
                                                 class="px-4 py-2 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors cursor-pointer">
                                                 Seleccionar banner
@@ -477,7 +456,7 @@ const cancelAndReturn = () => {
                             </li>
                             <li class="flex items-start">
                                 <i class='bx bx-check-circle text-[#193CB8] mt-1 mr-2'></i>
-                                <span>Añade un logo y banner representativos para captar la atención</span>
+                                <span>Añade un logo y encabezado representativos para captar la atención</span>
                             </li>
                             <li class="flex items-start">
                                 <i class='bx bx-check-circle text-[#193CB8] mt-1 mr-2'></i>
