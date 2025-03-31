@@ -50,6 +50,8 @@ const formatDate = (date) => {
   });
 };
 
+
+
 const getStatusInfo = (status) => {
   // Implementation to get status information
   const statusMap = {
@@ -138,6 +140,7 @@ const getStatusClass = (status) => {
                     <!-- El botón alineado a la derecha -->
                     <div class="flex justify-end ">
                       <button
+                        @click="viewFullProfile"
                         class="bg-white text-blue-800 border-blue-600 cursor-pointer px-4 ml-auto py-2 rounded-lg hover:bg-blue-100 transition">
                         Ver Perfil Completo
                       </button>

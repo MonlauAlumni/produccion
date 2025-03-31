@@ -1,10 +1,12 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { ref, computed, onMounted, watch } from 'vue';
+import { router, usePage } from '@inertiajs/vue3';
 import Layout from '@/Components/Layout.vue';
 import CandidateCard from '@/Pages/Company/CandidateManagement/CandidateCard.vue';
 import CandidateDetailModal from '@/Pages/Company/CandidateManagement/CandidateDetailModal.vue';
 import StatusUpdateModal from '@/Pages/Company/CandidateManagement/StatusUpdateModal.vue';
+
+const page = usePage();
 
 const props = defineProps({
   jobOffers: {
@@ -24,29 +26,32 @@ const props = defineProps({
   },
   stats: {
     type: Object,
-    default: () => ({
-      total: 0,
-      pending: 0,
-      rejected: 0,
-      accepted: 0,
-      interview: 0,
-      inProcess: 0,
-    })
-  }
+  },
+  selectedStatus: {
+    type: String,
+    default: 'all'
+  },
 });
-
-
 
 // Estado para la interfaz
 const isLoading = ref(false);
 const showScrollTopButton = ref(false);
 const searchQuery = ref('');
 const selectedJobOffer = ref('all');
-const selectedStatus = ref('all');
+// Initialize with the prop value
+const currentStatus = ref(props.selectedStatus || 'all');
+
 const selectedCandidate = ref(null);
 const showCandidateModal = ref(false);
 const showStatusModal = ref(false);
 const applicationToUpdate = ref(null);
+
+// Watch for changes in the prop
+watch(() => props.selectedStatus, (newValue) => {
+  if (newValue) {
+    currentStatus.value = newValue;
+  }
+});
 
 // Extraer datos de las aplicaciones
 const applicationsList = ref(props.applications || []);
@@ -74,17 +79,22 @@ const statusFilters = [
 
 // Estadísticas
 const stats = computed(() => {
-  const total = applicationsList.value.length;
-  const pending = applicationsList.value.filter(app => app.status === 'pending').length;
-  const inProcess = applicationsList.value.filter(app => app.status === 'in_process').length;
-  const interview = applicationsList.value.filter(app => app.status === 'interview').length;
-  const accepted = applicationsList.value.filter(app => app.status === 'accepted').length;
-  const rejected = applicationsList.value.filter(app => app.status === 'rejected').length;
+  const total =
+    props.stats.pending +
+    props.stats.in_process +
+    props.stats.interview +
+    props.stats.accepted +
+    props.stats.rejected;
+  const pending = props.stats.pending || 0;
+  const in_process = props.stats.in_process || 0;
+  const interview = props.stats.interview || 0;
+  const accepted = props.stats.accepted || 0;
+  const rejected = props.stats.rejected || 0;
   
   return {
     total,
     pending,
-    inProcess,
+    in_process,
     interview,
     accepted,
     rejected,
@@ -105,7 +115,7 @@ const loadMoreApplications = async () => {
       {
         page: nextPage,
         job_offer: selectedJobOffer.value !== 'all' ? selectedJobOffer.value : undefined,
-        status: selectedStatus.value !== 'all' ? selectedStatus.value : undefined,
+        status: currentStatus.value !== 'all' ? currentStatus.value : undefined,
         search: searchQuery.value || undefined
       },
       {
@@ -152,7 +162,7 @@ const scrollToTop = () => {
 const applyFilters = () => {
   router.get('/gestion-candidatos', {
     job_offer: selectedJobOffer.value !== 'all' ? selectedJobOffer.value : undefined,
-    status: selectedStatus.value !== 'all' ? selectedStatus.value : undefined,
+    status: currentStatus.value !== 'all' ? currentStatus.value : undefined,
     search: searchQuery.value || undefined
   }, {
     preserveScroll: true,
@@ -166,7 +176,6 @@ const searchCandidates = () => {
 };
 
 const downloadCV = (candidate) => {
-
   window.location.href = `/perfil/${candidate}/download-cv/`;
 };
 
@@ -174,6 +183,12 @@ const downloadCV = (candidate) => {
 const viewCandidate = (candidate) => {
   selectedCandidate.value = candidate;
   showCandidateModal.value = true;
+
+  console.log(candidate.student.profile.slang);
+
+  router.get(`/perfil/${candidate.student.profile.slang}`);
+  
+  
 };
 
 // Cerrar modal de candidato
@@ -184,7 +199,6 @@ const closeCandidateModal = () => {
 
 // Abrir modal para actualizar estado
 const openStatusModal = (application) => {
-  console.log(application)
   applicationToUpdate.value = application;
   showStatusModal.value = true;
 };
@@ -209,6 +223,10 @@ const updateApplicationStatus = (applicationId, newStatus) => {
   });
 };  
 
+const updateFilter = (filterId) => {
+  currentStatus.value = filterId;
+};
+
 // Enviar mensaje al candidato
 const messageCandidate = (candidateId) => {
   router.get(`/mensajes/nuevo/${candidateId}`);
@@ -228,6 +246,11 @@ const formatDate = (dateString) => {
 // Inicializar
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
+  
+  // Initialize selectedJobOffer from URL parameter if present
+  if (page.props.ziggy?.query?.job_offer) {
+    selectedJobOffer.value = page.props.ziggy.query.job_offer;
+  }
 
   // Limpiar al desmontar
   return () => {
@@ -246,9 +269,6 @@ onMounted(() => {
             <div class="mb-6 md:mb-0">
               <h1 class="text-3xl font-bold mb-2">Gestión de Candidatos</h1>
               <p class="text-blue-100 mb-4">Administra las aplicaciones a tus ofertas de trabajo</p>
-
-              <!-- Search Bar -->
-          
             </div>
 
             <!-- Stats Cards -->
@@ -282,14 +302,14 @@ onMounted(() => {
                   Filtros
                 </h2>
                 
-                <div v-if="selectedStatus || selectedJobOffer" class="mb-4">
-                  <button class="bg-red-100 text-red-800 px-5 w-full py-1 rounded-lg text-sm font-medium hover:bg-red-200 transition-colors" @click=" selectedJobOffer = 'all'; selectedStatus = 'all'; applyFilters()">
+                <div v-if="currentStatus !== 'all' || selectedJobOffer !== 'all'" class="mb-4">
+                  <button class="bg-red-100 text-red-800 px-5 w-full py-1 rounded-lg text-sm font-medium hover:bg-red-200 transition-colors" @click="selectedJobOffer = 'all'; currentStatus = 'all'; applyFilters()">
                     <div class="flex items-center jusity-center text-center">
-                    <i class='bx bx-x-circle mr-2 text-red-600 mt-1 '></i>
-                    <div>
-                    Borrar Filtros
+                      <i class='bx bx-x-circle mr-2 text-red-600 mt-1'></i>
+                      <div>
+                        Borrar Filtros
                       </div>  
-                  </div>
+                    </div>
                   </button>
                 </div>
                 <div class="mb-4">
@@ -313,10 +333,10 @@ onMounted(() => {
                     <button 
                       v-for="filter in statusFilters" 
                       :key="filter.id"
-                      @click="selectedStatus = filter.id; applyFilters()"
+                      @click="updateFilter(filter.id); applyFilters()"
                       :class="[
                         'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
-                        selectedStatus === filter.id
+                        currentStatus === filter.id
                           ? 'bg-[#193CB8]/10 text-[#193CB8]'
                           : 'hover:bg-gray-100 text-gray-700'
                       ]"
@@ -326,11 +346,11 @@ onMounted(() => {
                       <span v-if="filter.id === 'all'" class="ml-auto bg-gray-200 text-gray-800 text-xs rounded-full px-2 py-0.5">
                         {{ stats.total }}
                       </span>
-                      <span v-else-if="filter.id === 'pending'" class="ml-auto bg-yellow-100 text-yellow-800 text-xs rounded-full px-2 py-0.5">
+                      <span v-else-if="filter.id === 'pending'"  class="ml-auto bg-yellow-100 text-yellow-800 text-xs rounded-full px-2 py-0.5">
                         {{ stats.pending }}
                       </span>
                       <span v-else-if="filter.id === 'in_process'" class="ml-auto bg-blue-100 text-blue-800 text-xs rounded-full px-2 py-0.5">
-                        {{ stats.inProcess }}
+                        {{ stats.in_process }}
                       </span>
                       <span v-else-if="filter.id === 'interview'" class="ml-auto bg-purple-100 text-purple-800 text-xs rounded-full px-2 py-0.5">
                         {{ stats.interview }}
@@ -431,6 +451,7 @@ onMounted(() => {
         @close="closeCandidateModal"
         @update-status="openStatusModal"
         @message="messageCandidate"
+        @view-profile="viewCandidate"
       />
       
       <!-- Status Update Modal -->
@@ -443,56 +464,3 @@ onMounted(() => {
     </div>
   </Layout>
 </template>
-
-<style scoped>
-/* Animaciones para hacer la experiencia más adictiva */
-.candidate-card {
-  transform: translateY(0);
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-}
-
-.candidate-card:hover {
-  transform: translateY(-3px);
-}
-
-/* Animación para el botón de scroll to top */
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out;
-}
-
-/* Animación para los elementos que aparecen al hacer scroll */
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.candidate-card {
-  animation: slide-up 0.5s ease-out;
-}
-
-/* Delays para animaciones */
-.animation-delay-200 {
-  animation-delay: 0.2s;
-}
-
-.animation-delay-400 {
-  animation-delay: 0.4s;
-}
-</style>
