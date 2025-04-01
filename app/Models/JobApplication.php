@@ -28,6 +28,6 @@ class JobApplication extends Model
     // Relación con Student (una aplicación pertenece a un alumno)
     public function student()
     {
-        return $this->belongsTo(Student::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
