@@ -14,7 +14,7 @@ const props = defineProps({
 });
 
 // Emits
-const emit = defineEmits(['close', 'update-status', 'message', 'view-profile', 'download-cv']);
+const emit = defineEmits(['close', 'update-status', 'message', 'view-personal-profile', 'download-cv']);
 
 // State
 const activeTab = ref('profile');
@@ -33,7 +33,7 @@ const messageCandidate = () => {
 };
 
 const viewFullProfile = () => {
-  emit('view-profile', props.candidate);
+  emit('view-personal-profile', props.candidate);
 };
 
 const downloadCV = () => {

@@ -184,11 +184,13 @@ const viewCandidate = (candidate) => {
   selectedCandidate.value = candidate;
   showCandidateModal.value = true;
 
-  console.log(candidate.student.profile.slang);
 
+  
+  
+};
+
+const viewPersonalProfile = (candidate) => {
   router.get(`/perfil/${candidate.student.profile.slang}`);
-  
-  
 };
 
 // Cerrar modal de candidato
@@ -302,16 +304,7 @@ onMounted(() => {
                   Filtros
                 </h2>
                 
-                <div v-if="currentStatus !== 'all' || selectedJobOffer !== 'all'" class="mb-4">
-                  <button class="bg-red-100 text-red-800 px-5 w-full py-1 rounded-lg text-sm font-medium hover:bg-red-200 transition-colors" @click="selectedJobOffer = 'all'; currentStatus = 'all'; applyFilters()">
-                    <div class="flex items-center jusity-center text-center">
-                      <i class='bx bx-x-circle mr-2 text-red-600 mt-1'></i>
-                      <div>
-                        Borrar Filtros
-                      </div>  
-                    </div>
-                  </button>
-                </div>
+                
                 <div class="mb-4">
                   <label class="block text-sm font-medium text-gray-700 mb-2">Oferta de trabajo</label>
                   <select 
@@ -452,6 +445,7 @@ onMounted(() => {
         @update-status="openStatusModal"
         @message="messageCandidate"
         @view-profile="viewCandidate"
+        @view-personal-profile="viewPersonalProfile"
       />
       
       <!-- Status Update Modal -->
