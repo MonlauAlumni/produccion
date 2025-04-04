@@ -17,6 +17,7 @@ use App\Http\Controllers\Social\SocialController;
 use App\Http\Controllers\Social\GroupController;
 use App\Http\Controllers\Social\PostController;
 use App\Http\Controllers\Social\EventController;
+use App\Http\Controllers\Messaging\MessageController;
 use App\Http\Middleware\IsAdministrator;
 use App\Http\Middleware\IsCompany;
 use App\Http\Middleware\IsStudent;
@@ -43,6 +44,8 @@ Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/admin/company/{id}', [AdminController::class, 'singleCompany'])->name('admin.company');
 });
 
+
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/two-factor-authentication', [TwoFactorAuthenticationController::class, 'store']);
     Route::delete('/user/two-factor-authentication', [TwoFactorAuthenticationController::class, 'destroy']);
@@ -51,39 +54,51 @@ Route::middleware('auth:sanctum')->group(function () {
    
 
 Route::middleware('auth')->group(function() {
+
+    Route::group(['middleware' => ['role:alumne']], function () {
+
+        Route::post('/perfil/{slang}', [ProfileController::class, 'update'])->name('perfil.update');
+        Route::post('/perfil/{slang}/update-banner', [ProfileController::class, 'updateBanner'])->name('perfil.updateBanner');
+        Route::post('/perfil/{slang}/update-profile-picture', [ProfileController::class, 'updateProfilePicture'])->name('perfil.updateProfilePicture');
+
+        Route::post('/perfil/{slang}/educacion', [ExperienceController::class, 'storeEducation'])->name('perfil.educacion.store');
+        Route::put('/perfil/{slang}/educacion/{id}', [ExperienceController::class, 'updateEducation'])->name('perfil.educacion.update');
+        Route::delete('/perfil/{slang}/educacion/{id}', [ExperienceController::class, 'deleteEducation'])->name('perfil.educacion.delete');
+        
+        Route::post('/perfil/{slang}/experiencia', [ExperienceController::class, 'storeWork'])->name('perfil.experience.store');
+        Route::put('/perfil/{slang}/experiencia/{id}', [ExperienceController::class, 'updateWork'])->name('perfil.experience.update');
+        Route::delete('/perfil/{slang}/experiencia/{id}', [ExperienceController::class, 'deleteWork'])->name('perfil.experience.delete');
+
+        Route::post('/ofertas/{id}/aplicar', [JobApplicationController::class, 'store'])->name('job-application.store');
+        Route::post('/ofertas/{id}/guardar', [JobOfferController::class, 'toggleSave'])->name('job-offers.toggleSave');
+
+        Route::get('/mis-ofertas', [JobOfferController::class, 'myOffers'])->name('my-offers.index');
+
+    });
+    
+    Route::group(['middleware' => ['role:empresa']], function () {
+
+        Route::post('/empresa/{slang}/update-logo', [CompanyController::class, 'updateLogo'])->name('empresa.updateLogo');
+        Route::post('/empresa/{slang}/update', [CompanyController::class, 'update'])->name('empresa.update');
+        Route::post('/empresa/{slang}/update-banner', [CompanyController::class, 'updateBanner'])->name('empresa.updateBanner');
+
+        Route::get('/ofertas/crear', [JobOfferController::class, 'create'])->name('ofertas.crear'); 
+        Route::post('/ofertas/crear', [JobOfferController::class, 'store'])->name('ofertas.store'); 
+
+        Route::get('/gestion-candidatos', [JobApplicationController::class, 'index'])->name('job-applications.index');
+        Route::post('/gestion-candidatos/{applicationId}/change-status', [JobApplicationController::class, 'changeStatus'])->name('job-applications.changeStatus');
+    });
+    
     Route::get('/home', [JobOfferController::class, 'index'])->name('home');
 
     Route::get('/perfil/{slang}', [ProfileController::class, 'profile'])->name('perfil.show');
-    Route::post('/perfil/{slang}', [ProfileController::class, 'update'])->name('perfil.update');
-
-    Route::post('/perfil/{slang}/experiencia', [ExperienceController::class, 'storeWork'])->name('perfil.experience.store');
-    Route::put('/perfil/{slang}/experiencia/{id}', [ExperienceController::class, 'updateWork'])->name('perfil.experience.update');
-    Route::delete('/perfil/{slang}/experiencia/{id}', [ExperienceController::class, 'deleteWork'])->name('perfil.experience.delete');
-
-    Route::post('/perfil/{slang}/educacion', [ExperienceController::class, 'storeEducation'])->name('perfil.educacion.store');
-    Route::put('/perfil/{slang}/educacion/{id}', [ExperienceController::class, 'updateEducation'])->name('perfil.educacion.update');
-    Route::delete('/perfil/{slang}/educacion/{id}', [ExperienceController::class, 'deleteEducation'])->name('perfil.educacion.delete');
-    
-    Route::post('/perfil/{slang}/update-banner', [ProfileController::class, 'updateBanner'])->name('perfil.updateBanner');
-    Route::post('/perfil/{slang}/update-profile-picture', [ProfileController::class, 'updateProfilePicture'])->name('perfil.updateProfilePicture');
     Route::get('/perfil/{slang}/download-cv', [ProfileController::class, 'downloadCV'])->name('perfil.downloadCV');
     
     Route::get('/empresa/{slang}', [CompanyController::class, 'show'])->name('empresa.show');
-    Route::post('/empresa/{slang}/update-logo', [CompanyController::class, 'updateLogo'])->name('empresa.updateLogo');
-    Route::post('/empresa/{slang}/update', [CompanyController::class, 'update'])->name('empresa.update');
-    Route::post('/empresa/{slang}/update-banner', [CompanyController::class, 'updateBanner'])->name('empresa.updateBanner');
-
-
-    Route::get('/ofertas/crear', [JobOfferController::class, 'create'])->name('ofertas.crear'); 
-    Route::post('/ofertas/crear', [JobOfferController::class, 'store'])->name('ofertas.store'); 
+    
     Route::get('/ofertas', [JobOfferController::class, 'index'])->name('ofertas.index');
     Route::get('/ofertas/{id}', [JobOfferController::class, 'show'])->name('job-offers.show');
 
-    Route::post('/ofertas/{id}/guardar', [JobOfferController::class, 'toggleSave'])->name('job-offers.toggleSave');
-
-    Route::post('/ofertas/{id}/aplicar', [JobApplicationController::class, 'store'])->name('job-application.store');
-
-    Route::get('/mis-ofertas', [JobOfferController::class, 'myOffers'])->name('my-offers.index');
 
     Route::get('/connect', [SocialController::class, 'show'])->name('connect.show'); 
     Route::get('/connect/search', [SocialController::class, 'showSearch'])->name('connect.search'); 
@@ -125,6 +140,20 @@ Route::middleware('auth')->group(function() {
     Route::put('/settings/change-password', [SettingsController::class, 'updatePassword'])->name('update.password');
     Route::put('/settings/change-language', [SettingsController::class, 'changeLanguage'])->name('change.language');
     Route::put('/user/update', [SettingsController::class, 'updateUser'])->name('user.update');
+
+
+    //Messaging
+
+    Route::get('/mensajes', [MessageController::class, 'index'])->name('messages.index');
+    
+    // Obtener mensajes de una conversación
+    Route::get('/api/conversations/{conversation}/messages', [MessageController::class, 'getMessages']);
+    
+    // Enviar mensaje en una conversación existente
+    Route::post('/api/conversations/{conversation}/messages', [MessageController::class, 'sendMessage']);
+    
+    // Crear nueva conversación (solo empresas)
+    Route::post('/api/conversations', [MessageController::class, 'createConversation']);
 
 });
 
