@@ -17,6 +17,7 @@ use App\Http\Controllers\Social\SocialController;
 use App\Http\Controllers\Social\GroupController;
 use App\Http\Controllers\Social\PostController;
 use App\Http\Controllers\Social\EventController;
+use App\Http\Controllers\Messaging\MessageController;
 use App\Http\Middleware\IsAdministrator;
 use App\Http\Middleware\IsCompany;
 use App\Http\Middleware\IsStudent;
@@ -139,6 +140,20 @@ Route::middleware('auth')->group(function() {
     Route::put('/settings/change-password', [SettingsController::class, 'updatePassword'])->name('update.password');
     Route::put('/settings/change-language', [SettingsController::class, 'changeLanguage'])->name('change.language');
     Route::put('/user/update', [SettingsController::class, 'updateUser'])->name('user.update');
+
+
+    //Messaging
+
+    Route::get('/mensajes', [MessageController::class, 'index'])->name('messages.index');
+    
+    // Obtener mensajes de una conversación
+    Route::get('/api/conversations/{conversation}/messages', [MessageController::class, 'getMessages']);
+    
+    // Enviar mensaje en una conversación existente
+    Route::post('/api/conversations/{conversation}/messages', [MessageController::class, 'sendMessage']);
+    
+    // Crear nueva conversación (solo empresas)
+    Route::post('/api/conversations', [MessageController::class, 'createConversation']);
 
 });
 

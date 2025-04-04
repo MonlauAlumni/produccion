@@ -1,9 +1,9 @@
 <template>
-  <nav class="bg-[#193CB8] w-full h-14 mb-1  ">
+  <nav class="bg-[#193CB8] w-full py-2   px-4 ">
     <div class=" flex justify-between items-center">
       <div class="flex items-center ">
         <a href="/" class=" text-white font-bold flex items-center gap-3"> 
-          <img src="../../../public/images/logoMonlau.jpg" alt="Alumni" class="h-14 " />
+          <img src="../../../public/images/logoMonlau.jpg" alt="Alumni" class="h-10  " />
           
           <span class="text-xl">Alumni</span>
         </a>
