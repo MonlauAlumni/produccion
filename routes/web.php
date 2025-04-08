@@ -155,6 +155,18 @@ Route::middleware('auth')->group(function() {
     // Crear nueva conversación (solo empresas)
     Route::post('/api/conversations', [MessageController::class, 'createConversation']);
 
+    // Obtener todas las conversaciones
+    Route::get('/api/conversations', [MessageController::class, 'getConversations']);
+
+    // Marcar conversación como leída
+    Route::post('/api/conversations/{conversation}/read', [MessageController::class, 'markAsRead']);
+
+    // Buscar alumni para nueva conversación
+
+    Route::get('/api/alumni/search', [MessageController::class, 'searchAlumni']);
+    // Obtener trabajos de la empresa para nueva conversación
+    Route::get('/api/company/jobs', [MessageController::class, 'getCompanyJobs']);
+
 });
 
 

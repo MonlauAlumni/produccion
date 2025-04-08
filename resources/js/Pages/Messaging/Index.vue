@@ -1,358 +1,269 @@
 <template>
   <Layout>
-    <div class="min-h-screen bg-gray-50 flex">
- 
-      <ConversationList 
-        :conversations="conversations" 
-        :loading="loading"
-        :search-query="searchQuery"
-        :is-company="isCompany"
-        :active-conversation-id="activeConversation?.id"
-        @select-conversation="selectConversation"
-        @search="searchQuery = $event"
-        @new-conversation="showNewMessageModal = true"
-      />
-  
-      <!-- Área de chat (siempre visible) -->
-      <ConversationArea 
-        :conversation="activeConversation"
-        :messages="messages"
-        :loading="loadingMessages"
-        :is-typing="isTyping"
-        :is-company="isCompany"
-        @send-message="sendMessage"
-        @view-job-offer="viewJobOffer"
-      />
-  
-      <!-- Modal para nuevo mensaje (solo para empresas) -->
-      <NewConversationModal
-        v-if="showNewMessageModal"
-        :company-jobs="companyJobs"
-        @close="showNewMessageModal = false"
-        @create="startNewConversation"
-      />
-  
+    <div class="bg-gray-100 min-h-screen">
+      <div class="container mx-auto py-6 px-4">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+          <div class="flex h-[calc(100vh-120px)]">
+            <!-- Lista de conversaciones -->
+            <ConversationList :conversations="conversations" :activeConversationId="activeConversationId"
+              @select-conversation="selectConversation" @new-conversation="showNewConversationModal = true"
+              :loading="loadingConversations" />
+
+            <!-- Área de conversación -->
+            <ConversationArea v-if="activeConversation" :conversation="activeConversation" :messages="messages"
+              :currentUser="currentUser" @send-message="sendMessage" :loading="loadingMessages"
+              @load-more="loadMoreMessages" :hasMoreMessages="hasMoreMessages" />
+
+            <!-- Estado vacío -->
+            <div v-else class="flex-1 flex flex-col items-center justify-center p-6 bg-gray-50">
+              <div class="text-center">
+                <i class='bx bx-message-square-dots text-6xl text-gray-300 mb-4'></i>
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">No hay conversación seleccionada</h3>
+                <p class="text-gray-500 mb-6">Selecciona una conversación o inicia una nueva</p>
+                <button @click="showNewConversationModal = true"
+                  class="px-4 py-2 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors">
+                  <i class='bx bx-plus mr-2'></i>
+                  Nueva conversación
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal para nueva conversación -->
+      <NewConversationModal v-if="showNewConversationModal" @close="showNewConversationModal = false"
+        @create="createConversation" :companyJobs="companyJobs" />
+
     </div>
   </Layout>
-  </template>
-  
-  <script setup>
-  import { ref, computed, onMounted } from 'vue'
-  import { router } from '@inertiajs/vue3'
-  import ConversationList from '@/Components/Messages/ConversationList.vue'
-  import ConversationArea from '@/Components/Messages/ConversationArea.vue'
-  import NewConversationModal from '@/Components/Messages/NewConversationModal.vue'
-  import Layout from '@/Components/Layout.vue'
-  // Estado
-  const loading = ref(false)
-  const loadingMessages = ref(false)
-  const conversations = ref([])
-  const messages = ref([])
-  const activeConversation = ref(null)
-  const searchQuery = ref('')
-  const isTyping = ref(false)
-  const showNewMessageModal = ref(false)
-  const companyJobs = ref([])
-  
-  // Simulación de datos de usuario (en producción, esto vendría de Inertia)
-  const currentUser = ref({
-    id: 1,
-    name: 'Usuario',
-    roles: [{ name: 'empresa' }] // o 'alumne'
-  })
-  
-  // Computed properties
-  const isCompany = computed(() => {
-    return currentUser.value.roles && 
-           currentUser.value.roles.length > 0 && 
-           currentUser.value.roles[0].name === 'empresa'
-  })
-  
-  // Métodos
-  const fetchConversations = async () => {
-    loading.value = true
-    
-    try {
-      // En producción, esto sería una llamada a la API
-      // const response = await axios.get('/api/conversations')
-      // conversations.value = response.data
-      
-      // Simulación de datos
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      conversations.value = [
-        {
-          id: 1,
-          with_company: null,
-          with_user: {
-            id: 2,
-            name: 'María',
-            last_name_1: 'García',
-            profile: {
-              profile_picture: null
-            }
-          },
-          last_message: {
-            content: 'Gracias por la información, revisaré la oferta y te responderé pronto.',
-            created_at: '2023-04-01T10:30:00Z'
-          },
-          unread_count: 2,
-          created_at: '2023-03-28T14:20:00Z',
-          related_job: {
-            id: 101,
-            title: 'UX/UI Designer',
-            company: {
-              name: 'TechCorp'
-            }
-          }
-        },
-        {
-          id: 2,
-          with_company: null,
-          with_user: {
-            id: 1,
-            name: 'Juan',
-            last_name_1: 'Pérez',
-            profile: {
-              profile_picture: null
-            }
-          },
-          last_message: {
-            content: 'Me gustaría programar una entrevista para la próxima semana.',
-            created_at: '2023-03-31T16:45:00Z'
-          },
-          unread_count: 0,
-          created_at: '2023-03-25T09:15:00Z',
-          related_job: {
-            id: 102,
-            title: 'Desarrollador Full Stack',
-            company: {
-              name: 'TechCorp'
-            }
-          }
-        }
-      ]
-    } catch (error) {
-      console.error('Error al cargar conversaciones:', error)
-    } finally {
-      loading.value = false
+</template>
+
+<script setup>
+import { ref, onMounted, computed, watch } from 'vue';
+import Layout from '../../Components/Layout.vue';
+import ConversationList from '../../Components/Messages/ConversationList.vue';
+import ConversationArea from '../../Components/Messages/ConversationArea.vue';
+import NewConversationModal from '../../Components/Messages/NewConversationModal.vue';
+import MessageService from '../../services/MessageService';
+
+// Estado
+const conversations = ref([]);
+const activeConversationId = ref(null);
+const messages = ref([]);
+const currentUser = ref(null);
+const showNewConversationModal = ref(false);
+const companyJobs = ref([]);
+const currentPage = ref(1);
+const hasMoreMessages = ref(false);
+const loadingConversations = ref(true);
+const loadingMessages = ref(false);
+
+// Computed
+const activeConversation = computed(() => {
+  if (!activeConversationId.value) return null;
+  return conversations.value.find(conv => conv.id === activeConversationId.value);
+});
+
+// Métodos
+const fetchConversations = async () => {
+  try {
+    loadingConversations.value = true;
+    const data = await MessageService.getConversations();
+    conversations.value = data.conversations;
+    currentUser.value = data.currentUser;
+
+    // Si hay conversaciones, seleccionar la primera por defecto
+    if (conversations.value.length > 0 && !activeConversationId.value) {
+      activeConversationId.value = conversations.value[0].id;
     }
+  } catch (error) {
+    console.error('Error al cargar conversaciones:', error);
+  } finally {
+    loadingConversations.value = false;
   }
-  
-  const fetchMessages = async (conversationId) => {
-    loadingMessages.value = true
-    
-    try {
-      // En producción, esto sería una llamada a la API
-      // const response = await axios.get(`/api/conversations/${conversationId}/messages`)
-      // messages.value = response.data
-      
-      // Simulación de datos
-      await new Promise(resolve => setTimeout(resolve, 800))
-      messages.value = [
-        {
-          id: 1,
-          content: 'Hola, estamos interesados en tu perfil para nuestra oferta de UX/UI Designer.',
-          created_at: '2023-03-28T14:20:00Z',
-          is_from_me: true,
-          read_at: '2023-03-28T14:25:00Z'
-        },
-        {
-          id: 2,
-          content: 'Hola, gracias por contactarme. Me interesa mucho la posición.',
-          created_at: '2023-03-28T14:30:00Z',
-          is_from_me: false,
-          read_at: '2023-03-28T14:31:00Z'
-        },
-        {
-          id: 3,
-          content: 'Genial. ¿Podrías contarme un poco más sobre tu experiencia en diseño de interfaces?',
-          created_at: '2023-03-28T14:35:00Z',
-          is_from_me: true,
-          read_at: '2023-03-28T14:40:00Z'
-        },
-        {
-          id: 4,
-          content: 'Claro. Tengo 3 años de experiencia trabajando con Figma y Adobe XD. He diseñado interfaces para aplicaciones web y móviles, enfocándome en la experiencia de usuario y la accesibilidad.',
-          created_at: '2023-03-28T14:45:00Z',
-          is_from_me: false,
-          read_at: '2023-03-28T14:46:00Z'
-        },
-        {
-          id: 5,
-          content: 'Suena muy bien. ¿Te gustaría programar una entrevista para hablar más en detalle?',
-          created_at: '2023-03-28T14:50:00Z',
-          is_from_me: true,
-          read_at: '2023-03-28T15:00:00Z'
-        },
-        {
-          id: 6,
-          content: 'Por supuesto, me encantaría. ¿Qué días y horarios tienen disponibles?',
-          created_at: '2023-03-31T09:20:00Z',
-          is_from_me: false,
-          read_at: '2023-03-31T09:25:00Z'
-        },
-        {
-          id: 7,
-          content: 'Tenemos disponibilidad el martes o jueves de la próxima semana, entre las 10:00 y 16:00. ¿Alguna preferencia?',
-          created_at: '2023-03-31T10:15:00Z',
-          is_from_me: true,
-          read_at: null
-        }
-      ]
-    } catch (error) {
-      console.error('Error al cargar mensajes:', error)
-    } finally {
-      loadingMessages.value = false
-      
-      // Marcar como leídos
-      if (activeConversation.value) {
-        activeConversation.value.unread_count = 0
-      }
+};
+
+const fetchMessages = async (conversationId, page = 1) => {
+  if (!conversationId) return;
+
+  try {
+    loadingMessages.value = true;
+    const data = await MessageService.getMessages(conversationId, page);
+
+    if (page === 1) {
+      messages.value = data.messages.data;
+    } else {
+      // Añadir mensajes al principio para paginación infinita hacia arriba
+      messages.value = [...data.messages.data, ...messages.value];
     }
-  }
-  
-  const fetchCompanyJobs = async () => {
-    try {
-      // En producción, esto sería una llamada a la API
-      // const response = await axios.get('/api/company/jobs')
-      // companyJobs.value = response.data
-      
-      // Simulación de datos
-      companyJobs.value = [
-        { id: 101, title: 'UX/UI Designer' },
-        { id: 102, title: 'Desarrollador Full Stack' },
-        { id: 103, title: 'Data Scientist' }
-      ]
-    } catch (error) {
-      console.error('Error al cargar ofertas:', error)
+
+    hasMoreMessages.value = data.messages.current_page < data.messages.last_page;
+    currentPage.value = data.messages.current_page;
+
+    // Marcar como leída
+    if (page === 1) {
+      markConversationAsRead(conversationId);
     }
+  } catch (error) {
+    console.error('Error al cargar mensajes:', error);
+  } finally {
+    loadingMessages.value = false;
   }
-  
-  const selectConversation = (conversation) => {
-    activeConversation.value = conversation
-    fetchMessages(conversation.id)
+};
+
+const loadMoreMessages = () => {
+  if (hasMoreMessages.value && !loadingMessages.value) {
+    fetchMessages(activeConversationId.value, currentPage.value + 1);
   }
-  
-  const sendMessage = async (messageContent) => {
-    if (!messageContent.trim() || !activeConversation.value) return
-    
-    // Optimistic UI update
-    const tempId = Date.now()
-    messages.value.push({
-      id: tempId,
-      content: messageContent,
+};
+
+const selectConversation = (conversationId) => {
+  if (activeConversationId.value === conversationId) return;
+
+  activeConversationId.value = conversationId;
+  messages.value = [];
+  currentPage.value = 1;
+  hasMoreMessages.value = false;
+  fetchMessages(conversationId);
+};
+
+const sendMessage = async (messageText) => {
+  if (!activeConversationId.value || !messageText.trim()) return;
+
+  try {
+    const response = await MessageService.sendMessage(activeConversationId.value, messageText);
+
+    // Optimistic UI update - añadir mensaje inmediatamente
+    const newMessage = {
+      id: 'temp-' + Date.now(),
+      conversation_id: activeConversationId.value,
+      user_id: currentUser.value.id,
+      message: messageText,
       created_at: new Date().toISOString(),
-      is_from_me: true,
-      read_at: null
-    })
-    
-    // Actualizar última mensaje en la conversación
-    activeConversation.value.last_message = {
-      content: messageContent,
-      created_at: new Date().toISOString()
+      user: currentUser.value,
+      is_sender: true
+    };
+
+    messages.value.push(newMessage);
+
+    // Actualizar la conversación en la lista
+    const conversationIndex = conversations.value.findIndex(c => c.id === activeConversationId.value);
+    if (conversationIndex !== -1) {
+      const updatedConversation = {
+        ...conversations.value[conversationIndex],
+        last_message: messageText,
+        updated_at: new Date().toISOString()
+      };
+
+      // Eliminar y añadir al principio
+      conversations.value.splice(conversationIndex, 1);
+      conversations.value.unshift(updatedConversation);
     }
-    
-    try {
-      // En producción, esto sería una llamada a la API
-      // const response = await axios.post(`/api/conversations/${activeConversation.value.id}/messages`, {
-      //   content: messageContent
-      // })
-      
-      // Simulación de envío
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      // Simular respuesta después de un tiempo
-      simulateResponse()
-    } catch (error) {
-      console.error('Error al enviar mensaje:', error)
-      
-      // Eliminar mensaje optimista en caso de error
-      messages.value = messages.value.filter(m => m.id !== tempId)
+  } catch (error) {
+    console.error('Error al enviar mensaje:', error);
+    // Manejar error - quizás eliminar el mensaje optimista
+  }
+};
+
+const createConversation = async (data) => {
+  try {
+    const response = await MessageService.createConversation({
+      recipient_id: data.recipient.id,
+      message: data.message,
+      job_id: data.jobId
+    });
+
+    // Añadir la nueva conversación a la lista y seleccionarla
+    conversations.value.unshift(response.conversation);
+    activeConversationId.value = response.conversation.id;
+    showNewConversationModal.value = false;
+
+    // Cargar mensajes de la nueva conversación
+    fetchMessages(response.conversation.id);
+  } catch (error) {
+    console.error('Error al crear conversación:', error);
+  }
+};
+
+const markConversationAsRead = async (conversationId) => {
+  try {
+    await MessageService.markAsRead(conversationId);
+
+    // Actualizar el estado de la conversación en la lista
+    const conversationIndex = conversations.value.findIndex(c => c.id === conversationId);
+    if (conversationIndex !== -1) {
+      conversations.value[conversationIndex].unread_count = 0;
     }
+  } catch (error) {
+    console.error('Error al marcar como leída:', error);
   }
-  
-  const simulateResponse = () => {
-    // Solo para demo - simular "escribiendo..."
-    setTimeout(() => {
-      isTyping.value = true
-      
-      setTimeout(() => {
-        isTyping.value = false
-        
-        // Agregar respuesta simulada
-        const responses = [
-          "Gracias por tu mensaje. Lo revisaré y te responderé pronto.",
-          "Perfecto, ¿podríamos programar una llamada para discutir esto?",
-          "Entendido. ¿Podrías proporcionar más detalles sobre tu experiencia?",
-          "Excelente, estamos interesados en tu perfil. ¿Cuál sería tu disponibilidad para una entrevista?"
-        ]
-        
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)]
-        
-        messages.value.push({
-          id: Date.now(),
-          content: randomResponse,
-          created_at: new Date().toISOString(),
-          is_from_me: false,
-          read_at: new Date().toISOString()
-        })
-        
-        // Actualizar última mensaje en la conversación
-        activeConversation.value.last_message = {
-          content: randomResponse,
-          created_at: new Date().toISOString()
-        }
-      }, 2000)
-    }, 1000)
+};
+
+const fetchCompanyJobs = async () => {
+  try {
+    const data = await MessageService.getCompanyJobs();
+    companyJobs.value = data.jobs;
+  } catch (error) {
+    console.error('Error al cargar trabajos:', error);
   }
-  
-  const viewJobOffer = (jobId) => {
-    router.get(`/ofertas/${jobId}`)
-  }
-  
-  const startNewConversation = async (data) => {
-    try {
-      // En producción, esto sería una llamada a la API
-      // const response = await axios.post('/api/conversations', {
-      //   recipient_id: data.recipient.id,
-      //   message: data.message,
-      //   job_id: data.jobId
-      // })
-      
-      // Simulación
-      await new Promise(resolve => setTimeout(resolve, 800))
-      
-      // Crear nueva conversación simulada
-      const newConversation = {
-        id: Date.now(),
-        with_company: null,
-        with_user: data.recipient,
-        last_message: {
-          content: data.message,
-          created_at: new Date().toISOString()
-        },
-        unread_count: 0,
-        created_at: new Date().toISOString(),
-        related_job: data.jobId ? companyJobs.value.find(j => j.id === data.jobId) : null
+};
+
+// Escuchar eventos de WebSocket
+const listenForMessages = () => {
+  window.Echo.private(`user.${currentUser.value.id}`)
+    .listen('MessageSent', (e) => {
+      // Si el mensaje es para la conversación activa, añadirlo
+      if (e.message.conversation_id === activeConversationId.value) {
+        messages.value.push(e.message);
+        markConversationAsRead(activeConversationId.value);
       }
-      
-      // Agregar a la lista y seleccionar
-      conversations.value.unshift(newConversation)
-      selectConversation(newConversation)
-      
-      // Cerrar modal
-      showNewMessageModal.value = false
-    } catch (error) {
-      console.error('Error al crear conversación:', error)
-    }
+
+      // Actualizar la conversación en la lista
+      const conversationIndex = conversations.value.findIndex(c => c.id === e.message.conversation_id);
+      if (conversationIndex !== -1) {
+        // Actualizar la conversación existente
+        const updatedConversation = {
+          ...conversations.value[conversationIndex],
+          last_message: e.message.message,
+          updated_at: e.message.created_at
+        };
+
+        // Si no es la conversación activa, incrementar contador de no leídos
+        if (e.message.conversation_id !== activeConversationId.value) {
+          updatedConversation.unread_count = (updatedConversation.unread_count || 0) + 1;
+        }
+
+        // Eliminar y añadir al principio
+        conversations.value.splice(conversationIndex, 1);
+        conversations.value.unshift(updatedConversation);
+      } else {
+        // Es una nueva conversación, recargar todas
+        fetchConversations();
+      }
+    });
+};
+
+// Lifecycle hooks
+onMounted(async () => {
+  await fetchConversations();
+  if (activeConversationId.value) {
+    await fetchMessages(activeConversationId.value);
   }
-  
-  // Lifecycle hooks
-  onMounted(() => {
-    fetchConversations()
-    
-    if (isCompany.value) {
-      fetchCompanyJobs()
-    }
-  })
-  </script>
+  await fetchCompanyJobs();
+
+  if (currentUser.value) {
+    listenForMessages();
+  }
+});
+
+// Watchers
+watch(activeConversationId, (newId) => {
+  if (newId) {
+    messages.value = [];
+    currentPage.value = 1;
+    hasMoreMessages.value = false;
+    fetchMessages(newId);
+  }
+});
+</script>
