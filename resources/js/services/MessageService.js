@@ -30,10 +30,10 @@ class MessageService {
     /**
      * Enviar un mensaje en una conversación
      */
-    async sendMessage(conversationId, content) {
+    async sendMessage(conversationId, message) {
         try {
             const response = await axios.post(`/api/conversations/${conversationId}/messages`, {
-                content
+                message // Cambiado de content a message para coincidir con el controlador
             });
             return response.data;
         } catch (error) {
@@ -47,7 +47,14 @@ class MessageService {
      */
     async createConversation(data) {
         try {
-            const response = await axios.post('/api/conversations', data);
+            // Renombramos message a content para coincidir con el controlador
+            const payload = {
+                recipient_id: data.recipient_id,
+                message: data.message, // Cambiado de content a message
+                job_id: data.job_id
+            };
+            
+            const response = await axios.post('/api/conversations', payload);
             return response.data;
         } catch (error) {
             console.error('Error al crear conversación:', error);

@@ -1,11 +1,11 @@
 <template>
   <div>
     <!-- Fecha -->
-    <div v-if="showDate" class="text-center my-4">
+    <!-- <div v-if="showDate" class="text-center my-4">
       <span class="px-3 py-1 bg-gray-100 rounded-full text-xs text-gray-600">
         {{ formatDate(message.created_at) }}
       </span>
-    </div>
+    </div> -->
     
     <div 
       :class="[

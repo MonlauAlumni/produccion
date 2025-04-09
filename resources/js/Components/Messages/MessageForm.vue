@@ -25,15 +25,16 @@
       
       <button 
         type="submit"
-        :disabled="!messageText.trim()"
+        :disabled="!messageText.trim() || sending"
         :class="[
-          'w-12 h-12 rounded-full flex items-center justify-center',
-          messageText.trim() 
+          'w-12 h-12 rounded-full flex items-center justify-center transition-all',
+          messageText.trim() && !sending
             ? 'bg-[#193CB8] text-white hover:bg-[#142d8c]' 
             : 'bg-gray-100 text-gray-400 cursor-not-allowed'
         ]"
       >
-        <i class='bx bx-send text-xl'></i>
+        <i class='bx bx-send text-xl' v-if="!sending"></i>
+        <i class='bx bx-loader-alt animate-spin text-xl' v-else></i>
       </button>
     </form>
   </div>
@@ -47,17 +48,26 @@ const emit = defineEmits(['send']);
 const messageText = ref('');
 const textareaRows = ref(1);
 const textarea = ref(null);
+const sending = ref(false);
 
-const sendMessage = () => {
-  if (!messageText.value.trim()) return;
+const sendMessage = async () => {
+  if (!messageText.value.trim() || sending.value) return;
   
-  emit('send', messageText.value);
-  messageText.value = '';
-  textareaRows.value = 1;
+  sending.value = true;
   
-  // Enfocar el textarea después de enviar
-  if (textarea.value) {
-    textarea.value.focus();
+  try {
+    await emit('send', messageText.value);
+    messageText.value = '';
+    textareaRows.value = 1;
+    
+    // Enfocar el textarea después de enviar
+    if (textarea.value) {
+      textarea.value.focus();
+    }
+  } catch (error) {
+    console.error('Error al enviar mensaje:', error);
+  } finally {
+    sending.value = false;
   }
 };
 

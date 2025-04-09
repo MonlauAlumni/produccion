@@ -86,15 +86,16 @@
           </button>
           <button 
             @click="createConversation"
-            :disabled="!selectedAlumni || !newConversationMessage.trim()"
+            :disabled="!selectedAlumni || !newConversationMessage.trim() || sending"
             :class="[
-              'px-4 py-2 rounded-lg',
-              selectedAlumni && newConversationMessage.trim()
+              'px-4 py-2 rounded-lg flex items-center gap-2',
+              selectedAlumni && newConversationMessage.trim() && !sending
                 ? 'bg-[#193CB8] text-white hover:bg-[#142d8c]'
                 : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             ]"
           >
-            Enviar mensaje
+            <i class='bx bx-loader-alt animate-spin' v-if="sending"></i>
+            <span>Enviar mensaje</span>
           </button>
         </div>
       </div>
@@ -122,6 +123,7 @@
   const newMessageJobId = ref(null)
   const alumni = ref([])
   const loading = ref(false)
+  const sending = ref(false)
   
   // Búsqueda de alumni con debounce
   let searchTimeout = null
@@ -157,14 +159,22 @@
     selectedAlumni.value = alumni
   }
   
-  const createConversation = () => {
-    if (!selectedAlumni.value || !newConversationMessage.value.trim()) return
-  
-    emit('create', {
-      recipient: selectedAlumni.value,
-      message: newConversationMessage.value,
-      jobId: newMessageJobId.value
-    })
+  const createConversation = async () => {
+    if (!selectedAlumni.value || !newConversationMessage.value.trim() || sending.value) return
+    
+    sending.value = true
+    
+    try {
+      await emit('create', {
+        recipient: selectedAlumni.value,
+        message: newConversationMessage.value,
+        jobId: newMessageJobId.value
+      })
+    } catch (error) {
+      console.error('Error al crear conversación:', error)
+    } finally {
+      sending.value = false
+    }
   }
   
   // Cargar alumni iniciales al montar

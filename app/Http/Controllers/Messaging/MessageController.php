@@ -18,53 +18,49 @@ class MessageController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Messaging/Index', [
-            'conversations' => $this->getConversations(),
-            'currentUser' => Auth::user()
-        ]);
+        return Inertia::render('Messaging/Index');
     }
     
     /**
      * Obtener todas las conversaciones del usuario autenticado
      */
     public function getConversations()
-{
-    $user = Auth::user();
+    {
+        $user = Auth::user();
 
-    // Obtener las conversaciones
-    $conversations = Conversation::where('user_id', $user->id)
-        ->orWhere('recipient_id', $user->id)
-        ->with(['lastMessage', 'user', 'recipient', 'jobOffer'])
-        ->withCount(['messages as unread_count' => function($query) use ($user) {
-            $query->where('user_id', '!=', $user->id)
-                  ->whereNull('read_at');
-        }])
-        ->orderBy('updated_at', 'desc')
-        ->get();
+        // Obtener las conversaciones
+        $conversations = Conversation::where('user_id', $user->id)
+            ->orWhere('recipient_id', $user->id)
+            ->with(['lastMessage', 'user', 'recipient', 'jobOffer'])
+            ->withCount(['messages as unread_count' => function($query) use ($user) {
+                $query->where('user_id', '!=', $user->id)
+                    ->whereNull('read_at');
+            }])
+            ->orderBy('updated_at', 'desc')
+            ->get();
 
-    // Transformar las conversaciones para tener el formato correcto
-    $conversations->transform(function($conversation) use ($user) {
-        // Determinar el participante (el otro usuario)
-        $participant = $conversation->user_id === $user->id 
-            ? $conversation->recipient 
-            : $conversation->user;
-            
-        return [
-            'id' => $conversation->id,
-            'participant' => $participant, // Ahora ya accedemos correctamente a la relación
-            'last_message' => $conversation->lastMessage ? $conversation->lastMessage->message : null,
-            'updated_at' => $conversation->updated_at,
-            'unread_count' => $conversation->unread_count,
-            'job' => $conversation->jobOffer
-        ];
-    });
-    
-    return response()->json([
-        'conversations' => $conversations,
-        'currentUser' => $user
-    ]);
-}
-
+        // Transformar las conversaciones para tener el formato correcto
+        $conversations->transform(function($conversation) use ($user) {
+            // Determinar el participante (el otro usuario)
+            $participant = $conversation->user_id === $user->id 
+                ? $conversation->recipient 
+                : $conversation->user;
+                
+            return [
+                'id' => $conversation->id,
+                'participant' => $participant,
+                'last_message' => $conversation->lastMessage ? $conversation->lastMessage->content : null, // Cambiado a content
+                'updated_at' => $conversation->updated_at,
+                'unread_count' => $conversation->unread_count,
+                'job' => $conversation->jobOffer
+            ];
+        });
+        
+        return response()->json([
+            'conversations' => $conversations,
+            'currentUser' => $user
+        ]);
+    }
     
     /**
      * Obtener mensajes de una conversación específica
@@ -87,6 +83,8 @@ class MessageController extends Controller
         // Transformar los mensajes para añadir is_sender
         $messages->getCollection()->transform(function($message) use ($user) {
             $message->is_sender = $message->user_id === $user->id;
+            // Asegurar que message tenga la propiedad message para compatibilidad
+            $message->message = $message->content;
             return $message;
         });
         
@@ -109,13 +107,13 @@ class MessageController extends Controller
         
         // Validar el mensaje
         $request->validate([
-            'content' => 'required|string|max:1000'
+            'message' => 'required|string|max:1000' // Cambiado de content a message
         ]);
         
         // Crear el mensaje
         $message = $conversation->messages()->create([
             'user_id' => $user->id,
-            'content' => $request->message,  // Cambié 'message' a 'content' para que coincida con el campo en la base de datos
+            'content' => $request->message, // Usar message del request pero guardar como content
         ]);
       
         // Actualizar la fecha de la conversación
@@ -124,8 +122,9 @@ class MessageController extends Controller
         // Cargar la relación de usuario
         $message->load('user');
         
-        // Añadir is_sender
+        // Añadir is_sender y message para compatibilidad
         $message->is_sender = true;
+        $message->message = $message->content;
         
         // Emitir evento para WebSockets
         $recipientId = $conversation->user_id === $user->id 
@@ -149,7 +148,7 @@ class MessageController extends Controller
         // Validar la solicitud
         $request->validate([
             'recipient_id' => 'required|exists:users,id',
-            'content' => 'required|string|max:1000',
+            'message' => 'required|string|max:1000', // Cambiado de content a message
             'job_id' => 'nullable|exists:jobs,id'
         ]);
         
@@ -166,7 +165,7 @@ class MessageController extends Controller
             // Si existe, enviar mensaje en esa conversación
             $message = $existingConversation->messages()->create([
                 'user_id' => $user->id,
-                'content' => $request->message
+                'content' => $request->message // Usar message del request pero guardar como content
             ]);
             
             // Actualizar la conversación
@@ -179,9 +178,14 @@ class MessageController extends Controller
             
             // Cargar relaciones
             $message->load('user');
-            $existingConversation->load(['participant' => function($query) use ($user) {
-                $query->where('id', '!=', $user->id);
-            }, 'job']);
+            
+            // Determinar el participante (el otro usuario)
+            $participant = $existingConversation->user_id === $user->id 
+                ? $existingConversation->recipient 
+                : $existingConversation->user;
+            
+            // Añadir message para compatibilidad
+            $message->message = $message->content;
             
             // Emitir evento
             broadcast(new MessageSent($message, $request->recipient_id))->toOthers();
@@ -189,15 +193,13 @@ class MessageController extends Controller
             return response()->json([
                 'conversation' => [
                     'id' => $existingConversation->id,
-                    'participant' => $existingConversation->user_id === $user->id 
-                        ? $existingConversation->recipient 
-                        : $existingConversation->user,
+                    'participant' => $participant,
                     'last_message' => $request->message,
                     'updated_at' => now(),
                     'unread_count' => 0,
-                    'job' => $existingConversation->job
+                    'job' => $existingConversation->jobOffer
                 ],
-                'content' => $message
+                'message' => $message
             ]);
         }
         
@@ -211,12 +213,15 @@ class MessageController extends Controller
         // Crear el primer mensaje
         $message = $conversation->messages()->create([
             'user_id' => $user->id,
-            'content' => $request->message
+            'content' => $request->message // Usar message del request pero guardar como content
         ]);
         
         // Cargar relaciones
         $message->load('user');
-        $conversation->load(['recipient', 'job']);
+        $recipient = User::find($request->recipient_id);
+        
+        // Añadir message para compatibilidad
+        $message->message = $message->content;
         
         // Emitir evento
         broadcast(new MessageSent($message, $request->recipient_id))->toOthers();
@@ -224,13 +229,13 @@ class MessageController extends Controller
         return response()->json([
             'conversation' => [
                 'id' => $conversation->id,
-                'participant' => $conversation->recipient,
+                'participant' => $recipient,
                 'last_message' => $request->message,
                 'updated_at' => now(),
                 'unread_count' => 0,
-                'job' => $conversation->job
+                'job' => $conversation->jobOffer
             ],
-            'content' => $message
+            'message' => $message
         ]);
     }
     
@@ -255,7 +260,9 @@ class MessageController extends Controller
         return response()->json(['success' => true]);
     }
     
-    
+    /**
+     * Buscar alumni para el modal de nueva conversación
+     */
     public function searchAlumni(Request $request)
     {
         $query = $request->get('q', '');
@@ -285,10 +292,11 @@ class MessageController extends Controller
         $user = Auth::user();
         
         // Verificar que el usuario sea una empresa
-        if ($user->role !== 'company') {
+        if (!$user->hasRole('empresa')) { // Ajustar según tu sistema de roles
             return response()->json(['jobs' => []]);
         }
         
+        // Ajustar según tu estructura de datos
         $jobs = $user->company->jobs()
             ->where('status', 'active')
             ->orderBy('created_at', 'desc')
