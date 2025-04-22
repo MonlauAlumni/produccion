@@ -25,6 +25,7 @@ use Laravel\Fortify\Http\Controllers\TwoFactorAuthenticationController;
 use Laravel\Fortify\Http\Controllers\TwoFactorQrCodeController;
 use Illuminate\Support\Facades\Auth;    
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\Students\StudentController;
 
 
 Route::fallback(function () {
@@ -91,6 +92,8 @@ Route::middleware('auth')->group(function() {
         Route::post('/gestion-candidatos/{applicationId}/change-status', [JobApplicationController::class, 'changeStatus'])->name('job-applications.changeStatus');
 
         Route::delete('/gestion-candidatos/{applicationId}', [JobApplicationController::class, 'destroy'])->name('job-applications.destroy');
+
+        Route::get('/alumnos', [StudentController::class, 'index'])->name('student.show');
     });
     
     Route::get('/home', [JobOfferController::class, 'index'])->name('home');

@@ -18,10 +18,12 @@ export default {
       ],
       // Definimos los items sin la propiedad visible aquí
       middleMenuItems: [
-        { text: 'Alumni connect', icon: 'bx-group', route: '/connect' },
         { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo', route: '/mis-ofertas', requireRole: 'alumne' },
-        { text: 'Gestión de Candidatos', icon: 'bx-user-check', badge: 'Nuevo', route: '/gestion-candidatos', requireRole: 'empresa' },
+        { text: 'Alumnos', icon: 'bx-user', route: '/alumnos', requireRole: 'empresa' },
+        { text: 'Candidatos', icon: 'bx-user-check', badge: 'Nuevo', route: '/gestion-candidatos', requireRole: 'empresa' },
         { text: 'Empresas', icon: 'bx-buildings', route: '/empresas', requireRole: 'alumne' },
+        { text: 'Alumni connect', icon: 'bx-group', route: '/connect' },
+       
       ],
       bottomMenuItems: [
         { text: 'Configuración', icon: 'bx-cog', route: '/configuracion' },
