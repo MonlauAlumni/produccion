@@ -189,6 +189,14 @@ const viewCandidate = (candidate) => {
   
 };
 
+const deleteCandidate = (candidate) => {
+  router.delete(`/gestion-candidatos/${candidate.id}`, {
+    onSuccess: () => {
+      applicationsList.value = applicationsList.value.filter(app => app.id !== candidate.id);
+    }
+  });
+};
+
 const viewPersonalProfile = (candidate) => {
   router.get(`/perfil/${candidate.student.profile.slang}`);
 };
@@ -378,6 +386,7 @@ onMounted(() => {
                   :application="application"
                   class="candidate-card"
                   @view="viewCandidate"
+                  @delete="deleteCandidate"
                   @update-status="openStatusModal"
                   @message="messageCandidate"
                   @download-cv="downloadCV"

@@ -73,6 +73,8 @@ Route::middleware('auth')->group(function() {
         Route::post('/ofertas/{id}/guardar', [JobOfferController::class, 'toggleSave'])->name('job-offers.toggleSave');
 
         Route::get('/mis-ofertas', [JobOfferController::class, 'myOffers'])->name('my-offers.index');
+        
+        Route::get('/empresas', [CompanyController::class, 'index'])->name('companies.index');
 
     });
     
@@ -87,6 +89,8 @@ Route::middleware('auth')->group(function() {
 
         Route::get('/gestion-candidatos', [JobApplicationController::class, 'index'])->name('job-applications.index');
         Route::post('/gestion-candidatos/{applicationId}/change-status', [JobApplicationController::class, 'changeStatus'])->name('job-applications.changeStatus');
+
+        Route::delete('/gestion-candidatos/{applicationId}', [JobApplicationController::class, 'destroy'])->name('job-applications.destroy');
     });
     
     Route::get('/home', [JobOfferController::class, 'index'])->name('home');
