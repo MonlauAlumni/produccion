@@ -102,7 +102,13 @@ class JobApplicationController extends Controller
     ]);
 }
 
-    
+    public function destroy($id)
+    {
+        $application = JobApplication::find($id);
+        $application->delete();
+
+        return redirect()->back()->with('success', 'Solicitud eliminada correctamente');
+    }
 
     public function changeStatus(Request $request, $id)
     {

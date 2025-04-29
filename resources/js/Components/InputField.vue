@@ -8,7 +8,7 @@
       </slot>
       <component
         :is="isSelect ? 'select' : 'input'"
-        v-model="modelValue"
+        :value="modelValue"
         :type="type"
         :placeholder="placeholder"
         :class="inputClasses"

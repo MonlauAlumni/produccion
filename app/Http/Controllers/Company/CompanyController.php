@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Company;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Inertia\Inertia;
+use App\Models\User;    
 use App\Models\Company;
 
 class CompanyController extends Controller
@@ -74,6 +75,53 @@ class CompanyController extends Controller
         ]);
     
         return redirect()->route('empresa.show', ['slang' => $company->slang]);
+    }
+
+    public function index(Request $request)
+    {
+        $search = $request->input('search', '');
+ 
+        $location = $request->input('location', '');
+        
+        // Obtener empresas con filtros
+        $companies = Company::when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhereHas('company', function ($subq) use ($search) {
+                          $subq->where('description', 'like', "%{$search}%");
+                      });
+                });
+            })
+            
+            ->when($location, function ($query, $location) {
+                return $query->whereHas('company', function ($q) use ($location) {
+                    $q->where('location', 'like', "%{$location}%");
+                });
+            })
+            ->paginate(12)
+            ->withQueryString();
+ 
+     
+        
+        // Obtener ubicaciones populares para el filtro
+        $locations = Company::select('location')
+            ->distinct()
+            ->whereNotNull('location')
+            ->orderBy('location')
+            ->limit(15)
+            ->get()
+            ->pluck('location');
+        
+        return Inertia::render('Company/Index', [
+            'companies' => $companies,
+            'filters' => [
+                'search' => $search,
+        
+                'location' => $location,
+            ],
+     
+            'locations' => $locations,
+        ]);
     }
 
 }

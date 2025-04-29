@@ -15,7 +15,8 @@ const emit = defineEmits([
   'view',
   'update-status',
   'message',
-  'download-cv'
+  'download-cv',
+  'delete'
 ]);
 
 // Obtener información de estado de la aplicación
@@ -91,6 +92,10 @@ const updateStatus = () => {
 // Enviar mensaje
 const messageCandidate = () => {
   emit('message', props.application.user_id);
+};
+
+const deleteCandidate = () => {
+  emit('delete', props.application);
 };
 
 const downloadCV = () => {
@@ -237,7 +242,7 @@ const downloadCV = () => {
         </button>
         <button 
           v-else
-          @click="messageCandidate"
+          @click="deleteCandidate"
           class="border border-gray-300 text-white bg-red-600  hover:bg-red-500 font-medium py-2 rounded-lg transition-colors flex items-center cursor-pointer justify-center"
         >
           <i class='bx bx-trash mr-1'></i>

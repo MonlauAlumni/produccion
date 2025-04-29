@@ -1,117 +1,125 @@
 <template>
-    <div 
-      ref="messagesContainer"
-      class="flex-1 overflow-y-auto p-6 bg-gray-50 space-y-4"
-    >
-      <div v-if="loading" class="flex justify-center items-center h-32">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#193CB8]"></div>
-      </div>
-      
-      <template v-else>
-        <!-- Fecha de inicio de conversación -->
-        <div class="flex justify-center">
-          <span class="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-            {{ formatFullDate(conversation.created_at) }}
-          </span>
-        </div>
-        
-        <!-- Mensaje relacionado con la oferta (si existe) -->
-        <RelatedJobCard 
-          v-if="conversation.related_job" 
-          :job="conversation.related_job" 
-          @view="$emit('view-job-offer', conversation.related_job.id)"
-        />
-        
-        <!-- Mensajes de la conversación -->
-        <MessageItem 
-          v-for="message in messages" 
-          :key="message.id"
-          :message="message"
-        />
-        
-        <!-- Indicador de "escribiendo" -->
-        <div v-if="isTyping" class="flex justify-start">
-          <div class="bg-white rounded-lg p-3 shadow-sm rounded-bl-none">
-            <div class="flex space-x-1">
-              <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-              <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-              <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
-            </div>
-          </div>
-        </div>
-      </template>
+  <div 
+    ref="messagesContainer"
+    class="flex-1 p-4 overflow-y-auto flex flex-col-reverse"
+  >
+    <!-- Loader para cargar más mensajes -->
+    <div v-if="loading" class="py-4 text-center">
+      <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-[#193CB8]"></div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted, watch, nextTick } from 'vue'
-  import RelatedJobCard from './RelatedJobCard.vue'
-  import MessageItem from './MessageItem.vue'
-  
-  const props = defineProps({
-    conversation: {
-      type: Object,
-      required: true
-    },
-    messages: {
-      type: Array,
-      default: () => []
-    },
-    loading: {
-      type: Boolean,
-      default: false
-    },
-    isTyping: {
-      type: Boolean,
-      default: false
-    }
-  })
-  
-  defineEmits(['view-job-offer'])
-  
-  const messagesContainer = ref(null)
-  
-  const formatFullDate = (dateString) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('es-ES', { 
-      day: 'numeric', 
-      month: 'long', 
-      year: 'numeric' 
-    })
+    
+    <!-- Botón para cargar más mensajes -->
+    <div v-if="hasMoreMessages && !loading" class="text-center py-2">
+      <button 
+        @click="$emit('load-more')"
+        class="px-4 py-1 text-sm text-[#193CB8] hover:bg-blue-50 rounded-full"
+      >
+        Cargar mensajes anteriores
+      </button>
+    </div>
+    
+    <!-- Mensajes -->
+    <div class="space-y-4">
+      <MessageItem 
+        v-for="(message, index) in messages" 
+        :key="message.id"
+        :message="message"
+        :showAvatar="shouldShowAvatar(message, index)"
+        :showDate="shouldShowDate(message, index)"
+        :currentUser="currentUser"
+      />
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted, onUpdated, watch } from 'vue';
+import MessageItem from './MessageItem.vue';
+
+const props = defineProps({
+  messages: {
+    type: Array,
+    required: true
+  },
+  currentUser: {
+    type: Object,
+    required: true
+  },
+  loading: {
+    type: Boolean,
+    default: false
+  },
+  hasMoreMessages: {
+    type: Boolean,
+    default: false
   }
+});
+
+defineEmits(['load-more']);
+
+const messagesContainer = ref(null);
+
+// Determinar si se debe mostrar el avatar para un mensaje
+const shouldShowAvatar = (message, index) => {
+  // Mostrar avatar si es el primer mensaje o si el mensaje anterior es de otro usuario
+  if (index === props.messages.length - 1) return true;
   
-  const scrollToBottom = () => {
-    nextTick(() => {
+  const nextMessage = props.messages[index + 1];
+  return message.user_id !== nextMessage.user_id;
+};
+
+// Determinar si se debe mostrar la fecha para un mensaje
+const shouldShowDate = (message, index) => {
+  // Mostrar fecha si es el primer mensaje o si hay un cambio de día entre mensajes
+  if (index === props.messages.length - 1) return true;
+  
+  const nextMessage = props.messages[index + 1];
+  const messageDate = new Date(message.created_at).toDateString();
+  const nextMessageDate = new Date(nextMessage.created_at).toDateString();
+  
+  return messageDate !== nextMessageDate;
+};
+
+// Scroll al final cuando se cargan mensajes nuevos
+watch(() => props.messages, (newMessages, oldMessages) => {
+  if (newMessages.length > oldMessages.length && 
+      newMessages[newMessages.length - 1]?.id !== oldMessages[oldMessages.length - 1]?.id) {
+    setTimeout(() => {
       if (messagesContainer.value) {
-        messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+        messagesContainer.value.scrollTop = 0;
       }
-    })
+    }, 100);
   }
-  
-  // Scroll al final cuando cambian los mensajes o el estado de escritura
-  watch(() => props.messages.length, scrollToBottom)
-  watch(() => props.isTyping, scrollToBottom)
-  
-  // Scroll al final al montar el componente
-  onMounted(scrollToBottom)
-  </script>
-  
-  <style scoped>
-  ::-webkit-scrollbar {
-    width: 6px;
+}, { deep: true });
+
+onMounted(() => {
+  if (messagesContainer.value) {
+    messagesContainer.value.scrollTop = 0;
   }
-  
-  ::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background: #d1d5db;
-    border-radius: 10px;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: #9ca3af;
-  }
-  </style>
+});
+
+onUpdated(() => {
+  // Si se cargan mensajes anteriores, mantener la posición de scroll
+  // Si se añaden nuevos mensajes, scroll al final
+});
+</script>
+
+<style scoped>
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+</style>
