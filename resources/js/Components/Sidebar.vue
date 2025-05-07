@@ -1,11 +1,14 @@
 <script>
 import { usePage } from '@inertiajs/vue3'
 import { computed } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const page = usePage();
 
 
 export default {
+
+  
   data() {
     return {
       isOpen: false,

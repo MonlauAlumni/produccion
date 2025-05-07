@@ -6,6 +6,7 @@ use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
 use App\Models\JobOffer;
+use App\Models\Notification;
 use App\Http\Controllers\Controller;
 use App\Events\MessageSent;
 use Illuminate\Http\Request;
@@ -127,6 +128,9 @@ class MessageController extends Controller
         
         // Emitir evento para notificaciones en tiempo real
         broadcast(new MessageSent($message))->toOthers();
+
+        app(\App\Http\Controllers\NotificationController::class)
+            ->sendNotification($conversation->recipient_id, 'message', 'Tienes un nuevo mensaje de ' . Auth::user()->name);
         
         return response()->json($message);
     }

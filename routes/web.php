@@ -102,6 +102,8 @@ Route::middleware('auth')->group(function() {
 
     Route::get('/notificaciones', [NotificationController::class, 'show'])->name('notificaciones.show'); 
 
+    Route::post('/notificaciones', [NotificationController::class, 'sendNotification'])->name('notificaciones.send');
+
     Route::get('/connect', [SocialController::class, 'show'])->name('connect.show'); 
     Route::get('/connect/search', [SocialController::class, 'showSearch'])->name('connect.search'); 
 
