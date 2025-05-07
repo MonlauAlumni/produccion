@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Messaging;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
-use App\Events\MessageSent;
+use App\Models\JobOffer;
+use App\Models\Notification;
 use App\Http\Controllers\Controller;
+use App\Events\MessageSent;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -98,6 +100,7 @@ class MessageController extends Controller
      */
     public function sendMessage(Request $request, Conversation $conversation)
     {
+
         $user = Auth::user();
       
         // Verificar que el usuario sea parte de la conversación
@@ -125,6 +128,19 @@ class MessageController extends Controller
         // Añadir is_sender y message para compatibilidad
         $message->is_sender = true;
         $message->message = $message->content;
+
+        app(\App\Http\Controllers\Notifications\NotificationController::class)
+        ->sendNotification(
+            $conversation->recipient_id, 
+            'message', 
+            'Tienes un nuevo mensaje de ' . $user->name
+        );
+
+        // Emitir evento para notificaciones en tiempo real
+        broadcast(new MessageSent($message))->toOthers();
+
+        // Crear notificación en la base de datos
+
         
         // Emitir evento para WebSockets
         $recipientId = $conversation->user_id === $user->id 
