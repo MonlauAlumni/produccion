@@ -75,11 +75,11 @@
 
             <!-- Botón login -->
             <SubmitButton ref="loginButton" type="submit" class="mb-3" label="Iniciar sesión" />
-            <div class="flex justify-between gap-x-2">
+            <!-- <div class="flex justify-between gap-x-2">
                 <OAuthButton provider="github" text="GitHub" />
                 <OAuthButton provider="google" text="Google" />
                 <OAuthButton provider="microsoft" text="Microsoft" />
-            </div>
+            </div> -->
 
             <!-- Mostrar errores -->
             <div v-if="error" class="mt-4 text-red-500">
