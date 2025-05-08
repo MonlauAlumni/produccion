@@ -50,7 +50,7 @@
         <div class="mt-4">
           <a
             @click="viewCompanyProfile(company.slang)"
-            class="w-full block text-center px-4 py-2 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors"
+            class="w-full block text-center px-4 py-2 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors cursor-pointer"
           >
             Ver perfil
         </a>
