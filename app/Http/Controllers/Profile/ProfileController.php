@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Models\User;
 use App\Models\Profile;
+use App\Models\Skill;
 use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Support\Facades\Session;
@@ -21,19 +22,31 @@ class ProfileController extends Controller
             $query->where('slang', $slang);
         })->with('profile')->first();
 
-        
-    
-
         if (!$user) {
             return Inertia::render('404_page');
         }
 
         $authUserId = auth()->user()->id;
-      
 
         $authUser = Auth::user();
 
         $isSameUser = $authUser && $authUser->id === $user->id;
+        $skillsByCategory = [];
+        $areaMap = [
+            'Informatica' => 'it',
+            'Marketing' => 'marketing',
+            'Automocion' => 'automotive',
+        ];
+
+        $mappedArea = $areaMap[$user->training_area] ?? null;
+
+        // Obtener todas las skills según la categoría mapeada
+        $allSkills = [];
+        
+        if ($mappedArea) {
+            $allSkills = Skill::where('category', $mappedArea)->get(['id', 'name']);
+        }
+        
 
         return Inertia::render('Student/Profile', [
             'user' => $user,
@@ -42,9 +55,30 @@ class ProfileController extends Controller
             'educations' => $user->educations,
             'isSameUser' => $isSameUser,
             'slang' => $slang,
-
+            'skills' => $user->profile->skills,
+            'allSkills' => $allSkills,
 
         ]);
+    }
+
+    public function updateSkills(Request $request, $slang)
+    {
+        $request->validate([ 'skillId' => 'required|integer|exists:skills,id' ]);
+        $user = User::whereHas('profile', fn($q) => $q->where('slang', $slang))->with('profile')->first();
+         
+        if (!$user) return abort(404);
+        $profile = $user->profile;
+        $profile->skills()->syncWithoutDetaching([$request->skillId]);
+        $skill = Skill::find($request->skillId);
+        return response()->json(['id' => $skill->id, 'name' => $skill->name]);
+    }
+
+    public function removeSkill(Request $request, $slang, $skillId)
+    {
+        $user = User::whereHas('profile', fn($q) => $q->where('slang', $slang))->with('profile')->first();
+        if (!$user) return abort(404);
+        $user->profile->skills()->detach($skillId);
+        return response()->json(['removed' => $skillId]);
     }
 
     public function show()

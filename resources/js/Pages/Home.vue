@@ -1,6 +1,6 @@
 <script setup>
   import { ref, onMounted, computed, watch } from 'vue'
-  import { router } from '@inertiajs/vue3'
+  import { router, usePage } from '@inertiajs/vue3'
   import Layout from '@/Components/Layout.vue'
   import JobCard from '@/Pages/JobOffers/JobCard.vue'
   import JobConfirmationModal from '@/Components/JobOffers/JobConfirmationModal.vue'
@@ -12,22 +12,27 @@
     }
   });
 
+  const page = usePage();
+  
+  // Recuperar los filtros y página de la URL al cargar la página
+  const urlParams = new URLSearchParams(window.location.search);
+  
   const isJobConfirmationModalOpen = ref(false);
   const selectedJobId = ref(null);
 
   const getJobOffer = (id) => {
     return jobOffersList.value.find(job => job.id === id);
   };
+  
   const openJobConfirmationModal = (jobId) => {
-  selectedJobId.value = jobId; // Guardamos el jobId seleccionado
-  isJobConfirmationModalOpen.value = true; // Abrimos el modal
-};
+    selectedJobId.value = jobId;
+    isJobConfirmationModalOpen.value = true;
+  };
 
-// Función para cerrar el modal
-const closeJobConfirmationModal = () => {
-  isJobConfirmationModalOpen.value = false;
-  selectedJobId.value = null; // Limpiamos el jobId al cerrar el modal
-};
+  const closeJobConfirmationModal = () => {
+    isJobConfirmationModalOpen.value = false;
+    selectedJobId.value = null;
+  };
 
   // Extraer los datos de las ofertas de trabajo
   const jobOffersList = ref(props.jobOffers.data || []);
@@ -36,24 +41,38 @@ const closeJobConfirmationModal = () => {
     lastPage: props.jobOffers.last_page,
     from: props.jobOffers.from,
     to: props.jobOffers.to,
-    total: props.jobOffers.total
+    total: props.jobOffers.total,
+    links: props.jobOffers.links || []
   }));
 
   const isLoading = ref(false);
   const showScrollTopButton = ref(false);
   const showFilters = ref(false);
-  const searchQuery = ref('');
+  
+  // Inicializar searchQuery desde la URL si existe
+  const searchQuery = ref(urlParams.get('search') || '');
 
   // Estado para interacciones
   const savedJobs = ref(new Set());
   const likedJobs = ref(new Set());
   const viewedJobs = ref(new Set());
 
-  // Estado para filtros
+  // Estado para filtros - inicializar desde URL si existen
+  const initialActiveCategory = urlParams.has('categoria') ? 
+    Array.isArray(urlParams.getAll('categoria')) ? 
+    urlParams.getAll('categoria') : 
+    [urlParams.get('categoria')] : 
+    [];
+  
+  const initialActiveJobType = urlParams.has('trabajo') ? 
+    Array.isArray(urlParams.getAll('trabajo')) ? 
+    urlParams.getAll('trabajo') : 
+    [urlParams.get('trabajo')] : 
+    [];
+
   const activeFilter = ref('all');
-  const activeCategory = ref('all');
-  const activeJobType = ref('all');
-  const activeSalaryRange = ref('all');
+  const activeCategory = ref(initialActiveCategory);
+  const activeJobType = ref(initialActiveJobType);
 
   // Categorías destacadas
   const featuredCategories = [
@@ -61,7 +80,6 @@ const closeJobConfirmationModal = () => {
     { id: 'it', name: 'Tecnología', icon: 'bx-code-alt', color: '#4285F4' },
     { id: 'marketing', name: 'Marketing', icon: 'bx-line-chart', color: '#EA4335' },
     { id: 'automotive', name: 'Automoción', icon: 'bx-car', color: '#FF7C43' },
-
   ];
 
   // Tipos de trabajo
@@ -72,100 +90,53 @@ const closeJobConfirmationModal = () => {
     { id: 'hybrid', name: 'Híbrido' }
   ];
 
-  // Rangos salariales
-  const salaryRanges = [
-    { id: 'all', name: 'Todos' },
-    { id: 'under30k', name: 'Menos de 30.000€' },
-    { id: '30k-50k', name: '30.000€ - 50.000€' },
-    { id: 'over50k', name: 'Más de 50.000€' }
-  ];
-
-  // Estadísticas del mercado (datos de ejemplo)
-  const marketStats = {
-    topRoles: [
-      { name: 'Desarrollador Full Stack', trend: 24 },
-      { name: 'UX/UI Designer', trend: 18 },
-      { name: 'Data Scientist', trend: 32 }
-    ],
-    topSkills: [
-      { name: 'React & TypeScript', trend: 32 },
-      { name: 'Python', trend: 28 },
-      { name: 'AWS', trend: 22 }
-    ],
-    averageSalary: {
-      value: 42500,
-      trend: 5
+  // Cambiar de página
+  const goToPage = (pageNumber) => {
+    if (pageNumber < 1 || pageNumber > pagination.value.lastPage || pageNumber === pagination.value.currentPage) {
+      return;
     }
-  };
-
-  // Cargar más ofertas (paginación)
-  const loadMoreJobs = async () => {
-    if (isLoading.value || pagination.value.currentPage >= pagination.value.lastPage) return;
-
+    
     isLoading.value = true;
-
-    try {
-      // Usar Inertia para cargar la siguiente página
-      const nextPage = pagination.value.currentPage + 1;
-      await router.get(
-        '/ofertas',
-        {
-          page: nextPage,
-          filter: activeFilter.value !== 'all' ? activeFilter.value : undefined,
-          category: activeCategory.value !== 'all' ? activeCategory.value : undefined,
-          job_type: activeJobType.value !== 'all' ? activeJobType.value : undefined,
-          salary_range: activeSalaryRange.value !== 'all' ? activeSalaryRange.value : undefined,
-          search: searchQuery.value || undefined
-        },
-        {
-          preserveState: true,
-          preserveScroll: true,
-          only: ['jobOffers'],
-          onSuccess: (page) => {
-            // Añadir las nuevas ofertas a la lista existente
-            if (page.props.jobOffers && page.props.jobOffers.data) {
-              jobOffersList.value = [...jobOffersList.value, ...page.props.jobOffers.data];
-            }
-          }
+    
+    // Construir los parámetros de filtro
+    const params = {
+      page: pageNumber,
+      categoria: activeCategory.value.length ? activeCategory.value : undefined,
+      trabajo: activeJobType.value.length ? activeJobType.value : undefined,
+      search: searchQuery.value || undefined
+    };
+    
+    // Navegar a la página solicitada
+    router.get('/home', params, {
+      preserveScroll: true,
+      preserveState: true,
+      only: ['jobOffers'],
+      onSuccess: (page) => {
+        // Actualizar manualmente los datos de jobOffers
+        if (page.props.jobOffers) {
+          jobOffersList.value = page.props.jobOffers.data || [];
+          scrollToTop();
         }
-      );
-    } catch (error) {
-      console.error('Error al cargar más ofertas:', error);
-    } finally {
-      isLoading.value = false;
-    }
+        isLoading.value = false;
+      },
+      onError: () => {
+        isLoading.value = false;
+      }
+    });
   };
-
-  // Manejar scroll infinito
-  const handleScroll = () => {
-    const scrollPosition = window.scrollY + window.innerHeight;
-    const pageHeight = document.documentElement.scrollHeight;
-
-    // Mostrar/ocultar botón para volver arriba
-    showScrollTopButton.value = window.scrollY > 500;
-
-    // Cargar más ofertas cuando estamos cerca del final
-    if (scrollPosition > pageHeight - 500 && !isLoading.value && pagination.value.currentPage < pagination.value.lastPage) {
-      loadMoreJobs();
-    }
-  };
-
 
   const toggleSaveJob = (jobId) => {
     router.post(`ofertas/${jobId}/guardar`), {
-        onSuccess: () => {
-          if (savedJobs.value.has(jobId)) {
-            savedJobs.value.delete(jobId);
-          } else {
-            savedJobs.value.add(jobId);
-          }
-          console.log(savedJobs.value);
-        },
-
+      onSuccess: () => {
+        if (savedJobs.value.has(jobId)) {
+          savedJobs.value.delete(jobId);
+        } else {
+          savedJobs.value.add(jobId);
+        }
+        console.log(savedJobs.value);
+      },
     };
   };
-
- 
 
   // Ver detalle de oferta
   const viewJobOffer = (jobId) => {
@@ -177,21 +148,6 @@ const closeJobConfirmationModal = () => {
   const applyToJob = (jobId) => {
     viewedJobs.value.add(jobId);
     openJobConfirmationModal(jobId);
-  };
-
-  // Compartir oferta
-  const shareJob = (jobId) => {
-    // Implementación de compartir (podría usar la API Web Share si está disponible)
-    if (navigator.share) {
-      navigator.share({
-        title: 'Oferta de trabajo',
-        text: 'Mira esta oferta de trabajo',
-        url: `${window.location.origin}/ofertas/${jobId}`,
-      });
-    } else {
-      // Fallback para navegadores que no soportan Web Share API
-      alert(`Compartiendo oferta ${jobId}`);
-    }
   };
 
   // Volver al inicio de la página
@@ -209,34 +165,73 @@ const closeJobConfirmationModal = () => {
   };
 
   // Cambiar categoría activa
-  const setCategory = (category) => {
-    activeCategory.value = category;
+  const toggleCategory = (category) => {
+    if (category === 'all') {
+      activeCategory.value = [];
+    } else if (activeCategory.value.includes(category)) {
+      activeCategory.value = activeCategory.value.filter((c) => c !== category);
+    } else {
+      activeCategory.value.push(category);
+    }
     applyFilters();
   };
 
   // Cambiar tipo de trabajo activo
-  const setJobType = (jobType) => {
-    activeJobType.value = jobType;
+  const toggleJobType = (jobType) => {
+    if (jobType === 'all') {
+      activeJobType.value = [];
+    } else if (activeJobType.value.includes(jobType)) {
+      activeJobType.value = activeJobType.value.filter((t) => t !== jobType);
+    } else {
+      activeJobType.value.push(jobType);
+    }
     applyFilters();
   };
 
-  // Cambiar rango salarial activo
-  const setSalaryRange = (range) => {
-    activeSalaryRange.value = range;
+  // Limpiar todos los filtros
+  const clearAllFilters = () => {
+    activeCategory.value = [];
+    activeJobType.value = [];
+    searchQuery.value = '';
     applyFilters();
   };
 
-  // Aplicar filtros
+  // Aplicar filtros - SOLUCIÓN MEJORADA CON BÚSQUEDA
   const applyFilters = () => {
-    // Navegar a la ruta con los filtros aplicados
-    router.get('/home', {
-      filter: activeFilter.value !== 'all' ? activeFilter.value : undefined,
-      categoria: activeCategory.value !== 'all' ? activeCategory.value : undefined,
-      trabajo: activeJobType.value !== 'all' ? activeJobType.value : undefined,
-      salary_range: activeSalaryRange.value !== 'all' ? activeSalaryRange.value : undefined,
-      search: searchQuery.value || undefined
-    }, {
-      preserveScroll: true
+    isLoading.value = true;
+    
+    const params = {
+      page: 1 // Siempre volver a la primera página al aplicar filtros
+    };
+
+    // Agregar siempre los filtros actuales, aunque ya estuvieran
+    if (activeCategory.value.length > 0) {
+      params.categoria = activeCategory.value;
+    }
+
+    if (activeJobType.value.length > 0) {
+      params.trabajo = activeJobType.value;
+    }
+
+    if (searchQuery.value) {
+      params.search = searchQuery.value;
+    }
+
+    // Usar only para actualizar solo los datos de jobOffers
+    router.get('/home', params, {
+      preserveScroll: true,
+      preserveState: true,
+      only: ['jobOffers'],
+      onSuccess: (page) => {
+        // Actualizar manualmente los datos de jobOffers
+        if (page.props.jobOffers) {
+          jobOffersList.value = page.props.jobOffers.data || [];
+        }
+        isLoading.value = false;
+      },
+      onError: () => {
+        isLoading.value = false;
+      }
     });
   };
 
@@ -250,15 +245,70 @@ const closeJobConfirmationModal = () => {
     return number.toLocaleString();
   };
 
-  
+  // Generar array de páginas para la paginación
+  const paginationPages = computed(() => {
+    const currentPage = pagination.value.currentPage;
+    const lastPage = pagination.value.lastPage;
+    
+    if (lastPage <= 7) {
+      // Si hay 7 o menos páginas, mostrar todas
+      return Array.from({ length: lastPage }, (_, i) => i + 1);
+    }
+    
+    // Siempre mostrar la primera y última página
+    const pages = [1];
+    
+    // Determinar el rango de páginas a mostrar alrededor de la página actual
+    let startPage = Math.max(2, currentPage - 2);
+    let endPage = Math.min(lastPage - 1, currentPage + 2);
+    
+    // Ajustar para mostrar siempre 5 páginas en el medio si es posible
+    if (endPage - startPage < 4) {
+      if (startPage === 2) {
+        endPage = Math.min(lastPage - 1, startPage + 4);
+      } else if (endPage === lastPage - 1) {
+        startPage = Math.max(2, endPage - 4);
+      }
+    }
+    
+    // Añadir elipsis si es necesario
+    if (startPage > 2) {
+      pages.push('...');
+    }
+    
+    // Añadir páginas del rango
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    
+    // Añadir elipsis si es necesario
+    if (endPage < lastPage - 1) {
+      pages.push('...');
+    }
+    
+    // Añadir última página
+    if (lastPage > 1) {
+      pages.push(lastPage);
+    }
+    
+    return pages;
+  });
 
   // Inicializar
   onMounted(() => {
-    window.addEventListener('scroll', handleScroll);
+    // Mostrar/ocultar botón para volver arriba al hacer scroll
+    window.addEventListener('scroll', () => {
+      showScrollTopButton.value = window.scrollY > 500;
+    });
+
+    // Si hay filtros en la URL, aplicarlos
+    if (activeCategory.value.length > 0 || activeJobType.value.length > 0 || searchQuery.value) {
+      applyFilters();
+    }
 
     // Limpiar al desmontar
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', () => {});
     };
   });
 
@@ -286,7 +336,7 @@ const closeJobConfirmationModal = () => {
               <div class="relative max-w-xl">
                 <div class="flex">
                   <input v-model="searchQuery" type="text" placeholder="Buscar por título, empresa o ubicación..."
-                    class="w-full px-4 py-3 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 text-white placeholder-gray-200 focus:ring-blue-300 border-1 border-white"
+                    class="w-full px-4 py-3 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 placeholder-gray-500 focus:ring-blue-300 border-1 border-white"
                     @keyup.enter="searchJobs" />
                   <button @click="searchJobs"
                     class="bg-[#193CB8] hover:bg-[#142d8c] px-4 py-3 rounded-r-lg border-1 border-white flex items-center justify-center transition-colors">
@@ -315,36 +365,55 @@ const closeJobConfirmationModal = () => {
           <div class="flex flex-col md:flex-row gap-6">
             <!-- Main Feed -->
             <div class="flex-1">
+              <!-- Filtros activos -->
+              <div v-if="activeCategory.length > 0 || activeJobType.length > 0 || searchQuery" class="mb-4 flex flex-wrap gap-2">
+                <div class="text-sm font-medium text-gray-700 mr-2 flex items-center">Filtros activos:</div>
+                
+                <div v-for="cat in activeCategory" :key="`cat-${cat}`" 
+                     class="bg-[#193CB8]/10 text-[#193CB8] px-3 py-1 rounded-full text-sm flex items-center">
+                  {{ featuredCategories.find(c => c.id === cat)?.name || cat }}
+                  <button @click="toggleCategory(cat)" class="ml-2 text-[#193CB8] hover:text-[#142d8c]">
+                    <i class='bx bx-x'></i>
+                  </button>
+                </div>
+                
+                <div v-for="type in activeJobType" :key="`type-${type}`" 
+                     class="bg-[#193CB8]/10 text-[#193CB8] px-3 py-1 rounded-full text-sm flex items-center">
+                  {{ jobTypes.find(t => t.id === type)?.name || type }}
+                  <button @click="toggleJobType(type)" class="ml-2 text-[#193CB8] hover:text-[#142d8c]">
+                    <i class='bx bx-x'></i>
+                  </button>
+                </div>
+                
+                <div v-if="searchQuery" 
+                     class="bg-[#193CB8]/10 text-[#193CB8] px-3 py-1 rounded-full text-sm flex items-center">
+                  Búsqueda: "{{ searchQuery }}"
+                  <button @click="() => { searchQuery = ''; applyFilters(); }" class="ml-2 text-[#193CB8] hover:text-[#142d8c]">
+                    <i class='bx bx-x'></i>
+                  </button>
+                </div>
+                
+                <button @click="clearAllFilters" 
+                        class="text-gray-500 hover:text-gray-700 text-sm underline">
+                  Limpiar todos
+                </button>
+              </div>
+              
+              <!-- Loading Indicator para filtros -->
+              <div v-if="isLoading" class="mb-4 flex justify-center">
+                <div class="animate-pulse flex space-x-2">
+                  <div class="w-2 h-2 bg-[#193CB8] rounded-full"></div>
+                  <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-200"></div>
+                  <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-400"></div>
+                </div>
+              </div>
+              
               <!-- Feed Items -->
               <div class="space-y-6">
-                <JobCard v-for="job in jobOffersList.slice().reverse()" :key="job.id" :jobOffer="job"
+                <JobCard v-for="job in jobOffersList" :key="job.id" :jobOffer="job"
                   :isSaved="savedJobs.has(job.id)" class="job-card"
                   @view="viewJobOffer" @apply="applyToJob" @save="toggleSaveJob" @like="toggleLikeJob"
                   @share="shareJob" />
-
-                <!-- Loading Indicator -->
-                <div v-if="isLoading" class="flex justify-center py-4">
-                  <div class="animate-pulse flex space-x-2">
-                    <div class="w-2 h-2 bg-[#193CB8] rounded-full"></div>
-                    <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-200"></div>
-                    <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-400"></div>
-                  </div>
-                </div>
-
-                <!-- End of Results -->
-                <div v-if="pagination.currentPage >= pagination.lastPage && !isLoading && jobOffersList.length > 0"
-                  class="text-center py-8">
-                  <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class='bx bx-check-circle text-3xl text-[#193CB8]'></i>
-                  </div>
-                  <h3 class="text-lg font-medium text-gray-800 mb-2">¡Has visto todas las ofertas!</h3>
-                  <p class="text-gray-500 mb-4">Vuelve más tarde para descubrir nuevas oportunidades</p>
-                  <button @click="scrollToTop"
-                    class="text-[#193CB8] font-medium hover:underline flex items-center justify-center mx-auto">
-                    <i class='bx bx-chevron-up mr-1'></i>
-                    Volver arriba
-                  </button>
-                </div>
 
                 <!-- No Results -->
                 <div v-if="jobOffersList.length === 0 && !isLoading" class="text-center py-8">
@@ -355,6 +424,67 @@ const closeJobConfirmationModal = () => {
                   <p class="text-gray-500 mb-4">Prueba con otros filtros o vuelve más tarde</p>
                 </div>
               </div>
+              
+              <!-- Paginación -->
+              <div v-if="pagination.lastPage > 1 && !isLoading" class="flex justify-center mt-8">
+                <nav class="flex items-center space-x-1">
+                  <!-- Botón Anterior -->
+                  <button 
+                    @click="goToPage(pagination.currentPage - 1)" 
+                    :disabled="pagination.currentPage === 1"
+                    :class="[
+                      'px-3 py-2 rounded-md text-sm font-medium',
+                      pagination.currentPage === 1 
+                        ? 'text-gray-400 cursor-not-allowed' 
+                        : 'text-gray-700 hover:bg-gray-100'
+                    ]"
+                  >
+                    <i class='bx bx-chevron-left'></i>
+                    <span class="sr-only">Anterior</span>
+                  </button>
+                  
+                  <!-- Números de página -->
+                  <template v-for="(page, index) in paginationPages" :key="index">
+                    <span v-if="page === '...'" class="px-3 py-2 text-gray-500">...</span>
+                    <button 
+                      v-else
+                      @click="goToPage(page)"
+                      :class="[
+                        'px-3 py-2 rounded-md text-sm font-medium',
+                        page === pagination.currentPage
+                          ? 'bg-[#193CB8] text-white'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      ]"
+                    >
+                      {{ page }}
+                    </button>
+                  </template>
+                  
+                  <!-- Botón Siguiente -->
+                  <button 
+                    @click="goToPage(pagination.currentPage + 1)" 
+                    :disabled="pagination.currentPage === pagination.lastPage"
+                    :class="[
+                      'px-3 py-2 rounded-md text-sm font-medium',
+                      pagination.currentPage === pagination.lastPage 
+                        ? 'text-gray-400 cursor-not-allowed' 
+                        : 'text-gray-700 hover:bg-gray-100'
+                    ]"
+                  >
+                    <i class='bx bx-chevron-right'></i>
+                    <span class="sr-only">Siguiente</span>
+                  </button>
+                </nav>
+              </div>
+              
+              <!-- Loading Indicator para paginación -->
+              <div v-if="isLoading" class="flex justify-center py-4 mt-4">
+                <div class="animate-pulse flex space-x-2">
+                  <div class="w-2 h-2 bg-[#193CB8] rounded-full"></div>
+                  <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-200"></div>
+                  <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-400"></div>
+                </div>
+              </div>
             </div>
 
             <!-- Sidebar (Desktop) -->
@@ -363,10 +493,10 @@ const closeJobConfirmationModal = () => {
                 <h2 class="text-lg font-bold text-gray-800 mb-3">Categorías</h2>
 
                 <div class="space-y-2">
-                  <button v-for="category in featuredCategories" :key="category.id" @click="setCategory(category.id)"
+                  <button v-for="category in featuredCategories" :key="category.id" @click="toggleCategory(category.id)"
                     :class="[
                         'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
-                        activeCategory === category.id
+                        activeCategory.includes(category.id)
                           ? 'bg-[#193CB8]/10 text-[#193CB8]'
                           : 'hover:bg-gray-100 text-gray-700'
                       ]">
@@ -380,28 +510,14 @@ const closeJobConfirmationModal = () => {
                 <h2 class="text-lg font-bold text-gray-800 mb-3">Tipo de trabajo</h2>
 
                 <div class="space-y-2">
-                  <button v-for="type in jobTypes" :key="type.id" @click="setJobType(type.id)" :class="[
-                        'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
-                        activeJobType === type.id
-                          ? 'bg-[#193CB8]/10 text-[#193CB8]'
-                          : 'hover:bg-gray-100 text-gray-700'
-                      ]">
+                  <button v-for="type in jobTypes" :key="type.id" @click="toggleJobType(type.id)" 
+                    :class="[
+                      'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
+                      activeJobType.includes(type.id)
+                        ? 'bg-[#193CB8]/10 text-[#193CB8]'
+                        : 'hover:bg-gray-100 text-gray-700'
+                    ]">
                     {{ type.name }}
-                  </button>
-                </div>
-
-                <div class="border-t border-gray-200 my-4"></div>
-
-                <h2 class="text-lg font-bold text-gray-800 mb-3">Rango salarial</h2>
-
-                <div class="space-y-2">
-                  <button v-for="range in salaryRanges" :key="range.id" @click="setSalaryRange(range.id)" :class="[
-                        'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
-                        activeSalaryRange === range.id
-                          ? 'bg-[#193CB8]/10 text-[#193CB8]'
-                          : 'hover:bg-gray-100 text-gray-700'
-                      ]">
-                    {{ range.name }}
                   </button>
                 </div>
               </div>

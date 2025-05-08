@@ -78,14 +78,14 @@ const paginatedAlumni = computed(() => {
 });
 
 // Métodos
-// function toggleSkill(skill) {
-//   const index = filters.value.skills.indexOf(skill);
-//   if (index === -1) {
-//     filters.value.skills.push(skill);
-//   } else {
-//     filters.value.skills.splice(index, 1);
-//   }
-// }
+// // function toggleSkill(skill) {
+// //   const index = filters.value.skills.indexOf(skill);
+// //   if (index === -1) {
+// //     filters.value.skills.push(skill);
+// //   } else {
+// //     filters.value.skills.splice(index, 1);
+// //   }
+// // }
 
 function applyFilters() {
   currentPage.value = 1; // Resetear a la primera página al filtrar
