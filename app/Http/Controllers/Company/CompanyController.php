@@ -78,50 +78,45 @@ class CompanyController extends Controller
     }
 
     public function index(Request $request)
-    {
-        $search = $request->input('search', '');
- 
-        $location = $request->input('location', '');
-        
-        // Obtener empresas con filtros
-        $companies = Company::when($search, function ($query, $search) {
-                return $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                      ->orWhereHas('company', function ($subq) use ($search) {
-                          $subq->where('description', 'like', "%{$search}%");
-                      });
-                });
-            })
-            
-            ->when($location, function ($query, $location) {
-                return $query->whereHas('company', function ($q) use ($location) {
-                    $q->where('location', 'like', "%{$location}%");
-                });
-            })
-            ->paginate(12)
-            ->withQueryString();
- 
-     
-        
-        // Obtener ubicaciones populares para el filtro
-        $locations = Company::select('location')
-            ->distinct()
-            ->whereNotNull('location')
-            ->orderBy('location')
-            ->limit(15)
-            ->get()
-            ->pluck('location');
-        
-        return Inertia::render('Company/Index', [
-            'companies' => $companies,
-            'filters' => [
-                'search' => $search,
-        
-                'location' => $location,
-            ],
-     
-            'locations' => $locations,
-        ]);
-    }
+{
+    $search = $request->input('search', '');
+    $sector = $request->input('sector', '');
+    $location = $request->input('location', '');
+  
+    // Obtener empresas con filtros
+    $companies = Company::when($search, function ($query, $search) {
+            return $query->where(function ($q) use ($search) {
+                $q->where('company_name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        })
+        ->when($sector, function ($query, $sector) {
+            return $query->where('sector', $sector);
+        })
+        ->when($location, function ($query, $location) {
+            return $query->where('location', 'like', "%{$location}%");
+        })
+        ->paginate(12)
+        ->withQueryString();
+   
+    // Obtener ubicaciones populares para el filtro
+    $locations = Company::select('location')
+        ->distinct()
+        ->whereNotNull('location')
+        ->orderBy('location')
+        ->limit(15)
+        ->get()
+        ->pluck('location');
+  
+    return Inertia::render('Company/Index', [
+        'companies' => $companies,
+        'filters' => [
+            'search' => $search,
+            'sector' => $sector,
+            'location' => $location,
+        ],
+        'locations' => $locations,
+    ]);
+}
 
 }
