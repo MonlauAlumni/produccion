@@ -48,6 +48,7 @@ class HandleInertiaRequests extends Middleware
     return array_merge(parent::share($request), [
         'auth' => [
             'user' => $user,
+            'user_notifications' => $user ? $user->notifications()->where('is_read', 0)->count() : 0,
             'user_settings' => $settings,
         ],
         'locale' => $locale,

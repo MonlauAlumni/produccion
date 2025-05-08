@@ -19,4 +19,9 @@ class Notification extends Model
         'user_id' => 'integer',
         'is_read' => 'boolean',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

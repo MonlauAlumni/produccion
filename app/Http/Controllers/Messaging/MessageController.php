@@ -129,12 +129,20 @@ class MessageController extends Controller
         $message->is_sender = true;
         $message->message = $message->content;
 
-        app(\App\Http\Controllers\Notifications\NotificationController::class)
-        ->sendNotification(
-            $conversation->recipient_id, 
-            'message', 
-            'Tienes un nuevo mensaje de ' . $user->name
-        );
+        // Determinar el destinatario del mensaje
+        $recipientId = $conversation->user_id === $user->id 
+            ? $conversation->recipient_id 
+            : $conversation->user_id;
+            
+        // Solo enviar notificación si el destinatario no es el remitente
+        if ($recipientId !== $user->id) {
+            app(\App\Http\Controllers\Notifications\NotificationController::class)
+                ->sendNotification(
+                    $recipientId, 
+                    'message', 
+                    'Tienes un nuevo mensaje de ' . $user->name
+                );
+        }
 
         // Emitir evento para notificaciones en tiempo real
         broadcast(new MessageSent($message))->toOthers();

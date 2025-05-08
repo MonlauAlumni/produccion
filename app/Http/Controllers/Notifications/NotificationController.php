@@ -12,7 +12,21 @@ class NotificationController extends Controller
 {
     public function show(Request $request)
     {
+        $userNotifications = Notification::where('user_id', $request->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Transformar a formato paginado que espera el componente
         return Inertia::render('Notifications/Notifications', [
+            'notifications' => [
+                'data' => $userNotifications,
+                'current_page' => 1,
+                'last_page' => 1,
+                'from' => 1,
+                'to' => count($userNotifications),
+                'total' => count($userNotifications)
+            ],
+            'unreadCount' => $userNotifications->where('is_read', false)->count()
         ]);
     }
 
