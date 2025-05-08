@@ -14,7 +14,7 @@
 
   const page = usePage();
   
-  // Recuperar los filtros de la URL al cargar la página
+  // Recuperar los filtros y página de la URL al cargar la página
   const urlParams = new URLSearchParams(window.location.search);
   
   const isJobConfirmationModalOpen = ref(false);
@@ -41,7 +41,8 @@
     lastPage: props.jobOffers.last_page,
     from: props.jobOffers.from,
     to: props.jobOffers.to,
-    total: props.jobOffers.total
+    total: props.jobOffers.total,
+    links: props.jobOffers.links || []
   }));
 
   const isLoading = ref(false);
@@ -89,59 +90,39 @@
     { id: 'hybrid', name: 'Híbrido' }
   ];
 
-  // Cargar más ofertas (paginación)
-  const loadMoreJobs = async () => {
-    if (isLoading.value || pagination.value.currentPage >= pagination.value.lastPage) return;
-
+  // Cambiar de página
+  const goToPage = (pageNumber) => {
+    if (pageNumber < 1 || pageNumber > pagination.value.lastPage || pageNumber === pagination.value.currentPage) {
+      return;
+    }
+    
     isLoading.value = true;
-
-    try {
-      // Usar Inertia para cargar la siguiente página
-      const nextPage = pagination.value.currentPage + 1;
-      
-      // Construir los parámetros de filtro
-      const params = {
-        page: nextPage,
-        filter: activeFilter.value !== 'all' ? activeFilter.value : undefined,
-        categoria: activeCategory.value.length ? activeCategory.value : undefined,
-        trabajo: activeJobType.value.length ? activeJobType.value : undefined,
-        search: searchQuery.value || undefined
-      };
-      
-      await router.get(
-        '/ofertas',
-        params,
-        {
-          preserveState: true,
-          preserveScroll: true,
-          only: ['jobOffers'],
-          onSuccess: (page) => {
-            // Añadir las nuevas ofertas a la lista existente
-            if (page.props.jobOffers && page.props.jobOffers.data) {
-              jobOffersList.value = [...jobOffersList.value, ...page.props.jobOffers.data];
-            }
-          }
+    
+    // Construir los parámetros de filtro
+    const params = {
+      page: pageNumber,
+      categoria: activeCategory.value.length ? activeCategory.value : undefined,
+      trabajo: activeJobType.value.length ? activeJobType.value : undefined,
+      search: searchQuery.value || undefined
+    };
+    
+    // Navegar a la página solicitada
+    router.get('/home', params, {
+      preserveScroll: true,
+      preserveState: true,
+      only: ['jobOffers'],
+      onSuccess: (page) => {
+        // Actualizar manualmente los datos de jobOffers
+        if (page.props.jobOffers) {
+          jobOffersList.value = page.props.jobOffers.data || [];
+          scrollToTop();
         }
-      );
-    } catch (error) {
-      console.error('Error al cargar más ofertas:', error);
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  // Manejar scroll infinito
-  const handleScroll = () => {
-    const scrollPosition = window.scrollY + window.innerHeight;
-    const pageHeight = document.documentElement.scrollHeight;
-
-    // Mostrar/ocultar botón para volver arriba
-    showScrollTopButton.value = window.scrollY > 500;
-
-    // Cargar más ofertas cuando estamos cerca del final
-    if (scrollPosition > pageHeight - 500 && !isLoading.value && pagination.value.currentPage < pagination.value.lastPage) {
-      loadMoreJobs();
-    }
+        isLoading.value = false;
+      },
+      onError: () => {
+        isLoading.value = false;
+      }
+    });
   };
 
   const toggleSaveJob = (jobId) => {
@@ -219,7 +200,9 @@
   const applyFilters = () => {
     isLoading.value = true;
     
-    const params = {};
+    const params = {
+      page: 1 // Siempre volver a la primera página al aplicar filtros
+    };
 
     // Agregar siempre los filtros actuales, aunque ya estuvieran
     if (activeCategory.value.length > 0) {
@@ -262,9 +245,61 @@
     return number.toLocaleString();
   };
 
+  // Generar array de páginas para la paginación
+  const paginationPages = computed(() => {
+    const currentPage = pagination.value.currentPage;
+    const lastPage = pagination.value.lastPage;
+    
+    if (lastPage <= 7) {
+      // Si hay 7 o menos páginas, mostrar todas
+      return Array.from({ length: lastPage }, (_, i) => i + 1);
+    }
+    
+    // Siempre mostrar la primera y última página
+    const pages = [1];
+    
+    // Determinar el rango de páginas a mostrar alrededor de la página actual
+    let startPage = Math.max(2, currentPage - 2);
+    let endPage = Math.min(lastPage - 1, currentPage + 2);
+    
+    // Ajustar para mostrar siempre 5 páginas en el medio si es posible
+    if (endPage - startPage < 4) {
+      if (startPage === 2) {
+        endPage = Math.min(lastPage - 1, startPage + 4);
+      } else if (endPage === lastPage - 1) {
+        startPage = Math.max(2, endPage - 4);
+      }
+    }
+    
+    // Añadir elipsis si es necesario
+    if (startPage > 2) {
+      pages.push('...');
+    }
+    
+    // Añadir páginas del rango
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    
+    // Añadir elipsis si es necesario
+    if (endPage < lastPage - 1) {
+      pages.push('...');
+    }
+    
+    // Añadir última página
+    if (lastPage > 1) {
+      pages.push(lastPage);
+    }
+    
+    return pages;
+  });
+
   // Inicializar
   onMounted(() => {
-    window.addEventListener('scroll', handleScroll);
+    // Mostrar/ocultar botón para volver arriba al hacer scroll
+    window.addEventListener('scroll', () => {
+      showScrollTopButton.value = window.scrollY > 500;
+    });
 
     // Si hay filtros en la URL, aplicarlos
     if (activeCategory.value.length > 0 || activeJobType.value.length > 0 || searchQuery.value) {
@@ -273,7 +308,7 @@
 
     // Limpiar al desmontar
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', () => {});
     };
   });
 
@@ -301,7 +336,7 @@
               <div class="relative max-w-xl">
                 <div class="flex">
                   <input v-model="searchQuery" type="text" placeholder="Buscar por título, empresa o ubicación..."
-                    class="w-full px-4 py-3 rounded-l-lg text-gray-200 focus:outline-none focus:ring-2 placeholder-gray-200 focus:ring-blue-300 border-1 border-white"
+                    class="w-full px-4 py-3 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 placeholder-gray-500 focus:ring-blue-300 border-1 border-white"
                     @keyup.enter="searchJobs" />
                   <button @click="searchJobs"
                     class="bg-[#193CB8] hover:bg-[#142d8c] px-4 py-3 rounded-r-lg border-1 border-white flex items-center justify-center transition-colors">
@@ -375,34 +410,10 @@
               
               <!-- Feed Items -->
               <div class="space-y-6">
-                <JobCard v-for="job in jobOffersList.slice().reverse()" :key="job.id" :jobOffer="job"
+                <JobCard v-for="job in jobOffersList" :key="job.id" :jobOffer="job"
                   :isSaved="savedJobs.has(job.id)" class="job-card"
                   @view="viewJobOffer" @apply="applyToJob" @save="toggleSaveJob" @like="toggleLikeJob"
                   @share="shareJob" />
-
-                <!-- Loading Indicator para paginación -->
-                <div v-if="isLoading" class="flex justify-center py-4">
-                  <div class="animate-pulse flex space-x-2">
-                    <div class="w-2 h-2 bg-[#193CB8] rounded-full"></div>
-                    <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-200"></div>
-                    <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-400"></div>
-                  </div>
-                </div>
-
-                <!-- End of Results -->
-                <div v-if="pagination.currentPage >= pagination.lastPage && !isLoading && jobOffersList.length > 0"
-                  class="text-center py-8">
-                  <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class='bx bx-check-circle text-3xl text-[#193CB8]'></i>
-                  </div>
-                  <h3 class="text-lg font-medium text-gray-800 mb-2">¡Has visto todas las ofertas!</h3>
-                  <p class="text-gray-500 mb-4">Vuelve más tarde para descubrir nuevas oportunidades</p>
-                  <button @click="scrollToTop"
-                    class="text-[#193CB8] font-medium hover:underline flex items-center justify-center mx-auto">
-                    <i class='bx bx-chevron-up mr-1'></i>
-                    Volver arriba
-                  </button>
-                </div>
 
                 <!-- No Results -->
                 <div v-if="jobOffersList.length === 0 && !isLoading" class="text-center py-8">
@@ -411,6 +422,67 @@
                   </div>
                   <h3 class="text-lg font-medium text-gray-800 mb-2">No se encontraron ofertas</h3>
                   <p class="text-gray-500 mb-4">Prueba con otros filtros o vuelve más tarde</p>
+                </div>
+              </div>
+              
+              <!-- Paginación -->
+              <div v-if="pagination.lastPage > 1 && !isLoading" class="flex justify-center mt-8">
+                <nav class="flex items-center space-x-1">
+                  <!-- Botón Anterior -->
+                  <button 
+                    @click="goToPage(pagination.currentPage - 1)" 
+                    :disabled="pagination.currentPage === 1"
+                    :class="[
+                      'px-3 py-2 rounded-md text-sm font-medium',
+                      pagination.currentPage === 1 
+                        ? 'text-gray-400 cursor-not-allowed' 
+                        : 'text-gray-700 hover:bg-gray-100'
+                    ]"
+                  >
+                    <i class='bx bx-chevron-left'></i>
+                    <span class="sr-only">Anterior</span>
+                  </button>
+                  
+                  <!-- Números de página -->
+                  <template v-for="(page, index) in paginationPages" :key="index">
+                    <span v-if="page === '...'" class="px-3 py-2 text-gray-500">...</span>
+                    <button 
+                      v-else
+                      @click="goToPage(page)"
+                      :class="[
+                        'px-3 py-2 rounded-md text-sm font-medium',
+                        page === pagination.currentPage
+                          ? 'bg-[#193CB8] text-white'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      ]"
+                    >
+                      {{ page }}
+                    </button>
+                  </template>
+                  
+                  <!-- Botón Siguiente -->
+                  <button 
+                    @click="goToPage(pagination.currentPage + 1)" 
+                    :disabled="pagination.currentPage === pagination.lastPage"
+                    :class="[
+                      'px-3 py-2 rounded-md text-sm font-medium',
+                      pagination.currentPage === pagination.lastPage 
+                        ? 'text-gray-400 cursor-not-allowed' 
+                        : 'text-gray-700 hover:bg-gray-100'
+                    ]"
+                  >
+                    <i class='bx bx-chevron-right'></i>
+                    <span class="sr-only">Siguiente</span>
+                  </button>
+                </nav>
+              </div>
+              
+              <!-- Loading Indicator para paginación -->
+              <div v-if="isLoading" class="flex justify-center py-4 mt-4">
+                <div class="animate-pulse flex space-x-2">
+                  <div class="w-2 h-2 bg-[#193CB8] rounded-full"></div>
+                  <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-200"></div>
+                  <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-400"></div>
                 </div>
               </div>
             </div>
@@ -474,3 +546,77 @@
       :job-offer="getJobOffer(selectedJobId)" />
   </Layout>
 </template>
+
+<style>
+  /* Estilos básicos */
+  .prose p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+  }
+
+  /* Ocultar scrollbar pero mantener funcionalidad */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari and Opera */
+  }
+
+  /* Animaciones para hacer la experiencia más adictiva */
+  .job-card {
+    transform: translateY(0);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .job-card:hover {
+    transform: translateY(-3px);
+  }
+
+  /* Animación para el botón de scroll to top */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+
+  /* Animación para los elementos que aparecen al hacer scroll */
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .job-card {
+    animation: slide-up 0.5s ease-out;
+  }
+
+  /* Delays para animaciones */
+  .animation-delay-200 {
+    animation-delay: 0.2s;
+  }
+
+  .animation-delay-400 {
+    animation-delay: 0.4s;
+  }
+</style>
