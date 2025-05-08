@@ -79,6 +79,9 @@ Route::middleware('auth')->group(function() {
         
         Route::get('/empresas', [CompanyController::class, 'index'])->name('companies.index');
 
+        Route::post('/perfil/{slang}/skills', [ProfileController::class, 'updateSkills'])->name('perfil.skills.update');
+        Route::delete('/perfil/{slang}/skills/{skillId}', [ProfileController::class, 'removeSkill'])->name('perfil.skills.remove');
+
     });
     
     Route::group(['middleware' => ['role:empresa']], function () {

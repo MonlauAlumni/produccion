@@ -15,37 +15,59 @@ class JobOfferController extends Controller
     
     
     public function index(Request $request)
-    {
-      
-        $user = Auth::user();
-        $page = $request->input('page', 1);
-        $offers = JobOffer::with('company')->paginate(10);
-        
-        $category = $request->input('categoria');
-        $workMode = $request->input('trabajo');
+{
+    $user = Auth::user();
+    
+    $categories = $request->input('categoria');
+    $workModes = $request->input('trabajo'); // Puede ser string o array
+    $minimumSalary = $request->input('minimum_salary');
+    $maximumSalary = $request->input('maximum_salary');
+    
+    $offersQuery = JobOffer::with('company')->orderBy('created_at', 'desc');
 
-        $offersQuery = JobOffer::with('company')->orderBy('created_at', 'desc');
-
-        if ($category) {
-            $offersQuery->where('category', 'like', '%' . $category . '%');
+    // Filtrar por categorías (puede ser un array)
+    if ($categories) {
+        if (is_array($categories)) {
+            // Si hay múltiples categorías, usamos whereIn o where con OR
+            $offersQuery->where(function($query) use ($categories) {
+                foreach ($categories as $category) {
+                    $query->orWhere('category', 'like', '%' . $category . '%');
+                }
+            });
+        } else {
+            // Si es una sola categoría
+            $offersQuery->where('category', 'like', '%' . $categories . '%');
         }
-        if ($workMode) {
-            $offersQuery->where('work_mode', 'like', '%' . $workMode . '%');
-        }
-        
-        $offers->getCollection()->transform(function ($offer) use ($user) {
-            $offer->isSaved = $user->savedJobOffers->contains($offer);
-            
-            return $offer;
-        });
-
-        $offers = $offersQuery->paginate(10);
-
-
-        return Inertia::render('Home', [
-            'jobOffers' => $offers
-        ]);
     }
+
+    // Filtrar por modos de trabajo (puede ser un array)
+    if ($workModes) {
+        if (is_array($workModes)) {
+            $offersQuery->whereIn('work_mode', $workModes);
+        } else {
+            $offersQuery->where('work_mode', $workModes);
+        }
+    }
+
+    // Filtrar por rango salarial
+    if ($minimumSalary && $maximumSalary) {
+        $offersQuery->whereBetween('salary', [$minimumSalary, $maximumSalary]);
+    }
+
+    $offers = $offersQuery->paginate(10);
+
+    // Marcar ofertas guardadas
+    $offers->getCollection()->transform(function ($offer) use ($user) {
+        $offer->isSaved = $user->savedJobOffers->contains($offer->id);
+        return $offer;
+    });
+
+    return Inertia::render('Home', [
+        'jobOffers' => $offers,
+    ]);
+}
+
+    
     
 
 

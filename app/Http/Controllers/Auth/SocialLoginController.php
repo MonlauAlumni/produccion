@@ -38,6 +38,7 @@ class SocialLoginController extends Controller
                 'Accept' => 'application/json'
             ],
         ]);
+   
         $groups = json_decode($response->getBody(), true);
         $groupNames = [];
 

@@ -1,6 +1,6 @@
 <script setup>
   import { ref, onMounted, computed, watch } from 'vue'
-  import { router } from '@inertiajs/vue3'
+  import { router, usePage } from '@inertiajs/vue3'
   import Layout from '@/Components/Layout.vue'
   import JobCard from '@/Pages/JobOffers/JobCard.vue'
   import JobConfirmationModal from '@/Components/JobOffers/JobConfirmationModal.vue'
@@ -12,22 +12,27 @@
     }
   });
 
+  const page = usePage();
+  
+  // Recuperar los filtros de la URL al cargar la página
+  const urlParams = new URLSearchParams(window.location.search);
+  
   const isJobConfirmationModalOpen = ref(false);
   const selectedJobId = ref(null);
 
   const getJobOffer = (id) => {
     return jobOffersList.value.find(job => job.id === id);
   };
+  
   const openJobConfirmationModal = (jobId) => {
-  selectedJobId.value = jobId; // Guardamos el jobId seleccionado
-  isJobConfirmationModalOpen.value = true; // Abrimos el modal
-};
+    selectedJobId.value = jobId;
+    isJobConfirmationModalOpen.value = true;
+  };
 
-// Función para cerrar el modal
-const closeJobConfirmationModal = () => {
-  isJobConfirmationModalOpen.value = false;
-  selectedJobId.value = null; // Limpiamos el jobId al cerrar el modal
-};
+  const closeJobConfirmationModal = () => {
+    isJobConfirmationModalOpen.value = false;
+    selectedJobId.value = null;
+  };
 
   // Extraer los datos de las ofertas de trabajo
   const jobOffersList = ref(props.jobOffers.data || []);
@@ -49,11 +54,22 @@ const closeJobConfirmationModal = () => {
   const likedJobs = ref(new Set());
   const viewedJobs = ref(new Set());
 
-  // Estado para filtros
+  // Estado para filtros - inicializar desde URL si existen
+  const initialActiveCategory = urlParams.has('categoria') ? 
+    Array.isArray(urlParams.getAll('categoria')) ? 
+    urlParams.getAll('categoria') : 
+    [urlParams.get('categoria')] : 
+    [];
+  
+  const initialActiveJobType = urlParams.has('trabajo') ? 
+    Array.isArray(urlParams.getAll('trabajo')) ? 
+    urlParams.getAll('trabajo') : 
+    [urlParams.get('trabajo')] : 
+    [];
+
   const activeFilter = ref('all');
-  const activeCategory = ref('all');
-  const activeJobType = ref('all');
-  const activeSalaryRange = ref('all');
+  const activeCategory = ref(initialActiveCategory);
+  const activeJobType = ref(initialActiveJobType);
 
   // Categorías destacadas
   const featuredCategories = [
@@ -61,7 +77,6 @@ const closeJobConfirmationModal = () => {
     { id: 'it', name: 'Tecnología', icon: 'bx-code-alt', color: '#4285F4' },
     { id: 'marketing', name: 'Marketing', icon: 'bx-line-chart', color: '#EA4335' },
     { id: 'automotive', name: 'Automoción', icon: 'bx-car', color: '#FF7C43' },
-
   ];
 
   // Tipos de trabajo
@@ -72,32 +87,6 @@ const closeJobConfirmationModal = () => {
     { id: 'hybrid', name: 'Híbrido' }
   ];
 
-  // Rangos salariales
-  const salaryRanges = [
-    { id: 'all', name: 'Todos' },
-    { id: 'under30k', name: 'Menos de 30.000€' },
-    { id: '30k-50k', name: '30.000€ - 50.000€' },
-    { id: 'over50k', name: 'Más de 50.000€' }
-  ];
-
-  // Estadísticas del mercado (datos de ejemplo)
-  const marketStats = {
-    topRoles: [
-      { name: 'Desarrollador Full Stack', trend: 24 },
-      { name: 'UX/UI Designer', trend: 18 },
-      { name: 'Data Scientist', trend: 32 }
-    ],
-    topSkills: [
-      { name: 'React & TypeScript', trend: 32 },
-      { name: 'Python', trend: 28 },
-      { name: 'AWS', trend: 22 }
-    ],
-    averageSalary: {
-      value: 42500,
-      trend: 5
-    }
-  };
-
   // Cargar más ofertas (paginación)
   const loadMoreJobs = async () => {
     if (isLoading.value || pagination.value.currentPage >= pagination.value.lastPage) return;
@@ -107,16 +96,19 @@ const closeJobConfirmationModal = () => {
     try {
       // Usar Inertia para cargar la siguiente página
       const nextPage = pagination.value.currentPage + 1;
+      
+      // Construir los parámetros de filtro
+      const params = {
+        page: nextPage,
+        filter: activeFilter.value !== 'all' ? activeFilter.value : undefined,
+        categoria: activeCategory.value.length ? activeCategory.value : undefined,
+        trabajo: activeJobType.value.length ? activeJobType.value : undefined,
+        search: searchQuery.value || undefined
+      };
+      
       await router.get(
         '/ofertas',
-        {
-          page: nextPage,
-          filter: activeFilter.value !== 'all' ? activeFilter.value : undefined,
-          category: activeCategory.value !== 'all' ? activeCategory.value : undefined,
-          job_type: activeJobType.value !== 'all' ? activeJobType.value : undefined,
-          salary_range: activeSalaryRange.value !== 'all' ? activeSalaryRange.value : undefined,
-          search: searchQuery.value || undefined
-        },
+        params,
         {
           preserveState: true,
           preserveScroll: true,
@@ -150,22 +142,18 @@ const closeJobConfirmationModal = () => {
     }
   };
 
-
   const toggleSaveJob = (jobId) => {
     router.post(`ofertas/${jobId}/guardar`), {
-        onSuccess: () => {
-          if (savedJobs.value.has(jobId)) {
-            savedJobs.value.delete(jobId);
-          } else {
-            savedJobs.value.add(jobId);
-          }
-          console.log(savedJobs.value);
-        },
-
+      onSuccess: () => {
+        if (savedJobs.value.has(jobId)) {
+          savedJobs.value.delete(jobId);
+        } else {
+          savedJobs.value.add(jobId);
+        }
+        console.log(savedJobs.value);
+      },
     };
   };
-
- 
 
   // Ver detalle de oferta
   const viewJobOffer = (jobId) => {
@@ -177,21 +165,6 @@ const closeJobConfirmationModal = () => {
   const applyToJob = (jobId) => {
     viewedJobs.value.add(jobId);
     openJobConfirmationModal(jobId);
-  };
-
-  // Compartir oferta
-  const shareJob = (jobId) => {
-    // Implementación de compartir (podría usar la API Web Share si está disponible)
-    if (navigator.share) {
-      navigator.share({
-        title: 'Oferta de trabajo',
-        text: 'Mira esta oferta de trabajo',
-        url: `${window.location.origin}/ofertas/${jobId}`,
-      });
-    } else {
-      // Fallback para navegadores que no soportan Web Share API
-      alert(`Compartiendo oferta ${jobId}`);
-    }
   };
 
   // Volver al inicio de la página
@@ -209,34 +182,70 @@ const closeJobConfirmationModal = () => {
   };
 
   // Cambiar categoría activa
-  const setCategory = (category) => {
-    activeCategory.value = category;
+  const toggleCategory = (category) => {
+    if (category === 'all') {
+      activeCategory.value = [];
+    } else if (activeCategory.value.includes(category)) {
+      activeCategory.value = activeCategory.value.filter((c) => c !== category);
+    } else {
+      activeCategory.value.push(category);
+    }
     applyFilters();
   };
 
   // Cambiar tipo de trabajo activo
-  const setJobType = (jobType) => {
-    activeJobType.value = jobType;
+  const toggleJobType = (jobType) => {
+    if (jobType === 'all') {
+      activeJobType.value = [];
+    } else if (activeJobType.value.includes(jobType)) {
+      activeJobType.value = activeJobType.value.filter((t) => t !== jobType);
+    } else {
+      activeJobType.value.push(jobType);
+    }
     applyFilters();
   };
 
-  // Cambiar rango salarial activo
-  const setSalaryRange = (range) => {
-    activeSalaryRange.value = range;
+  // Limpiar todos los filtros
+  const clearAllFilters = () => {
+    activeCategory.value = [];
+    activeJobType.value = [];
     applyFilters();
   };
 
-  // Aplicar filtros
+  // Aplicar filtros - SOLUCIÓN MEJORADA
   const applyFilters = () => {
-    // Navegar a la ruta con los filtros aplicados
-    router.get('/home', {
-      filter: activeFilter.value !== 'all' ? activeFilter.value : undefined,
-      categoria: activeCategory.value !== 'all' ? activeCategory.value : undefined,
-      trabajo: activeJobType.value !== 'all' ? activeJobType.value : undefined,
-      salary_range: activeSalaryRange.value !== 'all' ? activeSalaryRange.value : undefined,
-      search: searchQuery.value || undefined
-    }, {
-      preserveScroll: true
+    isLoading.value = true;
+    
+    const params = {};
+
+    // Agregar siempre los filtros actuales, aunque ya estuvieran
+    if (activeCategory.value.length > 0) {
+      params.categoria = activeCategory.value;
+    }
+
+    if (activeJobType.value.length > 0) {
+      params.trabajo = activeJobType.value;
+    }
+
+    if (searchQuery.value) {
+      params.search = searchQuery.value;
+    }
+
+    // Usar only para actualizar solo los datos de jobOffers
+    router.get('/home', params, {
+      preserveScroll: true,
+      preserveState: true,
+      only: ['jobOffers'],
+      onSuccess: (page) => {
+        // Actualizar manualmente los datos de jobOffers
+        if (page.props.jobOffers) {
+          jobOffersList.value = page.props.jobOffers.data || [];
+        }
+        isLoading.value = false;
+      },
+      onError: () => {
+        isLoading.value = false;
+      }
     });
   };
 
@@ -250,11 +259,14 @@ const closeJobConfirmationModal = () => {
     return number.toLocaleString();
   };
 
-  
-
   // Inicializar
   onMounted(() => {
     window.addEventListener('scroll', handleScroll);
+
+    // Si hay filtros en la URL, aplicarlos
+    if (activeCategory.value.length > 0 || activeJobType.value.length > 0) {
+      applyFilters();
+    }
 
     // Limpiar al desmontar
     return () => {
@@ -286,7 +298,7 @@ const closeJobConfirmationModal = () => {
               <div class="relative max-w-xl">
                 <div class="flex">
                   <input v-model="searchQuery" type="text" placeholder="Buscar por título, empresa o ubicación..."
-                    class="w-full px-4 py-3 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 text-white placeholder-gray-200 focus:ring-blue-300 border-1 border-white"
+                    class="w-full px-4 py-3 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 placeholder-gray-500 focus:ring-blue-300 border-1 border-white"
                     @keyup.enter="searchJobs" />
                   <button @click="searchJobs"
                     class="bg-[#193CB8] hover:bg-[#142d8c] px-4 py-3 rounded-r-lg border-1 border-white flex items-center justify-center transition-colors">
@@ -315,6 +327,41 @@ const closeJobConfirmationModal = () => {
           <div class="flex flex-col md:flex-row gap-6">
             <!-- Main Feed -->
             <div class="flex-1">
+              <!-- Filtros activos -->
+              <div v-if="activeCategory.length > 0 || activeJobType.length > 0" class="mb-4 flex flex-wrap gap-2">
+                <div class="text-sm font-medium text-gray-700 mr-2 flex items-center">Filtros activos:</div>
+                
+                <div v-for="cat in activeCategory" :key="`cat-${cat}`" 
+                     class="bg-[#193CB8]/10 text-[#193CB8] px-3 py-1 rounded-full text-sm flex items-center">
+                  {{ featuredCategories.find(c => c.id === cat)?.name || cat }}
+                  <button @click="toggleCategory(cat)" class="ml-2 text-[#193CB8] hover:text-[#142d8c]">
+                    <i class='bx bx-x'></i>
+                  </button>
+                </div>
+                
+                <div v-for="type in activeJobType" :key="`type-${type}`" 
+                     class="bg-[#193CB8]/10 text-[#193CB8] px-3 py-1 rounded-full text-sm flex items-center">
+                  {{ jobTypes.find(t => t.id === type)?.name || type }}
+                  <button @click="toggleJobType(type)" class="ml-2 text-[#193CB8] hover:text-[#142d8c]">
+                    <i class='bx bx-x'></i>
+                  </button>
+                </div>
+                
+                <button @click="clearAllFilters" 
+                        class="text-gray-500 hover:text-gray-700 text-sm underline">
+                  Limpiar todos
+                </button>
+              </div>
+              
+              <!-- Loading Indicator para filtros -->
+              <div v-if="isLoading" class="mb-4 flex justify-center">
+                <div class="animate-pulse flex space-x-2">
+                  <div class="w-2 h-2 bg-[#193CB8] rounded-full"></div>
+                  <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-200"></div>
+                  <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-400"></div>
+                </div>
+              </div>
+              
               <!-- Feed Items -->
               <div class="space-y-6">
                 <JobCard v-for="job in jobOffersList.slice().reverse()" :key="job.id" :jobOffer="job"
@@ -322,7 +369,7 @@ const closeJobConfirmationModal = () => {
                   @view="viewJobOffer" @apply="applyToJob" @save="toggleSaveJob" @like="toggleLikeJob"
                   @share="shareJob" />
 
-                <!-- Loading Indicator -->
+                <!-- Loading Indicator para paginación -->
                 <div v-if="isLoading" class="flex justify-center py-4">
                   <div class="animate-pulse flex space-x-2">
                     <div class="w-2 h-2 bg-[#193CB8] rounded-full"></div>
@@ -363,10 +410,10 @@ const closeJobConfirmationModal = () => {
                 <h2 class="text-lg font-bold text-gray-800 mb-3">Categorías</h2>
 
                 <div class="space-y-2">
-                  <button v-for="category in featuredCategories" :key="category.id" @click="setCategory(category.id)"
+                  <button v-for="category in featuredCategories" :key="category.id" @click="toggleCategory(category.id)"
                     :class="[
                         'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
-                        activeCategory === category.id
+                        activeCategory.includes(category.id)
                           ? 'bg-[#193CB8]/10 text-[#193CB8]'
                           : 'hover:bg-gray-100 text-gray-700'
                       ]">
@@ -380,28 +427,14 @@ const closeJobConfirmationModal = () => {
                 <h2 class="text-lg font-bold text-gray-800 mb-3">Tipo de trabajo</h2>
 
                 <div class="space-y-2">
-                  <button v-for="type in jobTypes" :key="type.id" @click="setJobType(type.id)" :class="[
-                        'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
-                        activeJobType === type.id
-                          ? 'bg-[#193CB8]/10 text-[#193CB8]'
-                          : 'hover:bg-gray-100 text-gray-700'
-                      ]">
+                  <button v-for="type in jobTypes" :key="type.id" @click="toggleJobType(type.id)" 
+                    :class="[
+                      'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
+                      activeJobType.includes(type.id)
+                        ? 'bg-[#193CB8]/10 text-[#193CB8]'
+                        : 'hover:bg-gray-100 text-gray-700'
+                    ]">
                     {{ type.name }}
-                  </button>
-                </div>
-
-                <div class="border-t border-gray-200 my-4"></div>
-
-                <h2 class="text-lg font-bold text-gray-800 mb-3">Rango salarial</h2>
-
-                <div class="space-y-2">
-                  <button v-for="range in salaryRanges" :key="range.id" @click="setSalaryRange(range.id)" :class="[
-                        'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
-                        activeSalaryRange === range.id
-                          ? 'bg-[#193CB8]/10 text-[#193CB8]'
-                          : 'hover:bg-gray-100 text-gray-700'
-                      ]">
-                    {{ range.name }}
                   </button>
                 </div>
               </div>
