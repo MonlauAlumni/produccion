@@ -47,7 +47,9 @@
   const isLoading = ref(false);
   const showScrollTopButton = ref(false);
   const showFilters = ref(false);
-  const searchQuery = ref('');
+  
+  // Inicializar searchQuery desde la URL si existe
+  const searchQuery = ref(urlParams.get('search') || '');
 
   // Estado para interacciones
   const savedJobs = ref(new Set());
@@ -209,10 +211,11 @@
   const clearAllFilters = () => {
     activeCategory.value = [];
     activeJobType.value = [];
+    searchQuery.value = '';
     applyFilters();
   };
 
-  // Aplicar filtros - SOLUCIÓN MEJORADA
+  // Aplicar filtros - SOLUCIÓN MEJORADA CON BÚSQUEDA
   const applyFilters = () => {
     isLoading.value = true;
     
@@ -264,7 +267,7 @@
     window.addEventListener('scroll', handleScroll);
 
     // Si hay filtros en la URL, aplicarlos
-    if (activeCategory.value.length > 0 || activeJobType.value.length > 0) {
+    if (activeCategory.value.length > 0 || activeJobType.value.length > 0 || searchQuery.value) {
       applyFilters();
     }
 
@@ -298,7 +301,7 @@
               <div class="relative max-w-xl">
                 <div class="flex">
                   <input v-model="searchQuery" type="text" placeholder="Buscar por título, empresa o ubicación..."
-                    class="w-full px-4 py-3 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 placeholder-gray-500 focus:ring-blue-300 border-1 border-white"
+                    class="w-full px-4 py-3 rounded-l-lg text-gray-200 focus:outline-none focus:ring-2 placeholder-gray-200 focus:ring-blue-300 border-1 border-white"
                     @keyup.enter="searchJobs" />
                   <button @click="searchJobs"
                     class="bg-[#193CB8] hover:bg-[#142d8c] px-4 py-3 rounded-r-lg border-1 border-white flex items-center justify-center transition-colors">
@@ -328,7 +331,7 @@
             <!-- Main Feed -->
             <div class="flex-1">
               <!-- Filtros activos -->
-              <div v-if="activeCategory.length > 0 || activeJobType.length > 0" class="mb-4 flex flex-wrap gap-2">
+              <div v-if="activeCategory.length > 0 || activeJobType.length > 0 || searchQuery" class="mb-4 flex flex-wrap gap-2">
                 <div class="text-sm font-medium text-gray-700 mr-2 flex items-center">Filtros activos:</div>
                 
                 <div v-for="cat in activeCategory" :key="`cat-${cat}`" 
@@ -343,6 +346,14 @@
                      class="bg-[#193CB8]/10 text-[#193CB8] px-3 py-1 rounded-full text-sm flex items-center">
                   {{ jobTypes.find(t => t.id === type)?.name || type }}
                   <button @click="toggleJobType(type)" class="ml-2 text-[#193CB8] hover:text-[#142d8c]">
+                    <i class='bx bx-x'></i>
+                  </button>
+                </div>
+                
+                <div v-if="searchQuery" 
+                     class="bg-[#193CB8]/10 text-[#193CB8] px-3 py-1 rounded-full text-sm flex items-center">
+                  Búsqueda: "{{ searchQuery }}"
+                  <button @click="() => { searchQuery = ''; applyFilters(); }" class="ml-2 text-[#193CB8] hover:text-[#142d8c]">
                     <i class='bx bx-x'></i>
                   </button>
                 </div>
@@ -463,77 +474,3 @@
       :job-offer="getJobOffer(selectedJobId)" />
   </Layout>
 </template>
-
-<style>
-  /* Estilos básicos */
-  .prose p {
-    margin-bottom: 1rem;
-    line-height: 1.7;
-  }
-
-  /* Ocultar scrollbar pero mantener funcionalidad */
-  .hide-scrollbar {
-    -ms-overflow-style: none;
-    /* IE and Edge */
-    scrollbar-width: none;
-    /* Firefox */
-  }
-
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-    /* Chrome, Safari and Opera */
-  }
-
-  /* Animaciones para hacer la experiencia más adictiva */
-  .job-card {
-    transform: translateY(0);
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-  }
-
-  .job-card:hover {
-    transform: translateY(-3px);
-  }
-
-  /* Animación para el botón de scroll to top */
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-fade-in {
-    animation: fade-in 0.3s ease-out;
-  }
-
-  /* Animación para los elementos que aparecen al hacer scroll */
-  @keyframes slide-up {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .job-card {
-    animation: slide-up 0.5s ease-out;
-  }
-
-  /* Delays para animaciones */
-  .animation-delay-200 {
-    animation-delay: 0.2s;
-  }
-
-  .animation-delay-400 {
-    animation-delay: 0.4s;
-  }
-</style>

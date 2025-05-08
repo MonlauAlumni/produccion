@@ -22,8 +22,20 @@ class JobOfferController extends Controller
     $workModes = $request->input('trabajo'); // Puede ser string o array
     $minimumSalary = $request->input('minimum_salary');
     $maximumSalary = $request->input('maximum_salary');
+    $searchQuery = $request->input('search'); // Añadimos el parámetro de búsqueda
     
     $offersQuery = JobOffer::with('company')->orderBy('created_at', 'desc');
+
+    // Búsqueda por texto
+    if ($searchQuery) {
+        $offersQuery->where(function($query) use ($searchQuery) {
+            $query->where('title', 'like', '%' . $searchQuery . '%')
+                  ->orWhere('description', 'like', '%' . $searchQuery . '%')
+                  ->orWhereHas('company', function($q) use ($searchQuery) {
+                      $q->where('title', 'like', '%' . $searchQuery . '%');
+                  });
+        });
+    }
 
     // Filtrar por categorías (puede ser un array)
     if ($categories) {
