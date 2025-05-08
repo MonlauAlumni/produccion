@@ -1,18 +1,31 @@
 <script>
 import { usePage } from '@inertiajs/vue3'
 import { computed } from 'vue';
+import { onMounted, ref } from 'vue';
 
-const page = usePage();
+
+
 
 
 export default {
+
+  mounted() {
+  const page = usePage()
+  const notifications = page.props.auth?.user_notifications ?? 0
+  const notificacionesItem = this.topMenuItems.find(item => item.text === 'Notificaciones')
+
+  if (notificacionesItem) {
+    notificacionesItem.badge = notifications > 0 ? notifications : null
+  }
+},
+
   data() {
     return {
       isOpen: false,
       darkMode: false,
       topMenuItems: [
         { text: 'Inicio', icon: 'bx-home', route: '/home' },
-        { text: 'Notificaciones', icon: 'bx-bell', badge: '5', route: '/notificaciones' },
+        { text: 'Notificaciones', icon: 'bx-bell', badge: null, route: '/notificaciones' },
         { text: 'Mensajes', icon: 'bx-envelope', badge: '2', route: '/mensajes' },
         { text: 'Calendario', icon: 'bx-calendar', route: '/calendario' },
       ],

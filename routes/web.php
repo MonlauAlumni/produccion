@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Notifications\NotificationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Auth\RegisterController;
@@ -111,6 +112,9 @@ Route::middleware('auth')->group(function() {
     Route::get('/ofertas', [JobOfferController::class, 'index'])->name('ofertas.index');
     Route::get('/ofertas/{id}', [JobOfferController::class, 'show'])->name('job-offers.show');
 
+    Route::get('/notificaciones', [NotificationController::class, 'show'])->name('notificaciones.show'); 
+
+    Route::post('/notificaciones', [NotificationController::class, 'sendNotification'])->name('notificaciones.send');
 
     Route::get('/connect', [SocialController::class, 'show'])->name('connect.show'); 
     Route::get('/connect/search', [SocialController::class, 'showSearch'])->name('connect.search'); 
