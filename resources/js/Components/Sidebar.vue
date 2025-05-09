@@ -31,10 +31,10 @@ export default {
       ],
       // Definimos los items sin la propiedad visible aquí
       middleMenuItems: [
-        { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo', route: '/mis-ofertas', requireRole: 'alumne' },
-        { text: 'Alumnos', icon: 'bx-user', route: '/alumnos', requireRole: 'empresa' },
+        { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo', route: '/mis-ofertas', requireRole: 'alumne'  },
+        { text: 'Alumnos', icon: 'bx-user', route: '/alumnos', requireRole: ['empresa', 'admin'] },
         { text: 'Candidatos', icon: 'bx-user-check', badge: 'Nuevo', route: '/gestion-candidatos', requireRole: 'empresa' },
-        { text: 'Empresas', icon: 'bx-buildings', route: '/empresas', requireRole: 'alumne' },
+        { text: 'Empresas', icon: 'bx-buildings', route: '/empresas', requireRole: ['alumne', 'admin'] },
         { text: 'Alumni connect', icon: 'bx-group', route: '/connect' },
        
       ],
@@ -57,18 +57,16 @@ export default {
     return this.user?.roles && this.user.roles.length > 0 ? this.user.roles[0].name : null;
   },
 
-    filteredMiddleMenuItems() {
-      
-
-      return this.middleMenuItems.filter(item => {
-        // Si el item requiere un rol específico, verificamos que el usuario tenga ese rol
-        if (item.requireRole) {
-          return this.userRole === item.requireRole;
-        }
-        // Si no requiere un rol específico, siempre se muestra
-        return true;
-      });
+  filteredMiddleMenuItems() {
+  return this.middleMenuItems.filter(item => {
+    if (!item.requireRole) return true;
+    if (Array.isArray(item.requireRole)) {
+      return item.requireRole.includes(this.userRole);
     }
+    return item.requireRole === this.userRole;
+  });
+}
+
   },
   methods: {
     toggleSidebar() {
@@ -107,6 +105,8 @@ export default {
         <div class="flex items-center space-x-3 mb-3">
           <div class="relative">
             <div v-if="user.company">
+       
+
               <img v-if="user.company.profile_picture" :src="user.company.profile_picture"
                 alt="Profile picture" class="w-12 h-12  shadow-sm border-2 border-white">
               <div v-else
