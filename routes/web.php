@@ -59,7 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware('auth')->group(function() {
 
-    Route::group(['middleware' => ['role:alumne']], function () {
+    Route::group(['middleware' => ['role:alumne|admin']], function () {
 
         Route::post('/perfil/{slang}', [ProfileController::class, 'update'])->name('perfil.update');
         Route::post('/perfil/{slang}/update-banner', [ProfileController::class, 'updateBanner'])->name('perfil.updateBanner');
@@ -85,7 +85,7 @@ Route::middleware('auth')->group(function() {
 
     });
     
-    Route::group(['middleware' => ['role:empresa']], function () {
+    Route::group(['middleware' => ['role:empresa|admin']], function () {
 
         Route::post('/empresa/{slang}/update-logo', [CompanyController::class, 'updateLogo'])->name('empresa.updateLogo');
         Route::post('/empresa/{slang}/update', [CompanyController::class, 'update'])->name('empresa.update');

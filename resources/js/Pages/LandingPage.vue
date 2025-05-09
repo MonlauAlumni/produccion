@@ -16,26 +16,70 @@
         </a>
         
         <div class="flex gap-4 items-center">
-          <a 
-            v-if="!auth?.user" 
-            href="/login-monlau" 
-            class="text-white hover:text-white/90 transition-all px-4 py-2 rounded-md hover:bg-white/10"
-          >
-            <span class="flex items-center gap-2">
-              <i class='bx bx-log-in'></i>
-              <span>Iniciar Sesión</span>
-            </span>
-          </a>
-          
-          <a 
-            v-if="!auth?.user" 
-            href="/register" 
-            class="bg-white text-[#193CB8] px-5 py-2 rounded-md shadow-md hover:shadow-lg transition-all font-medium flex items-center gap-2 hover:bg-gray-50"
-          >
-            <i class='bx bx-user-plus'></i>
-            <span>Registrarse</span>
-          </a>
-        </div>
+    <!-- Menú desplegable para inicio de sesión -->
+    <div class="relative" v-if="!auth?.user">
+      <button 
+        @click="isLoginMenuOpen = !isLoginMenuOpen"
+        class="bg-white text-[#193CB8] px-5 py-2 rounded-md shadow-md hover:shadow-lg transition-all font-medium flex items-center gap-2"
+        aria-haspopup="true"
+        aria-expanded="isLoginMenuOpen"
+        aria-label="Menú de inicio de sesión"
+      >
+        <i class='bx bx-log-in text-lg'></i>
+        <span>Iniciar Sesión</span>
+        <i class='bx bx-chevron-down transition-transform' :class="isLoginMenuOpen ? 'rotate-180' : ''"></i>
+      </button>
+      
+      <!-- Menú desplegable -->
+      <div 
+        v-if="isLoginMenuOpen" 
+        class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg py-2 z-50 animate-fadeIn"
+        role="menu"
+        aria-orientation="vertical"
+        aria-labelledby="login-menu-button"
+      >
+        <a 
+          href="/login" 
+          class="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 transition-colors text-gray-800 w-full text-left"
+          role="menuitem"
+        >
+          <div class="bg-blue-100 flex p-2 rounded-full">
+            <i class='bx bx-user  text-[#193CB8] text-xl'></i>
+          </div>
+          <div>
+            <div class="font-medium">Alumno</div>
+            <div class="text-xs text-gray-500">Para estudiantes y graduados</div>
+          </div>
+        </a>
+        
+        <div class="border-t border-gray-200 my-1"></div>
+        
+        <a 
+          href="/login-monlau" 
+          class="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 transition-colors text-gray-800 w-full text-left"
+          role="menuitem"
+        >
+          <div class="bg-amber-100 p-2 flex rounded-full">
+            <i class='bx bx-building-house  text-amber-600 text-xl'></i>
+          </div>
+          <div>
+            <div class="font-medium">Empresa</div>
+            <div class="text-xs text-gray-500">Para reclutadores y empresas</div>
+          </div>
+        </a>
+      </div>
+    </div>
+    
+    <a 
+      v-if="!auth?.user" 
+      href="/register" 
+      class="bg-[#193CB8] text-white px-5 py-2 rounded-md shadow-md hover:shadow-lg transition-all font-medium flex items-center gap-2 hover:bg-[#122a8c]"
+      aria-label="Registrarse en la plataforma"
+    >
+      <i class='bx bx-user-plus'></i>
+      <span>Registrarse</span>
+    </a>
+  </div>
       </div>
     </nav>
 
@@ -67,7 +111,7 @@ import FeaturesSection from '../Components/Landing/FeaturesSection.vue';
 import StatsSection from '../Components/Landing/StatsSection.vue';
 import ShowcaseSection from '../Components/Landing/ShowcaseSection.vue';
 import Footer from '../Components/Footer.vue';
-
+const isLoginMenuOpen = ref(false);
 // Imágenes para el carrusel
 const images = ref([
   '/images/landing/landing-bg1.jpeg',
@@ -106,16 +150,39 @@ onMounted(() => {
   };
   
   window.addEventListener('scroll', handleScroll);
+  const handleClickOutside = (event) => {
+    const loginMenu = document.getElementById('login-menu');
+    if (isLoginMenuOpen.value && loginMenu && !loginMenu.contains(event.target)) {
+      isLoginMenuOpen.value = false;
+    }
+  };
   
+  document.addEventListener('click', handleClickOutside);
   // Limpiar el event listener al desmontar
   return () => {
+    document.removeEventListener('click', handleClickOutside);
+
     window.removeEventListener('scroll', handleScroll);
   };
+  
 });
 </script>
 
 <style>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
+}
 .landing-page {
   --primary-color: #193CB8;
   --primary-light: #2a4fd6;
