@@ -34,7 +34,6 @@ const pagination = computed(() => ({
   total: props.notifications.total || 0
 }));
 
-// Categorías de notificaciones
 const notificationTabs = [
   { id: 'all', name: 'Todas', icon: 'bx-bell' },
   { id: 'unread', name: 'No leídas', icon: 'bx-envelope' },
@@ -74,15 +73,12 @@ const loadMoreNotifications = async () => {
   }
 };
 
-// Manejar scroll infinito
 const handleScroll = () => {
   const scrollPosition = window.scrollY + window.innerHeight;
   const pageHeight = document.documentElement.scrollHeight;
 
-  // Mostrar/ocultar botón para volver arriba
   showScrollTopButton.value = window.scrollY > 500;
 
-  // Cargar más notificaciones cuando estamos cerca del final
   if (scrollPosition > pageHeight - 500 && !isLoading.value && pagination.value.currentPage < pagination.value.lastPage) {
     loadMoreNotifications();
   }
@@ -105,7 +101,12 @@ const applyFilters = () => {
     filter: activeTab.value !== 'all' ? activeTab.value : undefined
   }, {
     preserveScroll: true,
-    only: ['notifications']
+    only: ['notifications'],
+    onSuccess: (page) => {
+      if (page.props.notifications && page.props.notifications.data) {
+        notificationsList.value = page.props.notifications.data;
+      }
+    }
   });
 };
 
@@ -114,9 +115,15 @@ const markAsRead = (notificationId) => {
     preserveScroll: true,
     preserveState: false,
     onSuccess: () => {
-      const notification = notificationsList.value.find(n => n.id === notificationId);
-      if (notification && !notification.is_read) {
-        notification.is_read = true;
+      const index = notificationsList.value.findIndex(n => n.id === notificationId);
+      if (index !== -1 && !notificationsList.value[index].is_read) {
+        const updatedList = [...notificationsList.value];
+        updatedList[index] = {
+          ...updatedList[index],
+          is_read: true,
+          read_at: new Date().toISOString()
+        };
+        notificationsList.value = updatedList;
       }
     }
   });
@@ -125,22 +132,21 @@ const markAsRead = (notificationId) => {
 const deleteAllNotifications = () => {
   router.delete('/notificaciones', {}, {
     preserveScroll: true,
-    preserveState: false,
-    only: ['notifications', 'unreadCount'],
-    onSuccess: (page) => {
-      notificationsList.value = page.props.notifications.data || [];
+    preserveState: false, 
+    onSuccess: () => {
+      notificationsList.value = [];
     }
   });
 };
 
-
 const markAllAsRead = () => {
   router.put('/notificaciones/mark-all-as-read', {}, {
     preserveScroll: true,
-    only: ['notifications', 'unreadCount'],
+    preserveState: false,  
     onSuccess: () => {
       notificationsList.value = notificationsList.value.map(notification => ({
         ...notification,
+        is_read: true,
         read_at: notification.read_at || new Date().toISOString()
       }));
     }
@@ -150,7 +156,7 @@ const markAllAsRead = () => {
 const deleteNotification = (notificationId) => {
   router.delete(`/notificaciones/${notificationId}`, {
     preserveScroll: true,
-    only: ['notifications'],
+    preserveState: false,
     onSuccess: () => {
       notificationsList.value = notificationsList.value.filter(
         notification => notification.id !== notificationId
@@ -168,21 +174,17 @@ const formatDate = (dateString) => {
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
   if (diffDays === 0) {
-    // Hoy - mostrar hora
     return date.toLocaleTimeString('es-ES', {
       hour: '2-digit',
       minute: '2-digit'
     });
   } else if (diffDays === 1) {
-    // Ayer
     return 'Ayer';
   } else if (diffDays < 7) {
-    // Esta semana - mostrar día
     return date.toLocaleDateString('es-ES', {
       weekday: 'long'
     });
   } else {
-    // Más de una semana - mostrar fecha completa
     return date.toLocaleDateString('es-ES', {
       year: 'numeric',
       month: 'short',
@@ -244,18 +246,27 @@ const unreadNotificationsCount = computed(() => {
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
 
+  const page = usePage();
+  watch(() => page.props.notifications, (newNotifications) => {
+    if (newNotifications && newNotifications.data) {
+      if (newNotifications.current_page === 1) {
+        notificationsList.value = newNotifications.data;
+      }
+    }
+  }, { deep: true });
+
   return () => {
     window.removeEventListener('scroll', handleScroll);
   };
 });
 
-const page = usePage();
+import { watch } from 'vue';
 </script>
 
 <template>
   <Layout>
     <div class="min-h-screen bg-gray-50 flex flex-col">
-      <!-- Header Section -->
+
       <div class="bg-[#193CB8] text-white py-8">
         <div class="max-w-6xl mx-auto px-4">
           <div class="flex flex-col md:flex-row items-start justify-between">
@@ -264,7 +275,6 @@ const page = usePage();
               <p class="text-blue-100 mb-4">Mantente al día con todas tus actualizaciones</p>
             </div>
 
-            <!-- Stats Card -->
             <div class="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20 text-center">
               <div class="text-3xl font-bold">{{ unreadNotificationsCount }}</div>
               <div class="text-blue-100">No leídas</div>
@@ -273,10 +283,8 @@ const page = usePage();
         </div>
       </div>
 
-      <!-- Main Content -->
       <div class="flex-1 py-6">
         <div class="max-w-4xl mx-auto px-4">
-          <!-- Tabs Navigation -->
           <div class="bg-white rounded-xl shadow-sm mb-6 overflow-hidden">
             <div class="flex overflow-x-auto hide-scrollbar">
               <button v-for="tab in notificationTabs" :key="tab.id" @click="setFilter(tab.id)" :class="[
@@ -295,7 +303,6 @@ const page = usePage();
             </div>
           </div>
 
-          <!-- Actions Bar -->
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold text-gray-800">
               {{ activeTab === 'all' ? 'Todas las notificaciones' :
@@ -318,14 +325,12 @@ const page = usePage();
             </div>
           </div>
 
-          <!-- Notifications List -->
           <div class="space-y-3">
             <div v-for="notification in notificationsList" :key="notification.id" :class="[
               'bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-300 border border-gray-200',
               !notification.is_read ? 'border-l-4 border-l-[#193CB8]' : ''
             ]">
               <div class="p-4 flex">
-                <!-- Icon -->
                 <div :class="[
                   'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 mr-4',
                   getNotificationColor(notification.type)
@@ -333,7 +338,6 @@ const page = usePage();
                   <i :class="['bx text-white text-xl', getNotificationIcon(notification.type)]"></i>
                 </div>
 
-                <!-- Content -->
                 <div class="flex-1">
                   <div class="flex justify-between items-start">
                     <p class="text-gray-800 font-medium">{{ notification.message }}</p>
@@ -359,13 +363,11 @@ const page = usePage();
                         @click="router.get('/mensajes')">Ver mensaje</button>
                     </div>
 
-                    <!-- Otros tipos de notificaciones se pueden agregar según se implementen en el backend -->
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Loading Indicator -->
             <div v-if="isLoading" class="flex justify-center py-4">
               <div class="animate-pulse flex space-x-2">
                 <div class="w-2 h-2 bg-[#193CB8] rounded-full"></div>
@@ -374,7 +376,6 @@ const page = usePage();
               </div>
             </div>
 
-            <!-- End of Results -->
             <div v-if="pagination.currentPage >= pagination.lastPage && !isLoading && notificationsList.length > 0"
               class="text-center py-8">
               <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -389,7 +390,6 @@ const page = usePage();
               </button>
             </div>
 
-            <!-- No Results -->
             <div v-if="notificationsList.length === 0 && !isLoading" class="text-center py-8">
               <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i class='bx bx-bell-off text-3xl text-[#193CB8]'></i>
@@ -405,7 +405,6 @@ const page = usePage();
         </div>
       </div>
 
-      <!-- Scroll to Top Button -->
       <button v-show="showScrollTopButton" @click="scrollToTop"
         class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#193CB8] text-white shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300 z-50 animate-fade-in">
         <i class='bx bx-chevron-up text-xl'></i>
