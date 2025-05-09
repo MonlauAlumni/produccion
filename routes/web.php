@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Landing\LandingController;
 use App\Http\Controllers\Notifications\NotificationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -28,14 +29,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\Students\StudentController;
 
-
 Route::fallback(function () {
     return Inertia::render('404_page');
 });
 
-Route::get('/', function () {
-    return Inertia::render('LandingPage');
-});
+Route::get('/', [LandingController::class, 'index'])->name('landing');
 
 Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/admin/{page}', [AdminController::class, 'show'])->name('admin.page');

@@ -31,55 +31,57 @@
         </div>
       </div>
     </section>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue';
-  
-  const stats = [
-    { value: 750, label: "Usuarios registrados", suffix: "+" },
-    { value: 200, label: "Alumnos en formación", suffix: "" },
-    { value: 600, label: "Empresas colaboradoras", suffix: "+" },
-    { value: 10, label: "Años de experiencia", suffix: "" }
-  ];
-  
-  const countRefs = ref([]);
-  
-  onMounted(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const counters = document.querySelectorAll('.counter');
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+
+const page = usePage();
+const stats = computed(() => [
+  { value: page.props.userCount || 0, label: "Usuarios registrados", suffix: "" },
+  { value: page.props.currentStudentCount || 0, label: "Alumnos en formación", suffix: "" },
+  { value: page.props.companyCount || 0, label: "Empresas colaboradoras", suffix: "" },
+  { value: new Date().getFullYear() - 1982, label: "Años de experiencia", suffix: "" }
+]);
+
+const countRefs = ref([]);
+
+onMounted(() => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const counters = document.querySelectorAll('.counter');
+        
+        counters.forEach(counter => {
+          const target = parseInt(counter.getAttribute('data-target'));
+          const duration = 2000; // ms
+          const step = target / (duration / 16); // 60fps
           
-          counters.forEach(counter => {
-            const target = parseInt(counter.getAttribute('data-target'));
-            const duration = 2000; // ms
-            const step = target / (duration / 16); // 60fps
-            
-            let current = 0;
-            const updateCounter = () => {
-              current += step;
-              if (current < target) {
-                counter.textContent = Math.floor(current);
-                requestAnimationFrame(updateCounter);
-              } else {
-                counter.textContent = target;
-              }
-            };
-            
-            updateCounter();
-          });
+          let current = 0;
+          const updateCounter = () => {
+            current += step;
+            if (current < target) {
+              counter.textContent = Math.floor(current);
+              requestAnimationFrame(updateCounter);
+            } else {
+              counter.textContent = target;
+            }
+          };
           
-          // Desconectar el observer después de la animación
-          observer.disconnect();
-        }
-      });
-    }, { threshold: 0.5 });
-    
-    // Observar la sección
-    const section = document.querySelector('section');
-    if (section) {
-      observer.observe(section);
-    }
-  });
-  </script>
+          updateCounter();
+        });
+        
+        // Desconectar el observer después de la animación
+        observer.disconnect();
+      }
+    });
+  }, { threshold: 0.5 });
+  
+  // Observar la sección
+  const section = document.querySelector('section');
+  if (section) {
+    observer.observe(section);
+  }
+});
+</script>

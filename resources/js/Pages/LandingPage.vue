@@ -90,7 +90,11 @@
     <FeaturesSection />
     
     <!-- Sección de Estadísticas -->
-    <StatsSection />
+    <StatsSection 
+      :userCount="userCount.value" 
+      :currentStudentCount="currentStudentCount.value" 
+      :companyCount="companyCount.value" 
+    />
     
     <!-- Sección de Showcase -->
     <ShowcaseSection :sections="sections" />
@@ -111,14 +115,19 @@ import FeaturesSection from '../Components/Landing/FeaturesSection.vue';
 import StatsSection from '../Components/Landing/StatsSection.vue';
 import ShowcaseSection from '../Components/Landing/ShowcaseSection.vue';
 import Footer from '../Components/Footer.vue';
+import { usePage } from '@inertiajs/vue3';
+
+const page = usePage();
+const userCount = ref(page.props.userCount); 
+const companyCount = ref(page.props.companyCount); 
+const currentStudentCount = ref(page.props.currentStudentCount); 
+
 const isLoginMenuOpen = ref(false);
-// Imágenes para el carrusel
 const images = ref([
   '/images/landing/landing-bg1.jpeg',
   '/images/landing/landing-bg2.jpg'
 ]);
 
-// Secciones para el showcase
 const sections = ref([
   {
     title: "Ofertas",
