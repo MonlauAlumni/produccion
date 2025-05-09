@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import Layout from '@/Components/Layout.vue';
+import { watch } from 'vue';
 
 const props = defineProps({
   notifications: {
@@ -24,7 +25,7 @@ const props = defineProps({
 const isLoading = ref(false);
 const showScrollTopButton = ref(false);
 const activeTab = ref('all');
-const notificationsList = ref(props.notifications.data || []);
+const allNotifications = ref(props.notifications.data || []);
 
 const pagination = computed(() => ({
   currentPage: props.notifications.current_page,
@@ -42,6 +43,21 @@ const notificationTabs = [
   { id: 'jobs', name: 'Ofertas', icon: 'bx-briefcase' }
 ];
 
+const filteredNotifications = computed(() => {
+  if (activeTab.value === 'all') {
+    return allNotifications.value;
+  } else if (activeTab.value === 'unread') {
+    return allNotifications.value.filter(notification => !notification.is_read);
+  } else if (activeTab.value === 'mentions') {
+    return allNotifications.value.filter(notification => notification.type === 'mention');
+  } else if (activeTab.value === 'events') {
+    return allNotifications.value.filter(notification => notification.type === 'event');
+  } else if (activeTab.value === 'jobs') {
+    return allNotifications.value.filter(notification => notification.type === 'job');
+  }
+  return allNotifications.value;
+});
+
 const loadMoreNotifications = async () => {
   if (isLoading.value || pagination.value.currentPage >= pagination.value.lastPage) return;
 
@@ -51,17 +67,14 @@ const loadMoreNotifications = async () => {
     const nextPage = pagination.value.currentPage + 1;
     await router.get(
       '/notificaciones',
-      {
-        page: nextPage,
-        filter: activeTab.value !== 'all' ? activeTab.value : undefined
-      },
+      { page: nextPage },
       {
         preserveState: true,
         preserveScroll: true,
         only: ['notifications'],
         onSuccess: (page) => {
           if (page.props.notifications && page.props.notifications.data) {
-            notificationsList.value = [...notificationsList.value, ...page.props.notifications.data];
+            allNotifications.value = [...allNotifications.value, ...page.props.notifications.data];
           }
         }
       }
@@ -93,37 +106,22 @@ const scrollToTop = () => {
 
 const setFilter = (filter) => {
   activeTab.value = filter;
-  applyFilters();
-};
-
-const applyFilters = () => {
-  router.get('/notificaciones', {
-    filter: activeTab.value !== 'all' ? activeTab.value : undefined
-  }, {
-    preserveScroll: true,
-    only: ['notifications'],
-    onSuccess: (page) => {
-      if (page.props.notifications && page.props.notifications.data) {
-        notificationsList.value = page.props.notifications.data;
-      }
-    }
-  });
 };
 
 const markAsRead = (notificationId) => {
   router.put(`/notificaciones/${notificationId}/mark-as-read`, {}, {
     preserveScroll: true,
-    preserveState: false,
+    preserveState: true,
     onSuccess: () => {
-      const index = notificationsList.value.findIndex(n => n.id === notificationId);
-      if (index !== -1 && !notificationsList.value[index].is_read) {
-        const updatedList = [...notificationsList.value];
+      const index = allNotifications.value.findIndex(n => n.id === notificationId);
+      if (index !== -1 && !allNotifications.value[index].is_read) {
+        const updatedList = [...allNotifications.value];
         updatedList[index] = {
           ...updatedList[index],
           is_read: true,
           read_at: new Date().toISOString()
         };
-        notificationsList.value = updatedList;
+        allNotifications.value = updatedList;
       }
     }
   });
@@ -132,9 +130,9 @@ const markAsRead = (notificationId) => {
 const deleteAllNotifications = () => {
   router.delete('/notificaciones', {}, {
     preserveScroll: true,
-    preserveState: false, 
+    preserveState: true, 
     onSuccess: () => {
-      notificationsList.value = [];
+      allNotifications.value = [];
     }
   });
 };
@@ -142,9 +140,9 @@ const deleteAllNotifications = () => {
 const markAllAsRead = () => {
   router.put('/notificaciones/mark-all-as-read', {}, {
     preserveScroll: true,
-    preserveState: false,  
+    preserveState: true,  
     onSuccess: () => {
-      notificationsList.value = notificationsList.value.map(notification => ({
+      allNotifications.value = allNotifications.value.map(notification => ({
         ...notification,
         is_read: true,
         read_at: notification.read_at || new Date().toISOString()
@@ -156,9 +154,9 @@ const markAllAsRead = () => {
 const deleteNotification = (notificationId) => {
   router.delete(`/notificaciones/${notificationId}`, {
     preserveScroll: true,
-    preserveState: false,
+    preserveState: true,
     onSuccess: () => {
-      notificationsList.value = notificationsList.value.filter(
+      allNotifications.value = allNotifications.value.filter(
         notification => notification.id !== notificationId
       );
     }
@@ -240,7 +238,7 @@ const getNotificationColor = (type) => {
 };
 
 const unreadNotificationsCount = computed(() => {
-  return notificationsList.value.filter(notification => !notification.is_read).length;
+  return allNotifications.value.filter(notification => !notification.is_read).length;
 });
 
 onMounted(() => {
@@ -248,10 +246,8 @@ onMounted(() => {
 
   const page = usePage();
   watch(() => page.props.notifications, (newNotifications) => {
-    if (newNotifications && newNotifications.data) {
-      if (newNotifications.current_page === 1) {
-        notificationsList.value = newNotifications.data;
-      }
+    if (newNotifications && newNotifications.data && newNotifications.current_page === 1) {
+      allNotifications.value = newNotifications.data;
     }
   }, { deep: true });
 
@@ -259,8 +255,6 @@ onMounted(() => {
     window.removeEventListener('scroll', handleScroll);
   };
 });
-
-import { watch } from 'vue';
 </script>
 
 <template>
@@ -288,7 +282,7 @@ import { watch } from 'vue';
           <div class="bg-white rounded-xl shadow-sm mb-6 overflow-hidden">
             <div class="flex overflow-x-auto hide-scrollbar">
               <button v-for="tab in notificationTabs" :key="tab.id" @click="setFilter(tab.id)" :class="[
-                'px-4 py-3 flex items-center whitespace-nowrap transition-colors',
+                'px-4 py-3 flex items-center whitespace-nowrap transition-colors cursor-pointer',
                 activeTab === tab.id
                   ? 'text-[#193CB8] border-b-2 border-[#193CB8] font-medium'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
@@ -321,12 +315,11 @@ import { watch } from 'vue';
                 <i class="bx bx-trash mr-1"></i>
                 Borrar todas
               </button>
-
             </div>
           </div>
 
           <div class="space-y-3">
-            <div v-for="notification in notificationsList" :key="notification.id" :class="[
+            <div v-for="notification in filteredNotifications" :key="notification.id" :class="[
               'bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-300 border border-gray-200',
               !notification.is_read ? 'border-l-4 border-l-[#193CB8]' : ''
             ]">
@@ -362,7 +355,6 @@ import { watch } from 'vue';
                       <button class="text-[#193CB8] text-sm hover:underline cursor-pointer"
                         @click="router.get('/mensajes')">Ver mensaje</button>
                     </div>
-
                   </div>
                 </div>
               </div>
@@ -376,7 +368,7 @@ import { watch } from 'vue';
               </div>
             </div>
 
-            <div v-if="pagination.currentPage >= pagination.lastPage && !isLoading && notificationsList.length > 0"
+            <div v-if="pagination.currentPage >= pagination.lastPage && !isLoading && filteredNotifications.length > 0"
               class="text-center py-8">
               <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i class='bx bx-check-circle text-3xl text-[#193CB8]'></i>
@@ -390,7 +382,7 @@ import { watch } from 'vue';
               </button>
             </div>
 
-            <div v-if="notificationsList.length === 0 && !isLoading" class="text-center py-8">
+            <div v-if="filteredNotifications.length === 0 && !isLoading" class="text-center py-8">
               <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i class='bx bx-bell-off text-3xl text-[#193CB8]'></i>
               </div>
