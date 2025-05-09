@@ -35,35 +35,39 @@ class AppServiceProvider extends ServiceProvider
      * Bootstrap any application services.
      */
     public function boot(): void
-{
-    Inertia::share([
-        'user' => function () {
-       
-            $user = auth()->user();
+    {
+        Inertia::share([
+            'user' => function () {
 
-            if (!$user) {
-                return null;
-            }
+                $user = auth()->user();
 
-            $role = $user->roles->first();
-         
-           
-          
+                if (!$user) {
+                    return null;
+                }
 
-            // Solo pasar los campos necesarios
-            return [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $role ? $role->name : null,
-                'profile' => optional($user->profile)->only(['profile_picture', 'slang']),
-                'company' => optional($user->company)->only(['company_name', 'id', 'profile_picture']),
-            ];
-        },
-    ]);
-    
-    Profile::observe(ProfileObserver::class);
-}
+                $role = $user->roles->first();
+
+
+
+
+                // Solo pasar los campos necesarios
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $role ? $role->name : null,
+                    'profile' => optional($user->profile)->only(['profile_picture', 'slang']),
+                    'company' => optional($user->company)->only(['company_name', 'id', 'profile_picture']),
+                ];
+            },
+        ]);
+
+        RateLimiter::for('two-factor', function (Request $request) {
+            return Limit::perMinute(5)->by($request->session()->get('login.id'));
+        });
+
+        Profile::observe(ProfileObserver::class);
+    }
 
 
 }
