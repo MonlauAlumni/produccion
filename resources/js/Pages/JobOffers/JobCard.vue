@@ -6,6 +6,10 @@ const settings = computed(() => page.props.auth.user_settings)
 
 // Obtener rol del usuario autenticado
 const userRole = computed(() => page.props.auth.user?.roles?.[0]?.name ?? null)
+// Leer áreas de formación asignadas al usuario desde user_settings
+const userArea = computed(() => page.props.auth.user?.training_area ?? null)
+
+const jobOfferArea = computed(() => props.jobOffer.category ?? null)
 
 const props = defineProps({
     jobOffer: {
@@ -126,7 +130,52 @@ const getCategoryLabel = (category) => {
       }
     }
   ;
+  
+// Mapeo de áreas de formación a categorías de trabajo
+const areaToCategoryMap = {
+  'informatica': 'it',
+  'marketing': 'marketing',
+  'automocion': 'automotive'
+};
 
+// Mapeo inverso para mostrar en la interfaz
+const categoryToTrainingArea = {
+  'it': 'Informatica',
+  'automotive': 'Automocion',
+  'marketing': 'Marketing'
+};
+
+// Función para normalizar texto (quitar acentos, convertir a minúsculas)
+const normalizeText = (text) => {
+  if (!text) return '';
+  return text.toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, ""); // Elimina acentos
+};
+
+const isApplyDisabled = computed(() => {
+  // Si el usuario es empresa, no puede aplicar
+  if (userRole.value === 'empresa') return true;
+  
+  // Si no hay área de usuario o categoría de trabajo, deshabilitar
+  if (!userArea.value || !jobOfferArea.value) return true;
+  
+  // Normalizar el área de formación del usuario
+  const normalizedUserArea = normalizeText(userArea.value);
+  
+  // Normalizar la categoría del trabajo
+  const normalizedJobCategory = normalizeText(jobOfferArea.value);
+  
+  // Verificar si hay coincidencia directa o a través del mapeo
+  return !(
+    // Coincidencia directa
+    normalizedUserArea === normalizedJobCategory ||
+    // O coincidencia a través del mapeo
+    normalizeText(areaToCategoryMap[normalizedUserArea]) === normalizedJobCategory ||
+    // O coincidencia inversa
+    normalizedUserArea === normalizeText(categoryToTrainingArea[normalizedJobCategory])
+  );
+});
 </script>
 
 <template>
@@ -238,10 +287,10 @@ const getCategoryLabel = (category) => {
                 </button>
                 <button
                   @click="applyToJob(jobOffer.id)"
-                  :disabled="userRole === 'empresa'"
+                  :disabled="isApplyDisabled"
                   :class="[
                     'flex-1 font-medium py-2 rounded-r-lg transition-colors',
-                    userRole === 'empresa'
+                    isApplyDisabled
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : 'bg-[#193CB8] text-white hover:bg-[#142d8c] cursor-pointer'
                   ]"

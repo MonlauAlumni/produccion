@@ -13,10 +13,49 @@
   });
 
   const page = usePage();
-  
+
+  // Default filtering by user's training_area
+  const userTrainingArea = computed(() => page.props.auth.user?.training_area ?? null);
+  const normalizeText = (text) => {
+    if (!text) return '';
+    return text.toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  };
+  const areaToCategoryMap = {
+    informatica: 'it',
+    marketing: 'marketing',
+    automocion: 'automotive'
+  };
+
   // Recuperar los filtros y página de la URL al cargar la página
   const urlParams = new URLSearchParams(window.location.search);
-  
+
+  const initialActiveCategory = urlParams.has('categoria') ? 
+    Array.isArray(urlParams.getAll('categoria')) ? 
+    urlParams.getAll('categoria') : 
+    [urlParams.get('categoria')] : 
+    [];
+
+  // Aplicar filtro por defecto según training_area si no hay categoría en URL
+  if (initialActiveCategory.length === 0 && userTrainingArea.value) {
+    const normArea = normalizeText(userTrainingArea.value);
+    const mappedCategory = areaToCategoryMap[normArea];
+    if (mappedCategory) {
+      initialActiveCategory.push(mappedCategory);
+    }
+  }
+
+  const initialActiveJobType = urlParams.has('trabajo') ? 
+    Array.isArray(urlParams.getAll('trabajo')) ? 
+    urlParams.getAll('trabajo') : 
+    [urlParams.get('trabajo')] : 
+    [];
+
+  const activeFilter = ref('all');
+  const activeCategory = ref(initialActiveCategory);
+  const activeJobType = ref(initialActiveJobType);
+
   const isJobConfirmationModalOpen = ref(false);
   const selectedJobId = ref(null);
 
@@ -56,23 +95,6 @@
   const savedJobs = ref(new Set());
   const likedJobs = ref(new Set());
   const viewedJobs = ref(new Set());
-
-  // Estado para filtros - inicializar desde URL si existen
-  const initialActiveCategory = urlParams.has('categoria') ? 
-    Array.isArray(urlParams.getAll('categoria')) ? 
-    urlParams.getAll('categoria') : 
-    [urlParams.get('categoria')] : 
-    [];
-  
-  const initialActiveJobType = urlParams.has('trabajo') ? 
-    Array.isArray(urlParams.getAll('trabajo')) ? 
-    urlParams.getAll('trabajo') : 
-    [urlParams.get('trabajo')] : 
-    [];
-
-  const activeFilter = ref('all');
-  const activeCategory = ref(initialActiveCategory);
-  const activeJobType = ref(initialActiveJobType);
 
   // Categorías destacadas
   const featuredCategories = [
@@ -336,7 +358,7 @@
               <div class="relative max-w-xl">
                 <div class="flex">
                   <input v-model="searchQuery" type="text" placeholder="Buscar por título, empresa o ubicación..."
-                    class="w-full px-4 py-3 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 placeholder-gray-500 focus:ring-blue-300 border-1 border-white"
+                    class="w-full px-4 py-3 rounded-l-lg text-gray-200 focus:outline-none focus:ring-2 placeholder-gray-300 focus:ring-blue-300 border-1 border-white"
                     @keyup.enter="searchJobs" />
                   <button @click="searchJobs"
                     class="bg-[#193CB8] hover:bg-[#142d8c] px-4 py-3 rounded-r-lg border-1 border-white flex items-center justify-center transition-colors">
