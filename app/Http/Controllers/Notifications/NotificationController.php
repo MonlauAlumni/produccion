@@ -40,6 +40,53 @@ class NotificationController extends Controller
         $notification->message = $message;
         $notification->is_read = false;
         $notification->save();
+
+        if (Notification::where('user_id', $userId)->count() > 50) {
+            Notification::where('user_id', $userId)->orderBy('created_at', 'asc')->first()->delete();
+        }
+    }
+
+    public function update(Request $request, $notificationId)
+    {
+        $notification = Notification::find($notificationId);
+
+        if ($notification && $notification->user_id === $request->user()->id) {
+            $notification->is_read = true;
+            $notification->save();
+        }
+
+        return redirect()->back();
+    }
+
+    public function updateAll(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        Notification::where('user_id', $userId)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return redirect()->back();
+    }
+
+    public function destroy(Request $request, $notificationId)
+    {
+        $notification = Notification::find($notificationId);
+
+        if ($notification && $notification->user_id === $request->user()->id) {
+            $notification->delete();
+        }
+
+        return redirect()->back();
+    }
+
+    public function destroyAll(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        Notification::where('user_id', $userId)->delete();
+
+        return redirect()->back();
     }
 
 }

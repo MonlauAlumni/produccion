@@ -110,14 +110,32 @@ const applyFilters = () => {
 };
 
 const markAsRead = (notificationId) => {
-  router.post(`/notificaciones/${notificationId}/marcar-leida`, {}, {
+  router.put(`/notificaciones/${notificationId}/mark-as-read`, {}, {
     preserveScroll: true,
-    only: ['notifications', 'unreadCount']
+    preserveState: false,
+    onSuccess: () => {
+      const notification = notificationsList.value.find(n => n.id === notificationId);
+      if (notification && !notification.is_read) {
+        notification.is_read = true;
+      }
+    }
   });
 };
 
+const deleteAllNotifications = () => {
+  router.delete('/notificaciones', {}, {
+    preserveScroll: true,
+    preserveState: false,
+    only: ['notifications', 'unreadCount'],
+    onSuccess: (page) => {
+      notificationsList.value = page.props.notifications.data || [];
+    }
+  });
+};
+
+
 const markAllAsRead = () => {
-  router.post('/notificaciones/marcar-todas-leidas', {}, {
+  router.put('/notificaciones/mark-all-as-read', {}, {
     preserveScroll: true,
     only: ['notifications', 'unreadCount'],
     onSuccess: () => {
@@ -143,12 +161,12 @@ const deleteNotification = (notificationId) => {
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
-  
+
   const date = new Date(dateString);
   const now = new Date();
   const diffTime = Math.abs(now - date);
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  
+
   if (diffDays === 0) {
     // Hoy - mostrar hora
     return date.toLocaleTimeString('es-ES', {
@@ -225,7 +243,7 @@ const unreadNotificationsCount = computed(() => {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
-  
+
   return () => {
     window.removeEventListener('scroll', handleScroll);
   };
@@ -261,23 +279,16 @@ const page = usePage();
           <!-- Tabs Navigation -->
           <div class="bg-white rounded-xl shadow-sm mb-6 overflow-hidden">
             <div class="flex overflow-x-auto hide-scrollbar">
-              <button 
-                v-for="tab in notificationTabs" 
-                :key="tab.id"
-                @click="setFilter(tab.id)"
-                :class="[
-                  'px-4 py-3 flex items-center whitespace-nowrap transition-colors',
-                  activeTab === tab.id
-                    ? 'text-[#193CB8] border-b-2 border-[#193CB8] font-medium'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                ]"
-              >
+              <button v-for="tab in notificationTabs" :key="tab.id" @click="setFilter(tab.id)" :class="[
+                'px-4 py-3 flex items-center whitespace-nowrap transition-colors',
+                activeTab === tab.id
+                  ? 'text-[#193CB8] border-b-2 border-[#193CB8] font-medium'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              ]">
                 <i :class="['bx mr-2', tab.icon]"></i>
                 {{ tab.name }}
-                <span 
-                  v-if="tab.id === 'unread' && unreadNotificationsCount > 0"
-                  class="ml-2 bg-[#193CB8] text-white text-xs rounded-full px-2 py-0.5"
-                >
+                <span v-if="tab.id === 'unread' && unreadNotificationsCount > 0"
+                  class="ml-2 bg-[#193CB8] text-white text-xs rounded-full px-2 py-0.5">
                   {{ unreadNotificationsCount }}
                 </span>
               </button>
@@ -287,30 +298,32 @@ const page = usePage();
           <!-- Actions Bar -->
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold text-gray-800">
-              {{ activeTab === 'all' ? 'Todas las notificaciones' : 
-                 activeTab === 'unread' ? 'Notificaciones no leídas' : 
-                 activeTab === 'mentions' ? 'Menciones' : 
-                 activeTab === 'events' ? 'Eventos' : 'Ofertas de trabajo' }}
+              {{ activeTab === 'all' ? 'Todas las notificaciones' :
+                activeTab === 'unread' ? 'Notificaciones no leídas' :
+                  activeTab === 'mentions' ? 'Menciones' :
+                    activeTab === 'events' ? 'Eventos' : 'Ofertas de trabajo' }}
             </h2>
-            <button 
-              @click="markAllAsRead"
-              class="text-[#193CB8] hover:text-[#142d8c] text-sm font-medium flex items-center"
-            >
-              <i class='bx bx-check-double mr-1'></i>
-              Marcar todas como leídas
-            </button>
+            <div class="flex items-center space-x-4">
+              <button @click="markAllAsRead"
+                class="text-[#193CB8] hover:text-[#142d8c] text-sm font-medium flex items-center cursor-pointer">
+                <i class='bx bx-check-double mr-1'></i>
+                Marcar todas como leídas
+              </button>
+              <button @click="deleteAllNotifications"
+                class="text-red-500 hover:text-red-600 text-sm font-medium flex items-center cursor-pointer">
+                <i class="bx bx-trash mr-1"></i>
+                Borrar todas
+              </button>
+
+            </div>
           </div>
 
           <!-- Notifications List -->
           <div class="space-y-3">
-            <div 
-              v-for="notification in notificationsList" 
-              :key="notification.id"
-              :class="[
-                'bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-300 border border-gray-200',
-                !notification.is_read ? 'border-l-4 border-l-[#193CB8]' : ''
-              ]"
-            >
+            <div v-for="notification in notificationsList" :key="notification.id" :class="[
+              'bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-300 border border-gray-200',
+              !notification.is_read ? 'border-l-4 border-l-[#193CB8]' : ''
+            ]">
               <div class="p-4 flex">
                 <!-- Icon -->
                 <div :class="[
@@ -327,32 +340,25 @@ const page = usePage();
                     <div class="flex items-center space-x-2 ml-2">
                       <span class="text-xs text-gray-500">{{ formatDate(notification.created_at) }}</span>
                       <div class="flex space-x-1">
-                        <button 
-                          v-if="!notification.is_read"
-                          @click="markAsRead(notification.id)"
+                        <button v-if="!notification.is_read" @click="markAsRead(notification.id)"
                           class="text-gray-400 hover:text-[#193CB8] p-1 rounded-full hover:bg-gray-100"
-                          title="Marcar como leída"
-                        >
+                          title="Marcar como leída">
                           <i class='bx bx-check text-lg'></i>
                         </button>
-                        <button 
-                          @click="deleteNotification(notification.id)"
-                          class="text-gray-400 hover:text-red-500 p-1 rounded-full hover:bg-gray-100"
-                          title="Eliminar"
-                        >
+                        <button @click="deleteNotification(notification.id)"
+                          class="text-gray-400 hover:text-red-500 p-1 rounded-full hover:bg-gray-100" title="Eliminar">
                           <i class='bx bx-x text-lg'></i>
                         </button>
                       </div>
                     </div>
                   </div>
 
-                  <!-- Notification Details -->
                   <div class="mt-2">
-                    <!-- Message Notification -->
                     <div v-if="notification.type === 'message'" class="mt-2">
-                      <button class="text-[#193CB8] text-sm hover:underline">Ver mensaje</button>
+                      <button class="text-[#193CB8] text-sm hover:underline cursor-pointer"
+                        @click="router.get('/mensajes')">Ver mensaje</button>
                     </div>
-                    
+
                     <!-- Otros tipos de notificaciones se pueden agregar según se implementen en el backend -->
                   </div>
                 </div>
@@ -369,16 +375,15 @@ const page = usePage();
             </div>
 
             <!-- End of Results -->
-            <div v-if="pagination.currentPage >= pagination.lastPage && !isLoading && notificationsList.length > 0" class="text-center py-8">
+            <div v-if="pagination.currentPage >= pagination.lastPage && !isLoading && notificationsList.length > 0"
+              class="text-center py-8">
               <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i class='bx bx-check-circle text-3xl text-[#193CB8]'></i>
               </div>
               <h3 class="text-lg font-medium text-gray-800 mb-2">¡Has visto todas las notificaciones!</h3>
               <p class="text-gray-500 mb-4">Estás al día con todas tus actualizaciones</p>
-              <button 
-                @click="scrollToTop"
-                class="text-[#193CB8] font-medium hover:underline flex items-center justify-center mx-auto"
-              >
+              <button @click="scrollToTop"
+                class="text-[#193CB8] font-medium hover:underline flex items-center justify-center mx-auto">
                 <i class='bx bx-chevron-up mr-1'></i>
                 Volver arriba
               </button>
@@ -391,10 +396,8 @@ const page = usePage();
               </div>
               <h3 class="text-lg font-medium text-gray-800 mb-2">No hay notificaciones</h3>
               <p class="text-gray-500 mb-4">Estás al día con todas tus actualizaciones</p>
-              <button 
-                @click="router.get('/connect')"
-                class="bg-[#193CB8] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#142d8c] transition-colors"
-              >
+              <button @click="router.get('/connect')"
+                class="bg-[#193CB8] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#142d8c] transition-colors cursor-pointer">
                 Explorar comunidad
               </button>
             </div>
@@ -403,11 +406,8 @@ const page = usePage();
       </div>
 
       <!-- Scroll to Top Button -->
-      <button 
-        v-show="showScrollTopButton" 
-        @click="scrollToTop"
-        class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#193CB8] text-white shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300 z-50 animate-fade-in"
-      >
+      <button v-show="showScrollTopButton" @click="scrollToTop"
+        class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#193CB8] text-white shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300 z-50 animate-fade-in">
         <i class='bx bx-chevron-up text-xl'></i>
       </button>
     </div>
@@ -429,6 +429,7 @@ const page = usePage();
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
