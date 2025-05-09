@@ -2,7 +2,7 @@
     <section class="relative h-screen overflow-hidden">
       <!-- Carrusel de fondo -->
       <div class="absolute inset-0 z-0">
-        <div class="relative h-full w-full">
+        <div class="relative h-full w-full bg-blue-600">
           <transition-group name="fade">
             <div 
               v-for="(image, index) in images" 
