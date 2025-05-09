@@ -87,16 +87,16 @@ export default {
   <div>
     <!-- Botón menú mobile -->
     <button @click="toggleSidebar"
-      class="md:hidden fixed top-4 left-4  bg-[#193CB8] z-100 text-white p-2 rounded-md shadow-md">
+      class="md:hidden fixed top-2.5 left-4 bg-[#193CB8]  z-50 text-white p-2 rounded-md shadow-md">
       <i class='bx bx-menu text-xl'></i>
     </button>
 
     <!-- Overlay para móviles -->
-    <div v-if="isOpen" @click="toggleSidebar" class="fixed inset-0 bg-black/50 md:hidden z-40 backdrop-blur-sm"></div>
+    <div v-if="isOpen" @click="toggleSidebar" class="fixed inset-0 bg-black/50 md:hidden z-40  backdrop-blur-sm"></div>
 
     <!-- Sidebar -->
     <aside :class="[ 
-      'h-full w-64 flex flex-col bg-white z-40 shadow-lg border-r border-gray-100 transition-all duration-300', 
+      'h-full w-64 flex flex-col bg-white z-50 md:z-40 shadow-lg border-r border-gray-100 transition-all duration-300', 
       isOpen ? 'fixed top-0 left-0 translate-x-0' : 'fixed top-0 left-0 -translate-x-full', 
       'md:static md:translate-x-0'
     ]">
