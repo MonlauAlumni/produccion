@@ -32,10 +32,7 @@ class AdminController extends Controller
                     ->when($request->filled('area'), function ($query) use ($request) {
                         $query->where('training_area', 'like', '%' . $request->area . '%');
                     })
-                    ->when($request->filled('role'), function ($query) use ($request) {
-                        $query->whereHas('roles', function ($q) use ($request) {
-                            $q->where('role_id', $request->role);
-                        });
+;
                     })
                     ->with('roles') 
                     ->orderBy('id', 'desc')
