@@ -4,6 +4,7 @@
     <div class="p-4 border-b border-gray-200 flex justify-between items-center">
       <h2 class="text-xl font-bold text-gray-800">Mensajes</h2>
       <button 
+      v-if="userRole === 'empresa'"
         @click="$emit('new-conversation')"
         class="w-10 h-10 rounded-full bg-[#193CB8] text-white flex items-center justify-center hover:bg-[#142d8c] transition-colors"
       >
@@ -49,8 +50,11 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import ConversationItem from './ConversationItem.vue';
+import { usePage, router } from '@inertiajs/vue3';
 
+import ConversationItem from './ConversationItem.vue';
+const page = usePage()
+const userRole = computed(() => page.props.auth.user?.roles?.[0]?.name ?? null)
 const props = defineProps({
   conversations: {
     type: Array,

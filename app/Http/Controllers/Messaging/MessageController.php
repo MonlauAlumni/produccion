@@ -21,13 +21,9 @@ class MessageController extends Controller
      */
     public function index()
     {
-       $company = Auth::user()->company;
+       
 
-       $job_offers = $company->jobOffers()->where('status', 'active')->get();
-
-        return Inertia::render('Messaging/Index', [
-            'companyJobs' => $job_offers,
-        ]);
+        return Inertia::render('Messaging/Index');
     }
     
     /**
@@ -176,8 +172,7 @@ class MessageController extends Controller
     {
         $user = Auth::user();
         
-        // Registrar los datos recibidos para depuración
-        Log::info('Datos recibidos para crear conversación:', $request->all());
+       
         
         // Validar la solicitud
         $validated = $request->validate([

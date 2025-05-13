@@ -45,9 +45,7 @@
         <span class="hidden sm:inline">Ver oferta</span>
       </button>
       
-      <button class="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100">
-        <i class='bx bx-dots-vertical-rounded'></i>
-      </button>
+     
     </div>
     
     <!-- Panel de detalles del trabajo (condicional) -->
