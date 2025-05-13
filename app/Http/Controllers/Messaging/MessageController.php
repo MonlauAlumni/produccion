@@ -12,6 +12,7 @@ use App\Events\MessageSent;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class MessageController extends Controller
 {
@@ -20,7 +21,13 @@ class MessageController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Messaging/Index');
+       $company = Auth::user()->company;
+
+       $job_offers = $company->jobOffers()->where('status', 'active')->get();
+
+        return Inertia::render('Messaging/Index', [
+            'companyJobs' => $job_offers,
+        ]);
     }
     
     /**
@@ -169,11 +176,14 @@ class MessageController extends Controller
     {
         $user = Auth::user();
         
+        // Registrar los datos recibidos para depuración
+        Log::info('Datos recibidos para crear conversación:', $request->all());
+        
         // Validar la solicitud
-        $request->validate([
+        $validated = $request->validate([
             'recipient_id' => 'required|exists:users,id',
-            'message' => 'required|string|max:1000', // Cambiado de content a message
-            'job_id' => 'nullable|exists:jobs,id'
+            'message' => 'required|string|max:1000',
+            'job_id' => 'nullable|exists:job_offers,id'
         ]);
         
         // Verificar si ya existe una conversación entre estos usuarios
@@ -189,7 +199,7 @@ class MessageController extends Controller
             // Si existe, enviar mensaje en esa conversación
             $message = $existingConversation->messages()->create([
                 'user_id' => $user->id,
-                'content' => $request->message // Usar message del request pero guardar como content
+                'content' => $validated['message']
             ]);
             
             // Actualizar la conversación
@@ -197,7 +207,7 @@ class MessageController extends Controller
             
             // Si se proporciona un job_id, actualizar la conversación
             if ($request->job_id) {
-                $existingConversation->update(['job_id' => $request->job_id]);
+                $existingConversation->update(['job_id' => $validated['job_id']]);
             }
             
             // Cargar relaciones
@@ -218,7 +228,7 @@ class MessageController extends Controller
                 'conversation' => [
                     'id' => $existingConversation->id,
                     'participant' => $participant,
-                    'last_message' => $request->message,
+                    'last_message' => $validated['message'],
                     'updated_at' => now(),
                     'unread_count' => 0,
                     'job' => $existingConversation->jobOffer
@@ -230,31 +240,31 @@ class MessageController extends Controller
         // Crear nueva conversación
         $conversation = Conversation::create([
             'user_id' => $user->id,
-            'recipient_id' => $request->recipient_id,
-            'job_id' => $request->job_id
+            'recipient_id' => $validated['recipient_id'],
+            'job_id' => $validated['job_id']
         ]);
         
         // Crear el primer mensaje
         $message = $conversation->messages()->create([
             'user_id' => $user->id,
-            'content' => $request->message // Usar message del request pero guardar como content
+            'content' => $validated['message']
         ]);
         
         // Cargar relaciones
         $message->load('user');
-        $recipient = User::find($request->recipient_id);
+        $recipient = User::find($validated['recipient_id']);
         
         // Añadir message para compatibilidad
         $message->message = $message->content;
         
         // Emitir evento
-        broadcast(new MessageSent($message, $request->recipient_id))->toOthers();
+        broadcast(new MessageSent($message, $validated['recipient_id']))->toOthers();
         
         return response()->json([
             'conversation' => [
                 'id' => $conversation->id,
                 'participant' => $recipient,
-                'last_message' => $request->message,
+                'last_message' => $validated['message'],
                 'updated_at' => now(),
                 'unread_count' => 0,
                 'job' => $conversation->jobOffer
@@ -287,22 +297,16 @@ class MessageController extends Controller
     /**
      * Buscar alumni para el modal de nueva conversación
      */
-    public function searchAlumni(Request $request)
+   public function searchAlumni(Request $request)
     {
         $query = $request->get('q', '');
         
         $alumni = User::whereHas('roles', function ($query) {
-            $query->where('name', 'alumne'); // Suponiendo que el nombre del rol es 'alumne'
-        })
-        ->when($query, function($q) use ($query) {
-            return $q->where(function($subq) use ($query) {
-                $subq->where('name', 'like', "%{$query}%")
-                     ->orWhere('last_name_1', 'like', "%{$query}%");
-                    
-            });
+            $query->where('name', 'alumne');
         })
         ->with('profile')
-        ->limit(10)
+        ->orderBy('name', 'asc')
+        ->limit(500) // Aumentamos el límite para cargar más alumni de una vez
         ->get();
      
         return response()->json(['alumni' => $alumni]);
