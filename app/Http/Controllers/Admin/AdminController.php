@@ -32,8 +32,8 @@ class AdminController extends Controller
                     ->when($request->filled('area'), function ($query) use ($request) {
                         $query->where('training_area', 'like', '%' . $request->area . '%');
                     })
-;
-                    })
+
+                    
                     ->with('roles') 
                     ->orderBy('id', 'desc')
                     ->paginate($request->pagination ?? 10);

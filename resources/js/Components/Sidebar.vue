@@ -13,7 +13,7 @@ export default {
   const page = usePage()
   const notifications = page.props.auth?.user_notifications ?? 0
   const notificacionesItem = this.topMenuItems.find(item => item.text === 'Notificaciones')
-
+  const userRole = page.props.auth?.user?.roles[0]?.name
   if (notificacionesItem) {
     notificacionesItem.badge = notifications > 0 ? notifications : null
   }
@@ -183,6 +183,13 @@ export default {
       </div>
 
       <!-- Botón Crear oferta -->
+      <div v-if="userRole === 'admin'" class="p-4 border-t border-gray-100">
+        <button @click.prevent="navigateTo('/admin/dashboard')"
+          class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] text-white w-full py-3 rounded-md shadow-md hover:from-[#1535a3] cursor-pointer hover:to-[#193CB8] transition-all flex items-center justify-center">
+          <i class='bx bx-shield mr-2'></i>
+          <span>Panel de Administración</span>
+        </button>
+      </div>
       <div v-if="user.company" class="p-4 border-t border-gray-100">
         <button @click.prevent="navigateTo('/ofertas/crear')"
           class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] text-white w-full py-3 rounded-md shadow-md hover:from-[#1535a3] cursor-pointer hover:to-[#193CB8] transition-all flex items-center justify-center">
