@@ -25,7 +25,9 @@ class JobOfferController extends Controller
     $maximumSalary = $request->input('maximum_salary');
     $searchQuery = $request->input('search'); // Añadimos el parámetro de búsqueda
     
-    $offersQuery = JobOffer::with('company')->orderBy('created_at', 'desc');
+    $offersQuery = JobOffer::with('company')
+        ->whereIn('status', ['active', 'activo'])
+        ->orderBy('created_at', 'desc');
 
     // Búsqueda por texto
     if ($searchQuery) {

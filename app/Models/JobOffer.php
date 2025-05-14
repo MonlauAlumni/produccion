@@ -23,6 +23,7 @@ class JobOffer extends Model
         'maximum_salary', 
         'location', 
         'work_mode', 
+        'contract_type',
         'category', 
         'expires_at',
         'deadline', 

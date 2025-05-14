@@ -31,33 +31,40 @@
   // Recuperar los filtros y página de la URL al cargar la página
   const urlParams = new URLSearchParams(window.location.search);
 
-  const initialActiveCategory = urlParams.has('categoria') ? 
-    Array.isArray(urlParams.getAll('categoria')) ? 
-    urlParams.getAll('categoria') : 
-    [urlParams.get('categoria')] : 
-    [];
+  // Initialize with default values to ensure hooks are always called
+  const initialActiveCategoryValue = urlParams.has('categoria')
+    ? Array.isArray(urlParams.getAll('categoria'))
+      ? urlParams.getAll('categoria')
+      : [urlParams.get('categoria')]
+    : [];
 
-  // Aplicar filtro por defecto según training_area si no hay categoría en URL
-  if (initialActiveCategory.length === 0 && userTrainingArea.value) {
+  const initialActiveJobTypeValue = urlParams.has('trabajo')
+    ? Array.isArray(urlParams.getAll('trabajo'))
+      ? urlParams.getAll('trabajo')
+      : [urlParams.get('trabajo')]
+    : [];
+
+  const initialSearchQueryValue = urlParams.get('search') || '';
+
+  // Apply default filter based on training_area if no category in URL
+  if (initialActiveCategoryValue.length === 0 && userTrainingArea.value) {
     const normArea = normalizeText(userTrainingArea.value);
     const mappedCategory = areaToCategoryMap[normArea];
     if (mappedCategory) {
-      initialActiveCategory.push(mappedCategory);
+      initialActiveCategoryValue.push(mappedCategory);
     }
   }
 
-  const initialActiveJobType = urlParams.has('trabajo') ? 
-    Array.isArray(urlParams.getAll('trabajo')) ? 
-    urlParams.getAll('trabajo') : 
-    [urlParams.get('trabajo')] : 
-    [];
-
   const activeFilter = ref('all');
-  const activeCategory = ref(initialActiveCategory);
-  const activeJobType = ref(initialActiveJobType);
+  const activeCategory = ref(initialActiveCategoryValue);
+  const activeJobType = ref(initialActiveJobTypeValue);
+  const searchQuery = ref(initialSearchQueryValue);
 
   const isJobConfirmationModalOpen = ref(false);
   const selectedJobId = ref(null);
+
+  // Nueva variable para controlar la visibilidad del drawer de filtros en móvil
+  const isFilterDrawerOpen = ref(false);
 
   const getJobOffer = (id) => {
     return jobOffersList.value.find(job => job.id === id);
@@ -89,7 +96,7 @@
   const showFilters = ref(false);
   
   // Inicializar searchQuery desde la URL si existe
-  const searchQuery = ref(urlParams.get('search') || '');
+  //const searchQuery = ref(urlParams.get('search') || '');
 
   // Estado para interacciones
   const savedJobs = ref(new Set());
@@ -196,6 +203,10 @@
       activeCategory.value.push(category);
     }
     applyFilters();
+    // Cerrar el drawer en móvil después de aplicar un filtro
+    if (window.innerWidth < 768) {
+      isFilterDrawerOpen.value = false;
+    }
   };
 
   // Cambiar tipo de trabajo activo
@@ -208,6 +219,10 @@
       activeJobType.value.push(jobType);
     }
     applyFilters();
+    // Cerrar el drawer en móvil después de aplicar un filtro
+    if (window.innerWidth < 768) {
+      isFilterDrawerOpen.value = false;
+    }
   };
 
   // Limpiar todos los filtros
@@ -316,6 +331,18 @@
     return pages;
   });
 
+  // Función para abrir/cerrar el drawer de filtros
+  const toggleFilterDrawer = () => {
+    isFilterDrawerOpen.value = !isFilterDrawerOpen.value;
+    
+    // Si se abre el drawer, prevenir el scroll del body
+    if (isFilterDrawerOpen.value) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  };
+
   // Inicializar
   onMounted(() => {
     // Mostrar/ocultar botón para volver arriba al hacer scroll
@@ -328,9 +355,19 @@
       applyFilters();
     }
 
+    // Cerrar el drawer si se redimensiona la ventana a desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768 && isFilterDrawerOpen.value) {
+        isFilterDrawerOpen.value = false;
+        document.body.style.overflow = '';
+      }
+    });
+
     // Limpiar al desmontar
     return () => {
       window.removeEventListener('scroll', () => {});
+      window.removeEventListener('resize', () => {});
+      document.body.style.overflow = '';
     };
   });
 
@@ -358,16 +395,21 @@
               <div class="relative max-w-xl">
                 <div class="flex">
                   <input v-model="searchQuery" type="text" placeholder="Buscar por título, empresa o ubicación..."
-                    class="w-full px-4 py-3 rounded-l-lg text-gray-200 focus:outline-none focus:ring-2 placeholder-gray-300 focus:ring-blue-300 border-1 border-white"
+                    class="w-full px-4 py-3 rounded-l-lg text-gray-700 bg-white focus:outline-none focus:ring-2 placeholder-gray-500 focus:ring-blue-300 border-1 border-white"
                     @keyup.enter="searchJobs" />
                   <button @click="searchJobs"
-                    class="bg-[#193CB8] hover:bg-[#142d8c] px-4 py-3 rounded-r-lg border-1 border-white flex items-center justify-center transition-colors">
+                    class="bg-white hover:bg-gray-100 px-4 py-3 rounded-r-lg border-1 border-white flex items-center justify-center transition-colors text-[#193CB8]">
                     <i class='bx bx-search text-xl'></i>
                   </button>
                 </div>
 
-                <button @click="showFilters = !showFilters"
-                  class="absolute right-16 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                <!-- Botón para mostrar filtros en móvil -->
+                <button 
+                  @click="toggleFilterDrawer"
+                  class="md:hidden absolute right-16 top-1/2 transform -translate-y-1/2 text-gray-700 bg-white hover:bg-gray-100 p-2 rounded-full"
+                  aria-label="Mostrar filtros"
+                >
+                  <i class='bx bx-filter text-xl'></i>
                 </button>
               </div>
             </div>
@@ -418,6 +460,17 @@
                 <button @click="clearAllFilters" 
                         class="text-gray-500 hover:text-gray-700 text-sm underline">
                   Limpiar todos
+                </button>
+              </div>
+              
+              <!-- Botón para mostrar filtros en móvil (fuera de la barra de búsqueda) -->
+              <div class="md:hidden mb-4">
+                <button 
+                  @click="toggleFilterDrawer"
+                  class="w-full bg-white border border-gray-200 rounded-lg py-3 px-4 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+                >
+                  <i class='bx bx-filter-alt mr-2'></i>
+                  Filtrar resultados
                 </button>
               </div>
               
@@ -548,14 +601,80 @@
         </div>
       </div>
 
+      <!-- Drawer de filtros para móvil -->
+      <div v-if="isFilterDrawerOpen" 
+           class="fixed inset-0 bg-black/50 z-50 md:hidden transition-opacity duration-300"
+           @click="toggleFilterDrawer">
+      </div>
+      
+      <div :class="[
+        'fixed inset-y-0 right-0 w-4/5 max-w-xs bg-white z-50 transform transition-transform duration-300 ease-in-out shadow-xl md:hidden',
+        isFilterDrawerOpen ? 'translate-x-0' : 'translate-x-full'
+      ]">
+        <div class="flex flex-col h-full">
+          <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 class="text-lg font-bold text-gray-800">Filtros</h2>
+            <button @click="toggleFilterDrawer" class="text-gray-500 hover:text-gray-700">
+              <i class='bx bx-x text-2xl'></i>
+            </button>
+          </div>
+          
+          <div class="flex-1 overflow-y-auto p-4">
+            <div class="mb-6">
+              <h3 class="text-md font-bold text-gray-800 mb-3">Categorías</h3>
+              <div class="space-y-2">
+                <button v-for="category in featuredCategories" :key="category.id" @click="toggleCategory(category.id)"
+                  :class="[
+                    'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
+                    activeCategory.includes(category.id)
+                      ? 'bg-[#193CB8]/10 text-[#193CB8]'
+                      : 'hover:bg-gray-100 text-gray-700'
+                  ]">
+                  <i :class="['bx mr-2', category.icon]" :style="{ color: category.color }"></i>
+                  {{ category.name }}
+                </button>
+              </div>
+            </div>
+            
+            <div class="border-t border-gray-200 my-4"></div>
+            
+            <div>
+              <h3 class="text-md font-bold text-gray-800 mb-3">Tipo de trabajo</h3>
+              <div class="space-y-2">
+                <button v-for="type in jobTypes" :key="type.id" @click="toggleJobType(type.id)" 
+                  :class="[
+                    'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
+                    activeJobType.includes(type.id)
+                      ? 'bg-[#193CB8]/10 text-[#193CB8]'
+                      : 'hover:bg-gray-100 text-gray-700'
+                  ]">
+                  {{ type.name }}
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="p-4 border-t border-gray-200">
+            <button @click="clearAllFilters" 
+                    class="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+              Limpiar filtros
+            </button>
+            <button @click="toggleFilterDrawer" 
+                    class="w-full bg-[#193CB8] text-white py-2 px-4 rounded-lg mt-2 hover:bg-[#142d8c] transition-colors">
+              Aplicar filtros
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Scroll to Top Button -->
       <button v-show="showScrollTopButton" @click="scrollToTop"
-        class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#193CB8] text-white shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300 z-50 animate-fade-in">
+        class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#193CB8] text-white shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300 z-40 animate-fade-in">
         <i class='bx bx-chevron-up text-xl'></i>
       </button>
 
       <!-- Floating Action Button (Mobile) -->
-      <div class="md:hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+      <div class="md:hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40">
         <button @click="router.get('/ofertas/crear')"
           class="bg-[#193CB8] text-white px-6 py-3 rounded-full shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300">
           <i class='bx bx-plus-circle mr-2'></i>
@@ -640,5 +759,10 @@
 
   .animation-delay-400 {
     animation-delay: 0.4s;
+  }
+  
+  /* Prevenir scroll cuando el drawer está abierto */
+  body.no-scroll {
+    overflow: hidden;
   }
 </style>
