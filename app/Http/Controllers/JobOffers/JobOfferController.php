@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Skill;
 use App\Models\JobApplication;
 use Illuminate\Support\Facades\Auth;
 
@@ -85,9 +86,9 @@ class JobOfferController extends Controller
 
     public function show($id)
     {
-        $jobOffer = JobOffer::with('company')->findOrFail($id);
+        $jobOffer = JobOffer::with(['company', 'skills', 'applicants'])->findOrFail($id);
 
-   
+     
         return Inertia::render('JobOffers/SingleJobOffer', [
             'jobOffer' => $jobOffer
         ]);
@@ -95,13 +96,17 @@ class JobOfferController extends Controller
 
     public function create()
     {
-        return Inertia::render('JobOffers/CreateJobOffer');
+
+        $skills = Skill::all();
+       
+        return Inertia::render('JobOffers/CreateJobOffer', [
+            'skills' => $skills,
+        ]);
     }
 
     public function store(Request $request)
     {
-
-        // Crear la oferta de trabajo
+   
         $jobOffer = JobOffer::create([
             'company_id' => auth()->user()->company->id,
             'title' => $request->title,
@@ -129,6 +134,10 @@ class JobOfferController extends Controller
             $jobOffer->file = $filePath;
             $jobOffer->save();
         }
+         if ($request->filled('skills')) {
+      $skillIds = collect($request->skills)->pluck('id')->toArray();
+$jobOffer->skills()->sync($skillIds);
+         }
     
         return redirect()->route('home');
     }

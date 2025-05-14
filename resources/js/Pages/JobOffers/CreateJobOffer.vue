@@ -2,6 +2,17 @@
 import { ref, computed } from 'vue'
 import { router } from '@inertiajs/vue3'
 import Layout from '@/Components/Layout.vue'
+import { isPropsEqual } from '@fullcalendar/core/internal'
+import axios from 'axios';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
+
+const props = defineProps({
+  skills: {
+    type: Array,
+    default: () => []
+  }
+})
 
 const form = ref({
   title: '',
@@ -24,9 +35,10 @@ const form = ref({
   category: '',
 })
 
-const skills = ref(['Vue.js', 'Laravel', 'PHP', 'MySQL', 'Git', 'JavaScript', 'HTML', 'CSS', 'React', 'Node.js'])
+const skills = ref(props.skills )
 const newSkill = ref('')
 const fileName = ref('')
+const selectedSkill = ref(null)
 
 // For responsibilities and benefits
 const newResponsibility = ref('')
@@ -52,6 +64,14 @@ const formProgress = computed(() => {
   return Math.round((filled / total) * 100);
 })
 
+// Computed list of skills filtered by selected category
+const filteredSkills = computed(() => {
+  if (!form.value.category) {
+    return props.skills;
+  }
+  return props.skills.filter(skill => skill.category === form.value.category);
+});
+
 const toggleSkill = (skill) => {
   const index = form.value.skills.indexOf(skill)
   if (index === -1) {
@@ -61,12 +81,23 @@ const toggleSkill = (skill) => {
   }
 }
 
-const addSkill = () => {
-  if (newSkill.value.trim() !== '') {
-    skills.value.push(newSkill.value.trim())
-    form.value.skills.push(newSkill.value.trim())
-    newSkill.value = ''
+const addSelectedSkill = () => {
+  if (!selectedSkill.value) return
+  
+  // Si skills es un array de objetos (como en SkillsSection)
+  if (typeof selectedSkill.value === 'object' && selectedSkill.value !== null) {
+    // Verifica si ya existe la habilidad
+    if (!form.value.skills.includes(selectedSkill.value.name)) {
+      form.value.skills.push(selectedSkill.value)
+    }
+  } else {
+    // Si es un string simple
+    if (!form.value.skills.includes(selectedSkill.value)) {
+      form.value.skills.push(selectedSkill.value)
+    }
   }
+  
+  selectedSkill.value = null
 }
 
 const addResponsibility = () => {
@@ -96,10 +127,17 @@ const handleFileUpload = (event) => {
   fileName.value = event.target.files[0]?.name || ''
 }
 
+const isSubmitting = ref(false);
+
 const submit = () => {
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
   router.post('/ofertas/crear', form.value, {
-    forceFormData: true
-  })
+    forceFormData: true,
+    onFinish: () => {
+      isSubmitting.value = false;
+    }
+  });
 }
 
 const activeSection = ref('basic') // basic, details, requirements, benefits, finish
@@ -545,32 +583,55 @@ const prevSection = () => {
                   Habilidades requeridas <span class="text-red-500">*</span>
                 </label>
                 <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
+                  <!-- Lista de habilidades seleccionadas -->
                   <div class="flex flex-wrap gap-2 mb-4">
-                    <span v-for="skill in skills" :key="skill" :class="[
-                      'px-4 py-2 rounded-full text-sm cursor-pointer transition-all duration-200 flex items-center',
-                      form.skills.includes(skill)
-                        ? 'bg-gradient-to-r from-[#193CB8] to-[#2d50c7] text-white shadow-md'
-                        : 'bg-white text-gray-700 border border-gray-300 hover:border-[#193CB8] hover:text-[#193CB8]'
-                    ]" @click="toggleSkill(skill)">
-                      <i :class="[
-                        'mr-1',
-                        form.skills.includes(skill) ? 'bx bx-check' : 'bx bx-plus'
-                      ]"></i>
-                      {{ skill }}
+                    <span v-for="skill in form.skills" :key="skill"
+                      class="bg-blue-50 text-[#193CB8] px-3 py-1.5 rounded-md text-sm font-medium group relative">
+                      {{ skill.name }}
+                      <button @click="form.skills = form.skills.filter(s => s !== skill)"
+                        class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                        :aria-label="`Eliminar habilidad ${skill}`" tabindex="0">
+                        <i class='bx bx-x text-xs' aria-hidden="true"></i>
+                      </button>
                     </span>
                   </div>
-                  <div class="flex">
-                    <input v-model="newSkill" @keyup.enter="addSkill" type="text"
-                      placeholder="Añadir nueva habilidad..."
-                      class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg shadow-sm focus:outline-none focus:ring-[#193CB8] focus:border-[#193CB8] bg-white">
-                    <button type="button" @click="addSkill"
-                      class="bg-gradient-to-r from-[#193CB8] to-[#2d50c7] text-white px-4 py-3 rounded-r-lg hover:shadow-md transition-all duration-300">
-                      <i class='bx bx-plus'></i>
-                    </button>
+
+                  <!-- Multiselect para añadir habilidades -->
+                  <div>
+                    <label for="skill-select" class="block text-sm font-medium text-gray-700 mb-1">
+                      Selecciona una habilidad
+                    </label>
+                    <Multiselect v-model="selectedSkill"
+                      :options="filteredSkills"
+                      label="name"
+                      track-by="id"
+                      placeholder="Buscar habilidad"
+                      class="skill-select"
+                      :searchable="true"
+                      :clear-on-select="true"
+                      :close-on-select="true"
+                      id="skill-select" />
+
+                    <!-- Botones de acción -->
+                    <div class="flex gap-2 mt-3">
+                      <button @click="addSelectedSkill"
+                        class="bg-[#193CB8] hover:bg-[#2748c6] text-white px-4 py-2 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex-1"
+                        aria-label="Añadir habilidad seleccionada" :disabled="!selectedSkill">
+                        <span class="flex items-center justify-center gap-1">
+                          <i class='bx bx-check' aria-hidden="true"></i>
+                          <span>Añadir</span>
+                        </span>
+                      </button>
+                      <button @click="selectedSkill = null"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 flex-1"
+                        aria-label="Cancelar selección">
+                        <span class="flex items-center justify-center gap-1">
+                          <i class='bx bx-x' aria-hidden="true"></i>
+                          <span>Cancelar</span>
+                        </span>
+                      </button>
+                    </div>
                   </div>
-                  <p class="mt-2 text-sm text-gray-500">
-                    Selecciona todas las habilidades relevantes o añade nuevas
-                  </p>
                 </div>
               </div>
 
@@ -657,27 +718,7 @@ const prevSection = () => {
 
             <div class="p-6 space-y-6">
               <!-- File Upload -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Archivos adjuntos (opcional)
-                </label>
-                <div
-                  class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-[#193CB8]/20 border-dashed rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer relative">
-                  <input id="file-upload" name="file-upload" type="file"
-                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" @change="handleFileUpload">
-                  <div class="space-y-1 text-center">
-                    <i class='bx bx-upload text-5xl text-[#193CB8]'></i>
-                    <div class="flex flex-col items-center text-sm text-gray-600">
-                      <p class="font-medium text-[#193CB8]">
-                        {{ fileName ? fileName : 'Arrastra archivos aquí o haz clic para seleccionar' }}
-                      </p>
-                      <p class="text-xs text-gray-500 mt-1">
-                        PNG, JPG, GIF, PDF hasta 10MB
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            
 
               <!-- Summary -->
               <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
@@ -693,12 +734,37 @@ const prevSection = () => {
                   </div>
                   <div class="flex items-start">
                     <div class="w-32 text-sm font-medium text-gray-500">Experiencia:</div>
-                    <div class="flex-1">{{ form.min_experience || 'No especificado' }}</div>
+                    <div class="flex-1">
+  {{ form.min_experience === '5' ? '5+ años' : `${form.min_experience || 'No especificado'}-${parseInt(form.min_experience) + 1} años` }}
+</div>
                   </div>
                   <div class="flex items-start">
-                    <div class="w-32 text-sm font-medium text-gray-500">Estudios:</div>
-                    <div class="flex-1">{{ form.min_studies || 'No especificado' }}</div>
+                    <div class="w-32 text-sm font-medium text-gray-500">Estudios</div>
+                    <div class="flex-1">
+{{ form.min_studies === 'high-school'
+    ? 'Grado Superior'
+    : form.min_studies === 'bachelor'
+        ? 'Grado Medio'
+        : form.min_studies === 'master'
+            ? 'Grado Universitario'
+            : 'No especificado' }}
+
+</div>
                   </div>
+                  <div class="flex items-start">
+                    <div class="w-32 text-sm font-medium text-gray-500">Modalidad</div>
+                    <div class="flex-1">
+{{ form.work_mode === 'onsite'
+    ? 'Presencial'
+    : form.work_mode === 'remote'
+        ? 'Remoto'
+        : form.work_mode === 'hybrid'
+            ? 'Híbrido'
+            : 'No seleccionado' }}
+
+</div>
+                  </div>
+                  
                   <div class="flex items-start">
                     <div class="w-32 text-sm font-medium text-gray-500">Fecha límite:</div>
                     <div class="flex-1">{{ form.deadline || 'No especificado' }}</div>
@@ -708,7 +774,7 @@ const prevSection = () => {
                     <div class="flex-1 flex flex-wrap gap-1">
                       <span v-for="skill in form.skills" :key="skill"
                         class="px-2 py-1 bg-[#193CB8]/10 text-[#193CB8] rounded-full text-xs">
-                        {{ skill }}
+                        {{ skill.name }}
                       </span>
                       <span v-if="form.skills.length === 0" class="text-gray-500">No especificado</span>
                     </div>
@@ -722,10 +788,14 @@ const prevSection = () => {
                   <i class='bx bx-left-arrow-alt mr-2'></i>
                   Anterior
                 </button>
-                <button type="submit"
-                  class="bg-gradient-to-r from-[#193CB8] to-[#2d50c7] text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center">
-                  <i class='bx bx-check-circle mr-2'></i>
-                  Publicar Oferta
+                <button
+                  type="submit"
+                  :disabled="isSubmitting"
+                  class="bg-gradient-to-r from-[#193CB8] to-[#2d50c7] text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center" 
+                  :class="isSubmitting ? 'opacity-50 cursor-not-allowed' : ''"
+                >
+                  <i v-if="isSubmitting" class='bx bx-loader-alt animate-spin mr-2'></i>
+                  <span>{{ isSubmitting ? 'Publicando...' : 'Publicar Oferta' }}</span>
                 </button>
               </div>
             </div>
