@@ -31,9 +31,9 @@ export default {
       ],
       // Definimos los items sin la propiedad visible aquí
       middleMenuItems: [
-        { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo', route: '/mis-ofertas', requireRole: 'alumne'  },
+        { text: 'Mis Ofertas', icon: 'bx-briefcase',  route: '/mis-ofertas', requireRole: 'alumne'  },
         { text: 'Alumnos', icon: 'bx-user', route: '/alumnos', requireRole: ['empresa', 'admin'] },
-        { text: 'Candidatos', icon: 'bx-user-check', badge: 'Nuevo', route: '/gestion-candidatos', requireRole: 'empresa' },
+        { text: 'Candidatos', icon: 'bx-user-check', route: '/gestion-candidatos', requireRole: 'empresa' },
         { text: 'Empresas', icon: 'bx-buildings', route: '/empresas', requireRole: ['alumne', 'admin'] },
         { text: 'Alumni connect', icon: 'bx-group', route: '/connect' },
        
