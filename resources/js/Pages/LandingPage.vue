@@ -34,7 +34,7 @@
           <div v-if="isLoginMenuOpen"
             class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg py-2 z-50 animate-fadeIn"
             role="menu" aria-orientation="vertical">
-            <a href="/login"
+            <a href="/login-monlau"
               class="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 text-gray-800 w-full text-left"
               role="menuitem">
               <div class="bg-blue-100 flex p-2 rounded-full">
@@ -48,7 +48,7 @@
 
             <div class="border-t border-gray-200 my-1"></div>
 
-            <a href="/login-monlau"
+            <a href="/login"
               class="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 text-gray-800 w-full text-left"
               role="menuitem">
               <div class="bg-amber-100 p-2 flex rounded-full">
