@@ -21,6 +21,7 @@ class JobOfferController extends Controller
     
     $categories = $request->input('categoria');
     $workModes = $request->input('trabajo'); // Puede ser string o array
+    $contractTypes = $request->input('tipo_contrato'); // Puede ser string o array
     $minimumSalary = $request->input('minimum_salary');
     $maximumSalary = $request->input('maximum_salary');
     $searchQuery = $request->input('search'); // Añadimos el parámetro de búsqueda
@@ -63,6 +64,16 @@ class JobOfferController extends Controller
             $offersQuery->where('work_mode', $workModes);
         }
     }
+    // Filtrar por tipos de contrato (puede ser un array)
+    if ($contractTypes) {
+        if (is_array($contractTypes)) {
+            $offersQuery->whereIn('contract_type', $contractTypes);
+        } else {
+            $offersQuery->where('contract_type', $contractTypes);
+        }
+    }
+
+
 
     // Filtrar por rango salarial
     if ($minimumSalary && $maximumSalary) {

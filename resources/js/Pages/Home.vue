@@ -28,6 +28,7 @@
     automocion: 'automotive'
   };
 
+
   // Recuperar los filtros y página de la URL al cargar la página
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -44,6 +45,12 @@
       : [urlParams.get('trabajo')]
     : [];
 
+  const initialActiveContractTypeValue = urlParams.has('tipo_contrato')
+    ? Array.isArray(urlParams.getAll('tipo_contrato'))
+      ? urlParams.getAll('tipo_contrato')
+      : [urlParams.get('tipo_contrato')]
+    : [];
+
   const initialSearchQueryValue = urlParams.get('search') || '';
 
   // Apply default filter based on training_area if no category in URL
@@ -58,6 +65,7 @@
   const activeFilter = ref('all');
   const activeCategory = ref(initialActiveCategoryValue);
   const activeJobType = ref(initialActiveJobTypeValue);
+  const activeContractType = ref(initialActiveContractTypeValue);
   const searchQuery = ref(initialSearchQueryValue);
 
   const isJobConfirmationModalOpen = ref(false);
@@ -118,7 +126,13 @@
     { id: 'onsite', name: 'Presencial' },
     { id: 'hybrid', name: 'Híbrido' }
   ];
-
+  
+  const contractType = [
+    { id: 'all', name: 'Todos' },
+    { id: 'full_time', name: 'Jornada Completa' },
+    { id: 'part_time', name: 'Media Jornada' },
+    { id: 'internship', name: 'Prácticas' }
+  ];
   // Cambiar de página
   const goToPage = (pageNumber) => {
     if (pageNumber < 1 || pageNumber > pagination.value.lastPage || pageNumber === pagination.value.currentPage) {
@@ -132,6 +146,7 @@
       page: pageNumber,
       categoria: activeCategory.value.length ? activeCategory.value : undefined,
       trabajo: activeJobType.value.length ? activeJobType.value : undefined,
+      tipo_contrato: activeContractType.value.length ? activeContractType.value : undefined,
       search: searchQuery.value || undefined
     };
     
@@ -225,6 +240,17 @@
     }
   };
 
+  const toggleContractType = (contractType) => {
+    if (contractType === 'all') {
+      activeContractType.value = [];
+    } else if (activeContractType.value.includes(contractType)) {
+      activeContractType.value = activeContractType.value.filter((t) => t !== contractType);
+    } else {
+      activeContractType.value.push(contractType);
+    }
+    applyFilters();
+  };
+
   // Limpiar todos los filtros
   const clearAllFilters = () => {
     activeCategory.value = [];
@@ -248,6 +274,10 @@
 
     if (activeJobType.value.length > 0) {
       params.trabajo = activeJobType.value;
+    }
+
+    if (activeContractType.value.length > 0) {
+      params.tipo_contrato = activeContractType.value;
     }
 
     if (searchQuery.value) {
@@ -448,6 +478,14 @@
                     <i class='bx bx-x'></i>
                   </button>
                 </div>
+
+                <div v-for="type in activeContractType" :key="`contract-${type}`" 
+                     class="bg-[#193CB8]/10 text-[#193CB8] px-3 py-1 rounded-full text-sm flex items-center">
+                  {{ contractType.find(t => t.id === type)?.name || type }}
+                  <button @click="toggleContractType(type)" class="ml-2 text-[#193CB8] hover:text-[#142d8c]">
+                    <i class='bx bx-x'></i>
+                  </button>
+                </div>
                 
                 <div v-if="searchQuery" 
                      class="bg-[#193CB8]/10 text-[#193CB8] px-3 py-1 rounded-full text-sm flex items-center">
@@ -589,6 +627,21 @@
                     :class="[
                       'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
                       activeJobType.includes(type.id)
+                        ? 'bg-[#193CB8]/10 text-[#193CB8]'
+                        : 'hover:bg-gray-100 text-gray-700'
+                    ]">
+                    {{ type.name }}
+                  </button>
+                </div>
+                <div class="border-t border-gray-200 my-4"></div>
+
+                <h2 class="text-lg font-bold text-gray-800 mb-3">Tipo de contrato</h2>
+
+                <div class="space-y-2">
+                  <button v-for="type in contractType" :key="type.id" @click="toggleContractType(type.id)" 
+                    :class="[
+                      'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
+                      activeContractType.includes(type.id)
                         ? 'bg-[#193CB8]/10 text-[#193CB8]'
                         : 'hover:bg-gray-100 text-gray-700'
                     ]">
