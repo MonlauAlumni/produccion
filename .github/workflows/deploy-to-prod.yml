@@ -1,0 +1,58 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - master  # Este es el trigger, cuando hagas push a master en preproduccion
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Checkout el código del repositorio
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      # Paso 2: Configurar SSH para poder acceder al repositorio remoto
+      - name: Configurar SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      # Paso 3: Debug de la autenticación SSH
+      - name: Debug SSH
+        run: |
+          ls -la ~/.ssh
+          ssh -T git@github.com || echo "Error de autenticación SSH"
+
+      # Paso 4: Configurar el acceso a los remotos de los repositorios
+      - name: Configurar acceso a repositorios
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git remote add produccion git@github.com:MonlauAlumni/produccion.git
+          git fetch origin  # Trae las ramas de preproduccion
+          git fetch produccion  # Trae las ramas de produccion
+
+      # Paso 5: Hacer checkout de la rama main de produccion
+      - name: Checkout main en produccion
+        run: |
+          git checkout main || echo "Error al hacer checkout de la rama main en produccion"
+
+      # Paso 6: Hacer merge de la rama master de preproduccion a main de produccion
+      - name: Merge master de preproduccion a main de produccion
+        run: |
+          git merge origin/master --no-ff --no-edit --allow-unrelated-histories || echo "Error al hacer merge"
+
+      # Paso 7: Configurar el tamaño del búfer de Git (para grandes cambios)
+      - name: Configurar el búfer de Git
+        run: |
+          git config --global http.postBuffer 524288000
+
+      # Paso 8: Push forzado de los cambios de main en produccion
+      - name: Push forzado a producción
+        run: |
+          git push --force produccion main || echo "Error al hacer push forzado"

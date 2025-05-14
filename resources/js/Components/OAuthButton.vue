@@ -6,7 +6,7 @@
     ]"
     @click="redirectToAuthProvider"
   >
-    <img :src="providerIcon" alt="provider icon" class="w-5 h-5 mr-3" />
+    <img v-if="image" :src="providerIcon" alt="provider icon" class="w-5 h-5 mr-3" />
     <span class="font-semibold">{{ text }}</span>
   </button>
 </template>
@@ -24,6 +24,10 @@ const props = defineProps({
   text: {
     type: String,
     default: "Sign in",
+  },
+  image: {
+    type: Boolean,
+    default: true,
   },
 });
 

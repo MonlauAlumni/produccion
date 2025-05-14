@@ -1,83 +1,179 @@
-<template>
-    <div>
-        <!-- Botón de menú en móviles y tablets -->
-        <button @click="toggleSidebar" class="md:hidden fixed top-30 left-5 z-50 bg-gray-800 text-white p-2 rounded-md">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" d="M4 5h16v2H4V5zm0 6h16v2H4v-2zm0 6h16v2H4v-2z" clip-rule="evenodd"></path>
-            </svg>
-        </button>
-
-        <!-- Fondo oscuro al abrir el menú -->
-        <div v-if="isOpen" @click="toggleSidebar" class="fixed inset-0 bg-black/60 md:hidden z-40"></div>
-
-        <!-- Sidebar -->
-        <aside :class="['h-screen w-64 p-4 flex flex-col fixed top-0 left-0 transition-transform bg-white z-50',
-                        isOpen ? 'translate-x-0' : '-translate-x-full', 'md:translate-x-0 md:top-24']">
-            <!-- Botón de cerrar en móviles -->
-            <button @click="toggleSidebar" class="md:hidden absolute top-4 right-4 bg-red-500 text-white p-1 rounded-full">
-                ✕
-            </button>
-
-            <!-- Perfil de usuario -->
-            <div class="rounded-3xl p-4 flex items-center space-x-3 border-2 border-gray-300">
-                <div class="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">
-                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-sm font-semibold">{{ username }}</p>
-                    <p class="text-xs text-gray-600">@{{ usertag }}</p>
-                </div>
-            </div>
-
-            <div class="mt-6 border-2 border-gray-300 rounded-3xl p-4 flex flex-col space-y-4">
-                <!-- Menú de navegación -->
-                <nav>
-                    <ul class="space-y-4">
-                        <li v-for="item in menuItems" :key="item.text">
-                            <a href="#" class="block px-4 py-2 text-gray-700 border border-transparent hover:border-gray-300 rounded-3xl transition-all">
-                                {{ item.text }}
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-
-                <!-- Botón Post -->
-                <div class="mt-2 flex justify-center">
-                    <button class="bg-blue-600 text-white px-6 py-2 shadow-md hover:bg-blue-800 cursor-pointer w-full rounded-3xl transition-all">
-                        Post
-                    </button>
-                </div>
-            </div>
-        </aside>
-    </div>
-</template>
-
 <script>
+import { usePage } from '@inertiajs/vue3'
+import { computed } from 'vue';
+const page = usePage();
+
 export default {
-    props: {
-        username: { type: String, required: true },
-        usertag: { type: String, required: true }
+  data() {
+    return {
+      isOpen: false,
+      darkMode: false,
+      topMenuItems: [
+        { text: 'Inicio', icon: 'bx-home', route: '/home' },
+        { text: 'Notificaciones', icon: 'bx-bell', badge: '5', route: '/notificaciones' },
+        { text: 'Mensajes', icon: 'bx-envelope', badge: '2', route: '/mensajes' },
+        { text: 'Calendario', icon: 'bx-calendar', route: '/calendario' },
+      ],
+      middleMenuItems: [
+        { text: 'Alumni connect', icon: 'bx-group', route: '/connect' },
+        { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo', route: '/mis-ofertas' },
+        { text: 'Empresas', icon: 'bx-buildings', route: '/empresas' },
+      ],
+      bottomMenuItems: [
+        { text: 'Configuración', icon: 'bx-cog', route: '/configuracion' },
+        { text: 'Cerrar sesión', icon: 'bx-log-out', route: '/logout' }
+      ],
+    };
+
+  },
+  computed: {
+    user() {
+      return page.props.auth.user;
     },
-    data() {
-        return {
-            isOpen: false,
-            menuItems: [
-                { text: 'Inicio' },
-                { text: 'Social' },
-                { text: 'Notificaciones' },
-                { text: 'Mis Ofertas' },
-                { text: 'Empresas' },
-                { text: 'Alumnos' },
-                { text: 'Configuración' }
-            ]
-        };
-    },
-    methods: {
-        toggleSidebar() {
-            this.isOpen = !this.isOpen;
-        }
+    currentRoute() {
+      return window.location.pathname; // Obtiene la ruta actual
     }
+  },
+  methods: {
+    toggleSidebar() {
+      this.isOpen = !this.isOpen;
+    },
+    navigateTo(route) {
+      this.$inertia.visit(route);
+    },
+    isActive(route) {
+      return this.currentRoute === route;
+    }
+  }
 };
+
+
 </script>
+
+<template>
+  <div>
+    <!-- Botón menú mobile -->
+    <button @click="toggleSidebar"
+      class="md:hidden fixed top-4 left-4 z-50 bg-[#193CB8] text-white p-2 rounded-md shadow-md">
+      <i class='bx bx-menu text-xl'></i>
+    </button>
+
+    <!-- Overlay para móviles -->
+    <div v-if="isOpen" @click="toggleSidebar" class="fixed inset-0 bg-black/50 md:hidden z-40 backdrop-blur-sm"></div>
+
+    <!-- Sidebar -->
+    <aside :class="[
+      'h-full w-64 flex flex-col bg-white z-40 shadow-lg border-r border-gray-100 transition-all duration-300',
+      isOpen ? 'fixed top-0 left-0 translate-x-0' : 'fixed top-0 left-0 -translate-x-full',
+      'md:static md:translate-x-0'
+    ]">
+      <!-- Perfil usuario -->
+      <div class="p-4 border-b border-gray-100">
+        <div class="flex items-center space-x-3 mb-3">
+          <div class="relative">
+            <div v-if="user.company">
+              <img v-if="user.company.profile_picture" :src="user.company.profile_picture"
+                alt="Profile picture" class="w-12 h-12  shadow-sm border-2 border-white">
+              <div v-else
+                class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
+                <i class='bx bxs-building text-xl'></i>
+              </div>
+            </div>
+            <div v-if="user.profile">
+                <img v-if="user.profile.profile_picture" :src="user.profile.profile_picture"
+                  alt="Profile picture" class="w-12 h-12  shadow-sm border-2 border-white">
+                <div v-else
+                  class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
+                  <i class='bx bxs-user text-xl'></i>
+                </div>
+            </div>
+            <div v-if="user?.company"
+              class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white"></div>
+          </div>
+          <div>
+              <p @click.prevent="navigateTo(`/empresa/${user.company.slang}`)" v-if="user.company" class="font-semibold text-gray-800 hover:underline cursor-pointer">{{ user.company.company_name }}</p>
+              <p @click.prevent="navigateTo(`/perfil/${user.profile.slang}`)" v-else class="font-semibold text-gray-800 hover:underline cursor-pointer">{{ user.name }} {{ user.last_name_1 }}</p>
+            <p class="text-xs text-gray-500 flex items-center">
+              <i class='bx bxs-circle text-green-500 text-[8px] mr-1'></i> Online
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto">
+        <!-- Sección principal -->
+        <div class="p-4">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">Principal</p>
+          <nav>
+            <ul class="space-y-1">
+              <li v-for="item in topMenuItems" :key="item.text">
+                <a @click.prevent="navigateTo(item.route)" :class="[
+                  'flex items-center px-3  py-2.5 rounded-md transition-all relative cursor-pointer',
+                  isActive(item.route)
+                    ? 'bg-blue-50 text-[#193CB8] font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-[#193CB8] before:rounded-r-md'
+                    : 'text-gray-700 hover:bg-blue-100'
+                ]">
+                  <i :class="['bx text-xl mr-3', item.icon]"></i>
+                  <span>{{ item.text }}</span>
+                  <span v-if="item.badge"
+                    class="ml-auto bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+                    {{ item.badge }}
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <!-- Sección social -->
+        <div class="p-4 border-t border-gray-100">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">Social</p>
+          <nav>
+            <ul class="space-y-1">
+              <li v-for="item in middleMenuItems" :key="item.text">
+                <a @click.prevent="navigateTo(item.route)" :class="[
+                  'flex items-center px-3 py-2.5 rounded-md transition-all relative cursor-pointer',
+                  isActive(item.route)
+                    ? 'bg-blue-50 text-[#193CB8] font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-[#193CB8] before:rounded-r-md'
+                    : 'text-gray-700 hover:bg-gray-50'
+                ]">
+                  <i :class="['bx text-xl mr-3', item.icon]"></i>
+                  <span>{{ item.text }}</span>
+                  <span v-if="item.badge"
+                    class="ml-auto bg-[#193CB8] text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+                    {{ item.badge }}
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Botón Crear oferta -->
+      <div v-if="user.company" class="p-4 border-t border-gray-100">
+        <button @click.prevent="navigateTo('/ofertas/crear')"
+          class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] text-white w-full py-3 rounded-md shadow-md hover:from-[#1535a3] cursor-pointer hover:to-[#193CB8] transition-all flex items-center justify-center">
+          <i class='bx bx-plus-circle mr-2'></i>
+          <span>Crear oferta</span>
+        </button>
+      </div>
+
+      <!-- Sección inferior -->
+      <div class="p-4 border-t border-gray-100">
+        <ul class="space-y-1">
+          <li v-for="item in bottomMenuItems" :key="item.text">
+            <a @click.prevent="navigateTo(item.route)" :class="[
+              'flex items-center px-3 py-2.5 text-gray-700 rounded-md transition-all cursor-pointer',
+              item.text === 'Cerrar sesión' ? 'hover:bg-red-500 hover:text-white' : 'hover:bg-gray-50'
+            ]">
+              <i :class="['bx text-xl mr-3', item.icon]"></i>
+              <span>{{ item.text }}</span>
+            </a>
+          </li>
+
+        </ul>
+      </div>
+    </aside>
+  </div>
+</template>

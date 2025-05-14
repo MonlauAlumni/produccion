@@ -18,15 +18,13 @@ class CreateUsersTable extends Migration
             $table->string('name');
             $table->string('email')->unique('email');
             $table->string('password');
-            $table->enum('role', ['admin', 'teacher', 'tutor', 'student', 'company', 'guest']);
-            $table->string('profile_picture')->nullable();
             $table->timestamps();
         });
     }
 
     /**
      * Reverse the migrations.
-     *
+     *s
      * @return void
      */
     public function down()
