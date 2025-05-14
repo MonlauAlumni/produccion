@@ -17,10 +17,11 @@
     router.post(`/empresa/${props.company.slang}/update-logo`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-      },
-    }).then((response) => {
+      }, onSuccess: () => {
+   
       props.company.logo_url = response.data.logo_url;
-    });
+        },  }
+  );
   };
   
   // Computed property for company industry
@@ -39,11 +40,11 @@
       <div class="p-6">
         <div class="flex flex-col md:flex-row md:items-center gap-6">
           <!-- Logo de la empresa -->
-          <div class="relative h-28 w-28 rounded-lg bg-white shadow-md overflow-hidden group border-4 border-white">
+          <div class="relative h-26 w-28 rounded-lg bg-white shadow-md overflow-hidden group border-4 border-white">
             <img 
               :src="company.profile_picture" 
               :alt="company.name + ' logo'" 
-              class="h-27 w-28 rounded-lg" 
+              class="h-26 w-28 rounded-lg" 
             />
             
             <!-- Hover para subir nueva imagen (solo para administradores) -->

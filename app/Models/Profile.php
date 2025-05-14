@@ -3,9 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\WorkExperience;
+use App\Models\Education;
+use App\Models\User;
+use App\Models\Skill;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Profile extends Model
 {
+    use HasFactory;
+
     protected $table = 'profiles';
     protected $fillable = [
         'user_id',
@@ -25,6 +32,16 @@ class Profile extends Model
         'banner_url',
 
     ];
+
+    public function experience()
+    {
+        return $this->hasMany(WorkExperience::class, 'user_id', 'user_id');
+    }
+
+    public function education()
+    {
+        return $this->hasMany(Education::class, 'user_id', 'user_id');
+    }
 
     public function user()
     {
@@ -50,6 +67,12 @@ class Profile extends Model
             $profile->profile_picture = $user ? $user->profile_picture : null;
         });
     }
+
+    public function skills()
+    {
+        return $this->belongsToMany(Skill::class, 'profile_skill', 'profile_id', 'skill_id');
+    }
+
 
    
 }

@@ -17,7 +17,10 @@
     skills: Array,
     isSameUser: Boolean,
     slang: String,
+    allSkills: Array,
   });
+
+
   
   const editModal = ref(null);
   
@@ -118,6 +121,7 @@
                   :skills="skills || []" 
                   :isSameUser="isSameUser"
                   :slang="slang"
+                  :allSkills="allSkills || []"
                 />
                 
                 <!-- Contact Information -->

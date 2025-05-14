@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Profile;
 use App\Models\Company;
-use App\Models\Educations;   
+use App\Models\Educations;
 use App\Models\WorkExperience;
+
 use App\Models\Skill;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
@@ -19,7 +20,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable, HasRoles, TwoFactorAuthenticatable;
 
     protected $fillable = [
-        'name', 
+        'name',
         'last_name_1',
         'last_name_2',
         'email',
@@ -40,6 +41,7 @@ class User extends Authenticatable
     {
         return $this->hasOne(Profile::class);
     }
+   
 
     public function educations()
     {
@@ -71,6 +73,39 @@ class User extends Authenticatable
         return $this->hasOne(UserSetting::class);
     }
 
-   
-  
- }
+    public function mutual_connections()
+    {
+        $myConnectionIds = auth()->user()->connections()
+            ->where('status', 'accepted')
+            ->pluck('connection_id')
+            ->merge(
+                auth()->user()->connectedUsers()
+                    ->where('status', 'accepted')
+                    ->pluck('user_id')
+            )
+            ->unique();
+
+        return $this->connections()
+            ->where('status', 'accepted')
+            ->whereIn('connection_id', $myConnectionIds);
+    }
+
+    public function connections()
+    {
+        return $this->belongsToMany(User::class, 'connections', 'user_id', 'connection_id')
+            ->withPivot('status');
+    }
+
+    public function connectedUsers()
+    {
+        return $this->hasMany(Connection::class, 'connection_id');
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+
+
+}

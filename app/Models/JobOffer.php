@@ -23,6 +23,7 @@ class JobOffer extends Model
         'maximum_salary', 
         'location', 
         'work_mode', 
+        'contract_type',
         'category', 
         'expires_at',
         'deadline', 
@@ -42,9 +43,14 @@ class JobOffer extends Model
         return $this->belongsTo(Company::class);
     }
 
+    public function skills()
+    {
+        return $this->belongsToMany(Skill::class, 'job_offer_skill');
+    }
+
     public function applicants()
     {
-        return $this->belongsToMany(User::class, 'job_offer_applications');
+        return $this->belongsToMany(User::class, 'job_applications');
     }
 
     public function savedByUsers()

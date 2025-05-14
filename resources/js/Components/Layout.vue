@@ -7,7 +7,7 @@
 
       <Sidebar 
         :username="auth?.user?.name || 'Usuario Alumni'" 
-        class="fixed md:w-64 z-40 mt-14 md:h-[calc(100vh-64px)]" 
+        class="md:w-64 md:fixed  mt-14 md:h-[calc(100vh-64px)]" 
       />
 
       <!-- Main Content -->
@@ -17,6 +17,8 @@
     </div>
   </div>
 </template>
+
+
 
 <script>
 import Navbar from '@/Components/Navbar.vue';

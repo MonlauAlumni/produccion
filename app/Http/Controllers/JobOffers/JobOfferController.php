@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Skill;
 use App\Models\JobApplication;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,31 +16,92 @@ class JobOfferController extends Controller
     
     
     public function index(Request $request)
-    {
-      
-        $user = Auth::user();
-        $page = $request->input('page', 1);
-        $offers = JobOffer::with('company')->paginate(10);
-            
-        
-        $offers->getCollection()->transform(function ($offer) use ($user) {
-            $offer->isSaved = $user->savedJobOffers->contains($offer);
-            
-            return $offer;
-        });
+{
+    $user = Auth::user();
+    
+    $categories = $request->input('categoria');
+    $workModes = $request->input('trabajo'); // Puede ser string o array
+    $contractTypes = $request->input('tipo_contrato'); // Puede ser string o array
+    $minimumSalary = $request->input('minimum_salary');
+    $maximumSalary = $request->input('maximum_salary');
+    $searchQuery = $request->input('search'); // Añadimos el parámetro de búsqueda
+    
+    $offersQuery = JobOffer::with('company')
+        ->whereIn('status', ['active', 'activo'])
+        ->orderBy('created_at', 'desc');
 
-        return Inertia::render('Home', [
-            'jobOffers' => $offers
-        ]);
+    // Búsqueda por texto
+    if ($searchQuery) {
+        $offersQuery->where(function($query) use ($searchQuery) {
+            $query->where('title', 'like', '%' . $searchQuery . '%')
+                  ->orWhere('description', 'like', '%' . $searchQuery . '%')
+                  ->orWhereHas('company', function($q) use ($searchQuery) {
+                      $q->where('title', 'like', '%' . $searchQuery . '%');
+                  });
+        });
     }
+
+    // Filtrar por categorías (puede ser un array)
+    if ($categories) {
+        if (is_array($categories)) {
+            // Si hay múltiples categorías, usamos whereIn o where con OR
+            $offersQuery->where(function($query) use ($categories) {
+                foreach ($categories as $category) {
+                    $query->orWhere('category', 'like', '%' . $category . '%');
+                }
+            });
+        } else {
+            // Si es una sola categoría
+            $offersQuery->where('category', 'like', '%' . $categories . '%');
+        }
+    }
+
+    // Filtrar por modos de trabajo (puede ser un array)
+    if ($workModes) {
+        if (is_array($workModes)) {
+            $offersQuery->whereIn('work_mode', $workModes);
+        } else {
+            $offersQuery->where('work_mode', $workModes);
+        }
+    }
+    // Filtrar por tipos de contrato (puede ser un array)
+    if ($contractTypes) {
+        if (is_array($contractTypes)) {
+            $offersQuery->whereIn('contract_type', $contractTypes);
+        } else {
+            $offersQuery->where('contract_type', $contractTypes);
+        }
+    }
+
+
+
+    // Filtrar por rango salarial
+    if ($minimumSalary && $maximumSalary) {
+        $offersQuery->whereBetween('salary', [$minimumSalary, $maximumSalary]);
+    }
+
+    $offers = $offersQuery->paginate(10);
+
+    // Marcar ofertas guardadas
+    $offers->getCollection()->transform(function ($offer) use ($user) {
+        $offer->isSaved = $user->savedJobOffers->contains($offer->id);
+        return $offer;
+    });
+
+    return Inertia::render('Home', [
+        'jobOffers' => $offers,
+    ]);
+}
+
+    
     
 
 
     public function show($id)
     {
-        $jobOffer = JobOffer::with('company')->findOrFail($id);
+        $jobOffer = JobOffer::with(['company', 'skills', 'applicants'])->findOrFail($id);
 
-   
+     
         return Inertia::render('JobOffers/SingleJobOffer', [
             'jobOffer' => $jobOffer
         ]);
@@ -47,13 +109,17 @@ class JobOfferController extends Controller
 
     public function create()
     {
-        return Inertia::render('JobOffers/CreateJobOffer');
+
+        $skills = Skill::all();
+       
+        return Inertia::render('JobOffers/CreateJobOffer', [
+            'skills' => $skills,
+        ]);
     }
 
     public function store(Request $request)
     {
-
-        // Crear la oferta de trabajo
+    
         $jobOffer = JobOffer::create([
             'company_id' => auth()->user()->company->id,
             'title' => $request->title,
@@ -73,14 +139,20 @@ class JobOfferController extends Controller
             'deadline' => $request->deadline,
             'status' => 'active',
             'category' => $request->category,
+            'contract_type' => $request->job_type,
         ]);
-       
+        // Sincronizar habilidades
+    
         // Si se sube un archivo, manejarlo
         if ($request->hasFile('file')) {
             $filePath = $request->file('file')->store('job_offers', 'public');
             $jobOffer->file = $filePath;
             $jobOffer->save();
         }
+         if ($request->filled('skills')) {
+      $skillIds = collect($request->skills)->pluck('id')->toArray();
+$jobOffer->skills()->sync($skillIds);
+         }
     
         return redirect()->route('home');
     }
