@@ -582,7 +582,7 @@
 
                 <div class="border-t border-gray-200 my-4"></div>
 
-                <h2 class="text-lg font-bold text-gray-800 mb-3">Tipo de trabajo</h2>
+                <h2 class="text-lg font-bold text-gray-800 mb-3">Modalidad</h2>
 
                 <div class="space-y-2">
                   <button v-for="type in jobTypes" :key="type.id" @click="toggleJobType(type.id)" 
@@ -639,7 +639,7 @@
             <div class="border-t border-gray-200 my-4"></div>
             
             <div>
-              <h3 class="text-md font-bold text-gray-800 mb-3">Tipo de trabajo</h3>
+              <h3 class="text-md font-bold text-gray-800 mb-3">Modalidad</h3>
               <div class="space-y-2">
                 <button v-for="type in jobTypes" :key="type.id" @click="toggleJobType(type.id)" 
                   :class="[

@@ -108,7 +108,7 @@ class JobOfferController extends Controller
 
     public function store(Request $request)
     {
-   
+    
         $jobOffer = JobOffer::create([
             'company_id' => auth()->user()->company->id,
             'title' => $request->title,
@@ -128,8 +128,10 @@ class JobOfferController extends Controller
             'deadline' => $request->deadline,
             'status' => 'active',
             'category' => $request->category,
+            'contract_type' => $request->job_type,
         ]);
-       
+        // Sincronizar habilidades
+    
         // Si se sube un archivo, manejarlo
         if ($request->hasFile('file')) {
             $filePath = $request->file('file')->store('job_offers', 'public');

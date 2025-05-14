@@ -33,6 +33,7 @@ const form = ref({
   file: null,
   job_type: '',
   category: '',
+
 })
 
 const skills = ref(props.skills )
@@ -399,15 +400,7 @@ const prevSection = () => {
 
 
 
-                <div v-if="form.job_type === 'internship'" class="mt-6">
-                  <label class="inline-flex items-center">
-                    <input type="checkbox" v-model="form.dual" class="form-checkbox h-5 w-5 text-blue-600">
-                    <span class="ml-2 text-gray-700">Dual</span>
-                  </label>
-                  <p class="mt-2 text-sm text-gray-500">
-                    Marque esta opción si se ofrece la posibilidad de hacer Dual.
-                  </p>
-                </div>
+               
               </div>
 
               <!-- Salary -->
