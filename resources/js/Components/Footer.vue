@@ -137,7 +137,7 @@
         class="container mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center text-sm text-white/70">
         <div>© MONLAU GROUP 2021 | © Alumni 2025, All Rights Reserved</div>
         <div class="mt-2 sm:mt-0">
-          Desarrollado con <i class='bx bxs-heart text-red-500 inline-block'></i> por el equipo de Alumni |
+          Diseñado con <i class='bx bxs-heart text-red-500 inline-block'></i> por el equipo de Alumni |
           <span class="italic">Desarrollado por Lucas Martínez e Iker Hurtado</span>
         </div>
       </div>
