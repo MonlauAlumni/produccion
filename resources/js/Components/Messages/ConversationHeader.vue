@@ -1,75 +1,72 @@
 <template>
-    <div class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-      <div class="flex items-center">
-        <div class="flex items-center">
-          <div class="relative">
-            <div v-if="conversation.with_company">
-              <img 
-                v-if="conversation.with_company.profile_picture" 
-                :src="conversation.with_company.profile_picture" 
-                alt="Company logo" 
-                class="w-10 h-10 rounded-lg object-cover"
-              />
-              <div v-else class="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center text-[#193CB8]">
-                <i class='bx bxs-building text-xl'></i>
-              </div>
-            </div>
-            <div v-else>
-              <img 
-                v-if="conversation.with_user.profile && conversation.with_user.profile.profile_picture" 
-                :src="conversation.with_user.profile.profile_picture" 
-                alt="User avatar" 
-                class="w-10 h-10 rounded-lg object-cover"
-              />
-              <div v-else class="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center text-[#193CB8]">
-                <i class='bx bxs-user text-xl'></i>
-              </div>
-            </div>
-            <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-          </div>
-          
-          <div class="ml-3">
-            <h2 class="font-semibold text-gray-800">
-              {{ contactName }}
-            </h2>
-            <div class="text-xs text-gray-500 flex items-center">
-              <i class='bx bxs-circle text-green-500 text-[8px] mr-1'></i> 
-              Online
-            </div>
-          </div>
+  <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <!-- Avatar -->
+      <div class="relative">
+        <img 
+          v-if="conversation.participant.profile && conversation.participant.profile.profile_picture" 
+          :src="conversation.participant.profile.profile_picture" 
+          alt="User avatar" 
+          class="w-10 h-10 rounded-lg object-cover"
+        />
+        <div v-else class="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center text-[#193CB8]">
+          <i class='bx bxs-user text-xl'></i>
         </div>
+        
+        <!-- Indicador online -->
+        <div 
+          v-if="conversation.participant.is_online"
+          class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white"
+        ></div>
       </div>
       
-      <div class="flex items-center">
-        <button 
-          v-if="conversation.related_job"
-          @click="$emit('view-job-offer')"
-          class="mr-3 text-sm text-[#193CB8] hover:underline flex items-center"
-        >
-          <i class='bx bx-briefcase mr-1'></i>
-          Ver oferta
-        </button>
-        
-        
+      <!-- Información -->
+      <div>
+        <h3 class="font-semibold text-gray-800">
+          {{ conversation.participant.name }} {{ conversation.participant.last_name_1 }}
+        </h3>
+        <p class="text-sm text-gray-500">
+          {{ conversation.participant.profile?.headline || 'Usuario' }}
+        </p>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { computed } from 'vue'
-  
-  const props = defineProps({
-    conversation: {
-      type: Object,
-      required: true
-    }
-  })
-  
-  defineEmits(['view-job-offer'])
-  
-  const contactName = computed(() => {
-    return props.conversation.with_company 
-      ? props.conversation.with_company.company_name 
-      : `${props.conversation.with_user.name} ${props.conversation.with_user.last_name_1}`
-  })
-  </script>
+    
+    <!-- Acciones -->
+    <div class="flex items-center gap-2">
+      <button 
+        v-if="conversation.job"
+        @click="showJobDetails = !showJobDetails"
+        :class="[
+          'px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1',
+          showJobDetails ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+        ]"
+      >
+        <i class='bx bx-briefcase'></i>
+        <span class="hidden sm:inline">Ver oferta</span>
+      </button>
+      
+     
+    </div>
+    
+    <!-- Panel de detalles del trabajo (condicional) -->
+    <RelatedJobCard 
+      v-if="showJobDetails && conversation.job" 
+      :job="conversation.job"
+      @close="showJobDetails = false"
+    />
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import RelatedJobCard from './RelatedJobCard.vue';
+
+const props = defineProps({
+  conversation: {
+    type: Object,
+    required: true
+  }
+});
+
+const showJobDetails = ref(false);
+</script>

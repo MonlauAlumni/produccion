@@ -1,27 +1,42 @@
 <script>
 import { usePage } from '@inertiajs/vue3'
 import { computed } from 'vue';
+import { onMounted, ref } from 'vue';
 
-const page = usePage();
+
+
 
 
 export default {
+
+  mounted() {
+  const page = usePage()
+  const notifications = page.props.auth?.user_notifications ?? 0
+  const notificacionesItem = this.topMenuItems.find(item => item.text === 'Notificaciones')
+  const userRole = page.props.auth?.user?.roles[0]?.name
+  if (notificacionesItem) {
+    notificacionesItem.badge = notifications > 0 ? notifications : null
+  }
+},
+
   data() {
     return {
       isOpen: false,
       darkMode: false,
       topMenuItems: [
         { text: 'Inicio', icon: 'bx-home', route: '/home' },
-        { text: 'Notificaciones', icon: 'bx-bell', badge: '5', route: '/notificaciones' },
+        { text: 'Notificaciones', icon: 'bx-bell', badge: null, route: '/notificaciones' },
         { text: 'Mensajes', icon: 'bx-envelope', badge: '2', route: '/mensajes' },
         { text: 'Calendario', icon: 'bx-calendar', route: '/calendario' },
       ],
       // Definimos los items sin la propiedad visible aquí
       middleMenuItems: [
+        { text: 'Mis Ofertas', icon: 'bx-briefcase',  route: '/mis-ofertas', requireRole: 'alumne'  },
+        { text: 'Alumnos', icon: 'bx-user', route: '/alumnos', requireRole: ['empresa', 'admin'] },
+        { text: 'Candidatos', icon: 'bx-user-check', route: '/gestion-candidatos', requireRole: 'empresa' },
+        { text: 'Empresas', icon: 'bx-buildings', route: '/empresas', requireRole: ['alumne', 'admin'] },
         { text: 'Alumni connect', icon: 'bx-group', route: '/connect' },
-        { text: 'Mis Ofertas', icon: 'bx-briefcase', badge: 'Nuevo', route: '/mis-ofertas', requireRole: 'alumne' },
-        { text: 'Gestión de Candidatos', icon: 'bx-user-check', badge: 'Nuevo', route: '/gestion-candidatos', requireRole: 'empresa' },
-        { text: 'Empresas', icon: 'bx-buildings', route: '/empresas' },
+       
       ],
       bottomMenuItems: [
         { text: 'Configuración', icon: 'bx-cog', route: '/configuracion' },
@@ -42,18 +57,16 @@ export default {
     return this.user?.roles && this.user.roles.length > 0 ? this.user.roles[0].name : null;
   },
 
-    filteredMiddleMenuItems() {
-      
-
-      return this.middleMenuItems.filter(item => {
-        // Si el item requiere un rol específico, verificamos que el usuario tenga ese rol
-        if (item.requireRole) {
-          return this.userRole === item.requireRole;
-        }
-        // Si no requiere un rol específico, siempre se muestra
-        return true;
-      });
+  filteredMiddleMenuItems() {
+  return this.middleMenuItems.filter(item => {
+    if (!item.requireRole) return true;
+    if (Array.isArray(item.requireRole)) {
+      return item.requireRole.includes(this.userRole);
     }
+    return item.requireRole === this.userRole;
+  });
+}
+
   },
   methods: {
     toggleSidebar() {
@@ -74,16 +87,16 @@ export default {
   <div>
     <!-- Botón menú mobile -->
     <button @click="toggleSidebar"
-      class="md:hidden fixed top-4 left-4  bg-[#193CB8] z-100 text-white p-2 rounded-md shadow-md">
+      class="md:hidden fixed top-2.5 left-4 bg-[#193CB8]  z-50 text-white p-2 rounded-md shadow-md">
       <i class='bx bx-menu text-xl'></i>
     </button>
 
     <!-- Overlay para móviles -->
-    <div v-if="isOpen" @click="toggleSidebar" class="fixed inset-0 bg-black/50 md:hidden z-40 backdrop-blur-sm"></div>
+    <div v-if="isOpen" @click="toggleSidebar" class="fixed inset-0 bg-black/50 md:hidden z-40  backdrop-blur-sm"></div>
 
     <!-- Sidebar -->
     <aside :class="[ 
-      'h-full w-64 flex flex-col bg-white z-40 shadow-lg border-r border-gray-100 transition-all duration-300', 
+      'h-full w-64 flex flex-col bg-white z-50 md:z-40 shadow-lg border-r border-gray-100 transition-all duration-300', 
       isOpen ? 'fixed top-0 left-0 translate-x-0' : 'fixed top-0 left-0 -translate-x-full', 
       'md:static md:translate-x-0'
     ]">
@@ -92,6 +105,8 @@ export default {
         <div class="flex items-center space-x-3 mb-3">
           <div class="relative">
             <div v-if="user.company">
+       
+
               <img v-if="user.company.profile_picture" :src="user.company.profile_picture"
                 alt="Profile picture" class="w-12 h-12  shadow-sm border-2 border-white">
               <div v-else
@@ -168,6 +183,13 @@ export default {
       </div>
 
       <!-- Botón Crear oferta -->
+      <div v-if="userRole === 'admin'" class="p-4 border-t border-gray-100">
+        <button @click.prevent="navigateTo('/admin/dashboard')"
+          class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] text-white w-full py-3 rounded-md shadow-md hover:from-[#1535a3] cursor-pointer hover:to-[#193CB8] transition-all flex items-center justify-center">
+          <i class='bx bx-shield mr-2'></i>
+          <span>Panel de Administración</span>
+        </button>
+      </div>
       <div v-if="user.company" class="p-4 border-t border-gray-100">
         <button @click.prevent="navigateTo('/ofertas/crear')"
           class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] text-white w-full py-3 rounded-md shadow-md hover:from-[#1535a3] cursor-pointer hover:to-[#193CB8] transition-all flex items-center justify-center">

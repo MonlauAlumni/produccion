@@ -32,11 +32,8 @@ class AdminController extends Controller
                     ->when($request->filled('area'), function ($query) use ($request) {
                         $query->where('training_area', 'like', '%' . $request->area . '%');
                     })
-                    ->when($request->filled('role'), function ($query) use ($request) {
-                        $query->whereHas('roles', function ($q) use ($request) {
-                            $q->where('role_id', $request->role);
-                        });
-                    })
+
+                    
                     ->with('roles') 
                     ->orderBy('id', 'desc')
                     ->paginate($request->pagination ?? 10);
@@ -54,8 +51,17 @@ class AdminController extends Controller
 
 
                 case 'companies':
-                    $query = Company::select(['id', 'company_name', 'company_phone', 'fiscal_id', 'user_id'])
-                        ->with('user:id,email,name,last_name_1,last_name_2') // Include the related user data
+                    $query = Company::select([
+                            'id', 
+                            'company_name', 
+                            'company_phone', 
+                            'fiscal_id', 
+                            'user_id',
+                            'address',        // Añadido
+                            'zip_code',       // Añadido
+                            'population'      // Añadido
+                        ])
+                        ->with('user:id,email,name,last_name_1,last_name_2')
                         ->when($request->filled('id'), function ($query) use ($request) {
                             $query->where('id', $request->id);
                         })
@@ -69,25 +75,40 @@ class AdminController extends Controller
                         ->when($request->filled('fiscal_id'), function ($query) use ($request) {
                             $query->where('fiscal_id', 'like', '%' . $request->fiscal_id . '%');
                         })
+                        ->when($request->filled('address'), function ($query) use ($request) {
+                            $query->where('address', 'like', '%' . $request->address . '%');
+                        })
+                        ->when($request->filled('zip_code'), function ($query) use ($request) {
+                            $query->where('zip_code', 'like', '%' . $request->zip_code . '%');
+                        })
+                        ->when($request->filled('population'), function ($query) use ($request) {
+                            $query->where('population', 'like', '%' . $request->population . '%');
+                        })
                         ->orderBy('id', 'desc')
                         ->paginate($request->pagination ?? 10);
                 
                     $companies = $query;
                 
-                    $totalCompanies = $companies->total();  
-                
                     return Inertia::render('Admin/AdminCompanies', [
                         'companies' => $companies->items(),
                         'pagination' => $companies,
-                        'totalCompanies' => $totalCompanies,
+                        'totalCompanies' => $companies->total(),
                         'filters' => $request->all(),                
                     ]);
+                
 
                 
                 
             default:
                 abort(404);
         }
+    }
+
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+        return redirect()->back()->with('success', 'Usuario eliminado exitosamente.');
     }
 
     public function singleUser($id)
@@ -108,9 +129,38 @@ class AdminController extends Controller
             'last_name_2' => 'nullable|string|max:255',
             'email' => "required|email|unique:users,email,{$id}",
             'training_area' => 'required|string|max:255',
-        ]);
+        ], 
+        );
 
         $user->update($validated);
         return redirect()->back()->with('success', 'Usuario actualizado exitosamente.');
+    }
+
+    
+    public function singleCompany($id)
+    {
+        $company = Company::findOrFail($id);
+        return Inertia::render('Admin/AdminSingleCompany', [
+            'company' => $company
+        ]);
+    }
+
+    public function updateCompany(Request $request, $id)
+    {
+        $company = Company::findOrFail($id);
+        
+        $validated = $request->validate([
+            'company_name' => 'required|string|max:255',
+            'company_phone' => 'required|string|max:255',
+            'fiscal_id' => 'required|string|max:255',
+            'address' => 'required|string|max:255', // Añadido
+            'zip_code' => 'required|string|max:10', // Añadido
+            'population' => 'required|string|max:255', // Añadido
+
+        ], 
+        );
+
+        $company->update($validated);
+        return redirect()->back()->with('success', 'Empresa actualizada exitosamente.');
     }
 }

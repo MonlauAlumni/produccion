@@ -34,25 +34,29 @@ class HandleInertiaRequests extends Middleware
      * @return array<string, mixed>
      */
     public function share(Request $request): array
-{
-    $user = $request->user();
+    {
+        $user = $request->user();
 
-    $settings = $user ? $user->settings()->first() : [];
+        $settings = $user ? $user->settings()->first() : [];
 
-    $locale = app()->getLocale();
-    $translations = [];
-    
-    if (file_exists(resource_path("lang/{$locale}.json"))) {
-        $translations = json_decode(file_get_contents(resource_path("lang/{$locale}.json")), true);
+        $locale = app()->getLocale();
+        $translations = [];
+        
+        if (file_exists(resource_path("lang/{$locale}.json"))) {
+            $translations = json_decode(file_get_contents(resource_path("lang/{$locale}.json")), true);
+        }
+
+        return array_merge(parent::share($request), [
+            'auth' => [
+                // Cargamos la relación de roles para que Sidebar pueda filtrarlos
+'user' => $user ? $user->load(['roles', 'profile', 'company']) : null,
+                
+                'user_notifications' => $user ? $user->notifications()->where('is_read', 0)->count() : 0,
+                'user_settings' => $settings,
+            ],
+            'locale' => $locale,
+            'translations' => $translations,
+        ]);
+       
     }
-    return array_merge(parent::share($request), [
-        'auth' => [
-            'user' => $user,
-            'user_settings' => $settings,
-        ],
-        'locale' => $locale,
-        'translations' => $translations,
-    ]);
-}
-
 }

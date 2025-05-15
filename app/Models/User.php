@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Profile;
 use App\Models\Company;
-use App\Models\Educations;   
+use App\Models\Educations;
 use App\Models\WorkExperience;
 
 use App\Models\Skill;
@@ -20,7 +20,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable, HasRoles, TwoFactorAuthenticatable;
 
     protected $fillable = [
-        'name', 
+        'name',
         'last_name_1',
         'last_name_2',
         'email',
@@ -41,9 +41,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(Profile::class);
     }
-
    
-    
+
     public function educations()
     {
         return $this->hasMany(Education::class);
@@ -85,7 +84,7 @@ class User extends Authenticatable
                     ->pluck('user_id')
             )
             ->unique();
-        
+
         return $this->connections()
             ->where('status', 'accepted')
             ->whereIn('connection_id', $myConnectionIds);
@@ -94,14 +93,19 @@ class User extends Authenticatable
     public function connections()
     {
         return $this->belongsToMany(User::class, 'connections', 'user_id', 'connection_id')
-                    ->withPivot('status');
+            ->withPivot('status');
     }
 
     public function connectedUsers()
-{
-    return $this->hasMany(Connection::class, 'connection_id');
-}
+    {
+        return $this->hasMany(Connection::class, 'connection_id');
+    }
 
-   
-  
- }
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+
+
+}

@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 // Props
 const props = defineProps({
@@ -12,6 +14,10 @@ const props = defineProps({
     default: null
   }
 });
+
+// Determine authenticated user's role
+const page = usePage();
+const userRole = computed(() => page.props.auth.user?.roles?.[0]?.name ?? null);
 
 // Emits
 const emit = defineEmits(['close', 'update-status', 'message', 'view-personal-profile', 'download-cv']);
@@ -49,8 +55,6 @@ const formatDate = (date) => {
     day: 'numeric'
   });
 };
-
-
 
 const getStatusInfo = (status) => {
   // Implementation to get status information
@@ -400,8 +404,11 @@ const getStatusClass = (status) => {
             Cambiar estado
           </button>
 
-          <button @click="messageCandidate"
-            class="flex-1 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:shadow-md font-medium py-3 rounded-lg transition-all flex items-center justify-center">
+          <button 
+            v-if="userRole === 'company'" 
+            @click="messageCandidate"
+            class="flex-1 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:shadow-md font-medium py-3 rounded-lg transition-all flex items-center justify-center"
+          >
             <i class='bx bx-envelope mr-2'></i>
             Contactar
           </button>

@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps, defineEmits, ref } from 'vue';
-
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
   application: {
@@ -15,7 +15,8 @@ const emit = defineEmits([
   'view',
   'update-status',
   'message',
-  'download-cv'
+  'download-cv',
+  'delete'
 ]);
 
 // Obtener información de estado de la aplicación
@@ -90,7 +91,18 @@ const updateStatus = () => {
 
 // Enviar mensaje
 const messageCandidate = () => {
-  emit('message', props.application.user_id);
+  // Navegar a la página de mensajes con parámetros para abrir el modal
+  // y preseleccionar el usuario y la oferta
+  router.get('/mensajes', {
+    openModal: true,
+    userId: props.application.user_id,
+    jobId: props.application.job_offer ? props.application.job_offer.id : null,
+    userName: props.application.student ? `${props.application.student.name} ${props.application.student.last_name_1 || ''}` : 'Candidato'
+  });
+};
+
+const deleteCandidate = () => {
+  emit('delete', props.application);
 };
 
 const downloadCV = () => {
@@ -156,10 +168,7 @@ const downloadCV = () => {
 
           <!-- Match Score and Job Details -->
           <div class="mt-3 flex flex-wrap items-center gap-2">
-            <div class="bg-[#193CB8]/10 text-[#193CB8] text-sm font-bold px-3 py-1 rounded-full flex items-center mr-2">
-              <i class='bx bx-badge-check mr-1'></i>
-              Match 85%
-            </div>
+            
             
             <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm">
               <div class="flex items-center text-gray-600">
@@ -237,7 +246,7 @@ const downloadCV = () => {
         </button>
         <button 
           v-else
-          @click="messageCandidate"
+          @click="deleteCandidate"
           class="border border-gray-300 text-white bg-red-600  hover:bg-red-500 font-medium py-2 rounded-lg transition-colors flex items-center cursor-pointer justify-center"
         >
           <i class='bx bx-trash mr-1'></i>

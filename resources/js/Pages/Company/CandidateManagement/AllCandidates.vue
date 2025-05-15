@@ -69,12 +69,12 @@ const pagination = computed(() => ({
 
 // Filtros de estado
 const statusFilters = [
-  { id: 'all', name: 'Todos los estados', icon: 'bx-list-ul', color: 'text-gray-700' },
-  { id: 'pending', name: 'Pendientes', icon: 'bx-time', color: 'text-yellow-600' },
-  { id: 'in_process', name: 'En proceso', icon: 'bx-loader', color: 'text-blue-600' },
-  { id: 'interview', name: 'Entrevista', icon: 'bx-calendar-check', color: 'text-purple-600' },
-  { id: 'accepted', name: 'Aceptados', icon: 'bx-check-circle', color: 'text-green-600' },
-  { id: 'rejected', name: 'Rechazados', icon: 'bx-x-circle', color: 'text-red-600' }
+  { id: 'all', name: 'Todos los estados', icon: 'bx-list-ul', color: 'text-gray-700', bgColor: 'bg-gray-200' },
+  { id: 'pending', name: 'Pendientes', icon: 'bx-time', color: 'text-yellow-600', bgColor: 'bg-yellow-100' },
+  { id: 'in_process', name: 'En proceso', icon: 'bx-loader', color: 'text-blue-600', bgColor: 'bg-blue-100' },
+  { id: 'interview', name: 'Entrevista', icon: 'bx-calendar-check', color: 'text-purple-600', bgColor: 'bg-purple-100' },
+  { id: 'accepted', name: 'Aceptados', icon: 'bx-check-circle', color: 'text-green-600', bgColor: 'bg-green-100' },
+  { id: 'rejected', name: 'Rechazados', icon: 'bx-x-circle', color: 'text-red-600', bgColor: 'bg-red-100' }
 ];
 
 // Estadísticas
@@ -187,6 +187,14 @@ const viewCandidate = (candidate) => {
 
   
   
+};
+
+const deleteCandidate = (candidate) => {
+  router.delete(`/gestion-candidatos/${candidate.id}`, {
+    onSuccess: () => {
+      applicationsList.value = applicationsList.value.filter(app => app.id !== candidate.id);
+    }
+  });
 };
 
 const viewPersonalProfile = (candidate) => {
@@ -330,11 +338,11 @@ onMounted(() => {
                       :class="[
                         'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
                         currentStatus === filter.id
-                          ? 'bg-[#193CB8]/10 text-[#193CB8]'
+                          ? `${filter.bgColor} ${filter.color}`
                           : 'hover:bg-gray-100 text-gray-700'
                       ]"
                     >
-                      <i :class="['bx mr-2', filter.icon, filter.color]"></i>
+                      <i :class="['bx mr-2', filter.icon]"></i>
                       {{ filter.name }}
                       <span v-if="filter.id === 'all'" class="ml-auto bg-gray-200 text-gray-800 text-xs rounded-full px-2 py-0.5">
                         {{ stats.total }}
@@ -378,6 +386,7 @@ onMounted(() => {
                   :application="application"
                   class="candidate-card"
                   @view="viewCandidate"
+                  @delete="deleteCandidate"
                   @update-status="openStatusModal"
                   @message="messageCandidate"
                   @download-cv="downloadCV"
