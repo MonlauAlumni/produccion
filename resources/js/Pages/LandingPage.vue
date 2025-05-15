@@ -133,7 +133,7 @@ const currentStudentCount = ref(page.props.currentStudentCount);
 const isMobileMenuOpen = ref(false);
 const isLoginMenuOpen = ref(false);
 const images = ref([
-  '/images/landing/landing-bg1.jpeg',
+
   '/images/landing/landing-bg2.jpg',
   '/images/landing/landing-bg3.jpg',
   '/images/landing/landing-bg4.jpg',
