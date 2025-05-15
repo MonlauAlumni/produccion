@@ -36,7 +36,18 @@ class SocialController extends Controller
         $words = preg_split('/\s+/', mb_strtolower(preg_replace('/[^\p{L}\p{N}\s]+/u', '', $allContents)), -1, PREG_SPLIT_NO_EMPTY);
         $counts = array_count_values($words);
         arsort($counts);
-        $trendingTopics = array_slice(array_map(fn($w,$c)=>['word'=>$w,'count'=>$c],array_keys($counts),$counts),0,5);
+        $trendingTopics = array_slice(
+            array_map(
+            fn($w, $c) => [
+                'word' => mb_substr($w, 1, mb_strlen($w) - 2), // corta la primera y la última letra
+                'count' => $c
+            ],
+            array_keys($counts),
+            $counts
+            ),
+            0,
+            5
+        );
 
 
         $page = request()->input('page', 1);
