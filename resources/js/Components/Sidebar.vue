@@ -26,7 +26,7 @@ export default {
       topMenuItems: [
         { text: 'Inicio', icon: 'bx-home', route: '/home' },
         { text: 'Notificaciones', icon: 'bx-bell', badge: null, route: '/notificaciones' },
-        { text: 'Mensajes', icon: 'bx-envelope', badge: '2', route: '/mensajes' },
+        { text: 'Mensajes', icon: 'bx-envelope', badge: '', route: '/mensajes' },
         { text: 'Calendario', icon: 'bx-calendar', route: '/calendario' },
       ],
       // Definimos los items sin la propiedad visible aquí
