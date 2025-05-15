@@ -38,8 +38,8 @@ const pagination = computed(() => ({
 const notificationTabs = [
   { id: 'all', name: 'Todas', icon: 'bx-bell' },
   { id: 'unread', name: 'No leídas', icon: 'bx-envelope' },
-  { id: 'mentions', name: 'Menciones', icon: 'bx-at' },
-  { id: 'events', name: 'Eventos', icon: 'bx-calendar-event' },
+  // { id: 'mentions', name: 'Menciones', icon: 'bx-at' },
+  // { id: 'events', name: 'Eventos', icon: 'bx-calendar-event' },
   { id: 'jobs', name: 'Ofertas', icon: 'bx-briefcase' }
 ];
 
