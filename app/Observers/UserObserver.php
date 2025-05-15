@@ -10,7 +10,7 @@ class UserObserver
     public function creating(User $user)
     {
         
-        
+   
         Profile::create([
             'user_id' => $user->id,
         ]);
