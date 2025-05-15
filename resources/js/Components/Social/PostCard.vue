@@ -1,7 +1,6 @@
 <template>
   <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6" :data-post-id="post.id">
     <div class="flex items-start gap-3">
-      <!-- Avatar -->
       <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 cursor-pointer"
         @click="router.get(`/perfil/${post.user.profile.slang}`)">
         <img v-if="post.user.profile && post.user.profile.profile_picture"
@@ -13,27 +12,24 @@
         </div>
       </div>
 
-      <div class="flex-1 overflow-hidden"> <!-- Añadido overflow-hidden aquí -->
-        <!-- Post Header -->
+      <div class="flex-1 overflow-hidden"> 
         <div class="flex items-center justify-between">
-          <div class="overflow-hidden"> <!-- Añadido overflow-hidden aquí -->
-            <h3 class="font-medium text-gray-800 hover:underline cursor-pointer truncate" <!-- Añadido truncate -->
+          <div class="overflow-hidden">
+            <h3 class="font-medium text-gray-800 hover:underline cursor-pointer truncate"
               @click="router.get(`/perfil/${post.user.profile.slang}`)">
               {{ post.user.name }} {{ post.user.last_name_1 }} {{ post.user.last_name_2 ? post.user.last_name_2 : '' }}
             </h3>
             <p class="text-xs text-gray-500">{{ formatDate(post.created_at) }}</p>
           </div>
-          <button class="p-1 text-gray-400 hover:text-gray-600 cursor-pointer flex-shrink-0"> <!-- Añadido flex-shrink-0 -->
+          <button class="p-1 text-gray-400 hover:text-gray-600 cursor-pointer flex-shrink-0">
             <i class="bx bx-dots-horizontal-rounded"></i>
           </button>
         </div>
 
-        <!-- Post Content -->
-        <div class="mt-2 overflow-hidden"> <!-- Añadido overflow-hidden aquí -->
+        <div class="mt-2 overflow-hidden">
           <div class="text-gray-700 post-content break-words" v-html="sanitizeHTML(post.content)"
             :style="{ fontSize: user_settings.font_size + 'px' }"></div>
 
-          <!-- Image Carousel -->
           <div v-if="post.images && post.images.length > 0" class="mt-3 relative">
             <div class="image-carousel overflow-hidden relative w-full h-[300px]">
               <div class="flex transition-transform duration-500 h-full"
@@ -43,7 +39,6 @@
               </div>
             </div>
 
-            <!-- Flechas de navegación -->
             <template v-if="post.images.length > 1">
               <button @click="prevImage"
                 class="nav-arrow absolute cursor-pointer left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full w-8 h-8 flex items-center justify-center shadow-md">
@@ -54,7 +49,6 @@
                 <i class="bx bx-chevron-right text-xl"></i>
               </button>
 
-              <!-- Indicadores (dots) -->
               <div class="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-1.5">
                 <button v-for="(image, index) in post.images" :key="index" @click="setImage(index)"
                   class="w-2 h-2 rounded-full transition-all duration-200 cursor-pointer"
@@ -64,7 +58,6 @@
           </div>
         </div>
 
-        <!-- Post Actions -->
         <div class="flex items-center gap-4 mt-4 pt-2 border-t border-gray-100">
           <button @click="likePost" class="flex items-center gap-1 cursor-pointer"
             :class="isLiked ? 'text-[#193CB8]' : 'text-gray-500 hover:text-[#193CB8]'">
@@ -82,12 +75,10 @@
           </button> -->
         </div>
 
-        <!-- Comments Section -->
-        <div v-if="post.comments && post.comments.length > 0" class="mt-4 pt-2 border-t border-gray-100 space-y-3 overflow-hidden"> <!-- Añadido overflow-hidden -->
+        <div v-if="post.comments && post.comments.length > 0" class="mt-4 pt-2 border-t border-gray-100 space-y-3 overflow-hidden"> 
           <PostComment v-for="comment in post.comments" :key="comment.id" :comment="comment" />
         </div>
 
-        <!-- Add Comment (Only if Member) -->
         <div v-if="isMember" class="mt-3 flex items-center gap-2">
           <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
             <img :src="auth?.user?.profile?.profile_picture || '/images/default-avatar.jpg'" alt="Tu avatar"

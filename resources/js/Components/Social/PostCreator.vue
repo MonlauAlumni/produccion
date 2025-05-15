@@ -65,9 +65,9 @@ const handleEditorChange = (newContent) => {
     const plainText = newContent.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
     charCount.value = plainText.length;
     
-    if (plainText.length > 1000) {
+    if (plainText.length > 2000) {
         // Si supera el límite, recorta el texto y actualiza el contenido
-        const truncated = plainText.slice(0, 1000);
+        const truncated = plainText.slice(0, 2000);
         // Actualiza el contenido del editor solo con el texto permitido
         if (quillEditorRef.value) {
             const editor = quillEditorRef.value.getQuill();
@@ -80,7 +80,7 @@ const handleEditorChange = (newContent) => {
             }
         }
         content.value = truncated;
-        charCount.value = 1000;
+        charCount.value = 2000;
     } else {
         content.value = newContent;
     }
