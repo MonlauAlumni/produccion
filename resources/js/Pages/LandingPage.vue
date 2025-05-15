@@ -62,7 +62,7 @@
           </div>
         </div>
 
-        <a href="/register"
+        <a href="/register-company"
           class="bg-[#193CB8] text-white px-5 py-2 rounded-md shadow-md hover:shadow-lg transition-all font-medium flex items-center gap-2 hover:bg-[#122a8c]">
           <i class='bx bx-user-plus'></i>
           <span>Registrarse</span>
@@ -85,7 +85,7 @@
         <i class='bx bx-building-house'></i>
         Empresa
       </a>
-      <a href="/register"
+      <a href="/register-company"
         class="flex items-center gap-3 text-white bg-[#193CB8] px-4 py-2 rounded-md font-medium hover:bg-[#122a8c]">
         <i class='bx bx-user-plus'></i>
         Registrarse

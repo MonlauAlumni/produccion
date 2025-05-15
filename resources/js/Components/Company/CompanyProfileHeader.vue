@@ -11,18 +11,24 @@
   });
   
   const uploadProfileImage = (e) => {
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append('logo', file);
-    router.post(`/empresa/${props.company.slang}/update-logo`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      }, onSuccess: () => {
-   
-      props.company.logo_url = response.data.logo_url;
-        },  }
-  );
-  };
+  const file = e.target.files[0];
+  const formData = new FormData();
+
+  formData.append('logo', file);
+
+  router.post(`/empresa/${props.company.slang}/update-logo`, formData, {
+    forceFormData: true, // importante para asegurar que Inertia no serializa como JSON
+    onSuccess: (page) => {
+      // Puedes acceder a los datos actualizados desde el objeto `page.props`
+      const newLogoUrl = page.props.company?.logo_url;
+
+      if (newLogoUrl) {
+        props.company.logo_url = newLogoUrl;
+      }
+    },
+  });
+};
+
   
   // Computed property for company industry
   const industry = computed(() => {
@@ -94,10 +100,7 @@
                   <span>Contactar</span>
                 </button>
                 
-                <button class="flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 cursor-pointer px-4 py-2 rounded-md transition-colors">
-                  <i class='bx bx-share-alt'></i>
-                  <span class="hidden sm:inline">Compartir</span>
-                </button>
+                
               </div>
             </div>
             
