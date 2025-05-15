@@ -5,14 +5,19 @@ use App\Models\Profile;
 
 class ProfileObserver
 {
-    public function creating(Profile $profile)
-    {
-      
-        $user = $profile->user;
+    public function created(Profile $profile)
+{
 
-        // Genera el slang
+
+    if ($profile->user->hasRole('alumne')) {
         $profile->slang = strtolower(
-            str_replace(' ', '-', trim("{$user->name}-{$user->last_name_1}" . ($user->last_name_2 ? "-{$user->last_name_2}" : "")))
+            str_replace(' ', '-', trim(
+                "{$profile->user->name}-{$profile->user->last_name_1}" .
+                ($profile->user->last_name_2 ? "-{$profile->user->last_name_2}" : "")
+            ))
         );
     }
+}
+
+
 }
