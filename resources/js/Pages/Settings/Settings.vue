@@ -919,16 +919,21 @@ const terminateAllSessions = () => {
 
         <!-- QR Code Modal -->
         <div v-if="qrCode && qrModal" class="fixed inset-0 flex items-center justify-center bg-black/50 p-4 z-50">
-            <div class="bg-gray-900 dark:bg-white p-4 md:p-6 rounded-lg shadow-lg w-full max-w-sm text-center">
-                <h2 class="text-lg font-semibold mb-4">Scan this QR Code</h2>
-                <div v-html="qrCode" class="p-4 bg-gray-100 dark:border rounded-lg inline-block"></div>
-                <p class="text text-gray-300 mt-2 dark:text-gray-500">Use your authenticator app to scan the code and
-                    enable 2FA</p>
-                <div class="flex flex-col sm:flex-row gap-2 justify-center">
-                    <button @click="disable2FA()"
-                        class="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 cursor-pointer transition duration-300 w-full">Cancel</button>
+            <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-2xl w-full max-w-md text-center border border-gray-200 dark:border-gray-700">
+                <h2 class="text-2xl font-bold text-blue-700 dark:text-blue-300 mb-2">Escanea este QR</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Usa tu app de autenticación para activar 2FA</p>
+                <div class="flex justify-center mb-4">
+                    <div v-html="qrCode" class="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg inline-block border border-gray-200 dark:border-gray-700 shadow"></div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2 mt-4">
                     <button @click="qrModal = false"
-                        class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer transition duration-300 w-full">Confirm</button>
+                        class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition duration-300">
+                        Confirmar
+                    </button>
+                    <button @click="disable2FA()"
+                        class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition duration-300">
+                        Cancelar
+                    </button>
                 </div>
             </div>
         </div>
