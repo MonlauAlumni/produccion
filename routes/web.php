@@ -219,5 +219,5 @@ Route::middleware(['guest'])->group(function () {
 
 Route::get('logout', function () {
     Auth::logout();
-    return redirect('/login-monlau');
+    return redirect('/');
 });

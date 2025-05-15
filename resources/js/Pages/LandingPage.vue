@@ -34,7 +34,7 @@
           <div v-if="isLoginMenuOpen"
             class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg py-2 z-50 animate-fadeIn"
             role="menu" aria-orientation="vertical">
-            <a href="/login"
+            <a href="/login-monlau"
               class="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 text-gray-800 w-full text-left"
               role="menuitem">
               <div class="bg-blue-100 flex p-2 rounded-full">
@@ -75,12 +75,12 @@
   <div v-if="isMobileMenuOpen"
     class="absolute md:hidden w-full bg-white px-6 py-4 shadow-md space-y-3 top-[72px] z-50">
     <template v-if="!auth?.user">
-      <a href="/login"
+      <a href="/login-monlau"
         class="flex items-center gap-3 text-[#193CB8] hover:underline">
         <i class='bx bx-user'></i>
         Alumno
       </a>
-      <a href="/login-monlau"
+      <a href="/login"
         class="flex items-center gap-3 text-[#193CB8] hover:underline">
         <i class='bx bx-building-house'></i>
         Empresa
