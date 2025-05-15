@@ -4,6 +4,7 @@ import { router } from '@inertiajs/vue3';
 import { QuillEditor, Quill } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import DOMPurify from "dompurify";
+import ResponsabilidadModal from './ResponsabilidadModal.vue'; // Importa el componente del modal
 
 const props = defineProps({
     auth: Object,
@@ -17,6 +18,7 @@ const fileInputRef = ref(null);
 const content = ref("");
 const images = ref([]);
 const imagePreviews = ref([]);
+const showConfirmModal = ref(false);
 
 onMounted(() => {
     const Link = Quill.import('formats/link');
@@ -40,7 +42,7 @@ const editorOptions = {
         ]
     },
     placeholder: props.group && props.group.id
-        ? 'Comparte algo con el grupo...'
+        ? 'Comparte algo con el grupo..'
         : '¿Qué quieres compartir hoy?',
     theme: 'snow'
 };
@@ -75,53 +77,34 @@ const removeImage = (index) => {
     images.value.splice(index, 1);
 };
 
-const submitPost = () => {
-    const purifyConfig = {
-        ALLOWED_ATTR: ['href', 'target', 'style', 'rel'],
-        ADD_ATTR: ['target', 'rel']
-    };
+// Función para abrir el modal de confirmación
+const openConfirmModal = () => {
+    if (!content.value.trim() && images.value.length === 0) return;
+    showConfirmModal.value = true;
+};
 
-    let sanitizedContent = DOMPurify.sanitize(content.value, purifyConfig);
+// Función para cerrar el modal
+const closeConfirmModal = () => {
+    showConfirmModal.value = false;
+};
 
-    if (!sanitizedContent.trim() && images.value.length === 0) return;
+// Función para manejar cuando el post ha sido enviado desde el modal
+const handlePostSubmitted = (data) => {
+    // Emitir el evento al componente padre
+    emit('postCreated', data);
+};
 
-    const formData = new FormData();
-    formData.append('content', sanitizedContent);
-    
-    if (props.group && props.group.id) {
-        formData.append('group_id', props.group.id);
+// Función para resetear el formulario
+const resetForm = () => {
+    content.value = '';
+    images.value = [];
+    imagePreviews.value = [];
+    if (fileInputRef.value) {
+        fileInputRef.value.value = '';
     }
-    
-    if (images.value.length > 0) {
-        images.value.forEach((image) => {
-            formData.append(`images[]`, image);
-        });
+    if (quillEditorRef.value) {
+        quillEditorRef.value.setHTML('');
     }
-
-    const postUrl = props.group && props.group.id 
-        ? `/posts/group/${props.group.id}` 
-        : '/posts';
-        
-    router.post(postUrl, formData, {
-        onSuccess: (page) => {
-            content.value = '';
-            images.value = [];
-            imagePreviews.value = [];
-            if (fileInputRef.value) {
-                fileInputRef.value.value = '';
-            }
-            if (quillEditorRef.value) {
-                quillEditorRef.value.setHTML('');
-            }
-
-            let newPostId = null;
-            if (page.props.group && page.props.group.posts && page.props.group.posts.length > 0) {
-                newPostId = page.props.group.posts[0].id;
-            }
-
-            emit('postCreated', { postId: newPostId, page });
-        }
-    });
 };
 </script>
 
@@ -174,7 +157,7 @@ const submitPost = () => {
                         </button>
                     </div>
 
-                    <button @click="submitPost" :disabled="!content && imagePreviews.length === 0"
+                    <button @click="openConfirmModal" :disabled="!content && imagePreviews.length === 0"
                         :class="{ 'opacity-50 cursor-not-allowed': !content && imagePreviews.length === 0 }"
                         class="px-4 py-1.5 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm">
                         Publicar
@@ -182,6 +165,19 @@ const submitPost = () => {
                 </div>
             </div>
         </div>
+
+        <!-- Modal de confirmación -->
+        <ResponsabilidadModal 
+            v-if="showConfirmModal"
+            :auth="auth"
+            :group="group"
+            :content="content"
+            :images="images"
+            :imagePreviews="imagePreviews"
+            @closeModal="closeConfirmModal"
+            @postSubmitted="handlePostSubmitted"
+            @resetForm="resetForm"
+        />
     </div>
 </template>
 
