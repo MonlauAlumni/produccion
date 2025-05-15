@@ -35,8 +35,7 @@ export default {
         { text: 'Alumnos', icon: 'bx-user', route: '/alumnos', requireRole: ['empresa', 'admin'] },
         { text: 'Candidatos', icon: 'bx-user-check', route: '/gestion-candidatos', requireRole: 'empresa' },
         { text: 'Empresas', icon: 'bx-buildings', route: '/empresas', requireRole: ['alumne', 'admin'] },
-        { text: 'Alumni connect', icon: 'bx-group', route: '/connect' },
-       
+        { text: 'Alumni connect', icon: 'bx-group', route: '/connect', requireRole: ['alumne', 'admin'] },
       ],
       bottomMenuItems: [
         { text: 'Configuración', icon: 'bx-cog', route: '/configuracion' },

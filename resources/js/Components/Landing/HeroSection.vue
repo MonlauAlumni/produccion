@@ -40,7 +40,7 @@
         
         <div class="flex flex-col sm:flex-row gap-4 opacity-0 animate-fadeInUp delay-300">
           <a 
-            href="/register" 
+            href="/register-company" 
             class="px-8 py-3 bg-white text-[#193CB8] rounded-lg font-medium shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
           >
             Únete ahora

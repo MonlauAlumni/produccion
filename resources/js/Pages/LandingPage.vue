@@ -62,7 +62,7 @@
           </div>
         </div>
 
-        <a href="/register"
+        <a href="/register-company"
           class="bg-[#193CB8] text-white px-5 py-2 rounded-md shadow-md hover:shadow-lg transition-all font-medium flex items-center gap-2 hover:bg-[#122a8c]">
           <i class='bx bx-user-plus'></i>
           <span>Registrarse</span>
@@ -75,17 +75,17 @@
   <div v-if="isMobileMenuOpen"
     class="absolute md:hidden w-full bg-white px-6 py-4 shadow-md space-y-3 top-[72px] z-50">
     <template v-if="!auth?.user">
-      <a href="/login"
+      <a href="/login-monlau"
         class="flex items-center gap-3 text-[#193CB8] hover:underline">
         <i class='bx bx-user'></i>
         Alumno
       </a>
-      <a href="/login-monlau"
+      <a href="/login"
         class="flex items-center gap-3 text-[#193CB8] hover:underline">
         <i class='bx bx-building-house'></i>
         Empresa
       </a>
-      <a href="/register"
+      <a href="/register-company"
         class="flex items-center gap-3 text-white bg-[#193CB8] px-4 py-2 rounded-md font-medium hover:bg-[#122a8c]">
         <i class='bx bx-user-plus'></i>
         Registrarse
