@@ -13,24 +13,24 @@
         </div>
       </div>
 
-      <div class="flex-1">
+      <div class="flex-1 overflow-hidden"> <!-- Añadido overflow-hidden aquí -->
         <!-- Post Header -->
         <div class="flex items-center justify-between">
-          <div>
-            <h3 class="font-medium text-gray-800 hover:underline cursor-pointer"
+          <div class="overflow-hidden"> <!-- Añadido overflow-hidden aquí -->
+            <h3 class="font-medium text-gray-800 hover:underline cursor-pointer truncate" <!-- Añadido truncate -->
               @click="router.get(`/perfil/${post.user.profile.slang}`)">
               {{ post.user.name }} {{ post.user.last_name_1 }} {{ post.user.last_name_2 ? post.user.last_name_2 : '' }}
             </h3>
             <p class="text-xs text-gray-500">{{ formatDate(post.created_at) }}</p>
           </div>
-          <button class="p-1 text-gray-400 hover:text-gray-600 cursor-pointer" @click="showPostOptions">
+          <button class="p-1 text-gray-400 hover:text-gray-600 cursor-pointer flex-shrink-0"> <!-- Añadido flex-shrink-0 -->
             <i class="bx bx-dots-horizontal-rounded"></i>
           </button>
         </div>
 
         <!-- Post Content -->
-        <div class="mt-2">
-          <div class="text-gray-700 post-content" v-html="sanitizeHTML(post.content)"
+        <div class="mt-2 overflow-hidden"> <!-- Añadido overflow-hidden aquí -->
+          <div class="text-gray-700 post-content break-words" v-html="sanitizeHTML(post.content)"
             :style="{ fontSize: user_settings.font_size + 'px' }"></div>
 
           <!-- Image Carousel -->
@@ -76,14 +76,14 @@
             <i class="bx bx-comment"></i>
             <span class="text-sm">{{ post.comments_count }}</span>
           </button>
-          <button class="flex items-center gap-1 text-gray-500 hover:text-[#193CB8] cursor-pointer">
+          <!-- <button class="flex items-center gap-1 text-gray-500 hover:text-[#193CB8] cursor-pointer">
             <i class="bx bx-share"></i>
             <span class="text-sm">Compartir</span>
-          </button>
+          </button> -->
         </div>
 
         <!-- Comments Section -->
-        <div v-if="post.comments && post.comments.length > 0" class="mt-4 pt-2 border-t border-gray-100 space-y-3">
+        <div v-if="post.comments && post.comments.length > 0" class="mt-4 pt-2 border-t border-gray-100 space-y-3 overflow-hidden"> <!-- Añadido overflow-hidden -->
           <PostComment v-for="comment in post.comments" :key="comment.id" :comment="comment" />
         </div>
 
@@ -138,13 +138,22 @@ watch(() => props.post.id, () => {
 });
 
 const sanitizeHTML = (html) => {
-  let sanitizedHTML = DOMPurify.sanitize(html);
+  // Configuración para asegurar que los enlaces largos no rompan el diseño
+  const config = {
+    ADD_ATTR: ['target', 'rel'],
+    ADD_TAGS: ['iframe'],
+    FORBID_TAGS: ['style', 'script'],
+    FORBID_ATTR: ['style', 'onerror', 'onload'],
+  };
+  
+  let sanitizedHTML = DOMPurify.sanitize(html, config);
 
+  // Asegurar que los enlaces tengan http/https
   sanitizedHTML = sanitizedHTML.replace(/href="([^"]+)"/g, (match, p1) => {
     if (!/^https?:\/\//i.test(p1)) {
       p1 = 'http://' + p1;
     }
-    return `href="${p1}"`;
+    return `href="${p1}" target="_blank" rel="noopener noreferrer"`;
   });
 
   return sanitizedHTML;
@@ -188,6 +197,7 @@ const addComment = () => {
 
   router.post(commentUrl, formData, {
     preserveScroll: true,
+    preserveState: false,
     onSuccess: () => {
       commentText.value = '';
       nextTick(() => {
@@ -235,5 +245,44 @@ const showPostOptions = () => {
 
 .nav-arrow:hover {
   opacity: 1;
+}
+
+/* Estilos para asegurar que el contenido del post no se desborde */
+.post-content {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  max-width: 100%;
+}
+
+/* Asegurar que las imágenes y otros elementos embebidos no se desborden */
+:deep(.post-content img),
+:deep(.post-content iframe),
+:deep(.post-content video),
+:deep(.post-content embed),
+:deep(.post-content object) {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Asegurar que los enlaces largos no rompan el diseño */
+:deep(.post-content a) {
+  word-break: break-all;
+  color: #193CB8;
+  text-decoration: underline;
+}
+
+/* Estilos para los bloques de código o texto preformateado */
+:deep(.post-content pre),
+:deep(.post-content code) {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+  max-width: 100%;
+  display: block;
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
 }
 </style>
