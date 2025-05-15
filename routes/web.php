@@ -199,8 +199,8 @@ Route::middleware(['guest'])->group(function () {
 
     Route::get('/register-company', [RegisterCompanyController::class, 'create'])->name('register-company');
     Route::post('/register-company', [RegisterCompanyController::class, 'store']);
-    Route::get('/register', [RegisterController::class, 'create'])->name('register');
-    Route::post('/register', [RegisterController::class, 'store']);
+  //  Route::get('/register', [RegisterController::class, 'create'])->name('register');
+   // Route::post('/register', [RegisterController::class, 'store']);
 
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
@@ -219,5 +219,5 @@ Route::middleware(['guest'])->group(function () {
 
 Route::get('logout', function () {
     Auth::logout();
-    return redirect('/login-monlau');
+    return redirect('/');
 });
