@@ -1,6 +1,6 @@
 <script setup>
   import { ref } from 'vue'
-  import { router } from '@inertiajs/vue3'
+  import { router, usePage } from '@inertiajs/vue3'
   import Layout from '@/Components/Layout.vue'
   import JobConfirmationModal from '@/Components/JobOffers/JobConfirmationModal.vue'
   const props = defineProps({
@@ -9,7 +9,8 @@
       required: true
     }
   })
-  
+  const page = usePage()
+  const userRole = page.props.auth.user.role
   const jobOffer = ref(props.jobOffer)
   const showConfirmationModal = ref(false)
   
@@ -120,12 +121,15 @@ const closeConfirmationModal = () => {
             </div>
             
             <!-- Apply Button -->
-            <div class="mt-4 md:mt-0 flex flex-col items-end">
+            <div v-if="userRole === 'alumne'" class="mt-4 md:mt-0 flex flex-col items-end">
               <button 
                 @click="applyToJob"
+                
                 class="bg-white text-[#193CB8] cursor-pointer font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-blue-50 flex items-center"
               >
                 <i class='bx bx-send mr-2'></i>
+
+                
                 Inscribirme
               </button>
               <div class="text-xs text-blue-100 mt-2">
@@ -171,46 +175,52 @@ const closeConfirmationModal = () => {
             
             <!-- Requirements Section -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div class="border-b border-gray-200 p-4 flex items-center">
-                <i class='bx bx-list-check text-xl text-[#193CB8] mr-2'></i>
-                <h2 class="text-lg font-bold text-gray-800">Requisitos</h2>
-              </div>
-              <div class="p-5">
-                <div class="grid md:grid-cols-2 gap-5 mb-5">
-                  <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-[#193CB8]">
-                    <h3 class="font-semibold mb-2 flex items-center text-gray-800">
-                      <i class='bx bx-book text-[#193CB8] mr-2'></i>
-                      Estudios mínimos
-                    </h3>
-                    <p class="text-gray-700">{{ jobOffer.requirements }}</p>
-                  </div>
-                  <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-[#193CB8]">
-                    <h3 class="font-semibold mb-2 flex items-center text-gray-800">
-                      <i class='bx bx-time text-[#193CB8] mr-2'></i>
-                      Experiencia mínima
-                    </h3>
-                    <p class="text-gray-700">{{ jobOffer.experience }}</p>
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 class="font-semibold mb-3 flex items-center text-gray-800">
-                    <i class='bx bx-code-alt text-[#193CB8] mr-2'></i>
-                    Conocimientos requeridos
-                  </h3>
-                  <div class="flex flex-wrap gap-2 mt-2">
-                    <span 
-                      v-for="skill in skills" 
-                      :key="skill"
-                      class="px-3 py-1.5 bg-[#193CB8]/10 text-[#193CB8] rounded-md text-sm font-medium flex items-center border border-[#193CB8]/20"
-                    >
-                      <i class='bx bx-check mr-1'></i>
-                      {{ skill }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+  <div class="border-b border-gray-200 p-4 flex items-center">
+    <i class='bx bx-list-check text-xl text-[#193CB8] mr-2'></i>
+    <h2 class="text-lg font-bold text-gray-800">Requisitos</h2>
+  </div>
+  <div class="p-5">
+    <!-- Requirements in a more flexible layout -->
+    <div class="space-y-4">
+      <!-- Education requirements -->
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <h3 class="font-semibold flex items-center text-gray-800 border-b border-gray-200 pb-2 mb-3">
+          <i class='bx bx-book text-[#193CB8] mr-2'></i>
+          Estudios mínimos
+        </h3>
+        <div v-html="jobOffer.requirements" class="text-gray-700"></div>
+      </div>
+      
+      <!-- Experience requirements -->
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <h3 class="font-semibold flex items-center text-gray-800 border-b border-gray-200 pb-2 mb-3">
+          <i class='bx bx-time text-[#193CB8] mr-2'></i>
+          Experiencia mínima
+        </h3>
+        <div v-html="jobOffer.experience" class="text-gray-700"></div>
+      </div>
+      
+      <!-- Skills section -->
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <h3 class="font-semibold flex items-center text-gray-800 border-b border-gray-200 pb-2 mb-3">
+          <i class='bx bx-code-alt text-[#193CB8] mr-2'></i>
+          Conocimientos requeridos
+        </h3>
+        <div class="flex flex-wrap gap-2 mt-3">
+         
+          <span 
+            v-for="skill in jobOffer.skills" 
+            :key="skill"
+            class="px-3 py-1.5 bg-[#193CB8]/10 text-[#193CB8] rounded-md text-sm font-medium flex items-center border border-[#193CB8]/20"
+          >
+            <i class='bx bx-check mr-1'></i>
+            {{ skill.name }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
             
             <!-- Benefits Section -->
             <div v-if="jobOffer.benefits" class="bg-white rounded-lg shadow-sm border border-gray-200">
@@ -257,7 +267,7 @@ const closeConfirmationModal = () => {
                   <div class="text-sm text-gray-500">Inscritos</div>
                   <div class="font-medium flex items-center">
                     <i class='bx bx-user-plus text-[#193CB8] mr-1'></i>
-                    50+
+                    {{ jobOffer.applicants.length }}
                   </div>
                 </div>
                 
@@ -271,6 +281,7 @@ const closeConfirmationModal = () => {
                 </div>
                 
                 <button 
+                v-if="userRole === 'alumne'"
                   @click="applyToJob"
                   class="w-full bg-[#193CB8] cursor-pointer text-white font-semibold py-3 px-6 rounded-lg shadow-sm hover:bg-[#142d8c] flex items-center justify-center mt-5"
                 >
@@ -326,50 +337,7 @@ const closeConfirmationModal = () => {
             </div>
             
             <!-- Similar Jobs Card -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div class="border-b border-gray-200 p-4 flex items-center">
-                <i class='bx bx-list-plus text-xl text-[#193CB8] mr-2'></i>
-                <h3 class="font-bold text-gray-800">Ofertas similares</h3>
-              </div>
-              <div class="p-5">
-                <div class="space-y-3">
-                  <div class="p-3 border border-gray-100 rounded-lg hover:bg-gray-50">
-                    <h4 class="font-medium text-[#193CB8]">Desarrollador Backend</h4>
-                    <div class="flex items-center text-sm text-gray-500 mt-1">
-                      <i class='bx bx-buildings mr-1'></i>
-                      <span>Tech Solutions</span>
-                      <span class="mx-2">·</span>
-                      <i class='bx bx-map-pin mr-1'></i>
-                      <span>Madrid</span>
-                    </div>
-                  </div>
-                  <div class="p-3 border border-gray-100 rounded-lg hover:bg-gray-50">
-                    <h4 class="font-medium text-[#193CB8]">Frontend Developer</h4>
-                    <div class="flex items-center text-sm text-gray-500 mt-1">
-                      <i class='bx bx-buildings mr-1'></i>
-                      <span>Digital Agency</span>
-                      <span class="mx-2">·</span>
-                      <i class='bx bx-map-pin mr-1'></i>
-                      <span>Barcelona</span>
-                    </div>
-                  </div>
-                  <div class="p-3 border border-gray-100 rounded-lg hover:bg-gray-50">
-                    <h4 class="font-medium text-[#193CB8]">Full Stack Engineer</h4>
-                    <div class="flex items-center text-sm text-gray-500 mt-1">
-                      <i class='bx bx-buildings mr-1'></i>
-                      <span>Startup Inc</span>
-                      <span class="mx-2">·</span>
-                      <i class='bx bx-map-pin mr-1'></i>
-                      <span>Remoto</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <a href="#" class="flex items-center justify-center text-[#193CB8] text-sm mt-4 hover:underline">
-                  <i class='bx bx-search-alt mr-1'></i> Ver más ofertas similares
-                </a>
-              </div>
-            </div>
+           
           </div>
         </div>
         

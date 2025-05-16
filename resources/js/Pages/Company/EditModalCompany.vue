@@ -45,6 +45,7 @@
   const industries = [
     'Tecnología',
     'Finanzas',
+    'Automoción',
     'Salud',
     'Educación',
     'Marketing',

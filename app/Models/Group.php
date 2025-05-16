@@ -32,12 +32,12 @@ class Group extends Model
 
     public function posts()
     {
-        return $this->hasMany(GroupPost::class)->orderBy('created_at', 'desc');
+        return $this->hasMany(Post::class)->orderBy('created_at', 'desc');
     }
 
     public function events()
     {
-        return $this->hasMany(GroupEvent::class);
+        return $this->hasMany(Event::class);
     }
 
     public function files()

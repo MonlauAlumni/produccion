@@ -10,14 +10,16 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 
-const stats = [
-    { value: 750, label: "Usuarios registrados" },
-    { value: 200, label: "Alumnos en formación profesional" },
-    { value: 600, label: "Empresas registradas" },
-    { value: 10, label: "Años de experiencia" }
-];
+const page = usePage();
+const stats = computed(() => [
+    { value: page.props.userCount, label: "Usuarios registrados" },
+    { value: page.props.currentStudentCount, label: "Alumnos en formación profesional" },
+    { value: page.props.companyCount, label: "Empresas registradas" },
+    { value: 10, label: "Años de experiencia" } // Static value for now
+]);
 
 onMounted(() => {
     const statsSection = document.getElementById("stats-section");

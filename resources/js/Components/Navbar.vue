@@ -1,9 +1,10 @@
 <template>
-  <nav class="bg-[#193CB8] w-full py-3 px-4">
-    <div class=" mx-10 flex justify-between items-center">
-      <div class="flex items-center">
+  <nav class="bg-[#193CB8] w-full py-2   px-4 ">
+    <div class=" flex justify-between items-center">
+      <div class="relative flex ml-12 md:ml-0 z-0 md:z-50 items-center ">
         <a href="/" class=" text-white font-bold flex items-center gap-3"> 
-          <img src="../../../public/images/logoMonlau.jpg" alt="Alumni" class="w-9 h-8">
+          <img src="../../../public/images/logoMonlau.jpg" alt="Alumni" class="h-10  " />
+          
           <span class="text-xl">Alumni</span>
         </a>
       </div>      

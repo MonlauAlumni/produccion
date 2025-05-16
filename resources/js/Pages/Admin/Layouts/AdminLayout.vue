@@ -80,17 +80,17 @@ const { auth, appName } = usePage().props;
 
 <template>
     <nav class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] py-3 px-4 ">
-        <div class="container mx-auto flex justify-between items-center">
+        <div class="container flex  justify-between items-center">
             <!-- Logo y nombre -->
             <div class="flex items-center">
                 <a href="/" class="text-white font-bold flex items-center gap-3">
 
-                    <img src="../../../../../public/images/monlau-logo.png" alt="Alumni" class="w-8 h-8">
+                    <img src="../../../../../public/images/logoMonlau.jpg" alt="Alumni" class="w-8 h-8">
 
                     <span class="text-xl">Alumni</span>
                 </a>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center  gap-4">
                 <ul>
                     <li v-if="auth?.user" class="relative">
                         <button @click="toggleUserMenu" class="flex items-center gap-2 text-white">
@@ -120,8 +120,9 @@ const { auth, appName } = usePage().props;
                     </li>
                 </ul>
                 <!-- Menú central - visible solo en pantallas medianas y grandes -->
-                <box-icon name='menu' color="white" size="md" class="hover:cursor-pointer transition-all duration-300"
-                    @click.stop="toggleSidebar"></box-icon>
+          <button class="cursor-pointer text-white" @click.stop="toggleSidebar">
+       <i class='bx  bx-menu mt-1 text-lg'></i>
+          </button>
             </div>
 
         </div>

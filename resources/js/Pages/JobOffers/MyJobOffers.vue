@@ -37,6 +37,10 @@
   const appliedJobsList = ref(props.appliedOffers.data || []);
   const savedJobsList = ref(props.savedOffers.data || []);
   
+  const urlParams = new URLSearchParams(window.location.search);
+
+
+
   // Pagination for applied offers
   const appliedPagination = computed(() => ({
     currentPage: props.appliedOffers.current_page,
@@ -73,7 +77,10 @@
   
   // Active status filter
   const activeStatusFilter = ref('all');
-  
+  const initialTab = urlParams.get('tab') || 'applied';
+  const initialStatus = urlParams.get('status') || 'all';
+  activeTab.value = initialTab;
+  activeStatusFilter.value = initialStatus;
   // Set active status filter
   const setStatusFilter = (status) => {
     activeStatusFilter.value = status;
@@ -87,7 +94,15 @@
       status: activeStatusFilter.value !== 'all' ? activeStatusFilter.value : undefined
     }, { 
       preserveScroll: true,
-      only: ['appliedOffers', 'savedOffers']
+      preserveState: true,
+      only: ['appliedOffers', 'savedOffers'],
+      onSuccess: (page) => {
+        if (activeTab.value === 'applied') {
+          appliedJobsList.value = page.props.appliedOffers.data;
+        } else {
+          savedJobsList.value = page.props.savedOffers.data;
+        }
+      }
     });
   };
   

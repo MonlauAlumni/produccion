@@ -11,17 +11,24 @@
   });
   
   const uploadProfileImage = (e) => {
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append('logo', file);
-    router.post(`/empresa/${props.company.slang}/update-logo`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }).then((response) => {
-      props.company.logo_url = response.data.logo_url;
-    });
-  };
+  const file = e.target.files[0];
+  const formData = new FormData();
+
+  formData.append('logo', file);
+
+  router.post(`/empresa/${props.company.slang}/update-logo`, formData, {
+    forceFormData: true, // importante para asegurar que Inertia no serializa como JSON
+    onSuccess: (page) => {
+      // Puedes acceder a los datos actualizados desde el objeto `page.props`
+      const newLogoUrl = page.props.company?.logo_url;
+
+      if (newLogoUrl) {
+        props.company.logo_url = newLogoUrl;
+      }
+    },
+  });
+};
+
   
   // Computed property for company industry
   const industry = computed(() => {
@@ -39,11 +46,11 @@
       <div class="p-6">
         <div class="flex flex-col md:flex-row md:items-center gap-6">
           <!-- Logo de la empresa -->
-          <div class="relative h-28 w-28 rounded-lg bg-white shadow-md overflow-hidden group border-4 border-white">
+          <div class="relative h-26 w-28 rounded-lg bg-white shadow-md overflow-hidden group border-4 border-white">
             <img 
               :src="company.profile_picture" 
               :alt="company.name + ' logo'" 
-              class="h-27 w-28 rounded-lg" 
+              class="h-26 w-28 rounded-lg" 
             />
             
             <!-- Hover para subir nueva imagen (solo para administradores) -->
@@ -93,10 +100,7 @@
                   <span>Contactar</span>
                 </button>
                 
-                <button class="flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 cursor-pointer px-4 py-2 rounded-md transition-colors">
-                  <i class='bx bx-share-alt'></i>
-                  <span class="hidden sm:inline">Compartir</span>
-                </button>
+                
               </div>
             </div>
             

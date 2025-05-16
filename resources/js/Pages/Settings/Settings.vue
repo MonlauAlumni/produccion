@@ -554,7 +554,7 @@ const terminateAllSessions = () => {
             </div>
 
 
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-200">
+            <!-- <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-200">
                 <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">IDIOMA</h2>
                 <p class="text-gray-600 dark:text-gray-400 mb-4">Selecciona tu idioma:</p>
                 <div class="grid grid-cols-3 gap-4">
@@ -567,14 +567,13 @@ const terminateAllSessions = () => {
                         <span class="block text-sm font-semibold">{{ lang.name }}</span>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
         </div>
 
         <!-- SOCIAL SECTION -->
-        <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-6 px-4 border-t pt-4">SOCIAL</h1>
+        <!-- <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-6 px-4 border-t pt-4">SOCIAL</h1>
         <div class="p-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Email Notifications -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-200">
                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Notificaciones por Email</h2>
 
@@ -647,10 +646,10 @@ const terminateAllSessions = () => {
                         </label>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Social Profiles -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-200">
+            <!-- <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-200">
                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Perfiles Sociales</h2>
                 <p class="text-gray-600 dark:text-gray-400 mb-4">Conecta tus perfiles sociales para compartir contenido
                     y mejorar tu experiencia.</p>
@@ -691,10 +690,10 @@ const terminateAllSessions = () => {
                         {{ isUpdating ? 'Actualizando...' : 'Actualizar Información' }}
                     </button>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Connected Accounts -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-200">
+            <!-- <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-200">
                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Cuentas Conectadas</h2>
                 <p class="text-gray-600 dark:text-gray-400 mb-4">Conecta tus cuentas para iniciar sesión más fácilmente.
                 </p>
@@ -752,13 +751,11 @@ const terminateAllSessions = () => {
                         </button>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div> -->
+        <!-- </div> -->
 
-        <!-- PRIVACY SECTION -->
-        <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-6 px-4 border-t pt-4">PRIVACIDAD</h1>
+        <!-- <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-6 px-4 border-t pt-4">PRIVACIDAD</h1>
         <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Privacy Settings -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-200">
                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Configuración de Privacidad</h2>
                 <p class="text-gray-600 dark:text-gray-400 mb-4">Controla quién puede ver tu información y cómo se
@@ -814,7 +811,6 @@ const terminateAllSessions = () => {
                 </div>
             </div>
 
-            <!-- Active Sessions -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-200">
                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Sesiones Activas</h2>
                 <p class="text-gray-600 dark:text-gray-400 mb-4">Gestiona tus sesiones activas y cierra sesión en
@@ -846,7 +842,7 @@ const terminateAllSessions = () => {
                     </button>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- SECURITY SECTION -->
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-6 px-4 border-t pt-4">SEGURIDAD</h1>
@@ -882,7 +878,7 @@ const terminateAllSessions = () => {
             </div>
 
             <!-- Login History -->
-            <div
+            <!-- <div
                 class="bg-white border border-gray-200 dark:bg-gray-900 p-6 rounded-lg text-gray-700 dark:text-gray-300 shadow-xl">
                 <p class="text-xl font-bold">Historial de Inicio de Sesión</p>
                 <p class="mt-2 text-justify">
@@ -918,7 +914,7 @@ const terminateAllSessions = () => {
                     class="bg-blue-500 hover:bg-blue-600 text-white font-semibold p-3 rounded-lg cursor-pointer text-center mt-4 transition duration-300 w-1/2">
                     Ver Historial Completo
                 </button>
-            </div>
+            </div> -->
         </div>
 
         <!-- QR Code Modal -->

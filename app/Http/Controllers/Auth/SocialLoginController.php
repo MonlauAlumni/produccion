@@ -17,7 +17,7 @@ class SocialLoginController extends Controller
 {
     public function redirectToMicrosoft()
     {
-        return Socialite::driver('microsoft')->redirect();
+        return Socialite::driver('microsoft')->redirect();  
     }
 
     public function redirectToGoogle()
@@ -38,6 +38,7 @@ class SocialLoginController extends Controller
                 'Accept' => 'application/json'
             ],
         ]);
+   
         $groups = json_decode($response->getBody(), true);
         $groupNames = [];
 
