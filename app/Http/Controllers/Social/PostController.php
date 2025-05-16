@@ -53,7 +53,20 @@ class PostController extends Controller
         if ($post->user_id !== Auth::id()) {
             return redirect()->back()->with('error', 'No tienes permiso para eliminar este post.');
         }
+        $post->images()->each(function ($image) {
+            $imagePath = public_path($image->image_path);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+            $image->delete();
+        });
+        foreach ($post->comments as $comment) {
+            $commentToDelete = PostComment::find($comment->id);
+            if ($commentToDelete) {
+                $commentToDelete->delete();
+            }
 
+        }
         $post->delete();
         return redirect()->back()->with('success', 'Post eliminado con éxito!');
     }

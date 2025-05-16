@@ -197,7 +197,6 @@ const resetForm = () => {
                         </label>
                         <label
                             class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                            <i class='bx bx-video mr-1 text-green-500'></i> Video
                             <input type="file" class="hidden" @change="handleFileChange" accept="video/*" />
                         </label>
                         <button @click="router.get('/eventos/nuevo')"
