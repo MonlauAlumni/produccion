@@ -48,6 +48,16 @@ class PostController extends Controller
 
     }
 
+    public function destroy(Post $post)
+    {
+        if ($post->user_id !== Auth::id()) {
+            return redirect()->back()->with('error', 'No tienes permiso para eliminar este post.');
+        }
+
+        $post->delete();
+        return redirect()->back()->with('success', 'Post eliminado con éxito!');
+    }
+
     public function storeInGroup(Request $request, $groupId)
     {
         $request->merge(['group_id' => $groupId]);

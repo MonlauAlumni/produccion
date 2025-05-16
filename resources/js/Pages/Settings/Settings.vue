@@ -14,6 +14,10 @@ const props = defineProps({
         type: Array,
         required: true
     },
+    profile: {
+        type: Object,
+        required: true
+    },
 });
 const username = ref(user.value.name);
 const email = ref(user.value.email);
@@ -114,11 +118,17 @@ onMounted(() => {
 });
 
 const getQRCode = async () => {
+    qrModal.value = true;
     try {
         const response = await axios.get('/user/two-factor-qr-code');
-        qrCode.value = response.data.svg;
-        qrModal.value = true;
+        if (response.data && response.data.svg) {
+            qrCode.value = response.data.svg;
+        } else {
+            qrCode.value = '';
+            console.error("QR Code data not found in response.");
+        }
     } catch (error) {
+        qrCode.value = '';
         console.error("Error fetching QR Code:", error);
     }
 };
@@ -299,11 +309,16 @@ const uploadProfilePicture = async (e) => {
     formData.append('profile_picture', file);
 
     try {
-        await axios.post('/user/upload-profile-picture', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
+        await router.post(`/perfil/${props.profile.slang}/update-profile-picture`, formData, {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                console.log('Profile picture uploaded successfully');
+            },
+            onError: (error) => {
+                console.error('Error uploading profile picture:', error);
+            }
         });
-        // Optionally trigger a page refresh or update the user object
-        console.log('Profile picture uploaded successfully');
     } catch (error) {
         console.error('Error uploading profile picture:', error);
     }
@@ -508,7 +523,7 @@ const terminateAllSessions = () => {
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tamaño de
-                                Fuente de las Publicaciones</label>
+                                Fuente de las Ofertas</label>
                             <input v-model="fontSize" type="range" min="12" max="24" class="w-full mt-1" />
                         </div>
                         <div class="flex justify-end mt-4"></div>
@@ -871,7 +886,7 @@ const terminateAllSessions = () => {
                     'mt-4',
                     'transition',
                     'duration-300',
-                    isTwoFactorEnabled ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'
+                    'bg-gradient-to-r from-[#193CB8] to-[#2748c6] hover:bg-blue-600'
                 ]">
                     {{ isTwoFactorEnabled ? "DESACTIVAR 2FA (NO RECOMENDADO)" : "ACTIVAR 2FA" }}
                 </button>

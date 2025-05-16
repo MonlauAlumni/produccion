@@ -21,8 +21,21 @@
             </h3>
             <p class="text-xs text-gray-500">{{ formatDate(post.created_at) }}</p>
           </div>
-          <button class="p-1 text-gray-400 hover:text-gray-600 cursor-pointer flex-shrink-0">
-            <i class="bx bx-dots-horizontal-rounded"></i>
+          <button class="p-1 text-gray-400 hover:text-gray-600 cursor-pointer flex-shrink-0"  @click.stop="showPostOptions">
+            <div class="relative">
+              <i v-if="auth?.user?.id === post.user.id" class="bx bx-dots-horizontal-rounded "
+                ref="optionsButtonRef"></i>
+              <div v-if="postOptionsModal"
+                class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-20"
+                ref="optionsMenuRef">
+                <ul class="py-1">
+                 
+                  <li>
+                    <button class="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600" @click="openDeletePostModal">Eliminar</button>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </button>
         </div>
 
@@ -98,10 +111,32 @@
       </div>
     </div>
   </div>
+  <teleport to="body">
+    <div v-if="postDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div class="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 relative">
+        <button class="absolute top-2 right-2 text-gray-400 hover:text-gray-600" @click="postDeleteModal = false">
+          <i class="bx bx-x text-2xl"></i>
+        </button>
+        <h2 class="text-lg font-semibold text-gray-800 mb-2">Eliminar publicación</h2>
+        <p class="text-gray-600 mb-4">¿Estás seguro de que deseas eliminar esta publicación? Esta acción no se puede deshacer.</p>
+        <div class="flex justify-end gap-2">
+          <button class="px-4 py-2 rounded bg-gray-100 text-gray-700 hover:bg-gray-200" @click="postDeleteModal = false">
+            Cancelar
+          </button>
+          <button
+            class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+            @click="deletePost"
+          >
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </teleport>
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted, watch } from 'vue';
+import { ref, nextTick, onMounted, watch, onUnmounted } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import DOMPurify from 'dompurify';
 import PostComment from './PostComment.vue';
@@ -123,14 +158,17 @@ const isLiked = ref(props.post.is_liked);
 const currentImageIndex = ref(0);
 const slideDirection = ref('slide-right');
 const postOptionsModal = ref(false);
+const optionsButtonRef = ref(null);
+const optionsMenuRef = ref(null);
 
-// Reset current image index when post changes
-watch(() => props.post.id, () => {
-  currentImageIndex.value = 0;
-});
+const postDeleteModal = ref(false);
+
+const openDeletePostModal = () => {
+    postOptionsModal.value = false;
+    postDeleteModal.value = true;
+};
 
 const sanitizeHTML = (html) => {
-  // Configuración para asegurar que los enlaces largos no rompan el diseño
   const config = {
     ADD_ATTR: ['target', 'rel'],
     ADD_TAGS: ['iframe'],
@@ -140,7 +178,6 @@ const sanitizeHTML = (html) => {
 
   let sanitizedHTML = DOMPurify.sanitize(html, config);
 
-  // Asegurar que los enlaces tengan http/https
   sanitizedHTML = sanitizedHTML.replace(/href="([^"]+)"/g, (match, p1) => {
     if (!/^https?:\/\//i.test(p1)) {
       p1 = 'http://' + p1;
@@ -171,6 +208,16 @@ const prevImage = () => {
   currentImageIndex.value = (currentImageIndex.value - 1 + props.post.images.length) % props.post.images.length;
 };
 
+const deletePost = () => {
+  router.delete(`/posts/${props.post.id}`, {
+    onSuccess: () => {
+      router.visit(window.location.pathname, { 
+        preserveScroll: false,
+        preserveState: false,
+      });
+    }
+  });
+};
 
 const addComment = () => {
   if (!commentText.value.trim()) return;
@@ -219,9 +266,41 @@ const focusCommentInput = () => {
   }
 };
 
+// Handle click outside for post options dropdown
+const handleClickOutside = (event) => {
+  // Check if dropdown is open and if click is outside both the dropdown and the button
+  if (
+    postOptionsModal.value && 
+    optionsMenuRef.value && 
+    optionsButtonRef.value && 
+    !optionsMenuRef.value.contains(event.target) && 
+    !optionsButtonRef.value.contains(event.target)
+  ) {
+    postOptionsModal.value = false;
+    document.removeEventListener('click', handleClickOutside);
+  }
+};
+
+// Show post options dropdown
 const showPostOptions = () => {
   postOptionsModal.value = true;
+  // Use nextTick to ensure the DOM is updated before adding the event listener
+  nextTick(() => {
+    // Add a small delay to prevent the same click event from immediately closing the dropdown
+    setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+    }, 10);
+  });
 };
+
+// Clean up event listeners when component is unmounted
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+
+watch(() => props.post.id, () => {
+  currentImageIndex.value = 0;
+});
 </script>
 
 <style scoped>
@@ -239,7 +318,6 @@ const showPostOptions = () => {
   opacity: 1;
 }
 
-/* Estilos para asegurar que el contenido del post no se desborde */
 .post-content {
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -248,7 +326,6 @@ const showPostOptions = () => {
   max-width: 100%;
 }
 
-/* Asegurar que las imágenes y otros elementos embebidos no se desborden */
 :deep(.post-content img),
 :deep(.post-content iframe),
 :deep(.post-content video),
@@ -258,14 +335,12 @@ const showPostOptions = () => {
   height: auto;
 }
 
-/* Asegurar que los enlaces largos no rompan el diseño */
 :deep(.post-content a) {
   word-break: break-all;
   color: #193CB8;
   text-decoration: underline;
 }
 
-/* Estilos para los bloques de código o texto preformateado */
 :deep(.post-content pre),
 :deep(.post-content code) {
   white-space: pre-wrap;

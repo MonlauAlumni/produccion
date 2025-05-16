@@ -138,6 +138,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/grupos/{groupId}/posts/{postId}/comment', [PostController::class, 'addCommentInGroup'])->name('group.postComment');
 
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
     Route::post('/posts/{post}/comment', [PostController::class, 'addComment'])->name('posts.comment');
     Route::post('/posts/{post}/like', [PostController::class, 'toggleLike'])->name('posts.like');
     Route::post('/posts/group/{groupId}', [PostController::class, 'storeInGroup'])->name('group.storePost');
