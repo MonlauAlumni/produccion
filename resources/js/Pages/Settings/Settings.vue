@@ -14,6 +14,10 @@ const props = defineProps({
         type: Array,
         required: true
     },
+    profile: {
+        type: Object,
+        required: true
+    },
 });
 const username = ref(user.value.name);
 const email = ref(user.value.email);
@@ -114,11 +118,17 @@ onMounted(() => {
 });
 
 const getQRCode = async () => {
+    qrModal.value = true;
     try {
         const response = await axios.get('/user/two-factor-qr-code');
-        qrCode.value = response.data.svg;
-        qrModal.value = true;
+        if (response.data && response.data.svg) {
+            qrCode.value = response.data.svg;
+        } else {
+            qrCode.value = '';
+            console.error("QR Code data not found in response.");
+        }
     } catch (error) {
+        qrCode.value = '';
         console.error("Error fetching QR Code:", error);
     }
 };
@@ -299,11 +309,16 @@ const uploadProfilePicture = async (e) => {
     formData.append('profile_picture', file);
 
     try {
-        await axios.post('/user/upload-profile-picture', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
+        await router.post(`/perfil/${props.profile.slang}/update-profile-picture`, formData, {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                console.log('Profile picture uploaded successfully');
+            },
+            onError: (error) => {
+                console.error('Error uploading profile picture:', error);
+            }
         });
-        // Optionally trigger a page refresh or update the user object
-        console.log('Profile picture uploaded successfully');
     } catch (error) {
         console.error('Error uploading profile picture:', error);
     }
@@ -508,7 +523,7 @@ const terminateAllSessions = () => {
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tamaño de
-                                Fuente de las Publicaciones</label>
+                                Fuente de las Ofertas</label>
                             <input v-model="fontSize" type="range" min="12" max="24" class="w-full mt-1" />
                         </div>
                         <div class="flex justify-end mt-4"></div>
@@ -871,7 +886,7 @@ const terminateAllSessions = () => {
                     'mt-4',
                     'transition',
                     'duration-300',
-                    isTwoFactorEnabled ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'
+                    'bg-gradient-to-r from-[#193CB8] to-[#2748c6] hover:bg-blue-600'
                 ]">
                     {{ isTwoFactorEnabled ? "DESACTIVAR 2FA (NO RECOMENDADO)" : "ACTIVAR 2FA" }}
                 </button>
@@ -919,16 +934,21 @@ const terminateAllSessions = () => {
 
         <!-- QR Code Modal -->
         <div v-if="qrCode && qrModal" class="fixed inset-0 flex items-center justify-center bg-black/50 p-4 z-50">
-            <div class="bg-gray-900 dark:bg-white p-4 md:p-6 rounded-lg shadow-lg w-full max-w-sm text-center">
-                <h2 class="text-lg font-semibold mb-4">Scan this QR Code</h2>
-                <div v-html="qrCode" class="p-4 bg-gray-100 dark:border rounded-lg inline-block"></div>
-                <p class="text text-gray-300 mt-2 dark:text-gray-500">Use your authenticator app to scan the code and
-                    enable 2FA</p>
-                <div class="flex flex-col sm:flex-row gap-2 justify-center">
-                    <button @click="disable2FA()"
-                        class="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 cursor-pointer transition duration-300 w-full">Cancel</button>
+            <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-2xl w-full max-w-md text-center border border-gray-200 dark:border-gray-700">
+                <h2 class="text-2xl font-bold text-blue-700 dark:text-blue-300 mb-2">Escanea este QR</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Usa tu app de autenticación para activar 2FA</p>
+                <div class="flex justify-center mb-4">
+                    <div v-html="qrCode" class="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg inline-block border border-gray-200 dark:border-gray-700 shadow"></div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2 mt-4">
                     <button @click="qrModal = false"
-                        class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer transition duration-300 w-full">Confirm</button>
+                        class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition duration-300">
+                        Confirmar
+                    </button>
+                    <button @click="disable2FA()"
+                        class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition duration-300">
+                        Cancelar
+                    </button>
                 </div>
             </div>
         </div>

@@ -39,6 +39,7 @@ class RegisterCompanyController extends Controller
 
         // //Registro del Usuario (Usuario)
         try {
+        User::withoutEvents(function () use ($request){
         $user = User::create([
             'name' => $request->name,
             'last_name_1' => $request->last_name_1,
@@ -48,6 +49,7 @@ class RegisterCompanyController extends Controller
             'training_area' => 'Informatica',
         ]);
         $user->assignRole('empresa'); 
+        
         $user->settings()->create();
         // Registro de la Empresa
         $company = Company::create([
@@ -56,11 +58,16 @@ class RegisterCompanyController extends Controller
             'company_phone' => $request->company_phone,
             'fiscal_id' => $request->fiscal_id,
             'description' => $request->description,
+            'slang' => strtolower(
+                str_replace(' ', '-', trim(
+                    "{$request->company_name}"
+                ))
+            ),
         ]);
 
 
         Auth::login($user);
-
+});
 
         return redirect('/home')->with('success', 'Perfil completado con éxito. ¡Bienvenido!');
 

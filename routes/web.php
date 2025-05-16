@@ -138,6 +138,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/grupos/{groupId}/posts/{postId}/comment', [PostController::class, 'addCommentInGroup'])->name('group.postComment');
 
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
     Route::post('/posts/{post}/comment', [PostController::class, 'addComment'])->name('posts.comment');
     Route::post('/posts/{post}/like', [PostController::class, 'toggleLike'])->name('posts.like');
     Route::post('/posts/group/{groupId}', [PostController::class, 'storeInGroup'])->name('group.storePost');
@@ -199,8 +200,8 @@ Route::middleware(['guest'])->group(function () {
 
     Route::get('/register-company', [RegisterCompanyController::class, 'create'])->name('register-company');
     Route::post('/register-company', [RegisterCompanyController::class, 'store']);
-  //  Route::get('/register', [RegisterController::class, 'create'])->name('register');
-   // Route::post('/register', [RegisterController::class, 'store']);
+    Route::get('/register', [RegisterController::class, 'create'])->name('register');
+    Route::post('/register', [RegisterController::class, 'store']);
 
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);

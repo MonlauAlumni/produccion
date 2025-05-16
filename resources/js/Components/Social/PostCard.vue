@@ -1,7 +1,6 @@
 <template>
   <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6" :data-post-id="post.id">
     <div class="flex items-start gap-3">
-      <!-- Avatar -->
       <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 cursor-pointer"
         @click="router.get(`/perfil/${post.user.profile.slang}`)">
         <img v-if="post.user.profile && post.user.profile.profile_picture"
@@ -13,27 +12,37 @@
         </div>
       </div>
 
-      <div class="flex-1">
-        <!-- Post Header -->
+      <div class="flex-1 overflow-hidden">
         <div class="flex items-center justify-between">
-          <div>
-            <h3 class="font-medium text-gray-800 hover:underline cursor-pointer"
+          <div class="overflow-hidden">
+            <h3 class="font-medium text-gray-800 hover:underline cursor-pointer truncate"
               @click="router.get(`/perfil/${post.user.profile.slang}`)">
               {{ post.user.name }} {{ post.user.last_name_1 }} {{ post.user.last_name_2 ? post.user.last_name_2 : '' }}
             </h3>
             <p class="text-xs text-gray-500">{{ formatDate(post.created_at) }}</p>
           </div>
-          <button class="p-1 text-gray-400 hover:text-gray-600 cursor-pointer" @click="showPostOptions">
-            <i class="bx bx-dots-horizontal-rounded"></i>
+          <button class="p-1 text-gray-400 hover:text-gray-600 cursor-pointer flex-shrink-0"  @click.stop="showPostOptions">
+            <div class="relative">
+              <i v-if="auth?.user?.id === post.user.id" class="bx bx-dots-horizontal-rounded "
+                ref="optionsButtonRef"></i>
+              <div v-if="postOptionsModal"
+                class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-20"
+                ref="optionsMenuRef">
+                <ul class="py-1">
+                 
+                  <li>
+                    <button class="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600" @click="openDeletePostModal">Eliminar</button>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </button>
         </div>
 
-        <!-- Post Content -->
-        <div class="mt-2">
-          <div class="text-gray-700 post-content" v-html="sanitizeHTML(post.content)"
+        <div class="mt-2 overflow-hidden">
+          <div class="text-gray-700 post-content break-words" v-html="sanitizeHTML(post.content)"
             :style="{ fontSize: user_settings.font_size + 'px' }"></div>
 
-          <!-- Image Carousel -->
           <div v-if="post.images && post.images.length > 0" class="mt-3 relative">
             <div class="image-carousel overflow-hidden relative w-full h-[300px]">
               <div class="flex transition-transform duration-500 h-full"
@@ -43,7 +52,6 @@
               </div>
             </div>
 
-            <!-- Flechas de navegación -->
             <template v-if="post.images.length > 1">
               <button @click="prevImage"
                 class="nav-arrow absolute cursor-pointer left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full w-8 h-8 flex items-center justify-center shadow-md">
@@ -54,7 +62,6 @@
                 <i class="bx bx-chevron-right text-xl"></i>
               </button>
 
-              <!-- Indicadores (dots) -->
               <div class="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-1.5">
                 <button v-for="(image, index) in post.images" :key="index" @click="setImage(index)"
                   class="w-2 h-2 rounded-full transition-all duration-200 cursor-pointer"
@@ -64,7 +71,6 @@
           </div>
         </div>
 
-        <!-- Post Actions -->
         <div class="flex items-center gap-4 mt-4 pt-2 border-t border-gray-100">
           <button @click="likePost" class="flex items-center gap-1 cursor-pointer"
             :class="isLiked ? 'text-[#193CB8]' : 'text-gray-500 hover:text-[#193CB8]'">
@@ -76,18 +82,17 @@
             <i class="bx bx-comment"></i>
             <span class="text-sm">{{ post.comments_count }}</span>
           </button>
-          <button class="flex items-center gap-1 text-gray-500 hover:text-[#193CB8] cursor-pointer">
+          <!-- <button class="flex items-center gap-1 text-gray-500 hover:text-[#193CB8] cursor-pointer">
             <i class="bx bx-share"></i>
             <span class="text-sm">Compartir</span>
-          </button>
+          </button> -->
         </div>
 
-        <!-- Comments Section -->
-        <div v-if="post.comments && post.comments.length > 0" class="mt-4 pt-2 border-t border-gray-100 space-y-3">
+        <div v-if="post.comments && post.comments.length > 0"
+          class="mt-4 pt-2 border-t border-gray-100 space-y-3 overflow-hidden">
           <PostComment v-for="comment in post.comments" :key="comment.id" :comment="comment" />
         </div>
 
-        <!-- Add Comment (Only if Member) -->
         <div v-if="isMember" class="mt-3 flex items-center gap-2">
           <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
             <img :src="auth?.user?.profile?.profile_picture || '/images/default-avatar.jpg'" alt="Tu avatar"
@@ -106,10 +111,32 @@
       </div>
     </div>
   </div>
+  <teleport to="body">
+    <div v-if="postDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div class="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 relative">
+        <button class="absolute top-2 right-2 text-gray-400 hover:text-gray-600" @click="postDeleteModal = false">
+          <i class="bx bx-x text-2xl"></i>
+        </button>
+        <h2 class="text-lg font-semibold text-gray-800 mb-2">Eliminar publicación</h2>
+        <p class="text-gray-600 mb-4">¿Estás seguro de que deseas eliminar esta publicación? Esta acción no se puede deshacer.</p>
+        <div class="flex justify-end gap-2">
+          <button class="px-4 py-2 rounded bg-gray-100 text-gray-700 hover:bg-gray-200" @click="postDeleteModal = false">
+            Cancelar
+          </button>
+          <button
+            class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+            @click="deletePost"
+          >
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </teleport>
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted, watch } from 'vue';
+import { ref, nextTick, onMounted, watch, onUnmounted } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import DOMPurify from 'dompurify';
 import PostComment from './PostComment.vue';
@@ -131,20 +158,31 @@ const isLiked = ref(props.post.is_liked);
 const currentImageIndex = ref(0);
 const slideDirection = ref('slide-right');
 const postOptionsModal = ref(false);
+const optionsButtonRef = ref(null);
+const optionsMenuRef = ref(null);
 
-// Reset current image index when post changes
-watch(() => props.post.id, () => {
-  currentImageIndex.value = 0;
-});
+const postDeleteModal = ref(false);
+
+const openDeletePostModal = () => {
+    postOptionsModal.value = false;
+    postDeleteModal.value = true;
+};
 
 const sanitizeHTML = (html) => {
-  let sanitizedHTML = DOMPurify.sanitize(html);
+  const config = {
+    ADD_ATTR: ['target', 'rel'],
+    ADD_TAGS: ['iframe'],
+    FORBID_TAGS: ['style', 'script'],
+    FORBID_ATTR: ['style', 'onerror', 'onload'],
+  };
+
+  let sanitizedHTML = DOMPurify.sanitize(html, config);
 
   sanitizedHTML = sanitizedHTML.replace(/href="([^"]+)"/g, (match, p1) => {
     if (!/^https?:\/\//i.test(p1)) {
       p1 = 'http://' + p1;
     }
-    return `href="${p1}"`;
+    return `href="${p1}" target="_blank" rel="noopener noreferrer"`;
   });
 
   return sanitizedHTML;
@@ -170,6 +208,16 @@ const prevImage = () => {
   currentImageIndex.value = (currentImageIndex.value - 1 + props.post.images.length) % props.post.images.length;
 };
 
+const deletePost = () => {
+  router.delete(`/posts/${props.post.id}`, {
+    onSuccess: () => {
+      router.visit(window.location.pathname, { 
+        preserveScroll: false,
+        preserveState: false,
+      });
+    }
+  });
+};
 
 const addComment = () => {
   if (!commentText.value.trim()) return;
@@ -188,6 +236,7 @@ const addComment = () => {
 
   router.post(commentUrl, formData, {
     preserveScroll: true,
+    preserveState: false,
     onSuccess: () => {
       commentText.value = '';
       nextTick(() => {
@@ -217,9 +266,41 @@ const focusCommentInput = () => {
   }
 };
 
+// Handle click outside for post options dropdown
+const handleClickOutside = (event) => {
+  // Check if dropdown is open and if click is outside both the dropdown and the button
+  if (
+    postOptionsModal.value && 
+    optionsMenuRef.value && 
+    optionsButtonRef.value && 
+    !optionsMenuRef.value.contains(event.target) && 
+    !optionsButtonRef.value.contains(event.target)
+  ) {
+    postOptionsModal.value = false;
+    document.removeEventListener('click', handleClickOutside);
+  }
+};
+
+// Show post options dropdown
 const showPostOptions = () => {
   postOptionsModal.value = true;
+  // Use nextTick to ensure the DOM is updated before adding the event listener
+  nextTick(() => {
+    // Add a small delay to prevent the same click event from immediately closing the dropdown
+    setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+    }, 10);
+  });
 };
+
+// Clean up event listeners when component is unmounted
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+
+watch(() => props.post.id, () => {
+  currentImageIndex.value = 0;
+});
 </script>
 
 <style scoped>
@@ -235,5 +316,40 @@ const showPostOptions = () => {
 
 .nav-arrow:hover {
   opacity: 1;
+}
+
+.post-content {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  max-width: 100%;
+}
+
+:deep(.post-content img),
+:deep(.post-content iframe),
+:deep(.post-content video),
+:deep(.post-content embed),
+:deep(.post-content object) {
+  max-width: 100%;
+  height: auto;
+}
+
+:deep(.post-content a) {
+  word-break: break-all;
+  color: #193CB8;
+  text-decoration: underline;
+}
+
+:deep(.post-content pre),
+:deep(.post-content code) {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+  max-width: 100%;
+  display: block;
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
 }
 </style>

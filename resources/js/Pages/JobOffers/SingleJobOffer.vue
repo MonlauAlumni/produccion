@@ -1,5 +1,5 @@
 <script setup>
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
   import { router, usePage } from '@inertiajs/vue3'
   import Layout from '@/Components/Layout.vue'
   import JobConfirmationModal from '@/Components/JobOffers/JobConfirmationModal.vue'
@@ -10,7 +10,7 @@
     }
   })
   const page = usePage()
-  const userRole = page.props.auth.user.role
+const userRole = computed(() => page.props.auth.user?.roles?.[0]?.name ?? null)
   const jobOffer = ref(props.jobOffer)
   const showConfirmationModal = ref(false)
   

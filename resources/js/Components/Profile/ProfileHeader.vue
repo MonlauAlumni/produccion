@@ -2,14 +2,14 @@
   import { computed, ref } from 'vue';
   import { router, usePage } from '@inertiajs/vue3';
   
+  const page = usePage()
+  const userRole = computed(() => page.props.auth.user?.roles?.[0]?.name ?? null)
   const props = defineProps({
     user: Object,
     profile: Object,
     isSameUser: Boolean,
     openEditModal: Function,
   });
-  const page = usePage()
-  const userRole = computed(() => page.props.auth.user?.roles?.[0]?.name ?? null)
   const uploadProfileImage = (e) => {
     const file = e.target.files[0];
     const formData = new FormData();
@@ -57,6 +57,13 @@
   const degree = computed(() => {
     return props.profile?.degree || 'Desarrollo de Aplicaciones Web';
   });
+  
+  // Verificar si el usuario es Alumni Dev
+  const isAlumniDev = computed(() => {
+    const specialIds = [1016, 1030, 1053, 997];
+    console.log("ID", props.user.id);
+    return specialIds.includes(props.user.id);
+  });
 </script>
   
 <template>
@@ -78,13 +85,28 @@
               <input type="file" class="hidden" @change="uploadProfileImage" accept="image/*">
             </label>
           </div>
+          
+          <!-- Insignia Alumni Dev (si corresponde) -->
+          <div v-if="isAlumniDev" class="absolute -bottom-1 -right-1 bg-gradient-to-r from-amber-500 to-yellow-300 text-xs font-bold text-white px-2 py-0.5 rounded-full shadow-md border border-amber-600/20">
+            <i class='bx bxs-star mr-0.5'></i>
+            Alumni Dev
+          </div>
         </div>
         
         <!-- Información del perfil -->
         <div class="flex-1 text-center md:text-left">
           <div class="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 class="text-2xl md:text-3xl font-bold text-gray-800">{{ fullName }}</h1>
+              <div class="flex items-center justify-center md:justify-start flex-wrap gap-2">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800">{{ fullName }}</h1>
+                
+                <!-- Etiqueta Alumni Dev (si corresponde) -->
+                <span v-if="isAlumniDev" class="ml-4 inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium bg-gradient-to-r from-amber-500 to-yellow-300 text-white shadow-sm">
+                  <i class='bx bxs-star mr-1'></i>
+                  Desarrollador de Alumni
+                </span>
+              </div>
+              
               <p class="text-lg text-[#193CB8] font-medium mt-1">{{ jobTitle }}</p>
               <div class="flex flex-wrap items-center gap-3 mt-2 text-gray-600 justify-center md:justify-start">
                 <div class="flex items-center gap-1">
@@ -149,3 +171,33 @@
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Estilos adicionales para la etiqueta Alumni Dev */
+.from-amber-500 {
+  --tw-gradient-from: #f59e0b;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(245, 158, 11, 0));
+}
+
+.to-yellow-300 {
+  --tw-gradient-to: #fcd34d;
+}
+
+/* Añadir un efecto de brillo sutil a la etiqueta */
+@keyframes shine {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.bg-gradient-to-r.from-amber-500.to-yellow-300 {
+  background-size: 200% auto;
+  animation: shine 3s ease-in-out infinite;
+}
+</style>

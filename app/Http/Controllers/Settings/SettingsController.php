@@ -13,7 +13,8 @@ class SettingsController extends Controller
     {
         $settings = $request->user()->settings()->first();
         return Inertia::render('Settings/Settings', [
-            'settings' => $request->user()->settings()->first()
+            'settings' => $request->user()->settings()->first(),
+            'profile' => $request->user()->profile,
 
         ]);
     }

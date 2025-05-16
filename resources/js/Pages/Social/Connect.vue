@@ -124,12 +124,12 @@ const loadMorePosts = () => {
                             ]">
                                 <i class='bx bx-compass mr-1'></i> Descubrir
                             </button>
-                            <button @click="activeTab = 'feed'" :class="[
+                            <!-- <button @click="activeTab = 'feed'" :class="[
                                 'px-5 py-2 rounded-full transition-colors font-medium',
                                 activeTab === 'feed' ? 'bg-white text-[#193CB8]' : 'text-white hover:bg-white/10'
                             ]">
                                 <i class='bx bx-news mr-1'></i> Mi Feed
-                            </button>
+                            </button> -->
                             <button @click="activeTab = 'eventos'" :class="[
                                 'px-5 py-2 rounded-full transition-colors font-medium',
                                 activeTab === 'eventos' ? 'bg-white text-[#193CB8]' : 'text-white hover:bg-white/10'
@@ -185,7 +185,7 @@ const loadMorePosts = () => {
                                                 </div>
                                             </div>
                                         </div>
-
+<!-- 
                                         <div @click="scrollToShareInput"
                                             class="flex-shrink-0 w-64 bg-gradient-to-br from-[#193CB8]/5 to-[#2748c6]/10 rounded-lg overflow-hidden border border-dashed border-[#193CB8]/30 cursor-pointer hover:shadow-md transition-shadow flex items-center justify-center">
                                             <div class="text-center p-4">
@@ -195,7 +195,7 @@ const loadMorePosts = () => {
                                                 </div>
                                                 <p class="text-[#193CB8] font-medium">Comparte tu historia</p>
                                             </div>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>
@@ -310,7 +310,7 @@ const loadMorePosts = () => {
                                         <span v-for="topic in trendingTopics" :key="topic.word"
                                             @click="router.get('/connect/search?q=' + topic.word)"
                                             class="px-3 py-1.5 bg-[#193CB8]/10 text-[#193CB8] rounded-full text-sm flex items-center cursor-pointer hover:bg-[#193CB8]/20 transition-colors">
-                                            #{{ topic.word }}
+                                            #{{ topic.word.length > 10 ? topic.word.slice(0, 10) + '...' : topic.word }}
                                             <span class="ml-1 text-xs bg-[#193CB8] text-white rounded-full px-1.5">
                                                 {{ topic.count }}
                                             </span>

@@ -11,7 +11,7 @@
       />
 
       <!-- Main Content -->
-      <main class="flex-1 md:ml-64  mt-14 bg-gray-50">
+      <main class="flex-1 md:ml-64  mt-14 bg-gray-50 dark:bg-gray-900">
         <slot></slot>
       </main>
     </div>

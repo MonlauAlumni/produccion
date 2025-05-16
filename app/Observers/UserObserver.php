@@ -7,13 +7,14 @@ use App\Models\Profile;
 
 class UserObserver
 {
-    public function created(User $user)
+    public function creating(User $user)
     {
-        if($user->hasRole('alumne')){
+        
+        
         Profile::create([
             'user_id' => $user->id,
         ]);
-    }
+    
     }
 }
 

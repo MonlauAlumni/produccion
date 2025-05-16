@@ -55,6 +55,8 @@ const confirmPost = () => {
         : '/posts';
 
     router.post(postUrl, formData, {
+        preserveScroll: false,
+        preserveState: false,
         onSuccess: (page) => {
             isLoading.value = false;
             closeModal();
