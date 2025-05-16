@@ -310,7 +310,7 @@ const loadMorePosts = () => {
                                         <span v-for="topic in trendingTopics" :key="topic.word"
                                             @click="router.get('/connect/search?q=' + topic.word)"
                                             class="px-3 py-1.5 bg-[#193CB8]/10 text-[#193CB8] rounded-full text-sm flex items-center cursor-pointer hover:bg-[#193CB8]/20 transition-colors">
-                                            #{{ topic.word }}
+                                            #{{ topic.word.length > 10 ? topic.word.slice(0, 10) + '...' : topic.word }}
                                             <span class="ml-1 text-xs bg-[#193CB8] text-white rounded-full px-1.5">
                                                 {{ topic.count }}
                                             </span>

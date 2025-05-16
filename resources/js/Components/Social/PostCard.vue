@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <div class="flex-1 overflow-hidden"> 
+      <div class="flex-1 overflow-hidden">
         <div class="flex items-center justify-between">
           <div class="overflow-hidden">
             <h3 class="font-medium text-gray-800 hover:underline cursor-pointer truncate"
@@ -75,7 +75,8 @@
           </button> -->
         </div>
 
-        <div v-if="post.comments && post.comments.length > 0" class="mt-4 pt-2 border-t border-gray-100 space-y-3 overflow-hidden"> 
+        <div v-if="post.comments && post.comments.length > 0"
+          class="mt-4 pt-2 border-t border-gray-100 space-y-3 overflow-hidden">
           <PostComment v-for="comment in post.comments" :key="comment.id" :comment="comment" />
         </div>
 
@@ -136,7 +137,7 @@ const sanitizeHTML = (html) => {
     FORBID_TAGS: ['style', 'script'],
     FORBID_ATTR: ['style', 'onerror', 'onload'],
   };
-  
+
   let sanitizedHTML = DOMPurify.sanitize(html, config);
 
   // Asegurar que los enlaces tengan http/https

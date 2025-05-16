@@ -30,8 +30,10 @@ class SocialController extends Controller
             ->get();
 
         $allContents = Post::whereNull('group_id')
-        ->where('created_at', '>=', now()->subDays(7))
-        ->pluck('content')->implode(' ');
+            ->where('created_at', '>=', now()->subDays(7))
+            ->pluck('content')
+            ->map(fn($content) => strip_tags($content))
+            ->implode(' ');
 
         $words = preg_split('/\s+/', mb_strtolower(preg_replace('/[^\p{L}\p{N}\s]+/u', '', $allContents)), -1, PREG_SPLIT_NO_EMPTY);
         $counts = array_count_values($words);
@@ -39,7 +41,7 @@ class SocialController extends Controller
         $trendingTopics = array_slice(
             array_map(
             fn($w, $c) => [
-                'word' => mb_substr($w, 1, mb_strlen($w) - 2), // corta la primera y la última letra
+                'word' => $w,
                 'count' => $c
             ],
             array_keys($counts),
