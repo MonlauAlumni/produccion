@@ -15,7 +15,6 @@ class SocialController extends Controller
 {
     public function show(Request $request)
     {
-        dd($request->user()->connections()->get());
         $totalPosts = Post::whereNull('group_id')->count();
         $popularGroups = Group::where('privacy', 'public')
             ->orderBy('members_count', 'desc')
