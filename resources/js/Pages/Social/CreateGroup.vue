@@ -35,8 +35,8 @@ const errors = ref({});
 
 const logoPreview = ref(null);
 const bannerPreview = ref(null);
-
 const isUploading = ref(false);
+const acceptedResponsibility = ref(false); // Nueva variable para el checkbox de responsabilidad
 
 const descriptionLength = computed(() => form.value.description.length);
 const maxDescriptionLength = 500;
@@ -126,6 +126,10 @@ const submitForm = () => {
 
     if (!form.value.category) {
         errors.value.category = 'Selecciona una categoría';
+    }
+    // Nueva validación para responsabilidad
+    if (!acceptedResponsibility.value) {
+        errors.value.responsibility = 'Debes aceptar los términos de responsabilidad para crear el grupo';
     }
 
     if (Object.keys(errors.value).length > 0) {
@@ -415,6 +419,46 @@ const cancelAndReturn = () => {
                                                     #{{ tag }}
                                                 </span>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Cuadro de términos de responsabilidad -->
+                                <div class="bg-blue-50 border border-blue-100 rounded-lg p-5 mt-6">
+                                    <div class="flex items-start">
+                                        <i class='bx bx-info-circle text-[#193CB8] text-xl mt-0.5 mr-3'></i>
+                                        <div>
+                                            <h4 class="font-semibold text-gray-800 mb-2">Términos de responsabilidad</h4>
+                                            <p class="text-sm text-gray-700 mb-3">
+                                                Al crear este grupo, confirmas que:
+                                            </p>
+                                            <ul class="list-disc pl-5 mb-4 text-sm text-gray-700 space-y-1">
+                                                <li>Te responsabilizas completamente del contenido y la organización del grupo</li>
+                                                <li>La información proporcionada es precisa y veraz</li>
+                                                <li>El grupo cumple con las leyes y normativas aplicables</li>
+                                                <li>No infringes derechos de terceros (propiedad intelectual, privacidad, etc.)</li>
+                                                <li>Asumes la responsabilidad por cualquier incidente que pueda ocurrir en el grupo</li>
+                                            </ul>
+                                            
+                                            <div class="flex items-start">
+                                                <div class="flex h-5 items-center">
+                                                    <input 
+                                                        id="responsibility" 
+                                                        v-model="acceptedResponsibility"
+                                                        type="checkbox" 
+                                                        class="h-4 w-4 rounded border-gray-300 text-[#193CB8] focus:ring-[#193CB8]"
+                                                        :class="{ 'border-red-500': errors.responsibility }"
+                                                    />
+                                                </div>
+                                                <div class="ml-3 text-sm">
+                                                    <label for="responsibility" class="font-medium text-gray-700">
+                                                        He leído y acepto los términos de responsabilidad
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <p v-if="errors.responsibility" class="mt-1 text-sm text-red-500 error-message">
+                                                {{ errors.responsibility }}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
