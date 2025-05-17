@@ -542,23 +542,6 @@ const terminateAllSessions = () => {
                                 personalización y
                                 observa cómo se transforma el entorno de tu aplicación.
                             </p>
-                            <div class="mt-2 flex justify-around">
-                                <span
-                                    class="px-2 py-1 bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-200 rounded"
-                                    :style="{ fontSize: fontSize + 'px' }">
-                                    Ejemplo 1
-                                </span>
-                                <span
-                                    class="px-2 py-1 bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-200 rounded"
-                                    :style="{ fontSize: fontSize + 'px' }">
-                                    Ejemplo 2
-                                </span>
-                                <span
-                                    class="px-2 py-1 bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200 rounded"
-                                    :style="{ fontSize: fontSize + 'px' }">
-                                    Ejemplo 3
-                                </span>
-                            </div>
                         </div>
                         <button @click="updateAppearanceInfo" :disabled="isAppearanceUpdating"
                             class="mt-2 bg-gradient-to-r from-[#193CB8] to-[#2748c6] px-4 py-2 rounded hover:bg-blue-600 cursor-pointer text-white transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">

@@ -126,6 +126,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/connect', [SocialController::class, 'show'])->name('connect.show');
     Route::get('/connect/search', [SocialController::class, 'showSearch'])->name('connect.search');
 
+    Route::post('/connect/{id}/send-request', [SocialController::class, 'sendConnectionRequest'])->name('connect.send-request');
+    Route::post('/connect/{id}/accept', [SocialController::class, 'acceptConnection'])->name('connect.accept');
+
     Route::get('/grupos', [App\Http\Controllers\Social\GroupController::class, 'index'])->name('groups.index');
     Route::get('/grupos/nuevo', [GroupController::class, 'showCreateGroup'])->name('create-group.show');
     Route::get('/grupos/{slug}', [App\Http\Controllers\Social\GroupController::class, 'show'])->name('groups.show');

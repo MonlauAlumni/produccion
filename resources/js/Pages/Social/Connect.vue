@@ -319,11 +319,11 @@ const loadMorePosts = () => {
                                 </div>
                             </div>
 
-                            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                            <div class="bg-white rounded-xl shadow-sm overflow-hidden" v-if="suggestedConnections.length > 0">
                                 <div class="p-4 border-b border-gray-100">
                                     <h2 class="text-lg font-bold text-gray-800">Personas que quizás conozcas</h2>
                                 </div>
-                                <div class="p-4 space-y-4">
+                                <div class="p-4 space-y-4" >
                                     <div v-for="connection in suggestedConnections" :key="connection.id"
                                         class="flex items-center gap-3 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
                                         <img :src="connection.profile?.profile_picture" :alt="connection.name"
