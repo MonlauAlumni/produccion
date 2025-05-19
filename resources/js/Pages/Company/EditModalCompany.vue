@@ -198,74 +198,62 @@
             </div>
             
             <!-- Navegación por pestañas -->
-            <div class="bg-gray-50 border-b border-gray-200">
-              <div class="flex overflow-x-auto hide-scrollbar">
-                <button 
-                  @click="activeTab = 'basic'" 
-                  :class="[
-                    'px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2',
-                    activeTab === 'basic' 
-                      ? 'border-[#193CB8] text-[#193CB8]' 
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
-                  ]"
-                >
-                  <i class='bx bx-building mr-1'></i>
-                  Información Básica
-                </button>
-                
-                <button 
-                  @click="activeTab = 'description'" 
-                  :class="[
-                    'px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2',
-                    activeTab === 'description' 
-                      ? 'border-[#193CB8] text-[#193CB8]' 
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
-                  ]"
-                >
-                  <i class='bx bx-info-circle mr-1'></i>
-                  Descripción
-                </button>
-                
-                <button 
-                  @click="activeTab = 'contact'" 
-                  :class="[
-                    'px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2',
-                    activeTab === 'contact' 
-                      ? 'border-[#193CB8] text-[#193CB8]' 
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
-                  ]"
-                >
-                  <i class='bx bx-envelope mr-1'></i>
-                  Contacto
-                </button>
-                
-                <button 
-                  @click="activeTab = 'social'" 
-                  :class="[
-                    'px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2',
-                    activeTab === 'social' 
-                      ? 'border-[#193CB8] text-[#193CB8]' 
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
-                  ]"
-                >
-                  <i class='bx bx-link mr-1'></i>
-                  Redes Sociales
-                </button>
-                
-                <button 
-                  @click="activeTab = 'tags'" 
-                  :class="[
-                    'px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2',
-                    activeTab === 'tags' 
-                      ? 'border-[#193CB8] text-[#193CB8]' 
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
-                  ]"
-                >
-                  <i class='bx bx-purchase-tag mr-1'></i>
-                  Tags
-                </button>
-              </div>
-            </div>
+           <div class="bg-gray-50 border-b border-gray-200 w-full">
+  <div class="flex overflow-x-auto hide-scrollbar w-full">
+    <button 
+      @click="activeTab = 'basic'" 
+      :class="[
+        'flex-grow px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 text-center',
+        activeTab === 'basic' 
+          ? 'border-[#193CB8] text-[#193CB8]' 
+          : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+      ]"
+    >
+      <i class='bx bx-building mr-1'></i>
+      Información Básica
+    </button>
+    
+    <button 
+      @click="activeTab = 'description'" 
+      :class="[
+        'flex-grow px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 text-center',
+        activeTab === 'description' 
+          ? 'border-[#193CB8] text-[#193CB8]' 
+          : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+      ]"
+    >
+      <i class='bx bx-info-circle mr-1'></i>
+      Descripción
+    </button>
+    
+    <button 
+      @click="activeTab = 'contact'" 
+      :class="[
+        'flex-grow px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 text-center',
+        activeTab === 'contact' 
+          ? 'border-[#193CB8] text-[#193CB8]' 
+          : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+      ]"
+    >
+      <i class='bx bx-envelope mr-1'></i>
+      Contacto
+    </button>
+    
+    <button 
+      @click="activeTab = 'social'" 
+      :class="[
+        'flex-grow px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 text-center',
+        activeTab === 'social' 
+          ? 'border-[#193CB8] text-[#193CB8]' 
+          : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+      ]"
+    >
+      <i class='bx bx-link mr-1'></i>
+      Redes Sociales
+    </button>
+  </div>
+</div>
+
             
             <!-- Mensajes de éxito o error -->
             <transition name="fade">

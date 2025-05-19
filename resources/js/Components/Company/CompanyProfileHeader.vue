@@ -102,13 +102,7 @@
               </div>
             </div>
             
-            <!-- Tags/Keywords de la empresa -->
-            <div class="mt-4 flex flex-wrap gap-2">
-              <span v-for="(tag, index) in company.tags || ['Tecnología', 'Innovación', 'Desarrollo']" :key="index"
-                class="bg-blue-50 dark:bg-blue-900 text-[#193CB8] dark:text-blue-200 px-3 py-1 rounded-full text-sm">
-                {{ tag }}
-              </span>
-            </div>
+            
           </div>
         </div>
       </div>

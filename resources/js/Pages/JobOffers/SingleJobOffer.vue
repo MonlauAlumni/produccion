@@ -3,9 +3,18 @@
   import { router, usePage } from '@inertiajs/vue3'
   import Layout from '@/Components/Layout.vue'
   import JobConfirmationModal from '@/Components/JobOffers/JobConfirmationModal.vue'
+  import JobEditModal from '@/Components/JobOffers/JobEditModal.vue'
   const props = defineProps({
     jobOffer: {
       type: Object,
+      required: true
+    },
+    isJobOfferOwner: {
+      type: Boolean,
+      required: true
+    },
+    skills: {
+      type: Array,
       required: true
     }
   })
@@ -13,9 +22,10 @@
 const userRole = computed(() => page.props.auth.user?.roles?.[0]?.name ?? null)
   const jobOffer = ref(props.jobOffer)
   const showConfirmationModal = ref(false)
+  const showEditModal = ref(false)
   
-  const skills = ref(['Vue.js', 'Laravel', 'PHP', 'MySQL', 'Git', 'JavaScript', 'HTML/CSS', 'API REST'])
-  
+ 
+  const isJobOfferOwner = ref(props.isJobOfferOwner)
   const formatJobType = (type) => {
     const types = {
       onsite: 'Presencial',
@@ -45,6 +55,13 @@ const userRole = computed(() => page.props.auth.user?.roles?.[0]?.name ?? null)
 const closeConfirmationModal = () => {
   showConfirmationModal.value = false
 }
+  const openEditModal = () => {
+    showEditModal.value = true
+  }
+
+  const closeEditModal = () => {
+    showEditModal.value = false
+  }
   
   const getDaysRemaining = (dateString) => {
     const parts = dateString.split('-');
@@ -129,13 +146,26 @@ const closeConfirmationModal = () => {
                 <i class='bx bx-send mr-2'></i>
                 Inscribirme
               </button>
-              <div class="text-xs text-blue-100 dark:text-blue-300 mt-2">
+              
+              <div class="text-xs text-blue-100 mt-2">
                 <i class='bx bx-user-plus'></i> {{ jobOffer.vacancies }} {{ jobOffer.vacancies === 1 ? 'vacante disponible' : 'vacantes disponibles' }}
               </div>
             </div>
+  <div v-if="isJobOfferOwner" class="max-w-5xl mx-auto px-4 py-2 flex justify-end">
+    <button 
+      @click="openEditModal"
+      class="bg-white text-[#193CB8] cursor-pointer font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-blue-50 flex items-center"
+    >
+      <i class='bx bx-edit mr-2'></i>
+      Editar Oferta
+    </button>
+  </div>
+     
           </div>
         </div>
       </div>
+      
+
       
       <div class="max-w-5xl mx-auto py-6 px-4">
         <div class="grid md:grid-cols-3 gap-6">
@@ -316,15 +346,24 @@ const closeConfirmationModal = () => {
                 </a>
               </div>
             </div>
+            
+          
+           
           </div>
         </div>
       </div>
     </div>  
     <JobConfirmationModal
-      :is-open="showConfirmationModal"
-      :job-offer="jobOffer"
-      @close="closeConfirmationModal"
-    />
+    :is-open="showConfirmationModal"
+    :job-offer="jobOffer"
+    @close="closeConfirmationModal"
+  />
+  <JobEditModal
+    :is-open="showEditModal"
+    :job-offer="jobOffer"
+    :skills="skills"
+    @close="closeEditModal"
+  />
   </Layout>
   </template>
   
