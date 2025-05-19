@@ -76,13 +76,13 @@
       <!-- Overlay del modal con animación de fade -->
       <transition name="fade">
         <div v-if="isOpen" 
-             class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto"
+             class="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto"
              @click="closeModal">
           
           <!-- Contenido del modal con animación de slide -->
           <transition name="slide-up">
             <div v-if="isOpen" 
-                 class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-auto overflow-hidden transform transition-all"
+                 class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md mx-auto overflow-hidden transform transition-all"
                  @click.stop>
               
               <!-- Cabecera del modal con diseño mejorado -->
@@ -109,12 +109,12 @@
               
               <!-- Mensaje de error -->
               <transition name="fade">
-                <div v-if="errorMessage" class="bg-red-100 border-b border-red-400 text-red-700 px-4 py-3 flex items-center justify-between">
+                <div v-if="errorMessage" class="bg-red-100 dark:bg-red-900 border-b border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 flex items-center justify-between">
                   <span class="flex items-center">
                     <i class='bx bx-error-circle mr-2 text-xl'></i>
                     {{ errorMessage }}
                   </span>
-                  <button @click="errorMessage = ''" class="text-red-700">
+                  <button @click="errorMessage = ''" class="text-red-700 dark:text-red-300">
                     <i class='bx bx-x'></i>
                   </button>
                 </div>
@@ -123,22 +123,22 @@
               <!-- Cuerpo del modal -->
               <div class="p-6 space-y-5">
                 <div class="flex items-center justify-center">
-                  <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center text-red-500">
+                  <div class="w-16 h-16 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center text-red-500 dark:text-red-300">
                     <i class='bx bx-trash text-3xl'></i>
                   </div>
                 </div>
                 
                 <div class="text-center">
-                  <h3 class="text-lg font-medium text-gray-900 mb-2">
+                  <h3 class="text-lg font-medium text-gray-900 dark:text-gray-200 mb-2">
                     ¿Estás seguro de que quieres eliminar esto?
                   </h3>
-                  <p class="text-gray-500">
+                  <p class="text-gray-500 dark:text-gray-400">
                     {{ props.type === 'work' 
                       ? `Vas a eliminar la experiencia laboral en "${props.item?.company_name}" como "${props.item?.position}".` 
                       : `Vas a eliminar la formación académica en "${props.item?.institution}" como "${props.item?.degree}".`
                     }}
                   </p>
-                  <p class="text-gray-500 mt-2">
+                  <p class="text-gray-500 dark:text-gray-400 mt-2">
                     Esta acción no se puede deshacer.
                   </p>
                 </div>
@@ -147,7 +147,7 @@
                   <button 
                     type="button" 
                     @click="closeModal" 
-                    class="px-4 py-2 text-sm cursor-pointer font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors flex items-center gap-1"
+                    class="px-4 py-2 text-sm cursor-pointer font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors flex items-center gap-1"
                   >
                     <i class='bx bx-x'></i>
                     Cancelar
@@ -155,7 +155,7 @@
                   <button 
                     type="button"
                     @click="confirmDelete"
-                    class="px-4 py-2 text-sm cursor-pointer font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors flex items-center gap-1"
+                    class="px-4 py-2 text-sm cursor-pointer font-medium text-white bg-red-600 dark:bg-red-700 rounded-lg hover:bg-red-700 dark:hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors flex items-center gap-1"
                     :disabled="isLoading"
                   >
                     <i v-if="isLoading" class='bx bx-loader-alt animate-spin'></i>
@@ -203,4 +203,3 @@
       animation: spin 1s linear infinite;
     }
     </style>
-    

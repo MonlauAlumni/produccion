@@ -920,8 +920,8 @@ const terminateAllSessions = () => {
                 Cancelar
                 </button>
                 <button @click="disable2FA()" :disabled="!confirmButtonEnabled"
-                class="mt-4 px-4 py-2 rounded-lg cursor-pointer transition duration-300 flex-1 flex items-center justify-center"
-                :class="confirmButtonEnabled ? 'bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white' : 'bg-gray-500 dark:bg-gray-600 text-gray-300 cursor-not-allowed'">
+                class="mt-4 px-4 py-2 rounded-lg transition duration-300 flex-1 flex items-center justify-center"
+                :class="confirmButtonEnabled ? 'bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white cursor-pointer' : 'bg-gray-500 dark:bg-gray-600 text-gray-300 cursor-not-allowed'">
                 <span v-if="!confirmButtonEnabled">Espera {{ confirmCountdown }}s</span>
                 <span v-else>Entiendo, deshabilitar 2FA</span>
                 </button>
