@@ -111,8 +111,12 @@ export default {
         <div class="flex items-center space-x-3 mb-3">
           <div class="relative">
             <div v-if="user.company">
-              <img v-if="user.company.profile_picture" :src="user.company.profile_picture"
-                alt="Profile picture" class="w-12 h-12 shadow-sm border-2 border-white dark:border-gray-700">
+       
+
+              <img v-if="user.company.profile_picture"
+     :src="user.company.profile_picture"
+     alt="Profile picture"
+     class="w-12 h-12 object-cover rounded-full shadow-sm border-2 border-white">
               <div v-else
                 class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-[#193CB8] dark:text-blue-400 shadow-sm border-2 border-white dark:border-gray-700">
                 <i class='bx bxs-building text-xl'></i>
@@ -120,7 +124,7 @@ export default {
             </div>
             <div v-if="user.profile">
               <img v-if="user.profile.profile_picture" :src="user.profile.profile_picture"
-                alt="Profile picture" class="w-12 h-12 shadow-sm border-2 border-white dark:border-gray-700">
+                alt="Profile picture" class="w-12 h-12   shadow-sm border-2 border-white">
               <div v-else
                 class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-[#193CB8] dark:text-blue-400 shadow-sm border-2 border-white dark:border-gray-700">
                 <i class='bx bxs-user text-xl'></i>
