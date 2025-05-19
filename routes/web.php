@@ -126,6 +126,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/connect', [SocialController::class, 'show'])->name('connect.show');
     Route::get('/connect/search', [SocialController::class, 'showSearch'])->name('connect.search');
 
+    Route::post('/connect/{id}/send-request', [SocialController::class, 'sendConnectionRequest'])->name('connect.send-request');
+    Route::post('/connect/{id}/accept', [SocialController::class, 'acceptConnection'])->name('connect.accept');
+
     Route::get('/grupos', [App\Http\Controllers\Social\GroupController::class, 'index'])->name('groups.index');
     Route::get('/grupos/nuevo', [GroupController::class, 'showCreateGroup'])->name('create-group.show');
     Route::get('/grupos/{slug}', [App\Http\Controllers\Social\GroupController::class, 'show'])->name('groups.show');
@@ -138,6 +141,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/grupos/{groupId}/posts/{postId}/comment', [PostController::class, 'addCommentInGroup'])->name('group.postComment');
 
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
     Route::post('/posts/{post}/comment', [PostController::class, 'addComment'])->name('posts.comment');
     Route::post('/posts/{post}/like', [PostController::class, 'toggleLike'])->name('posts.like');
     Route::post('/posts/group/{groupId}', [PostController::class, 'storeInGroup'])->name('group.storePost');
