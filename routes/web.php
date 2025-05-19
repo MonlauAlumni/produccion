@@ -33,7 +33,12 @@ Route::fallback(function () {
     return Inertia::render('404_page');
 });
 
-Route::get('/', [LandingController::class, 'index'])->name('landing');
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect('/home');
+    }
+    return app(LandingController::class)->index();
+})->name('landing');
 
 Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/admin/{page}', [AdminController::class, 'show'])->name('admin.page');
@@ -125,6 +130,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/connect', [SocialController::class, 'show'])->name('connect.show');
     Route::get('/connect/search', [SocialController::class, 'showSearch'])->name('connect.search');
+
+    Route::post('/connect/{id}/send-request', [SocialController::class, 'sendConnectionRequest'])->name('connect.send-request');
+    Route::post('/connect/{id}/accept', [SocialController::class, 'acceptConnection'])->name('connect.accept');
 
     Route::get('/grupos', [App\Http\Controllers\Social\GroupController::class, 'index'])->name('groups.index');
     Route::get('/grupos/nuevo', [GroupController::class, 'showCreateGroup'])->name('create-group.show');

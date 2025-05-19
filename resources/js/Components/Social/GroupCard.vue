@@ -1,6 +1,6 @@
 <template>
     <div
-        class="group bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 relative">
+        class="group bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 dark:border-gray-800 relative">
         <div class="relative h-40 overflow-hidden rounded-t-xl">
             <img v-if="group.group_banner" :src="group.group_banner" alt="Banner del grupo"
                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -33,39 +33,39 @@
         </div>
 
         <div class="absolute left-4 top-32 z-10">
-            <div class="w-20 h-20 rounded-xl overflow-hidden border-4 border-white shadow-md bg-white">
+            <div class="w-20 h-20 rounded-xl overflow-hidden border-4 border-white dark:border-gray-900 shadow-md bg-white dark:bg-gray-900">
                 <img v-if="group.group_logo" :src="group.group_logo" loading="lazy" alt="Logo del grupo"
                     class="w-full h-full object-cover" />
-                <div v-else class="w-full h-full bg-gray-100 flex items-center justify-center text-[#193CB8]">
+                <div v-else class="w-full h-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-[#193CB8] dark:text-[#7ea2ff]">
                     <i class='bx bx-group text-4xl'></i>
                 </div>
             </div>
         </div>
 
         <div class="p-5 pt-10">
-            <p class="text-gray-600 text-justify mb-4 line-clamp-2 text-sm mx-25">
+            <p class="text-gray-600 dark:text-gray-300 text-justify mb-4 line-clamp-2 text-sm mx-25">
                 {{ group.description }}
             </p>
 
             <div v-if="group.tags && group.tags.length > 0" class="flex flex-wrap gap-1 mb-4">
                 <span v-for="(tag, index) in group.tags.slice(0, 3)" :key="index"
-                    class="px-2 py-0.5 bg-[#193CB8]/10 text-[#193CB8] rounded-full text-xs">
+                    class="px-2 py-0.5 bg-[#193CB8]/10 dark:bg-[#193CB8]/20 text-[#193CB8] dark:text-[#7ea2ff] rounded-full text-xs">
                     #{{ tag }}
                 </span>
-                <span v-if="group.tags.length > 3" class="text-xs text-gray-500 px-1">+{{ group.tags.length - 3 }}
+                <span v-if="group.tags.length > 3" class="text-xs text-gray-500 dark:text-gray-400 px-1">+{{ group.tags.length - 3 }}
                     más</span>
             </div>
 
             <div class="flex items-center justify-between">
                 <button
-                    class="px-4 cursor-pointer py-2 rounded-lg bg-[#193CB8] text-white hover:bg-[#142d8c] transition-colors flex items-center gap-1 text-sm font-medium"
+                    class="px-4 cursor-pointer py-2 rounded-lg bg-[#193CB8] text-white hover:bg-[#142d8c] dark:bg-[#142d8c] dark:hover:bg-[#193CB8] transition-colors flex items-center gap-1 text-sm font-medium"
                     @click="navigateToGroup">
                     <i class='bx bx-show'></i> Ver grupo
                 </button>
 
-                <button class="p-2 rounded-full text-gray-500 hover:bg-gray-100 transition-colors" title="Más opciones">
+                <!-- <button class="p-2 rounded-full text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Más opciones">
                     <i class='bx bx-dots-horizontal-rounded'></i>
-                </button>
+                </button> -->
             </div>
         </div>
     </div>

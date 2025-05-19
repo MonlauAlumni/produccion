@@ -100,10 +100,13 @@ const toggleDarkMode = () => {
     if (isDarkMode.value) {
         localStorage.setItem('theme', 'dark');
         document.documentElement.classList.add('dark');
+        highlightColor.value = '#ffffff';
     } else {
         localStorage.setItem('theme', 'light');
         document.documentElement.classList.remove('dark');
+        highlightColor.value = '#000000';
     }
+    updateAppearanceInfo();
 };
 
 onMounted(() => {
@@ -385,7 +388,7 @@ const terminateAllSessions = () => {
     <Layout :auth="auth">
 
         <div class="grid grid-cols-2 gap-4 p-4">
-            <div class="p-6 border border-gray-200 bg-white dark:bg-gray-800 rounded-lg shadow-xl space-y-6">
+            <div class="p-6 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg shadow-xl space-y-6 transition-colors duration-300">
                 <div class="flex flex-col md:flex-row md:justify-between md:items-center">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">CUENTA</h1>
@@ -404,12 +407,12 @@ const terminateAllSessions = () => {
                 </div>
 
                 <div v-if="updateSuccess"
-                    class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow">
+                    class="bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded shadow transition-colors duration-300">
                     Información actualizada exitosamente.
                 </div>
 
                 <div v-if="updateErrors.general"
-                    class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow">
+                    class="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded shadow transition-colors duration-300">
                     {{ updateErrors.general }}
                 </div>
 
@@ -421,13 +424,13 @@ const terminateAllSessions = () => {
                         </label>
                         <div class="relative w-2/3">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="bx bx-user text-gray-500"></i>
+                                <i class="bx bx-user text-gray-500 dark:text-gray-400"></i>
                             </div>
                             <input v-model="username" type="text" :placeholder="user.name" required
-                                class="block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600" />
+                                class="block w-full pl-10 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-300" />
                         </div>
                     </div>
-                    <p v-if="updateErrors.name" class="text-red-500 text-sm">{{ updateErrors.name }}</p>
+                    <p v-if="updateErrors.name" class="text-red-500 dark:text-red-400 text-sm">{{ updateErrors.name }}</p>
 
                     <div class="flex items-center">
                         <label for="email"
@@ -436,26 +439,26 @@ const terminateAllSessions = () => {
                         </label>
                         <div class="relative w-2/3">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="bx bx-envelope text-gray-500"></i>
+                                <i class="bx bx-envelope text-gray-500 dark:text-gray-400"></i>
                             </div>
                             <input v-model="email" type="email" :placeholder="user.email" required
-                                class="block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600" />
+                                class="block w-full pl-10 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-300" />
                         </div>
                     </div>
-                    <p v-if="updateErrors.email" class="text-red-500 text-sm">{{ updateErrors.email }}</p>
+                    <p v-if="updateErrors.email" class="text-red-500 dark:text-red-400 text-sm">{{ updateErrors.email }}</p>
                 </div>
 
                 <!-- Profile Picture Section -->
                 <div class="flex items-center mt-4">
                     <div class="relative">
                         <img v-if="pfp" :src="pfp"
-                            class="w-16 h-16 rounded-full object-cover" alt="Profile Picture" />
+                            class="w-16 h-16 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600 transition-colors duration-300" alt="Profile Picture" />
                         <div v-else
-                            class="w-16 h-16 bg-gray-200 text-gray-500 flex items-center justify-center rounded-full">
+                            class="w-16 h-16 bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-300 flex items-center justify-center rounded-full transition-colors duration-300">
                             <i class="bx bxs-user text-2xl"></i>
                         </div>
                         <div @click="triggerFileInput"
-                            class="absolute inset-0 flex items-center justify-center bg-black/10 hover:bg-black/20 text-white font-semibold rounded-full cursor-pointer opacity-0 hover:opacity-100">
+                            class="absolute inset-0 flex items-center justify-center bg-black/10 dark:bg-black/30 hover:bg-black/20 dark:hover:bg-black/40 text-white font-semibold rounded-full cursor-pointer opacity-0 hover:opacity-100 transition duration-200">
                             Cambiar
                         </div>
                     </div>
@@ -465,14 +468,12 @@ const terminateAllSessions = () => {
                         <p class="text-gray-600 dark:text-gray-400">Personaliza tu foto de perfil.</p>
                     </div>
                 </div>
-                <!-- End Profile Picture Section -->
-
             </div>
 
 
 
             <div
-                class="p-6 bg-white dark:bg-gray-800  rounded-xl shadow-2xl space-y-6 border border-gray-200 dark:border-gray-700">
+                class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-2xl space-y-6 border border-gray-200 dark:border-gray-700 transition-colors duration-300">
                 <div class="flex flex-col md:flex-row md:justify-between md:items-center">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">APARIENCIA</h1>
@@ -483,25 +484,25 @@ const terminateAllSessions = () => {
                         </p>
                     </div>
                     <div class="flex flex-col items-center space-y-2 md:space-y-0 md:flex-row">
-                        <span class="text-gray-700 dark:text-white">Modo Oscuro</span>
+                        <span class="text-gray-700 dark:text-gray-200">Modo Oscuro</span>
                         <label class="relative inline-flex items-center cursor-pointer ml-2">
                             <input type="checkbox" v-model="isDarkMode" @change="toggleDarkMode" class="sr-only peer">
-                            <div class="w-11 h-6 rounded-full transition-all duration-300"
-                                :class="isDarkMode ? 'bg-blue-500' : 'bg-gray-600'">
-                                <div class="absolute top-1 left-1 h-4 w-4 bg-white border border-gray-300 rounded-full transition-all duration-300"
-                                    :class="isDarkMode ? 'translate-x-5 border-white' : ''"></div>
+                            <div class="w-11 h-6 rounded-full transition-all duration-300 bg-gray-300 dark:bg-gray-700"
+                                :class="isDarkMode ? 'bg-blue-500 dark:bg-blue-600' : 'bg-gray-300 dark:bg-gray-700'">
+                                <div class="absolute top-1 left-1 h-4 w-4 bg-white dark:bg-gray-300 border border-gray-300 dark:border-gray-500 rounded-full transition-all duration-300"
+                                    :class="isDarkMode ? 'translate-x-5 border-white dark:border-gray-300' : ''"></div>
                             </div>
                         </label>
                     </div>
                 </div>
-                <div class="mt-4 border-t pt-4">
+                <div class="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
                     <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Personalización Avanzada</h3>
                     <div v-if="updateAppearanceSuccess"
-                        class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow">
+                        class="bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded shadow transition-colors duration-300">
                         Apariencia actualizada exitosamente.
                     </div>
                     <div v-if="updateAppearanceErrors.general"
-                        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow">
+                        class="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded shadow transition-colors duration-300">
                         {{ updateAppearanceErrors.general }}
                     </div>
                     <p class="mt-2 text-gray-600 dark:text-gray-400">
@@ -513,8 +514,10 @@ const terminateAllSessions = () => {
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Color de
                                 Acento</label>
                             <select v-model="highlightColor"
-                                class="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600">
-                                <option value="#000000">Negro</option>
+                                class="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300">
+                                <option :value="isDarkMode ? '#ffffff' : '#000000'">
+                                    {{ isDarkMode ? 'Blanco' : 'Negro' }}
+                                </option>
                                 <option value="#0000ff">Azul</option>
                                 <option value="#ff0000">Rojo</option>
                                 <option value="#00ff00">Verde</option>
@@ -524,7 +527,7 @@ const terminateAllSessions = () => {
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tamaño de
                                 Fuente de las Ofertas</label>
-                            <input v-model="fontSize" type="range" min="12" max="24" class="w-full mt-1" />
+                            <input v-model="fontSize" type="range" min="12" max="24" class="w-full mt-1 accent-blue-500 dark:accent-blue-400" />
                         </div>
                         <div class="flex justify-end mt-4"></div>
                         <button @click="resetToDefaults"
@@ -535,7 +538,7 @@ const terminateAllSessions = () => {
                     <div class="mt-4 flex flex-col space-y-2">
                         <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Previsualización del Tema
                         </h3>
-                        <div class="p-4 bg-gray-100 dark:bg-gray-900 rounded-lg shadow-inner">
+                        <div class="p-4 bg-gray-100 dark:bg-gray-900 rounded-lg shadow-inner transition-colors duration-300">
                             <p class="text-sm text-gray-700 dark:text-gray-300" :style="{ fontSize: fontSize + 'px' }">
                                 Esta es una previsualización del <span class="font-bold"
                                     :style="{ color: highlightColor }">tema seleccionado</span>. Cambia las opciones de
@@ -843,18 +846,18 @@ const terminateAllSessions = () => {
         </div> -->
 
         <!-- SECURITY SECTION -->
-        <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-6 px-4 border-t pt-4">SEGURIDAD</h1>
-        <p class="px-4 mt-4 dark:text-gray-300">Añade una capa extra de seguridad a tu cuenta.</p>
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-6 px-4 border-t pt-4 dark:border-gray-700">SEGURIDAD</h1>
+        <p class="px-4 mt-4 text-gray-700 dark:text-gray-300">Añade una capa extra de seguridad a tu cuenta.</p>
         <div class="p-4 grid grid-cols-2 gap-4">
             <div
-                class="bg-white dark:bg-gray-900 p-6 rounded-lg border border-gray-200 text-gray-700 dark:text-gray-300 shadow-xl">
-                <p class="text-xl font-bold">Autenticación de Dos Factores (2FA)</p>
-                <p class="mt-2 text-justify">
+                class="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 shadow-xl transition-colors duration-300">
+                <p class="text-xl font-bold text-gray-800 dark:text-gray-100">Autenticación de Dos Factores (2FA)</p>
+                <p class="mt-2 text-justify text-gray-700 dark:text-gray-300">
                     La Autenticación de Dos Factores añade una capa extra de seguridad a tu cuenta.
                     Al requerir una segunda forma de verificación, ayuda a prevenir accesos no autorizados,
                     incluso si alguien conoce tu contraseña.
                 </p>
-                <p class="mt-2 text-justify">
+                <p class="mt-2 text-justify text-gray-700 dark:text-gray-300">
                     Una vez habilitada, se te pedirá un código de verificación enviado a tu dispositivo cada vez
                     que inicies sesión. Puedes usar una aplicación de autenticación para completar este proceso.
                 </p>
@@ -874,94 +877,55 @@ const terminateAllSessions = () => {
                     {{ isTwoFactorEnabled ? "DESACTIVAR 2FA (NO RECOMENDADO)" : "ACTIVAR 2FA" }}
                 </button>
             </div>
-
-            <!-- Login History -->
-            <!-- <div
-                class="bg-white border border-gray-200 dark:bg-gray-900 p-6 rounded-lg text-gray-700 dark:text-gray-300 shadow-xl">
-                <p class="text-xl font-bold">Historial de Inicio de Sesión</p>
-                <p class="mt-2 text-justify">
-                    Revisa tu historial de inicio de sesión para detectar actividades sospechosas.
-                    Si observas inicios de sesión que no reconoces, cambia tu contraseña inmediatamente
-                    y habilita la autenticación de dos factores.
-                </p>
-                <div class="mt-4 max-h-40 overflow-y-auto space-y-2">
-                    <div class="flex justify-between items-center p-2 bg-gray-200 dark:bg-gray-800 rounded">
-                        <div>
-                            <div class="text-gray-700 dark:text-gray-300 font-medium">Madrid, Spain</div>
-                            <div class="text-gray-600 dark:text-gray-400 text-sm">Chrome • Windows • Hoy, 14:32</div>
-                        </div>
-                        <div class="text-green-500 text-sm">Exitoso</div>
-                    </div>
-                    <div class="flex justify-between items-center p-2 bg-gray-200 dark:bg-gray-800 rounded">
-                        <div>
-                            <div class="text-gray-700 dark:text-gray-300 font-medium">Barcelona, Spain</div>
-                            <div class="text-gray-600 dark:text-gray-400 text-sm">Safari • iOS • Ayer, 09:15</div>
-                        </div>
-                        <div class="text-green-500 text-sm">Exitoso</div>
-                    </div>
-                    <div class="flex justify-between items-center p-2 bg-gray-200 dark:bg-gray-800 rounded">
-                        <div>
-                            <div class="text-gray-700 dark:text-gray-300 font-medium">Unknown Location</div>
-                            <div class="text-gray-600 dark:text-gray-400 text-sm">Firefox • Linux • 15/03/2023, 22:45
-                            </div>
-                        </div>
-                        <div class="text-red-500 text-sm">Fallido</div>
-                    </div>
-                </div>
-                <button
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-semibold p-3 rounded-lg cursor-pointer text-center mt-4 transition duration-300 w-1/2">
-                    Ver Historial Completo
-                </button>
-            </div> -->
         </div>
 
         <!-- QR Code Modal -->
-        <div v-if="qrCode && qrModal" class="fixed inset-0 flex items-center justify-center bg-black/50 p-4 z-50">
-            <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-2xl w-full max-w-md text-center border border-gray-200 dark:border-gray-700">
-                <h2 class="text-2xl font-bold text-blue-700 dark:text-blue-300 mb-2">Escanea este QR</h2>
-                <p class="text-gray-600 dark:text-gray-400 mb-4">Usa tu app de autenticación para activar 2FA</p>
-                <div class="flex justify-center mb-4">
-                    <div v-html="qrCode" class="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg inline-block border border-gray-200 dark:border-gray-700 shadow"></div>
-                </div>
-                <div class="flex flex-col sm:flex-row gap-2 mt-4">
-                    <button @click="qrModal = false"
-                        class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition duration-300">
-                        Confirmar
-                    </button>
-                    <button @click="disable2FA()"
-                        class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition duration-300">
-                        Cancelar
-                    </button>
-                </div>
+        <div v-if="qrCode && qrModal" class="fixed inset-0 flex items-center justify-center bg-black/50 dark:bg-black/80 p-4 z-50">
+            <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-2xl w-full max-w-md text-center border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+            <h2 class="text-2xl font-bold text-blue-700 dark:text-blue-300 mb-2">Escanea este QR</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">Usa tu app de autenticación para activar 2FA</p>
+            <div class="flex justify-center mb-4">
+                <div v-html="qrCode" class="p-4 bg-gray-100 rounded-lg inline-block border border-gray-200 dark:border-gray-700 shadow transition-colors duration-300"></div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-2 mt-4">
+                <button @click="qrModal = false"
+                class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition duration-300">
+                Confirmar
+                </button>
+                <button @click="disable2FA()"
+                class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition duration-300">
+                Cancelar
+                </button>
+            </div>
             </div>
         </div>
 
         <!-- Disable 2FA Confirmation Modal -->
-        <div v-if="disableConfirmModal" class="fixed inset-0 flex items-center justify-center bg-black/50 p-4 z-50">
-            <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg w-full max-w-md text-center">
-                <h2 class="text-xl font-bold text-red-600 dark:text-red-400 mb-4">ADVERTENCIA: Deshabilitar 2FA</h2>
-                <div class="p-4 bg-red-100 dark:bg-red-800 rounded-lg mb-4">
-                    <p class="text-red-800 dark:text-red-200 font-semibold">Esta acción no es recomendable</p>
-                </div>
-                <p class="text-gray-700 dark:text-gray-300 text-justify mb-4">
-                    Deshabilitar la Autenticación de Dos Factores reducirá significativamente la seguridad de tu cuenta.
-                    Sin 2FA, tu cuenta será más vulnerable a accesos no autorizados.
-                </p>
-                <p class="text-gray-700 dark:text-gray-300 text-justify mb-4">
-                    Recomendamos encarecidamente mantener 2FA habilitado para proteger tu información personal y datos.
-                </p>
-                <div class="flex justify-between gap-2">
-                    <button @click="closeDisableConfirmation()"
-                        class="mt-4 px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 cursor-pointer transition duration-300 flex-1">
-                        Cancelar
-                    </button>
-                    <button @click="disable2FA()" :disabled="!confirmButtonEnabled"
-                        class="mt-4 px-4 py-2 rounded-lg cursor-pointer transition duration-300 flex-1 flex items-center justify-center"
-                        :class="confirmButtonEnabled ? 'bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white' : 'bg-gray-500 dark:bg-gray-600 text-gray-300 cursor-not-allowed'">
-                        <span v-if="!confirmButtonEnabled">Espera {{ confirmCountdown }}s</span>
-                        <span v-else>Entiendo, deshabilitar 2FA</span>
-                    </button>
-                </div>
+        <div v-if="disableConfirmModal" class="fixed inset-0 flex items-center justify-center bg-black/50 dark:bg-black/80 p-4 z-50">
+            <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg w-full max-w-md text-center border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+            <h2 class="text-xl font-bold text-red-600 dark:text-red-400 mb-4">ADVERTENCIA: Deshabilitar 2FA</h2>
+            <div class="p-4 bg-red-100 dark:bg-red-800 rounded-lg mb-4">
+                <p class="text-red-800 dark:text-red-200 font-semibold">Esta acción no es recomendable</p>
+            </div>
+            <p class="text-gray-700 dark:text-gray-300 text-justify mb-4">
+                Deshabilitar la Autenticación de Dos Factores reducirá significativamente la seguridad de tu cuenta.
+                Sin 2FA, tu cuenta será más vulnerable a accesos no autorizados.
+            </p>
+            <p class="text-gray-700 dark:text-gray-300 text-justify mb-4">
+                Recomendamos encarecidamente mantener 2FA habilitado para proteger tu información personal y datos.
+            </p>
+            <div class="flex justify-between gap-2">
+                <button @click="closeDisableConfirmation()"
+                class="mt-4 px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 cursor-pointer transition duration-300 flex-1">
+                Cancelar
+                </button>
+                <button @click="disable2FA()" :disabled="!confirmButtonEnabled"
+                class="mt-4 px-4 py-2 rounded-lg cursor-pointer transition duration-300 flex-1 flex items-center justify-center"
+                :class="confirmButtonEnabled ? 'bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white' : 'bg-gray-500 dark:bg-gray-600 text-gray-300 cursor-not-allowed'">
+                <span v-if="!confirmButtonEnabled">Espera {{ confirmCountdown }}s</span>
+                <span v-else>Entiendo, deshabilitar 2FA</span>
+                </button>
+            </div>
             </div>
         </div>
     </Layout>

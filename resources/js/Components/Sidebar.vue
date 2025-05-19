@@ -104,7 +104,7 @@ export default {
       'h-full w-64 flex flex-col z-50 md:z-40 shadow-lg transition-all duration-300', 
       isOpen ? 'fixed top-0 left-0 translate-x-0' : 'fixed top-0 left-0 -translate-x-full', 
       'md:static md:translate-x-0',
-      'bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800'
+      'bg-white dark:bg-gray-900 border-r border-b rounded-br border-gray-100 dark:border-gray-800'
     ]">
       <!-- Perfil usuario -->
       <div class="p-4 border-b border-gray-100 dark:border-gray-800">
@@ -114,7 +114,7 @@ export default {
               <img v-if="user.company.profile_picture" :src="user.company.profile_picture"
                 alt="Profile picture" class="w-12 h-12 shadow-sm border-2 border-white dark:border-gray-700">
               <div v-else
-                class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white dark:border-gray-700">
+                class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-[#193CB8] dark:text-blue-400 shadow-sm border-2 border-white dark:border-gray-700">
                 <i class='bx bxs-building text-xl'></i>
               </div>
             </div>
@@ -122,7 +122,7 @@ export default {
               <img v-if="user.profile.profile_picture" :src="user.profile.profile_picture"
                 alt="Profile picture" class="w-12 h-12 shadow-sm border-2 border-white dark:border-gray-700">
               <div v-else
-                class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white dark:border-gray-700">
+                class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-[#193CB8] dark:text-blue-400 shadow-sm border-2 border-white dark:border-gray-700">
                 <i class='bx bxs-user text-xl'></i>
               </div>
             </div>

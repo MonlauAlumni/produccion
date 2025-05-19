@@ -78,46 +78,46 @@ const confirmPost = () => {
 
 <template>
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center">
-        <div class="absolute inset-0 bg-black/50" @click="closeModal"></div>
+        <div class="absolute inset-0 bg-black/50 dark:bg-black/70" @click="closeModal"></div>
 
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 z-10 overflow-hidden transform transition-all">
+        <div class="bg-white dark:bg-gray-900 rounded-xl shadow-xl w-full max-w-md mx-4 z-10 overflow-hidden transform transition-all border border-gray-100 dark:border-gray-700">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Confirmación de publicación</h3>
-                    <button @click="closeModal" class="text-gray-500 hover:text-gray-700 transition-colors">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Confirmación de publicación</h3>
+                    <button @click="closeModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
                         <i class='bx bx-x text-2xl'></i>
                     </button>
                 </div>
 
                 <div class="mb-6">
-                    <div class="p-4 bg-blue-50 rounded-lg border border-blue-100 mb-4">
-                        <p class="text-gray-800 text-sm">
+                    <div class="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-100 dark:border-blue-900 mb-4">
+                        <p class="text-gray-800 dark:text-gray-100 text-sm">
                             Al publicar este contenido, confirmas que:
                         </p>
-                        <ul class="list-disc pl-5 mt-2 text-sm text-gray-700 space-y-1">
+                        <ul class="list-disc pl-5 mt-2 text-sm text-gray-700 dark:text-gray-200 space-y-1">
                             <li>Te responsabilizas completamente del contenido que estás compartiendo</li>
                             <li>No contiene material ofensivo, ilegal o inapropiado</li>
                             <li>
                                 Cumple con los 
-                                <a href="/terminos-y-condiciones" target="_blank" rel="noopener" class="text-blue-600 underline hover:text-blue-800">
+                                <a href="/terminos-y-condiciones" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300">
                                     Términos y Condiciones
                                 </a>
                                 de nuestra plataforma
                             </li>
                         </ul>
                     </div>
-                    <p class="text-sm text-gray-600">
+                    <p class="text-sm text-gray-600 dark:text-gray-300">
                         ¿Estás seguro de que deseas continuar con esta publicación?
                     </p>
                 </div>
 
                 <div class="flex justify-end gap-3">
                     <button @click="closeModal"
-                        class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+                        class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-sm font-medium">
                         Cancelar
                     </button>
                     <button @click="confirmPost" :disabled="isLoading"
-                        class="px-4 py-2 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm font-medium flex items-center">
+                        class="px-4 py-2 bg-[#193CB8] dark:bg-blue-700 text-white rounded-lg hover:bg-[#142d8c] dark:hover:bg-blue-800 transition-colors text-sm font-medium flex items-center">
                         <span v-if="isLoading" class="mr-2">
                             <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
                                 viewBox="0 0 24 24">

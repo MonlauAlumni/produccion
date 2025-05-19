@@ -90,7 +90,7 @@ onMounted(() => {
 <template>
     <Layout :auth="auth">
         <div class="min-h-screen bg-gray-50 flex flex-col">
-            <div class="bg-[#193CB8] text-white py-8">
+            <div class="bg-[#193CB8] dark:bg-[#142d8c] text-white py-8">
                 <div class="max-w-6xl mx-auto px-4">
                     <div class="flex flex-col items-center text-center mb-6">
                         <h1 class="text-3xl font-bold mb-2">Resultados de búsqueda</h1>
