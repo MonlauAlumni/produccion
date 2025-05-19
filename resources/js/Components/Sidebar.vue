@@ -106,8 +106,10 @@ export default {
             <div v-if="user.company">
        
 
-              <img v-if="user.company.profile_picture" :src="user.company.profile_picture"
-                alt="Profile picture" class="w-12 h-12  shadow-sm border-2 border-white">
+              <img v-if="user.company.profile_picture"
+     :src="user.company.profile_picture"
+     alt="Profile picture"
+     class="w-12 h-12 object-cover rounded-full shadow-sm border-2 border-white">
               <div v-else
                 class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
                 <i class='bx bxs-building text-xl'></i>
@@ -115,7 +117,7 @@ export default {
             </div>
             <div v-if="user.profile">
               <img v-if="user.profile.profile_picture" :src="user.profile.profile_picture"
-                alt="Profile picture" class="w-12 h-12  shadow-sm border-2 border-white">
+                alt="Profile picture" class="w-12 h-12   shadow-sm border-2 border-white">
               <div v-else
                 class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
                 <i class='bx bxs-user text-xl'></i>
