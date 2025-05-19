@@ -23,6 +23,9 @@ class AdminController extends Controller
                 $newUsersThisMonth = User::whereMonth('created_at', now()->month)
                     ->whereYear('created_at', now()->year)
                     ->count();
+                $usersByArea = User::selectRaw('training_area, COUNT(*) as total')
+                    ->groupBy('training_area')
+                    ->pluck('total', 'training_area');
                 $companiesBySector = Company::selectRaw('sector, COUNT(*) as total')
                     ->groupBy('sector')
                     ->pluck('total', 'sector');
@@ -31,9 +34,7 @@ class AdminController extends Controller
                     'totalCompanies' => $totalCompanies,
                     'totalApplications' => $totalApplications,
                     'newUsersThisMonth' => $newUsersThisMonth,
-                    'usersByArea' => User::selectRaw('training_area, COUNT(*) as total')
-                        ->groupBy('training_area')
-                        ->pluck('total', 'training_area'),
+                    'usersByArea' => $usersByArea,
                     'companiesBySector' => $companiesBySector,
                 ]);
                 break;
@@ -47,6 +48,9 @@ class AdminController extends Controller
                 break;
 
             case 'users':
+                $usersByArea = User::selectRaw('training_area, COUNT(*) as total')
+                    ->groupBy('training_area')
+                    ->pluck('total', 'training_area');
                 $query = User::select(['id', 'name', 'last_name_1', 'last_name_2', 'email', 'training_area'])
                     ->when($request->filled('id'), function ($query) use ($request) {
                         $query->where('id', $request->id);
