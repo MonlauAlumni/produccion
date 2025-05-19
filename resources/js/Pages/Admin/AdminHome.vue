@@ -4,6 +4,7 @@ import { ref, computed, onMounted } from 'vue';
 import AdminLayout from './Layouts/AdminLayout.vue';
 import UsersByTrainingAreaChart from '@/components/Admin/UserByTrainingAreaChart.vue';
 import CompaniesBySectorChart from '@/components/Admin/CompaniesBySectorChart.vue';
+import { router } from '@inertiajs/vue3';
 
 // Define props with proper types
 const props = defineProps({
@@ -50,21 +51,17 @@ const stats = [
   }
 ];
 
-
-
-
 // Quick actions
 const quickActions = [
   { name: 'Usuarios', icon: 'bx-user-plus', color: 'bg-violet-600', route: '/admin/users' },
-  { name: 'Empresas', icon: 'bx-building-house', color: 'bg-emerald-600' },
-  { name: 'Notificaciones', icon: 'bx-file', color: 'bg-amber-600' },
-  { name: 'Configuración', icon: 'bx-cog', color: 'bg-gray-600' },
-  { name: 'Connect', icon: 'bx-file-blank', color: 'bg-blue-600' },
-  { name: 'Cerrar Sesión', icon: 'bx-log-out', color: 'bg-red-600' }	
+  { name: 'Empresas', icon: 'bx-building-house', color: 'bg-emerald-600', route: '/admin/companies' },
+  { name: 'Notificaciones', icon: 'bx-bell', color: 'bg-amber-600', route: '/admin/notifications' },
+  { name: 'Configuración', icon: 'bx-cog', color: 'bg-gray-600', route: '/configuracion' },
+  { name: 'Connect', icon: 'bx-link', color: 'bg-blue-600', route: '/connect' },
+  { name: 'Cerrar Sesión', icon: 'bx-log-out', color: 'bg-red-600', route: '/logout' }
 ];
 
 // Date range options
-const dateRanges = ['Last 7 Days', 'Last 30 Days', 'Last Quarter', 'Year to Date', 'Custom Range'];
 const selectedRange = ref('Last 30 Days');
 
 // Tab options for different views
@@ -97,186 +94,210 @@ const toggleCardExpansion = (index) => {
   expandedCard.value = expandedCard.value === index ? null : index;
 };
 
+// Navigate to route
+function navigateTo(route) {
+  if (route === '/logout') {
+    window.location.href = route;
+  } else {
+    router.visit(route);
+  }
+}
+
 // Total pending items
 const totalPending = computed(() => {
   return pendingCounts.reduce((sum, item) => sum + item.count, 0);
 });
 
-// Navigate to route
-function navigateTo(route) {
-  if (typeof window !== 'undefined' && window.Inertia) {
-    window.Inertia.visit(route);
-  } else if (typeof $router !== 'undefined' && $router.push) {
-    $router.push(route);
-  } else {
-    window.location.href = route;
-  }
-}
+// Pending counts from props or computed values
+const pendingCounts = [
+  { type: 'messages', count: 0 },
+  { type: 'alerts', count: 0 },
+  { type: 'tasks', count: 0 }
+];
 </script>
 
 <template>
   <AdminLayout>
-    <div class="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
-      <!-- Header with actions -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Analytics Dashboard</h1>
-          <p class="text-gray-500 mt-1">Welcome back, Admin</p>
-        </div>
-        
-
-      </div>
-
-      <!-- Tab Navigation -->
-      <div class="border-b border-gray-200">
-        <nav class="flex space-x-8">
-          <button 
-            v-for="tab in tabs" 
-            :key="tab"
-            @click="activeTab = tab"
-            class="py-3 px-1 text-sm font-medium border-b-2 transition-colors"
-            :class="activeTab === tab ? 'border-violet-600 text-violet-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
-          >
-            {{ tab }}
-          </button>
-        </nav>
-      </div>
-
-      <!-- Last Updated Info -->
-      <div class="flex items-center text-sm text-gray-500">
-        <i class="bx bx-time-five mr-1"></i>
-        <span>Última actualización: {{ lastUpdated }}</span>
-      </div>
-
-      <!-- Metric Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        <div
-          v-for="(stat, i) in stats"
-          :key="i"
-          class="rounded-xl shadow-sm border border-gray-100 bg-white transition-all duration-300 hover:shadow-md overflow-hidden cursor-pointer"
-          :class="{'translate-y-0 opacity-100': isLoaded, 'translate-y-4 opacity-0': !isLoaded}"
-          :style="{transitionDelay: `${i * 100}ms`}"
-          @click="toggleCardExpansion(i)"
-        >
-          <div class="p-5">
-            <div class="flex items-center justify-between">
-              <div :class="`p-3 rounded-full ${stat.color}`">
-                <i :class="`bx ${stat.icon} text-xl`"></i>
-              </div>
-              <button class="text-gray-400 hover:text-gray-600">
-                <i class="bx bx-dots-vertical-rounded"></i>
-              </button>
+    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div class="p-6 md:p-8 space-y-8 max-w-7xl mx-auto">
+        <!-- Header with actions -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+          <div class="relative">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 tracking-tight">Analytics Dashboard</h1>
+            <p class="text-gray-500 mt-2 font-medium">Welcome back, Admin</p>
+            <div class="absolute -bottom-2 left-0 w-20 h-1 bg-violet-600 rounded-full"></div>
+          </div>
+          
+          <div class="flex items-center gap-4">
+            <div class="flex items-center text-sm text-gray-500 bg-white py-2 px-4 rounded-full shadow-sm border border-gray-200">
+              <i class="bx bx-time-five mr-2 text-violet-500"></i>
+              <span>{{ lastUpdated }}</span>
             </div>
-            <div class="mt-4">
-              <p class="text-gray-500 text-sm font-medium">{{ stat.title }}</p>
-              <p class="text-2xl font-bold text-gray-800 mt-1">{{ formatNumber(stat.value) }}</p>
+          </div>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div
+            v-for="(stat, i) in stats"
+            :key="i"
+            class="rounded-2xl shadow-sm bg-white transition-all duration-300 hover:shadow-lg overflow-hidden cursor-pointer group relative"
+            :class="{'translate-y-0 opacity-100': isLoaded, 'translate-y-4 opacity-0': !isLoaded}"
+            :style="{transitionDelay: `${i * 100}ms`}"
+            @click="toggleCardExpansion(i)"
+          >
+            <div class="absolute top-0 left-0 w-full h-1" :class="stat.color.replace('bg-', 'bg-').replace('text-', '')"></div>
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-4">
+                <div :class="`p-3 rounded-xl ${stat.color} shadow-md`">
+                  <i :class="`bx ${stat.icon} text-xl`"></i>
+                </div>
+                <button class="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <i class="bx bx-dots-vertical-rounded"></i>
+                </button>
+              </div>
+              <div>
+                <p class="text-gray-500 text-sm font-medium">{{ stat.title }}</p>
+                <p class="text-3xl font-bold text-gray-800 mt-2">{{ formatNumber(stat.value) }}</p>
+              </div>
+            </div>
+            
+            <!-- Expandable content -->
+            <div 
+              v-if="expandedCard === i"
+              class="bg-gray-50 p-5 border-t border-gray-100 text-sm text-gray-600 animate-fadeIn"
+            >
+              <p>{{ stat.description }}</p>
+              <div class="mt-4 flex justify-end">
+                <button class="text-violet-600 hover:text-violet-700 text-xs font-medium flex items-center bg-violet-50 hover:bg-violet-100 py-2 px-3 rounded-lg transition-colors">
+                  View Details
+                  <i class="bx bx-right-arrow-alt ml-1"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div class="border-b border-gray-100">
+            <nav class="flex px-6">
+              <button 
+                v-for="tab in tabs" 
+                :key="tab"
+                @click="activeTab = tab"
+                class="py-5 px-4 text-sm font-medium border-b-2 transition-colors relative mr-6"
+                :class="activeTab === tab ? 'border-violet-600 text-violet-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+              >
+                {{ tab }}
+              </button>
+            </nav>
+          </div>
+        </div>
+
+        <!-- Command Center -->
+        <div 
+          class="bg-white rounded-2xl shadow-sm overflow-hidden"
+          :class="{'translate-y-0 opacity-100': isLoaded, 'translate-y-4 opacity-0': !isLoaded}"
+          style="transition: all 0.5s ease; transition-delay: 300ms;"
+        >
+          <div class="border-b border-gray-100">
+            <div class="flex items-center justify-between p-6">
+              <div class="flex items-center">
+                <div class="bg-violet-100 text-violet-600 p-3 rounded-xl mr-4 shadow-sm">
+                  <i class="bx bx-command text-xl"></i>
+                </div>
+                <div>
+                  <h2 class="text-xl font-semibold text-gray-800">Centro de comandos</h2>
+                  <p class="text-xs text-gray-500 mt-1">Acciones rápidas y estado del sistema</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-xs px-3 py-1.5 bg-green-100 text-green-700 rounded-full flex items-center shadow-sm">
+                  <span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+                  All Systems Operational
+                </span>
+                <button class="text-gray-400 hover:text-gray-600 p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                  <i class="bx bx-dots-horizontal-rounded text-xl"></i>
+                </button>
+              </div>
             </div>
           </div>
           
-          <!-- Expandable content -->
-          <div 
-            v-if="expandedCard === i"
-            class="bg-gray-50 p-4 border-t border-gray-100 text-sm text-gray-600 animate-fadeIn"
-          >
-            <p>{{ stat.description }}</p>
-            <div class="mt-2 flex justify-end">
-              <button class="text-violet-600 hover:text-violet-700 text-xs font-medium">
-                View Details
+          <!-- Quick Actions -->
+          <div class="p-6">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5">
+              <button 
+                v-for="(action, i) in quickActions" 
+                :key="i"
+                class="flex flex-col items-center justify-center p-5 rounded-xl border border-gray-100 hover:bg-gray-50 transition-all hover:shadow-md hover:-translate-y-1"
+                @click="action.route ? navigateTo(action.route) : null"
+              >
+                <div :class="`p-4 rounded-xl ${action.color} text-white mb-3 shadow-md`">
+                  <i :class="`bx ${action.icon} text-xl`"></i>
+                </div>
+                <span class="text-sm font-medium text-gray-700">{{ action.name }}</span>
               </button>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Command Center -->
-      <div 
-        class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
-        :class="{'translate-y-0 opacity-100': isLoaded, 'translate-y-4 opacity-0': !isLoaded}"
-        style="transition: all 0.5s ease; transition-delay: 300ms;"
-      >
-        <div class="border-b border-gray-100">
-          <div class="flex items-center justify-between p-5">
-        <div class="flex items-center">
-          <div class="bg-violet-100 text-violet-600 p-2 rounded-lg mr-3">
-            <i class="bx bx-command text-xl"></i>
-          </div>
-          <h2 class="text-lg font-semibold text-gray-800">Centro de comandos</h2>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full flex items-center">
-            <span class="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
-            All Systems Operational
-          </span>
-          <button class="text-gray-400 hover:text-gray-600 p-1">
-            <i class="bx bx-dots-horizontal-rounded text-xl"></i>
-          </button>
-        </div>
-          </div>
-        </div>
-        
-        <!-- Quick Actions Only -->
-        <div class="p-5">
-          <h3 class="text-sm font-medium text-gray-500 mb-4">Acciones rápidas</h3>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <button 
-          v-for="(action, i) in quickActions" 
-          :key="i"
-          class="flex flex-col items-center justify-center p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
-          @click="action.route ? navigateTo(action.route) : null"
+        <!-- Charts Section -->
+        <div 
+          class="grid grid-cols-1 lg:grid-cols-2 gap-6"
+          :class="{'translate-y-0 opacity-100': isLoaded, 'translate-y-4 opacity-0': !isLoaded}"
+          style="transition: all 0.5s ease; transition-delay: 400ms;"
         >
-          <div :class="`p-3 rounded-full ${action.color} text-white mb-2`">
-            <i :class="`bx ${action.icon} text-xl`"></i>
+          <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div class="border-b border-gray-100 px-6 py-5">
+              <div class="flex justify-between items-center">
+                <div>
+                  <h2 class="text-xl font-semibold text-gray-800">Usuarios por area de aprendizaje</h2>
+                  <p class="text-sm text-gray-500 mt-1">Distribución de usuarios según su área de formación</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <button class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors">
+                    <i class="bx bx-refresh"></i>
+                  </button>
+                  <button class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors">
+                    <i class="bx bx-dots-horizontal-rounded"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="p-6">
+              <UsersByTrainingAreaChart :data="props.usersByArea" />
+            </div>
           </div>
-          <span class="text-xs font-medium text-gray-700">{{ action.name }}</span>
-        </button>
+          
+          <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div class="border-b border-gray-100 px-6 py-5">
+              <div class="flex justify-between items-center">
+                <div>
+                  <h2 class="text-xl font-semibold text-gray-800">Empresas por sector</h2>
+                  <p class="text-sm text-gray-500 mt-1">Distribución de empresas según su sector industrial</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <button class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors">
+                    <i class="bx bx-refresh"></i>
+                  </button>
+                  <button class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors">
+                    <i class="bx bx-dots-horizontal-rounded"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="p-6">
+              <CompaniesBySectorChart :companiesBySector="props.companiesBySector" />
+            </div>
           </div>
         </div>
       </div>
-
-      <!-- Charts Section -->
-      <div 
-        class="grid grid-cols-1 md:grid-cols-2 gap-6"
-        :class="{'translate-y-0 opacity-100': isLoaded, 'translate-y-4 opacity-0': !isLoaded}"
-        style="transition: all 0.5s ease; transition-delay: 400ms;"
-      >
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-semibold text-gray-800">Usuarios por area de aprendizaje</h2>
-            <div class="flex items-center space-x-2">
-              <button class="p-1 rounded hover:bg-gray-100">
-                <i class="bx bx-refresh text-gray-500"></i>
-              </button>
-              <button class="p-1 rounded hover:bg-gray-100">
-                <i class="bx bx-dots-horizontal-rounded text-gray-500"></i>
-              </button>
-            </div>
-          </div>
-          <UsersByTrainingAreaChart :data="props.usersByArea" />
-        </div>
-        
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-semibold text-gray-800">Empresas por sector</h2>
-            <div class="flex items-center space-x-2">
-              <button class="p-1 rounded hover:bg-gray-100">
-                <i class="bx bx-refresh text-gray-500"></i>
-              </button>
-              <button class="p-1 rounded hover:bg-gray-100">
-                <i class="bx bx-dots-horizontal-rounded text-gray-500"></i>
-              </button>
-            </div>
-          </div>
-          <CompaniesBySectorChart :companiesBySector="props.companiesBySector" />
-        </div>
-      </div>
-
-
     </div>
   </AdminLayout>
 </template>
 
 <style scoped>
-/* Add any component-specific styles here */
 .translate-y-0 {
   transform: translateY(0);
 }
@@ -295,5 +316,12 @@ function navigateTo(route) {
 }
 .animate-fadeIn {
   animation: fadeIn 0.3s ease-out forwards;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 </style>
