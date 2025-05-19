@@ -89,8 +89,8 @@ onMounted(() => {
 
 <template>
     <Layout :auth="auth">
-        <div class="min-h-screen bg-gray-50 flex flex-col">
-            <div class="bg-[#193CB8] text-white py-8">
+        <div class="  flex flex-col">
+            <div class="bg-[#193CB8] dark:bg-[#142d8c] text-white py-8">
                 <div class="max-w-6xl mx-auto px-4">
                     <div class="flex flex-col items-center text-center mb-6">
                         <h1 class="text-3xl font-bold mb-2">Resultados de búsqueda</h1>
@@ -115,35 +115,45 @@ onMounted(() => {
 
             <div class="flex-1 py-8">
                 <div class="max-w-6xl mx-auto px-4">
-                    <div class="mb-6 border-b border-gray-200">
+                    <div class="mb-6 border-b border-gray-200 dark:border-blue-900/40">
                         <div class="flex overflow-x-auto hide-scrollbar">
                             <button @click="activeTab = 'all'" :class="[
                                 'px-4 py-2 font-medium whitespace-nowrap',
-                                activeTab === 'all' ? 'text-[#193CB8] border-b-2 border-[#193CB8]' : 'text-gray-500 hover:text-gray-700 cursor-pointer'
+                                activeTab === 'all' 
+                                    ? 'text-[#193CB8] dark:text-blue-200 border-b-2 border-[#193CB8] dark:border-blue-200' 
+                                    : 'text-gray-500 dark:text-blue-300 hover:text-gray-700 dark:hover:text-blue-100 cursor-pointer'
                             ]">
                                 Todos ({{ totalResults }})
                             </button>
                             <button @click="activeTab = 'people'" :class="[
                                 'px-4 py-2 font-medium whitespace-nowrap',
-                                activeTab === 'people' ? 'text-[#193CB8] border-b-2 border-[#193CB8]' : 'text-gray-500 hover:text-gray-700 cursor-pointer'
+                                activeTab === 'people' 
+                                    ? 'text-[#193CB8] dark:text-blue-200 border-b-2 border-[#193CB8] dark:border-blue-200' 
+                                    : 'text-gray-500 dark:text-blue-300 hover:text-gray-700 dark:hover:text-blue-100 cursor-pointer'
                             ]">
                                 <i class='bx bx-user mr-1'></i> Personas ({{ filteredUsers.length }})
                             </button>
                             <button @click="activeTab = 'groups'" :class="[
                                 'px-4 py-2 font-medium whitespace-nowrap',
-                                activeTab === 'groups' ? 'text-[#193CB8] border-b-2 border-[#193CB8]' : 'text-gray-500 hover:text-gray-700 cursor-pointer'
+                                activeTab === 'groups' 
+                                    ? 'text-[#193CB8] dark:text-blue-200 border-b-2 border-[#193CB8] dark:border-blue-200' 
+                                    : 'text-gray-500 dark:text-blue-300 hover:text-gray-700 dark:hover:text-blue-100 cursor-pointer'
                             ]">
                                 <i class='bx bx-group mr-1'></i> Grupos ({{ filteredGroups.length }})
                             </button>
                             <button @click="activeTab = 'events'" :class="[
                                 'px-4 py-2 font-medium whitespace-nowrap',
-                                activeTab === 'events' ? 'text-[#193CB8] border-b-2 border-[#193CB8]' : 'text-gray-500 hover:text-gray-700 cursor-pointer'
+                                activeTab === 'events' 
+                                    ? 'text-[#193CB8] dark:text-blue-200 border-b-2 border-[#193CB8] dark:border-blue-200' 
+                                    : 'text-gray-500 dark:text-blue-300 hover:text-gray-700 dark:hover:text-blue-100 cursor-pointer'
                             ]">
                                 <i class='bx bx-calendar-event mr-1'></i> Eventos ({{ filteredEvents.length }})
                             </button>
                             <button @click="activeTab = 'posts'" :class="[
                                 'px-4 py-2 font-medium whitespace-nowrap',
-                                activeTab === 'posts' ? 'text-[#193CB8] border-b-2 border-[#193CB8]' : 'text-gray-500 hover:text-gray-700 cursor-pointer'
+                                activeTab === 'posts' 
+                                    ? 'text-[#193CB8] dark:text-blue-200 border-b-2 border-[#193CB8] dark:border-blue-200' 
+                                    : 'text-gray-500 dark:text-blue-300 hover:text-gray-700 dark:hover:text-blue-100 cursor-pointer'
                             ]">
                                 <i class='bx bx-news mr-1'></i> Publicaciones ({{ filteredPosts.length }})
                             </button>
@@ -152,18 +162,18 @@ onMounted(() => {
 
                     <div v-if="isLoading" class="flex justify-center items-center py-12">
                         <div
-                            class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#193CB8] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]">
+                            class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#193CB8] dark:border-blue-200 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]">
                         </div>
-                        <span class="ml-3 text-gray-600">Buscando...</span>
+                        <span class="ml-3 text-gray-600 dark:text-blue-100">Buscando...</span>
                     </div>
 
-                    <div v-else-if="totalResults === 0" class="text-center py-12">
+                    <div v-else-if="totalResults === 0" class="text-center py-12 bg-white dark:bg-[#1a2332] rounded-xl shadow-sm">
                         <div
-                            class="w-20 h-20 bg-[#193CB8]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class='bx bx-search-alt text-4xl text-[#193CB8]'></i>
+                            class="w-20 h-20 bg-[#193CB8]/10 dark:bg-[#193CB8]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class='bx bx-search-alt text-4xl text-[#193CB8] dark:text-blue-200'></i>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-800 mb-2">No se encontraron resultados</h2>
-                        <p class="text-gray-600 max-w-md mx-auto">
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-blue-100 mb-2">No se encontraron resultados</h2>
+                        <p class="text-gray-600 dark:text-blue-200 max-w-md mx-auto">
                             No hemos encontrado resultados para "{{ searchQuery }}". Intenta con otros términos o revisa
                             la ortografía.
                         </p>
@@ -171,7 +181,7 @@ onMounted(() => {
 
                     <div v-else>
                         <div v-if="activeTab === 'all' || activeTab === 'people'" class="mb-8">
-                            <h2 class="text-xl font-bold text-gray-800 mb-4"
+                            <h2 class="text-xl font-bold text-gray-800 dark:text-blue-100 mb-4"
                                 v-if="activeTab === 'all' && filteredUsers.length > 0">
                                 Personas ({{ filteredUsers.length }})
                             </h2>
@@ -179,40 +189,40 @@ onMounted(() => {
                             <div v-if="filteredUsers.length > 0"
                                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 <div v-for="user in filteredUsers" :key="user.id"
-                                    class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                                    class="bg-white dark:bg-[#1a2332] rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                                     <div class="p-4 flex items-start gap-4">
                                         <div class="relative">
                                             <img v-if="user.profile && user.profile.profile_picture"
                                                 :src="user.profile.profile_picture" :alt="user.name"
                                                 class="w-16 h-16 rounded-full object-cover" />
                                             <div v-else
-                                                class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8]">
+                                                class="w-16 h-16 bg-gray-200 dark:bg-blue-900/40 rounded-full flex items-center justify-center text-[#193CB8] dark:text-blue-200">
                                                 <i class='bx bxs-user text-xl'></i>
                                             </div>
-                                            <div class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white"
-                                                :class="user.is_online ? 'bg-green-500' : 'bg-gray-300'"></div>
+                                            <div class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-[#1a2332]"
+                                                :class="user.is_online ? 'bg-green-500' : 'bg-gray-300 dark:bg-blue-900/40'"></div>
                                         </div>
 
                                         <div class="flex-1">
-                                            <h3 class="font-bold text-gray-800">{{ user.name }} {{ user.last_name_1 }}
+                                            <h3 class="font-bold text-gray-800 dark:text-blue-100">{{ user.name }} {{ user.last_name_1 }}
                                                 {{ user.last_name_2 }}</h3>
                                             <p v-if="user.profile && user.profile.job_title"
-                                                class="text-gray-600 text-sm">{{ user.profile.job_title }}</p>
+                                                class="text-gray-600 dark:text-blue-200 text-sm">{{ user.profile.job_title }}</p>
 
                                             <div v-if="user.profile && user.profile.location"
-                                                class="flex items-center text-gray-500 text-sm mt-1">
+                                                class="flex items-center text-gray-500 dark:text-blue-300 text-sm mt-1">
                                                 <i class='bx bx-map-pin mr-1'></i>
                                                 <span>{{ user.profile.location }}</span>
                                             </div>
 
                                             <div class="mt-3 flex gap-2">
                                                 <button
-                                                    class="px-3 py-1.5 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm">
+                                                    class="px-3 py-1.5 bg-[#193CB8] dark:bg-blue-700 text-white dark:text-blue-100 rounded-lg hover:bg-[#142d8c] dark:hover:bg-blue-900 transition-colors text-sm">
                                                     <i class='bx bx-user-plus mr-1'></i> Conectar
                                                 </button>
                                                 <button
                                                     @click="router.get('/perfil/' + (user.profile ? user.profile.slang : user.id))"
-                                                    class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+                                                    class="px-3 py-1.5 bg-gray-100 dark:bg-blue-900/40 text-gray-700 dark:text-blue-100 rounded-lg hover:bg-gray-200 dark:hover:bg-blue-800 transition-colors text-sm">
                                                     <i class='bx bx-user mr-1'></i> Ver Perfil
                                                 </button>
                                             </div>
@@ -222,25 +232,25 @@ onMounted(() => {
                             </div>
 
                             <div v-else-if="activeTab === 'people'"
-                                class="text-center py-8 bg-white rounded-xl shadow-sm">
+                                class="text-center py-8 bg-white dark:bg-[#1a2332] rounded-xl shadow-sm">
                                 <div
-                                    class="w-16 h-16 bg-[#193CB8]/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                                    <i class='bx bx-user text-3xl text-[#193CB8]'></i>
+                                    class="w-16 h-16 bg-[#193CB8]/10 dark:bg-[#193CB8]/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <i class='bx bx-user text-3xl text-[#193CB8] dark:text-blue-200'></i>
                                 </div>
-                                <h3 class="text-xl font-bold text-gray-800 mb-1">No se encontraron personas</h3>
-                                <p class="text-gray-600">Intenta con otros términos de búsqueda</p>
+                                <h3 class="text-xl font-bold text-gray-800 dark:text-blue-100 mb-1">No se encontraron personas</h3>
+                                <p class="text-gray-600 dark:text-blue-200">Intenta con otros términos de búsqueda</p>
                             </div>
 
                             <div v-if="activeTab === 'all' && filteredUsers.length > 3" class="text-center mt-4">
                                 <button @click="activeTab = 'people'"
-                                    class="text-[#193CB8] hover:underline font-medium">
+                                    class="text-[#193CB8] dark:text-blue-200 hover:underline font-medium">
                                     Ver todas las personas
                                 </button>
                             </div>
                         </div>
 
                         <div v-if="activeTab === 'all' || activeTab === 'groups'" class="mb-8">
-                            <h2 class="text-xl font-bold text-gray-800 mb-4"
+                            <h2 class="text-xl font-bold text-gray-800 dark:text-blue-100 mb-4"
                                 v-if="activeTab === 'all' && filteredGroups.length > 0">
                                 Grupos ({{ filteredGroups.length }})
                             </h2>
@@ -250,25 +260,25 @@ onMounted(() => {
                             </div>
 
                             <div v-else-if="activeTab === 'groups'"
-                                class="text-center py-8 bg-white rounded-xl shadow-sm">
+                                class="text-center py-8 bg-white dark:bg-[#1a2332] rounded-xl shadow-sm">
                                 <div
-                                    class="w-16 h-16 bg-[#193CB8]/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                                    <i class='bx bx-group text-3xl text-[#193CB8]'></i>
+                                    class="w-16 h-16 bg-[#193CB8]/10 dark:bg-[#193CB8]/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <i class='bx bx-group text-3xl text-[#193CB8] dark:text-blue-200'></i>
                                 </div>
-                                <h3 class="text-xl font-bold text-gray-800 mb-1">No se encontraron grupos</h3>
-                                <p class="text-gray-600">Intenta con otros términos de búsqueda</p>
+                                <h3 class="text-xl font-bold text-gray-800 dark:text-blue-100 mb-1">No se encontraron grupos</h3>
+                                <p class="text-gray-600 dark:text-blue-200">Intenta con otros términos de búsqueda</p>
                             </div>
 
                             <div v-if="activeTab === 'all' && filteredGroups.length > 3" class="text-center mt-4">
                                 <button @click="activeTab = 'groups'"
-                                    class="text-[#193CB8] hover:underline font-medium">
+                                    class="text-[#193CB8] dark:text-blue-200 hover:underline font-medium">
                                     Ver todos los grupos
                                 </button>
                             </div>
                         </div>
 
                         <div v-if="activeTab === 'all' || activeTab === 'events'" class="mb-8">
-                            <h2 class="text-xl font-bold text-gray-800 mb-4"
+                            <h2 class="text-xl font-bold text-gray-800 dark:text-blue-100 mb-4"
                                 v-if="activeTab === 'all' && filteredEvents.length > 0">
                                 Eventos ({{ filteredEvents.length }})
                             </h2>
@@ -279,25 +289,25 @@ onMounted(() => {
                             </div>
 
                             <div v-else-if="activeTab === 'events'"
-                                class="text-center py-8 bg-white rounded-xl shadow-sm">
+                                class="text-center py-8 bg-white dark:bg-[#1a2332] rounded-xl shadow-sm">
                                 <div
-                                    class="w-16 h-16 bg-[#193CB8]/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                                    <i class='bx bx-calendar-event text-3xl text-[#193CB8]'></i>
+                                    class="w-16 h-16 bg-[#193CB8]/10 dark:bg-[#193CB8]/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <i class='bx bx-calendar-event text-3xl text-[#193CB8] dark:text-blue-200'></i>
                                 </div>
-                                <h3 class="text-xl font-bold text-gray-800 mb-1">No se encontraron eventos</h3>
-                                <p class="text-gray-600">Intenta con otros términos de búsqueda</p>
+                                <h3 class="text-xl font-bold text-gray-800 dark:text-blue-100 mb-1">No se encontraron eventos</h3>
+                                <p class="text-gray-600 dark:text-blue-200">Intenta con otros términos de búsqueda</p>
                             </div>
 
                             <div v-if="activeTab === 'all' && filteredEvents.length > 3" class="text-center mt-4">
                                 <button @click="activeTab = 'events'"
-                                    class="text-[#193CB8] hover:underline font-medium">
+                                    class="text-[#193CB8] dark:text-blue-200 hover:underline font-medium">
                                     Ver todos los eventos
                                 </button>
                             </div>
                         </div>
 
                         <div v-if="activeTab === 'all' || activeTab === 'posts'">
-                            <h2 class="text-xl font-bold text-gray-800 mb-4"
+                            <h2 class="text-xl font-bold text-gray-800 dark:text-blue-100 mb-4"
                                 v-if="activeTab === 'all' && filteredPosts.length > 0">
                                 Publicaciones ({{ filteredPosts.length }})
                             </h2>
@@ -308,17 +318,17 @@ onMounted(() => {
                             </div>
 
                             <div v-else-if="activeTab === 'posts'"
-                                class="text-center py-8 bg-white rounded-xl shadow-sm">
+                                class="text-center py-8 bg-white dark:bg-[#1a2332] rounded-xl shadow-sm">
                                 <div
-                                    class="w-16 h-16 bg-[#193CB8]/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                                    <i class='bx bx-news text-3xl text-[#193CB8]'></i>
+                                    class="w-16 h-16 bg-[#193CB8]/10 dark:bg-[#193CB8]/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <i class='bx bx-news text-3xl text-[#193CB8] dark:text-blue-200'></i>
                                 </div>
-                                <h3 class="text-xl font-bold text-gray-800 mb-1">No se encontraron publicaciones</h3>
-                                <p class="text-gray-600">Intenta con otros términos de búsqueda</p>
+                                <h3 class="text-xl font-bold text-gray-800 dark:text-blue-100 mb-1">No se encontraron publicaciones</h3>
+                                <p class="text-gray-600 dark:text-blue-200">Intenta con otros términos de búsqueda</p>
                             </div>
 
                             <div v-if="activeTab === 'all' && filteredPosts.length > 3" class="text-center mt-4">
-                                <button @click="activeTab = 'posts'" class="text-[#193CB8] hover:underline font-medium">
+                                <button @click="activeTab = 'posts'" class="text-[#193CB8] dark:text-blue-200 hover:underline font-medium">
                                     Ver todas las publicaciones
                                 </button>
                             </div>

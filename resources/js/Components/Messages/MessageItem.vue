@@ -32,7 +32,7 @@
           'max-w-[70%] px-4 py-2 rounded-lg',
           message.user_id === currentUser.id 
             ? 'bg-[#193CB8] text-white rounded-tr-none' 
-            : 'bg-gray-100 text-gray-800 rounded-tl-none'
+            : 'bg-gray-100 dark:bg-gray-700 dark:text-gray-100 text-gray-800 rounded-tl-none'
         ]"
       >
         <p>{{ message.content }}</p>

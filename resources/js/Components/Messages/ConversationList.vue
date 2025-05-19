@@ -1,8 +1,8 @@
 <template>
-  <div class="w-1/3 border-r border-gray-200 overflow-hidden flex flex-col">
+  <div class="w-1/3 border-r border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col bg-white dark:bg-gray-800">
     <!-- Encabezado -->
-    <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-      <h2 class="text-xl font-bold text-gray-800">Mensajes</h2>
+    <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+      <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">Mensajes</h2>
       <button 
       v-if="userRole === 'empresa'"
         @click="$emit('new-conversation')"
@@ -13,26 +13,26 @@
     </div>
     
     <!-- Buscador -->
-    <div class="p-4 border-b border-gray-200">
+    <div class="p-4 border-b border-gray-200 dark:border-gray-700">
       <div class="relative">
         <input
           type="text"
           placeholder="Buscar conversaciones..."
           v-model="searchQuery"
-          class="w-full px-4 py-2 pr-10 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#193CB8]"
+          class="w-full px-4 py-2 pr-10 rounded-lg border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#193CB8] dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
         />
-        <i class='bx bx-search absolute right-3 top-2.5 text-gray-400'></i>
+        <i class='bx bx-search absolute right-3 top-2.5 text-gray-400 dark:text-gray-500'></i>
       </div>
     </div>
     
     <!-- Lista de conversaciones -->
     <div class="flex-1 overflow-y-auto">
       <div v-if="loading" class="p-4 text-center">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#193CB8]"></div>
-        <p class="mt-2 text-gray-500">Cargando conversaciones...</p>
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#193CB8] dark:border-blue-400"></div>
+        <p class="mt-2 text-gray-500 dark:text-gray-400">Cargando conversaciones...</p>
       </div>
       
-      <div v-else-if="filteredConversations.length === 0" class="p-4 text-center text-gray-500">
+      <div v-else-if="filteredConversations.length === 0" class="p-4 text-center text-gray-500 dark:text-gray-400">
         <i class='bx bx-message-x text-4xl mb-2'></i>
         <p>No se encontraron conversaciones</p>
       </div>
@@ -104,5 +104,18 @@ const filteredConversations = computed(() => {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
 }
 </style>

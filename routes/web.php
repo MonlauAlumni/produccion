@@ -33,7 +33,12 @@ Route::fallback(function () {
     return Inertia::render('404_page');
 });
 
-Route::get('/', [LandingController::class, 'index'])->name('landing');
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect('/home');
+    }
+    return app(LandingController::class)->index();
+})->name('landing');
 
 Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/admin/{page}', [AdminController::class, 'show'])->name('admin.page');

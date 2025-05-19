@@ -850,7 +850,7 @@ const terminateAllSessions = () => {
         <p class="px-4 mt-4 text-gray-700 dark:text-gray-300">Añade una capa extra de seguridad a tu cuenta.</p>
         <div class="p-4 grid grid-cols-2 gap-4">
             <div
-                class="bg-white dark:bg-gray-900 p-6 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 shadow-xl transition-colors duration-300">
+                class="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 shadow-xl transition-colors duration-300">
                 <p class="text-xl font-bold text-gray-800 dark:text-gray-100">Autenticación de Dos Factores (2FA)</p>
                 <p class="mt-2 text-justify text-gray-700 dark:text-gray-300">
                     La Autenticación de Dos Factores añade una capa extra de seguridad a tu cuenta.
@@ -920,8 +920,8 @@ const terminateAllSessions = () => {
                 Cancelar
                 </button>
                 <button @click="disable2FA()" :disabled="!confirmButtonEnabled"
-                class="mt-4 px-4 py-2 rounded-lg cursor-pointer transition duration-300 flex-1 flex items-center justify-center"
-                :class="confirmButtonEnabled ? 'bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white' : 'bg-gray-500 dark:bg-gray-600 text-gray-300 cursor-not-allowed'">
+                class="mt-4 px-4 py-2 rounded-lg transition duration-300 flex-1 flex items-center justify-center"
+                :class="confirmButtonEnabled ? 'bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white cursor-pointer' : 'bg-gray-500 dark:bg-gray-600 text-gray-300 cursor-not-allowed'">
                 <span v-if="!confirmButtonEnabled">Espera {{ confirmCountdown }}s</span>
                 <span v-else>Entiendo, deshabilitar 2FA</span>
                 </button>

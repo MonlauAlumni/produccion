@@ -179,10 +179,10 @@ const isApplyDisabled = computed(() => {
 </script>
 
 <template>
-    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
         <!-- Status Badge (si existe) -->
         <div v-if="jobOffer.status === 'featured'"
-            class="bg-[#193CB8] text-white text-xs font-bold px-3 py-1 flex items-center">
+            class="bg-[#4A90E2] text-white text-xs font-bold px-3 py-1 flex items-center">
             <i class='bx bx-star mr-1'></i>
             Oferta destacada
         </div>
@@ -198,29 +198,29 @@ const isApplyDisabled = computed(() => {
             <div class="flex items-start gap-4">
                 <!-- Company Logo -->
                 <div
-                    class="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center shrink-0 border border-gray-200">
+                    class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center shrink-0 border border-gray-200 dark:border-gray-600">
                     <img v-if="jobOffer.company && jobOffer.company.profile_picture"
                         :src="`${jobOffer.company.profile_picture}`" :alt="jobOffer.company.name || ''"
                         class="w-13 h-13 rounded-lg" />
-                    <i v-else class='bx bx-building text-2xl text-gray-400'></i>
+                    <i v-else class='bx bx-building text-2xl text-gray-400 dark:text-gray-500'></i>
                 </div>
 
                 <!-- Job Info -->
                 <div class="flex-1">
                     <div class="flex items-start justify-between">
                         <div>
-                            <h2 class="font-bold text-lg text-[#193CB8] hover:underline cursor-pointer"
+                            <h2 class="font-bold text-lg text-[#4A90E2] hover:underline cursor-pointer"
                                 @click="viewJobOffer(jobOffer.id)">
                                 {{ jobOffer.title }}
                             </h2>
-                            <div class="text-gray-700">
+                            <div class="text-gray-700 dark:text-gray-300">
                                 {{ jobOffer.company ? jobOffer.company.company_name : '' }}
                             </div>
                         </div>
 
                         <!-- Expires Badge -->
                         <div v-if="jobOffer.deadline"
-                            class="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1  w-40 rounded-full flex items-center">
+                            class="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-300 text-xs font-bold px-3 py-1 w-40 rounded-full flex items-center">
                             <i class='bx bx-calendar-exclamation mr-1'></i>
                             Expira: {{ new Date(jobOffer.deadline).toLocaleDateString() }}
                         </div>
@@ -228,36 +228,36 @@ const isApplyDisabled = computed(() => {
 
                     <!-- Job Details -->
                     <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm mt-3">
-                        <div class="flex items-center text-gray-600">
-                            <i class='bx bx-map-pin mr-1 text-[#193CB8]'></i>
+                        <div class="flex items-center text-gray-600 dark:text-gray-400">
+                            <i class='bx bx-map-pin mr-1 text-[#4A90E2]'></i>
                             {{ jobOffer.location }}
                         </div>
-                        <div class="flex items-center text-gray-600">
-                            <i class='bx bx-time-five mr-1 text-[#193CB8]'></i>
+                        <div class="flex items-center text-gray-600 dark:text-gray-400">
+                            <i class='bx bx-time-five mr-1 text-[#4A90E2]'></i>
                             {{ getJobTypeLabel(jobOffer.work_mode) }}
                         </div>
-                        <div class="flex items-center text-gray-600">
-                            <i class='bx bx-money mr-1 text-[#193CB8]'></i>
+                        <div class="flex items-center text-gray-600 dark:text-gray-400">
+                            <i class='bx bx-money mr-1 text-[#4A90E2]'></i>
                             {{ formatSalaryRange(jobOffer.minimum_salary, jobOffer.maximum_salary) }}
                         </div>
-                        <div v-if="jobOffer.category" class="flex items-center text-gray-600">
+                        <div v-if="jobOffer.category" class="flex items-center text-gray-600 dark:text-gray-400">
                             <!-- Icono dinámico según la categoría -->
-                            <i :class="getIconClass(jobOffer.category)" class="mr-1 text-[#193CB8]"></i>
+                            <i :class="getIconClass(jobOffer.category)" class="mr-1 text-[#4A90E2]"></i>
                             <!-- Etiqueta dinámica según la categoría -->
                             {{ getCategoryLabel(jobOffer.category) }}
-                          </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Description -->
-            <div class="mt-4 text-gray-700" v-html="truncatedDescription " :style="{ fontSize: settings.font_size + 'px' }">
+            <div class="mt-4 text-gray-700 dark:text-gray-300" v-html="truncatedDescription" :style="{ fontSize: settings.font_size + 'px' }">
               
             </div>
 
             <!-- Stats & Engagement -->
-            <div class="flex flex-wrap items-center justify-between mt-4 pt-4 border-t border-gray-100">
-                <div class="flex items-center space-x-4 text-sm text-gray-500">
+            <div class="flex flex-wrap items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                     <div class="flex items-center">
                         <i class='bx bx-calendar mr-1'></i>
                         {{ getTimeAgo(jobOffer.created_at) }}
@@ -270,8 +270,8 @@ const isApplyDisabled = computed(() => {
                     <button @click="toggleSaveJob(jobOffer.id)" :class="[
                         'px-2 py-2 rounded-full flex cursor-pointer items-center justify-center transition-colors',
                         isSaved
-                            ? 'bg-[#193CB8]/20 text-[#193CB8]'
-                            : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                            ? 'bg-[#4A90E2]/20 text-[#4A90E2]'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     ]">
                         <i :class="[isSaved ? 'bx bxs-bookmark' : 'bx bx-bookmark']"></i>
                     </button>
@@ -282,7 +282,7 @@ const isApplyDisabled = computed(() => {
             <!-- Apply Button -->
             <div class="mt-4 flex">
                 <button @click="viewJobOffer(jobOffer.id)"
-                    class="flex-1 bg-white border cursor-pointer border-[#193CB8] text-[#193CB8] hover:bg-blue-100 font-medium py-2 rounded-l-lg hover:bg-[#193CB8]/5 transition-colors">
+                    class="flex-1 bg-white dark:bg-gray-800 border cursor-pointer border-[#4A90E2] text-[#4A90E2] hover:bg-blue-100 dark:hover:bg-[#4A90E2]/10 font-medium py-2 rounded-l-lg transition-colors">
                     Ver detalles
                 </button>
                 <button
@@ -291,8 +291,8 @@ const isApplyDisabled = computed(() => {
                   :class="[
                     'flex-1 font-medium py-2 rounded-r-lg transition-colors',
                     isApplyDisabled
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-[#193CB8] text-white hover:bg-[#142d8c] cursor-pointer'
+                      ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                      : 'bg-[#4A90E2] text-white hover:bg-[#357ABD] cursor-pointer'
                   ]"
                 >
                   Aplicar ahora

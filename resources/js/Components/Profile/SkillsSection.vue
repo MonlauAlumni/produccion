@@ -56,29 +56,29 @@ const cancelAddSkill = () => {
 
 <template>
   <section 
-    class="bg-white rounded-lg shadow-sm border border-gray-200 p-6" 
+    class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6" 
     aria-labelledby="skills-heading"
   >
     <!-- Encabezado -->
     <div class="flex items-center justify-between mb-4">
-      <h2 id="skills-heading" class="text-xl font-semibold">Habilidades</h2>
+      <h2 id="skills-heading" class="text-xl font-semibold text-gray-800 dark:text-gray-200">Habilidades</h2>
       <button 
         v-if="isSameUser && !isAddingSkill" 
         @click="isAddingSkill = true"
-        class="text-[#193CB8] hover:text-[#2748c6] transition-colors p-1.5 rounded-full hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:ring-offset-2"
+        class="text-[#193CB8] dark:text-blue-200 hover:text-[#2748c6] dark:hover:text-blue-300 transition-colors p-1.5 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:ring-offset-2"
         aria-label="Añadir habilidad"
       >
         <i class='bx bx-plus-circle text-xl' aria-hidden="true"></i>
       </button>
     </div>
-    <hr class="border-t border-[#193CB8] mb-4" />
+    <hr class="border-t border-[#193CB8] dark:border-blue-700 mb-4" />
     
     <!-- Formulario para añadir habilidad -->
     <div v-if="isAddingSkill && isSameUser" class="mb-4">
       <div class="space-y-3">
         <!-- Multiselect con etiqueta visible -->
         <div>
-          <label for="skill-select" class="block text-sm font-medium text-gray-700 mb-1">
+          <label for="skill-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Selecciona una habilidad
           </label>
           <Multiselect
@@ -99,7 +99,7 @@ const cancelAddSkill = () => {
         <div class="flex gap-2">
           <button 
             @click="addSkill" 
-            class="bg-[#193CB8] hover:bg-[#2748c6] text-white px-4 py-2 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex-1"
+            class="bg-[#193CB8] dark:bg-blue-900 hover:bg-[#2748c6] dark:hover:bg-blue-800 text-white px-4 py-2 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex-1"
             aria-label="Confirmar añadir habilidad"
             :disabled="!selectedSkill"
           >
@@ -110,7 +110,7 @@ const cancelAddSkill = () => {
           </button>
           <button 
             @click="cancelAddSkill" 
-            class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 flex-1"
+            class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 flex-1"
             aria-label="Cancelar añadir habilidad"
           >
             <span class="flex items-center justify-center gap-1">
@@ -132,7 +132,7 @@ const cancelAddSkill = () => {
       <div 
         v-for="skill in profileSkills" 
         :key="skill.id" 
-        class="group relative bg-blue-50 text-[#193CB8] px-3 py-1.5 rounded-md text-sm font-medium"
+        class="group relative bg-blue-50 dark:bg-blue-900 text-[#193CB8] dark:text-blue-200 px-3 py-1.5 rounded-md text-sm font-medium"
         role="listitem"
       >
         {{ skill.name }}
@@ -151,7 +151,7 @@ const cancelAddSkill = () => {
     <!-- Estado vacío -->
     <div 
       v-else 
-      class="bg-gray-50 p-4 rounded-md border border-dashed border-gray-300 text-gray-500 text-center"
+      class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md border border-dashed border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 text-center"
       role="status"
     >
       <i class='bx bx-code-block text-2xl mb-2' aria-hidden="true"></i>
@@ -159,7 +159,7 @@ const cancelAddSkill = () => {
       <button 
         v-if="isSameUser && !isAddingSkill"
         @click="isAddingSkill = true"
-        class="mt-2 text-[#193CB8] hover:underline font-medium focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:ring-offset-2"
+        class="mt-2 text-[#193CB8] dark:text-blue-200 hover:underline font-medium focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:ring-offset-2"
         aria-label="Añadir habilidades"
       >
         Añadir habilidades

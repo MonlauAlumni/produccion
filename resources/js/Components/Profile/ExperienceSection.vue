@@ -50,19 +50,19 @@
   
 <template>
   <div class="mb-6">
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
       <button @click="toggleExpand"
-        class="w-full flex justify-between items-center py-4 px-6 bg-white text-gray-800 transition-all duration-300 ease-in-out hover:bg-gray-50 cursor-pointer">
+        class="w-full flex justify-between items-center py-4 px-6 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 transition-all duration-300 ease-in-out hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
         <div class="flex items-center gap-3">
-          <i :class="['bx text-xl text-[#193CB8]', sectionIcon]"></i>
+          <i :class="['bx text-xl text-[#193CB8] dark:text-blue-200', sectionIcon]"></i>
           <h2 class="text-xl font-semibold">{{ title }}</h2>
-          <span v-if="items && items.length" class="bg-[#193CB8] text-white  text-xs rounded-full px-2 py-1">
+          <span v-if="items && items.length" class="bg-[#193CB8] dark:bg-blue-900 text-white text-xs rounded-full px-2 py-1">
             {{ items.length }}
           </span>
         </div>
         <div class="space-x-3 flex items-center">
           <button v-if="isSameUser" @click.stop="openCreateModal()" 
-            class="flex cursor-pointer items-center gap-1 text-[#193CB8] hover:text-[#2748c6] bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md transition-colors">
+            class="flex cursor-pointer items-center gap-1 text-[#193CB8] dark:text-blue-200 hover:text-[#2748c6] dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900 hover:bg-blue-100 dark:hover:bg-blue-800 px-3 py-1.5 rounded-md transition-colors">
             <i class="bx bx-plus"></i>
             <span class="text-sm font-medium">Añadir</span>
           </button>
@@ -79,37 +79,37 @@
         leave-to-class="max-h-0 opacity-0"
       >
         <div v-if="isExpanded" class="overflow-hidden">
-          <div v-if="items && items.length" class="divide-y divide-gray-100">
+          <div v-if="items && items.length" class="divide-y divide-gray-100 dark:divide-gray-700">
             <div v-for="(item, index) in items" :key="index"
-            :class="{'border-b border-gray-300': index !== items.length - 1}"
-            class="p-6 hover:bg-gray-50 transition-colors duration-200">
+              :class="{'border-b border-gray-300 dark:border-gray-700': index !== items.length - 1}"
+              class="p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
               <div class="flex flex-col md:flex-row md:items-start gap-4">
                 <!-- Icono o logo -->
-                <div class="hidden md:flex items-center justify-center w-12 h-12 bg-blue-50 rounded-lg text-[#193CB8]">
+                <div class="hidden md:flex items-center justify-center w-12 h-12 bg-blue-50 dark:bg-blue-900 rounded-lg text-[#193CB8] dark:text-blue-200">
                   <i :class="['bx text-2xl', type === 'work' ? 'bx-building' : 'bx-book-open']"></i>
                 </div>
                 
                 <div class="flex-1">
                   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                    <h3 class="font-semibold text-lg text-[#193CB8]">
+                    <h3 class="font-semibold text-lg text-[#193CB8] dark:text-blue-200">
                       {{ item.position || item.degree }}
                     </h3>
-                    <div class="flex items-center gap-2 text-sm text-gray-500">
+                    <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                       <i class='bx bx-calendar'></i>
                       <span>{{ item.start_date }} - {{ item.end_date || 'Actualidad' }}</span>
                     </div>
                   </div>
                   
-                  <h4 class="text-md text-gray-700 font-medium mt-1">
+                  <h4 class="text-md text-gray-700 dark:text-gray-300 font-medium mt-1">
                     {{ item.company_name || item.institution || item.school_name }}
                   </h4>
                   
-                  <p v-if="item.location" class="text-sm text-gray-500 mt-1">
+                  <p v-if="item.location" class="text-sm text-gray-500 dark:text-gray-400 mt-1">
                     <i class='bx bx-map-pin mr-1'></i>
                     {{ item.location }}
                   </p>
                   
-                  <p v-if="item.description" class="mt-3 text-gray-600">
+                  <p v-if="item.description" class="mt-3 text-gray-600 dark:text-gray-400">
                     {{ item.description }}
                   </p>
                   
@@ -117,12 +117,12 @@
                   <div v-if="isSameUser" class="mt-4 flex items-center gap-2">
                     <button 
                       @click="openEditModal(item)"
-                      class="text-gray-500 cursor-pointer hover:text-[#193CB8] transition-colors">
+                      class="text-gray-500 dark:text-gray-400 cursor-pointer hover:text-[#193CB8] dark:hover:text-blue-200 transition-colors">
                       <i class='bx bx-pencil text-blue-500'></i>
                     </button>
                     <button 
                       @click="openDeleteModal(item)"
-                      class="text-gray-500 cursor-pointer hover:text-red-500 transition-colors">
+                      class="text-gray-500 dark:text-gray-400 cursor-pointer hover:text-red-500 transition-colors">
                       <i class='bx bx-trash text-red-500'></i>
                     </button>
                   </div>
@@ -133,13 +133,13 @@
           
           <!-- Empty state -->
           <div v-else class="p-8 text-center">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 mb-4">
-              <i :class="['bx text-3xl text-[#193CB8]', sectionIcon]"></i>
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 dark:bg-blue-900 mb-4">
+              <i :class="['bx text-3xl text-[#193CB8] dark:text-blue-200', sectionIcon]"></i>
             </div>
-            <h3 class="text-lg font-medium text-gray-800 mb-2">
+            <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">
               {{ type === 'work' ? 'No hay experiencia laboral' : 'No hay formación académica' }}
             </h3>
-            <p class="text-gray-500 max-w-md mx-auto">
+            <p class="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
               {{ isSameUser 
                 ? (type === 'work' 
                   ? 'Añade tu experiencia laboral para mostrar tu trayectoria profesional.' 
@@ -150,7 +150,7 @@
               }}
             </p>
             <button v-if="isSameUser" @click="openCreateModal()"
-              class="mt-4 inline-flex items-center cursor-pointer gap-2 bg-[#193CB8] hover:bg-[#2748c6] text-white px-4 py-2 rounded-md transition-colors">
+              class="mt-4 inline-flex items-center cursor-pointer gap-2 bg-[#193CB8] dark:bg-blue-900 hover:bg-[#2748c6] dark:hover:bg-blue-800 text-white px-4 py-2 rounded-md transition-colors">
               <i class='bx bx-plus'></i>
               <span>Añadir {{ type === 'work' ? 'experiencia' : 'formación' }}</span>
             </button>
