@@ -181,13 +181,13 @@
     <!-- Overlay del modal con animación de fade -->
     <transition name="fade">
       <div v-if="isOpen" 
-           class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto"
+           class="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto"
            @click="closeModal">
         
         <!-- Contenido del modal con animación de slide -->
         <transition name="slide-up">
           <div v-if="isOpen" 
-               class="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+               class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col"
                @click.stop>
             
             <!-- Cabecera del modal con diseño mejorado -->
@@ -213,15 +213,15 @@
             </div>
             
             <!-- Navegación por pestañas -->
-            <div class="bg-gray-50 border-b border-gray-200">
+            <div class="bg-blue-100 dark:bg-blue-800 border-b border-blue-200 dark:border-blue-600">
               <div class="flex overflow-x-auto justify-between hide-scrollbar">
                 <button 
                   @click="activeTab = 'personal'" 
                   :class="[
                     'px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2',
                     activeTab === 'personal' 
-                      ? 'border-[#193CB8] text-[#193CB8]' 
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                      ? 'border-blue-400 text-blue-700 dark:text-blue-200' 
+                      : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-300 hover:border-blue-200'
                   ]"
                 >
                   <i class='bx bx-user mr-1'></i>
@@ -233,8 +233,8 @@
                   :class="[
                     'px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2',
                     activeTab === 'academic' 
-                      ? 'border-[#193CB8] text-[#193CB8]' 
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                      ? 'border-blue-400 text-blue-700 dark:text-blue-200' 
+                      : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-blue-600 hover:border-blue-200 dark:hover:text-blue-300 '
                   ]"
                 >
                   <i class='bx bxs-graduation mr-1'></i>
@@ -246,8 +246,8 @@
                   :class="[
                     'px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2',
                     activeTab === 'contact' 
-                      ? 'border-[#193CB8] text-[#193CB8]' 
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                      ? 'border-blue-400 text-blue-700 dark:text-blue-200' 
+                      : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-blue-600 hover:border-blue-200 dark:hover:text-blue-300 '
                   ]"
                 >
                   <i class='bx bx-envelope mr-1'></i>
@@ -259,8 +259,8 @@
                   :class="[
                     'px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2',
                     activeTab === 'social' 
-                      ? 'border-[#193CB8] text-[#193CB8]' 
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                      ? 'border-blue-400 text-blue-700 dark:text-blue-200' 
+                      : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-blue-600 hover:border-blue-200 dark:hover:text-blue-300 '
                   ]"
                 >
                   <i class='bx bx-link mr-1'></i>
@@ -271,24 +271,24 @@
             
             <!-- Mensajes de éxito o error -->
             <transition name="fade">
-              <div v-if="successMessage" class="absolute top-16 inset-x-0 bg-green-100 border-b border-green-400 text-green-700 px-4 py-3 flex items-center justify-between">
+              <div v-if="successMessage" class="absolute top-16 inset-x-0 bg-green-100 dark:bg-green-900 border-b border-green-400 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 flex items-center justify-between">
                 <span class="flex items-center">
                   <i class='bx bx-check-circle mr-2 text-xl'></i>
                   {{ successMessage }}
                 </span>
-                <button @click="successMessage = ''" class="text-green-700">
+                <button @click="successMessage = ''" class="text-green-700 dark:text-green-300">
                   <i class='bx bx-x'></i>
                 </button>
               </div>
             </transition>
             
             <transition name="fade">
-              <div v-if="errorMessage" class="absolute top-16 inset-x-0 bg-red-100 border-b border-red-400 text-red-700 px-4 py-3 flex items-center justify-between">
+              <div v-if="errorMessage" class="absolute top-16 inset-x-0 bg-red-100 dark:bg-red-900 border-b border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 flex items-center justify-between">
                 <span class="flex items-center">
                   <i class='bx bx-error-circle mr-2 text-xl'></i>
                   {{ errorMessage }}
                 </span>
-                <button @click="errorMessage = ''" class="text-red-700">
+                <button @click="errorMessage = ''" class="text-red-700 dark:text-red-300">
                   <i class='bx bx-x'></i>
                 </button>
               </div>
@@ -302,86 +302,86 @@
                 <div v-show="activeTab === 'personal'">
                   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="group">
-                      <label class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-[#193CB8]">
+                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 group-focus-within:text-[#193CB8]">
                         Nombre <span class="text-red-500">*</span>
                       </label>
                       <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#193CB8]">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 dark:text-gray-500 group-focus-within:text-[#193CB8]">
                           <i class='bx bx-user'></i>
                         </div>
                         <input 
                           v-model="form.name" 
                           type="text" 
-                          class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] transition-all"
+                          class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 transition-all"
                           required
                         />
                       </div>
                     </div>
                     
                     <div class="group">
-                      <label class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-[#193CB8]">
+                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 group-focus-within:text-[#193CB8]">
                         Primer Apellido <span class="text-red-500">*</span>
                       </label>
                       <input 
                         v-model="form.last_name_1" 
                         type="text" 
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] transition-all"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 transition-all"
                         required
                       />
                     </div>
                     
                     <div class="group">
-                      <label class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-[#193CB8]">
+                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 group-focus-within:text-[#193CB8]">
                         Segundo Apellido
                       </label>
                       <input 
                         v-model="form.last_name_2" 
                         type="text" 
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] transition-all"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 transition-all"
                       />
                     </div>
                   </div>
                   
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div class="group">
-                      <label class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-[#193CB8]">
+                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 group-focus-within:text-[#193CB8]">
                         Título Profesional
                       </label>
                       <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#193CB8]">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 dark:text-gray-500 group-focus-within:text-[#193CB8]">
                           <i class='bx bx-briefcase'></i>
                         </div>
                         <input 
                           v-model="form.job_title" 
                           type="text" 
                           placeholder="Ej: Desarrollador Web, Estudiante de DAW..."
-                          class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] transition-all"
+                          class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 transition-all"
                         />
                       </div>
                     </div>
                     
                     <div class="group">
-                      <label class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-[#193CB8]">
+                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 group-focus-within:text-[#193CB8]">
                         Ubicación
                       </label>
                       <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#193CB8]">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 dark:text-gray-500 group-focus-within:text-[#193CB8]">
                           <i class='bx bx-map-pin'></i>
                         </div>
                         <input 
                           v-model="form.location" 
                           type="text" 
                           placeholder="Ej: Madrid, España"
-                          class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] transition-all"
+                          class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 transition-all"
                         />
                       </div>
                     </div>
                   </div>
                   
                   <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">CV</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">CV</label>
                     <div class="relative">
-                      <label class="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#193CB8] transition-colors bg-gray-50 hover:bg-blue-50/50">
+                      <label class="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:border-[#193CB8] transition-colors bg-gray-50 hover:bg-blue-50/50">
                         <div class="flex items-center gap-2 text-gray-600 hover:text-[#193CB8]">
                           <i class='bx bx-upload text-xl'></i>
                           <span>{{ fileName }}</span>
@@ -392,12 +392,12 @@
                   </div>
                   
                   <div class="mt-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Sobre mí</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sobre mí</label>
                     <div class="relative">
                       <textarea 
                         v-model="form.description" 
                         rows="5" 
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] transition-all"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 transition-all"
                         placeholder="Describe tu perfil profesional, intereses y objetivos..."
                       ></textarea>
                       <div class="absolute bottom-2 right-2 text-xs text-gray-400">
@@ -407,14 +407,14 @@
                   </div>
                   
                   <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Disponibilidad</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Disponibilidad</label>
                     <div class="relative">
                       <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                         <i class='bx bx-time'></i>
                       </div>
                       <select 
                         v-model="form.availability" 
-                        class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] transition-all appearance-none bg-no-repeat bg-[right_0.5rem_center]"
+                        class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 transition-all appearance-none bg-no-repeat bg-[right_0.5rem_center]"
                         style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e'); background-size: 1em;"
                       >
                         <option v-for="option in availabilityOptions" :key="option" :value="option">
@@ -427,25 +427,25 @@
                 
                 <!-- Formación académica -->
                 <div v-show="activeTab === 'academic'">
-                  <div class="bg-blue-50 rounded-lg p-4 mb-6 border border-blue-100 flex items-start gap-3">
-                    <i class='bx bx-info-circle text-[#193CB8] text-xl mt-0.5'></i>
-                    <p class="text-sm text-gray-700">
+                  <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-4 mb-6 border border-blue-100 dark:border-blue-700 flex items-start gap-3">
+                    <i class='bx bx-info-circle text-[#193CB8] dark:text-blue-200 text-xl mt-0.5'></i>
+                    <p class="text-sm text-gray-700 dark:text-gray-300">
                       La información académica que proporciones será visible en tu perfil y ayudará a las empresas a conocer tu formación.
                     </p>
                   </div>
                   
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="group">
-                      <label class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-[#193CB8]">
+                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 group-focus-within:text-[#193CB8]">
                         Grado/Curso
                       </label>
                       <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#193CB8]">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 dark:text-gray-500 group-focus-within:text-[#193CB8]">
                           <i class='bx bx-book'></i>
                         </div>
                         <select 
                           v-model="form.degree" 
-                          class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] transition-all appearance-none bg-no-repeat bg-[right_0.5rem_center]"
+                          class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 transition-all appearance-none bg-no-repeat bg-[right_0.5rem_center]"
                           style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e'); background-size: 1em;"
                         >
                           <option value="" disabled>Seleccionar grado</option>
@@ -457,16 +457,16 @@
                     </div>
                     
                     <div class="group">
-                      <label class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-[#193CB8]">
+                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 group-focus-within:text-[#193CB8]">
                         Año de Graduación
                       </label>
                       <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#193CB8]">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 dark:text-gray-500 group-focus-within:text-[#193CB8]">
                           <i class='bx bx-calendar'></i>
                         </div>
                         <select 
                           v-model="form.graduation_year" 
-                          class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] transition-all appearance-none bg-no-repeat bg-[right_0.5rem_center]"
+                          class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 transition-all appearance-none bg-no-repeat bg-[right_0.5rem_center]"
                           style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e'); background-size: 1em;"
                         >
                           <option value="" disabled>Seleccionar año</option>
@@ -483,33 +483,33 @@
                 <div v-show="activeTab === 'contact'">
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="group">
-                      <label class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-[#193CB8]">
+                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 group-focus-within:text-[#193CB8]">
                         Email
                       </label>
                       <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#193CB8]">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 dark:text-gray-500 group-focus-within:text-[#193CB8]">
                           <i class='bx bx-envelope'></i>
                         </div>
                         <input 
                           v-model="form.email" 
                           type="email" 
-                          class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] transition-all"
+                          class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 transition-all"
                         />
                       </div>
                     </div>
                     
                     <div class="group">
-                      <label class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-[#193CB8]">
+                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 group-focus-within:text-[#193CB8]">
                         Teléfono
                       </label>
                       <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#193CB8]">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 dark:text-gray-500 group-focus-within:text-[#193CB8]">
                           <i class='bx bx-phone'></i>
                         </div>
                         <input 
                           v-model="form.phone" 
                           type="tel" 
-                          class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] transition-all"
+                          class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 transition-all"
                         />
                       </div>
                     </div>
@@ -520,16 +520,16 @@
                 
                 <!-- Redes sociales -->
                 <div v-show="activeTab === 'social'">
-                  <div class="bg-blue-50 rounded-lg p-4 mb-6 border border-blue-100 flex items-start gap-3">
-                    <i class='bx bx-info-circle text-[#193CB8] text-xl mt-0.5'></i>
-                    <p class="text-sm text-gray-700">
+                  <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-4 mb-6 border border-blue-100 dark:border-blue-700 flex items-start gap-3">
+                    <i class='bx bx-info-circle text-[#193CB8] dark:text-blue-200 text-xl mt-0.5'></i>
+                    <p class="text-sm text-gray-700 dark:text-gray-300">
                       Añade tus perfiles profesionales para que las empresas puedan conocer más sobre tu trabajo y proyectos.
                     </p>
                   </div>
                   
                   <div class="space-y-4">
                     <div class="group">
-                      <label class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-[#193CB8]">
+                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 group-focus-within:text-[#193CB8]">
                         LinkedIn
                       </label>
                       <div class="flex items-center gap-3">
@@ -540,13 +540,13 @@
                           v-model="form.linkedin" 
                           type="url" 
                           placeholder="https://linkedin.com/in/tu-perfil" 
-                          class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] transition-all"
+                          class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 transition-all"
                         />
                       </div>
                     </div>
                     
                     <div class="group">
-                      <label class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-[#193CB8]">
+                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 group-focus-within:text-[#193CB8]">
                         GitHub
                       </label>
                       <div class="flex items-center gap-3">
@@ -557,13 +557,13 @@
                           v-model="form.github" 
                           type="url" 
                           placeholder="https://github.com/tu-usuario" 
-                          class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] transition-all"
+                          class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 transition-all"
                         />
                       </div>
                     </div>
                     
                     <div class="group">
-                      <label class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-[#193CB8]">
+                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 group-focus-within:text-[#193CB8]">
                         Sitio Web Personal
                       </label>
                       <div class="flex items-center gap-3">
@@ -574,7 +574,7 @@
                           v-model="form.website" 
                           type="url" 
                           placeholder="https://tu-sitio-web.com" 
-                          class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] transition-all"
+                          class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 transition-all"
                         />
                       </div>
                     </div>
@@ -584,9 +584,9 @@
             </div>
             
             <!-- Pie del modal con botones de acción -->
-            <div class="bg-gray-50 p-6 border-t border-gray-200">
+            <div class="bg-gray-50 dark:bg-gray-700 p-6 border-t border-gray-200 dark:border-gray-600">
               <div class="flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-3">
-                <div class="flex items-center text-sm text-gray-500">
+                <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
                   <i class='bx bx-info-circle mr-1'></i>
                   <span>Los campos marcados con <span class="text-red-500">*</span> son obligatorios</span>
                 </div>
@@ -594,7 +594,7 @@
                 <div class="flex justify-end gap-3">
                   <button 
                     @click="closeModal" 
-                    class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-1"
+                    class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex items-center gap-1"
                   >
                     <i class='bx bx-x'></i>
                     Cancelar
@@ -604,7 +604,7 @@
                     :disabled="!isFormValid || isLoading" 
                     :class="[
                       'px-4 py-2 rounded-lg text-white transition-colors flex items-center gap-2',
-                      isFormValid && !isLoading ? 'bg-[#193CB8] hover:bg-[#2748c6]' : 'bg-gray-400 cursor-not-allowed'
+                      isFormValid && !isLoading ? 'bg-[#193CB8] hover:bg-[#2748c6]' : 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed'
                     ]"
                   >
                     <i v-if="isLoading" class='bx bx-loader-alt animate-spin'></i>

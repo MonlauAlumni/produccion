@@ -254,14 +254,14 @@
   
   <template>
     <Layout>
-      <div class="min-h-screen bg-gray-50 flex flex-col">
+      <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
         <!-- Header Section -->
-        <div class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] text-white py-8">
+        <div class="bg-gradient-to-r bg-[#193CB8] dark:bg-[#142d8c] text-white py-8">
           <div class="max-w-6xl mx-auto px-4">
             <div class="flex flex-col items-start">
               <h1 class="text-3xl font-bold mb-2">Mis Ofertas</h1>
               <p class="text-blue-100 mb-6">Gestiona tus solicitudes y ofertas guardadas</p>
-              
+
               <!-- Tabs -->
               <div class="flex space-x-2 bg-white/10 backdrop-blur-sm p-1 rounded-lg border border-white/20">
                 <button 
@@ -292,19 +292,19 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Main Content -->
         <div class="flex-1 py-6">
           <div class="max-w-6xl mx-auto px-4">
             <div class="flex flex-col md:flex-row gap-6">
               <!-- Sidebar (Status Filters) -->
               <div v-if="activeTab === 'applied'" class="md:w-64 shrink-0">
-                <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-200 sticky top-20">
-                  <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
-                    <i class='bx bx-filter mr-2 text-[#193CB8]'></i>
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-200 dark:border-gray-700 sticky top-20">
+                  <h2 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3 flex items-center">
+                    <i class='bx bx-filter mr-2 text-[#193CB8] dark:text-blue-200'></i>
                     Estado
                   </h2>
-                  
+
                   <div class="space-y-2">
                     <button 
                       v-for="filter in statusFilters" 
@@ -313,42 +313,42 @@
                       :class="[
                         'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
                         activeStatusFilter === filter.id
-                          ? 'bg-[#193CB8]/10 text-[#193CB8]'
-                          : 'hover:bg-gray-100 text-gray-700'
+                          ? 'bg-[#193CB8]/10 dark:bg-blue-900 text-[#193CB8] dark:text-blue-200'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
                       ]"
                     >
                       <i :class="['bx mr-2', filter.icon]"></i>
                       {{ filter.name }}
                     </button>
                   </div>
-                  
-                  <div class="border-t border-gray-200 my-4"></div>
-                  
-                  <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-[#193CB8]">
-                    <h3 class="font-semibold text-[#193CB8] mb-2">Consejo</h3>
-                    <p class="text-sm text-gray-700">Mantén actualizado tu perfil para aumentar tus posibilidades de ser seleccionado.</p>
+
+                  <div class="border-t border-gray-200 dark:border-gray-700 my-4"></div>
+
+                  <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg border-l-4 border-[#193CB8] dark:border-blue-200">
+                    <h3 class="font-semibold text-[#193CB8] dark:text-blue-200 mb-2">Consejo</h3>
+                    <p class="text-sm text-gray-700 dark:text-gray-300">Mantén actualizado tu perfil para aumentar tus posibilidades de ser seleccionado.</p>
                   </div>
                 </div>
               </div>
-              
+
               <!-- Main Feed -->
               <div class="flex-1">
                 <!-- Applied Jobs Tab -->
                 <div v-if="activeTab === 'applied'" class="space-y-6">
-                  <div v-if="appliedJobsList.length === 0 && !isLoadingApplied" class="bg-white rounded-lg shadow-sm p-8 text-center">
-                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <i class='bx bx-briefcase text-3xl text-[#193CB8]'></i>
+                  <div v-if="appliedJobsList.length === 0 && !isLoadingApplied" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8 text-center">
+                    <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <i class='bx bx-briefcase text-3xl text-[#193CB8] dark:text-blue-200'></i>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-800 mb-2">No has aplicado a ninguna oferta</h3>
-                    <p class="text-gray-500 mb-4">Explora las ofertas disponibles y aplica a las que más te interesen</p>
+                    <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">No has aplicado a ninguna oferta</h3>
+                    <p class="text-gray-500 dark:text-gray-400 mb-4">Explora las ofertas disponibles y aplica a las que más te interesen</p>
                     <button 
                       @click="router.get('/ofertas')"
-                      class="bg-[#193CB8] text-white px-4 py-2 rounded-lg cursor-pointer font-medium hover:bg-[#142d8c] transition-colors"
+                      class="bg-[#193CB8] dark:bg-blue-200 text-white dark:text-gray-900 px-4 py-2 rounded-lg cursor-pointer font-medium hover:bg-[#142d8c] dark:hover:bg-blue-300 transition-colors"
                     >
                       Ver ofertas disponibles
                     </button>
                   </div>
-                  
+
                   <!-- Usando el nuevo componente MyJobCard para aplicaciones -->
                   <div v-for="application in appliedJobsList" :key="application.id" class="job-card">
                     <MyJobCard 
@@ -362,38 +362,38 @@
                       @cancel="cancelApplication"
                     />
                   </div>
-                  
+
                   <!-- Loading Indicator -->
                   <div v-if="isLoadingApplied" class="flex justify-center py-4">
                     <div class="animate-pulse flex space-x-2">
-                      <div class="w-2 h-2 bg-[#193CB8] rounded-full"></div>
-                      <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-200"></div>
-                      <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-400"></div>
+                      <div class="w-2 h-2 bg-[#193CB8] dark:bg-blue-200 rounded-full"></div>
+                      <div class="w-2 h-2 bg-[#193CB8] dark:bg-blue-200 rounded-full animation-delay-200"></div>
+                      <div class="w-2 h-2 bg-[#193CB8] dark:bg-blue-200 rounded-full animation-delay-400"></div>
                     </div>
                   </div>
-                  
+
                   <!-- End of Results -->
                   <div v-if="appliedPagination.currentPage >= appliedPagination.lastPage && !isLoadingApplied && appliedJobsList.length > 0" class="text-center py-6">
-                    <p class="text-gray-500">No hay más solicitudes para mostrar</p>
+                    <p class="text-gray-500 dark:text-gray-400">No hay más solicitudes para mostrar</p>
                   </div>
                 </div>
-                
+
                 <!-- Saved Jobs Tab -->
                 <div v-if="activeTab === 'saved'" class="space-y-6">
-                  <div v-if="savedJobsList.length === 0 && !isLoadingSaved" class="bg-white rounded-lg shadow-sm p-8 text-center">
-                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <i class='bx bx-bookmark text-3xl text-[#193CB8]'></i>
+                  <div v-if="savedJobsList.length === 0 && !isLoadingSaved" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8 text-center">
+                    <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <i class='bx bx-bookmark text-3xl text-[#193CB8] dark:text-blue-200'></i>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-800 mb-2">No tienes ofertas guardadas</h3>
-                    <p class="text-gray-500 mb-4">Guarda las ofertas que te interesen para revisarlas más tarde</p>
+                    <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">No tienes ofertas guardadas</h3>
+                    <p class="text-gray-500 dark:text-gray-400 mb-4">Guarda las ofertas que te interesen para revisarlas más tarde</p>
                     <button 
                       @click="router.get('/ofertas')"
-                      class="bg-[#193CB8] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#142d8c] transition-colors"
+                      class="bg-[#193CB8] dark:bg-blue-200 text-white dark:text-gray-900 px-4 py-2 rounded-lg font-medium hover:bg-[#142d8c] dark:hover:bg-blue-300 transition-colors"
                     >
                       Ver ofertas disponibles
                     </button>
                   </div>
-                  
+
                   <div v-for="job in savedJobsList" :key="job.id" class="job-card">
                     <JobCard 
                       :jobOffer="job"
@@ -404,31 +404,31 @@
                       @share="shareJob"
                     />
                   </div>
-                  
+
                   <!-- Loading Indicator -->
                   <div v-if="isLoadingSaved" class="flex justify-center py-4">
                     <div class="animate-pulse flex space-x-2">
-                      <div class="w-2 h-2 bg-[#193CB8] rounded-full"></div>
-                      <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-200"></div>
-                      <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-400"></div>
+                      <div class="w-2 h-2 bg-[#193CB8] dark:bg-blue-200 rounded-full"></div>
+                      <div class="w-2 h-2 bg-[#193CB8] dark:bg-blue-200 rounded-full animation-delay-200"></div>
+                      <div class="w-2 h-2 bg-[#193CB8] dark:bg-blue-200 rounded-full animation-delay-400"></div>
                     </div>
                   </div>
-                  
+
                   <!-- End of Results -->
                   <div v-if="savedPagination.currentPage >= savedPagination.lastPage && !isLoadingSaved && savedJobsList.length > 0" class="text-center py-6">
-                    <p class="text-gray-500">No hay más ofertas guardadas para mostrar</p>
+                    <p class="text-gray-500 dark:text-gray-400">No hay más ofertas guardadas para mostrar</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        
+
         <!-- Scroll to Top Button -->
         <button 
           v-show="showScrollTopButton" 
           @click="scrollToTop"
-          class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#193CB8] text-white shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300 z-50 animate-fade-in"
+          class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#193CB8] dark:bg-blue-200 text-white dark:text-gray-900 shadow-lg flex items-center justify-center hover:bg-[#142d8c] dark:hover:bg-blue-300 transition-all duration-300 z-50 animate-fade-in"
         >
           <i class='bx bx-chevron-up text-xl'></i>
         </button>
