@@ -51,7 +51,7 @@ class AdminController extends Controller
                 $usersByArea = User::selectRaw('training_area, COUNT(*) as total')
                     ->groupBy('training_area')
                     ->pluck('total', 'training_area');
-                $query = User::select(['id', 'name', 'last_name_1', 'last_name_2', 'email', 'training_area'])
+                $query = User::select(['id', 'name', 'last_name_1', 'last_name_2', 'email', 'training_area', 'status'])
                     ->when($request->filled('id'), function ($query) use ($request) {
                         $query->where('id', $request->id);
                     })

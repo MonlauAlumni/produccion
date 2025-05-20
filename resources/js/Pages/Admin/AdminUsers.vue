@@ -91,6 +91,11 @@ const modalDeleteUser = ref(false);
 const modalBlockUser = ref(false);
 const selectedUserId = ref(null);
 
+// Computed: usuario seleccionado
+const selectedUser = computed(() => {
+    return page.props.users.find(u => u.id === selectedUserId.value) || {};
+});
+
 // Function to open delete modal and set the selected user
 function confirmDelete(userId) {
     selectedUserId.value = userId;
@@ -122,14 +127,17 @@ function blockUser() {
     const user = page.props.users.find(u => u.id === selectedUserId.value);
     const isBlocked = user && user.status === 'blocked';
     const newStatus = isBlocked ? 'online' : 'blocked';
-    axios.put(`/admin/user/${selectedUserId.value}`, { status: newStatus })
-        .then(response => {
+    router.put(`/admin/user/${selectedUserId.value}`, { status: newStatus }, {
+        preserveState: true,
+        preserveScroll: true,
+        onSuccess: () => {
             modalBlockUser.value = false;
             searchUsers();
-        })
-        .catch(error => {
+        },
+        onError: () => {
             modalBlockUser.value = false;
-        });
+        }
+    });
 }
 </script>
 
@@ -329,7 +337,7 @@ function blockUser() {
                                     </svg>
                                 </button>
                                 <button
-                                    v-if="user.status === 'blocked'"
+                                    v-if="String(user.status).trim().toLowerCase() === 'blocked'"
                                     class="p-1.5 rounded-lg hover:bg-green-50 transition-colors duration-150"
                                     @click="confirmBlock(user.id)"
                                     title="Desbloquear"
@@ -338,10 +346,9 @@ function blockUser() {
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2l4 -4" />
                                         <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none" />
                                     </svg>
-                                    <span class="ml-1 text-xs text-green-700 font-semibold">Desbloquear</span>
                                 </button>
                                 <button
-                                    v-if="user.status !== 'blocked'"
+                                    v-else
                                     class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-150"
                                     @click="confirmBlock(user.id)"
                                     title="Bloquear"
@@ -349,7 +356,6 @@ function blockUser() {
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                                     </svg>
-                                    <span class="ml-1 text-xs text-gray-700 font-semibold">Bloquear</span>
                                 </button>
                             </div>
                         </td>
@@ -400,10 +406,15 @@ function blockUser() {
             confirmButtonClass="bg-red-600 text-white hover:bg-red-700" @close="modalDeleteUser = false"
             @confirm="deleteUser" />
 
-        <BaseModal :show="modalBlockUser" title="Bloquear Usuario"
+        <BaseModal v-if="String(selectedUser.status).trim().toLowerCase() !== 'blocked'" :show="modalBlockUser" title="Bloquear Usuario"
             message="¿Estás seguro de que deseas bloquear este usuario? Podrá ser desbloqueado más tarde." icon="block"
             iconColor="#6b7280" iconBgClass="bg-gray-300" confirmText="Bloquear"
             confirmButtonClass="bg-gray-600 text-white hover:bg-gray-700" @close="modalBlockUser = false"
+            @confirm="blockUser" />
+        <BaseModal v-else :show="modalBlockUser" title="Desbloquear Usuario"
+            message="¿Estás seguro de que deseas desbloquear este usuario? Podrá ser bloqueado más tarde." icon="check"
+            iconColor="#4ade80" iconBgClass="bg-green-100" confirmText="Desbloquear"
+            confirmButtonClass="bg-green-600 text-white hover:bg-green-700" @close="modalBlockUser = false"
             @confirm="blockUser" />
     </AdminLayout>
 </template>
@@ -416,6 +427,7 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 input[type="number"] {
+    appearance: textfield;
     -moz-appearance: textfield;
 }
 </style>
