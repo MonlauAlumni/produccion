@@ -72,6 +72,11 @@ const selectedSkill = ref(null)
 const activeTab = ref('basic')
 const isSubmitting = ref(false)
 
+const showDeleteConfirmation = ref(false)
+const deleteCountdown = ref(5)
+const isDeleting = ref(false)
+const countdownInterval = ref(null)
+
 // Computed list of skills filtered by selected category
 const filteredSkills = computed(() => {
   if (!form.value.category) {
@@ -130,6 +135,40 @@ const removeSkill = (skillToRemove) => {
   })
 }
 
+const openDeleteConfirmation = () => {
+  showDeleteConfirmation.value = true
+  deleteCountdown.value = 5
+  countdownInterval.value = setInterval(() => {
+    deleteCountdown.value -= 1
+    if (deleteCountdown.value <= 0) {
+      clearInterval(countdownInterval.value)
+    }
+  }, 1000)
+}
+
+const closeDeleteConfirmation = () => {
+  showDeleteConfirmation.value = false
+  clearInterval(countdownInterval.value)
+}
+
+const deleteJobOffer = () => {
+  if (deleteCountdown.value > 0 || isDeleting.value) return
+  
+  isDeleting.value = true
+  
+  router.delete(`/ofertas/${props.jobOffer.id}`, {
+    onSuccess: () => {
+      closeModal()
+      // Redirect to home page or job offers list
+      router.visit('/home')
+    },
+    onError: (errors) => {
+      console.error('Error al eliminar la oferta:', errors)
+      isDeleting.value = false
+    }
+  })
+}
+
 const closeModal = () => {
   emit('close')
 }
@@ -156,7 +195,7 @@ const submit = () => {
   <div v-if="isOpen" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
       <!-- Background overlay -->
-      <div class="fixed inset-0 bg-gray-500/75 dark:bg-black/75  backdrop-blur-sm transition-opacity" aria-hidden="true" @click="closeModal"></div>
+      <div class="fixed inset-0 bg-gray-500/75 dark:bg-black dark:bg-black/75 backdrop-blur-sm transition-opacity" aria-hidden="true" @click="closeModal"></div>
 
       <!-- Modal panel -->
       <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
@@ -481,7 +520,7 @@ const submit = () => {
                       class="bg-blue-50 dark:bg-blue-900 text-[#193CB8] dark:text-blue-200 px-3 py-1.5 rounded-md text-sm font-medium group relative border border-[#193CB8]/10 dark:border-blue-700">
                       {{ skill.name }}
                       <button type="button" @click="removeSkill(skill)"
-                        class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                        class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center opacity-0  focus:opacity-100 transition-opacity"
                         :aria-label="`Eliminar habilidad ${skill.name}`" tabindex="0">
                         <i class='bx bx-x text-xs' aria-hidden="true"></i>
                       </button>
@@ -565,24 +604,112 @@ const submit = () => {
               </div>
             </div>
 
-            <div class="mt-6 flex justify-end gap-3">
+            <div class="mt-6 flex justify-between gap-3">
               <button 
                 type="button" 
-                @click="closeModal"
-                class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+                @click="openDeleteConfirmation"
+                class="px-4 py-2 bg-red-600 dark:bg-red-700 text-white rounded-lg hover:bg-red-700 dark:hover:bg-red-800 transition-colors flex items-center"
               >
-                Cancelar
+                <i class='bx bx-trash mr-2'></i>
+                <span>Eliminar Oferta</span>
               </button>
-              <button 
-                type="submit"
-                class="px-4 py-2 bg-[#193CB8] dark:bg-blue-700 text-white rounded-lg hover:bg-[#142d8c] dark:hover:bg-blue-800 flex items-center transition-colors"
-                :disabled="isSubmitting"
-              >
-                <i v-if="isSubmitting" class='bx bx-loader-alt animate-spin mr-2'></i>
-                <span>{{ isSubmitting ? 'Guardando...' : 'Guardar Cambios' }}</span>
-              </button>
+              
+              <div class="flex gap-3">
+                <button 
+                  type="button" 
+                  @click="closeModal"
+                  class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit"
+                  class="px-4 py-2 bg-[#193CB8] dark:bg-blue-700 text-white rounded-lg hover:bg-[#142d8c] dark:hover:bg-blue-800 flex items-center transition-colors"
+                  :disabled="isSubmitting"
+                >
+                  <i v-if="isSubmitting" class='bx bx-loader-alt animate-spin mr-2'></i>
+                  <span>{{ isSubmitting ? 'Guardando...' : 'Guardar Cambios' }}</span>
+                </button>
+              </div>
             </div>
           </form>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div v-if="showDeleteConfirmation" class="fixed inset-0 z-[60] overflow-y-auto" aria-labelledby="delete-modal-title" role="dialog" aria-modal="true">
+          <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-gray-600/75 dark:bg-gray-800/75 transition-opacity" aria-hidden="true"></div>
+
+            <!-- Modal panel -->
+            <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div class="bg-red-600 dark:bg-red-700 px-6 py-4 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-white flex items-center">
+                  <i class='bx bx-trash mr-2'></i>
+                  Eliminar Oferta de Empleo
+                </h3>
+                <button @click="closeDeleteConfirmation" class="text-white hover:text-gray-200">
+                  <i class='bx bx-x text-2xl'></i>
+                </button>
+              </div>
+
+              <div class="bg-white dark:bg-gray-800 px-6 py-4">
+                <div class="mb-4">
+                  <div class="flex items-center justify-center w-16 h-16 mx-auto bg-red-100 dark:bg-red-900 rounded-full mb-4">
+                    <i class='bx bx-error-circle text-red-600 dark:text-red-400 text-4xl'></i>
+                  </div>
+                  
+                  <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 text-center mb-2">
+                    ¿Estás seguro de eliminar esta oferta?
+                  </h4>
+                  
+                  <p class="text-gray-600 dark:text-gray-300 text-center mb-4">
+                    Esta acción <span class="font-bold text-red-600 dark:text-red-400">no se puede deshacer</span> y eliminará permanentemente la oferta de empleo <span class="font-semibold">{{ props.jobOffer.title }}</span>.
+                  </p>
+                  
+                  <div class="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 mb-4">
+                    <div class="flex items-start">
+                      <i class='bx bx-info-circle text-amber-600 dark:text-amber-400 text-xl mt-0.5 mr-2'></i>
+                      <p class="text-sm text-amber-800 dark:text-amber-200">
+                        Se eliminarán todos los datos asociados a esta oferta, incluyendo las aplicaciones de candidatos.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row justify-between gap-3">
+                  <button 
+                    type="button" 
+                    @click="closeDeleteConfirmation"
+                    class="order-2 sm:order-1 px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors flex items-center justify-center"
+                  >
+                    <i class='bx bx-x mr-1'></i>
+                    Cancelar
+                  </button>
+                  
+                  <button 
+                    type="button"
+                    @click="deleteJobOffer"
+                    :disabled="deleteCountdown > 0 || isDeleting"
+                    :class="[
+                      'order-1 sm:order-2 px-4 py-2 rounded-lg text-white flex items-center justify-center transition-colors',
+                      deleteCountdown > 0 
+                        ? 'bg-red-400 dark:bg-red-500 cursor-not-allowed' 
+                        : isDeleting 
+                          ? 'bg-red-600 dark:bg-red-700 cursor-not-allowed' 
+                          : 'bg-red-600 dark:bg-red-700 hover:bg-red-700 dark:hover:bg-red-800'
+                    ]"
+                  >
+                    <i v-if="isDeleting" class='bx bx-loader-alt animate-spin mr-2'></i>
+                    <i v-else class='bx bx-trash mr-2'></i>
+                    <span v-if="isDeleting">Eliminando...</span>
+                    <span v-else-if="deleteCountdown > 0">Espera {{ deleteCountdown }}s...</span>
+                    <span v-else>Eliminar Definitivamente</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

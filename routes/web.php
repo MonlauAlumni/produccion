@@ -103,6 +103,8 @@ Route::middleware(['auth', \App\Http\Middleware\BlockIfUserIsBlocked::class])->g
         Route::delete('/gestion-candidatos/{applicationId}', [JobApplicationController::class, 'destroy'])->name('job-applications.destroy');
         Route::post('/ofertas/{id}/editar', [JobOfferController::class, 'update'])->name('ofertas.edit');
         Route::get('/alumnos', [StudentController::class, 'index'])->name('student.show');
+
+        Route::delete('/ofertas/{id}', [JobOfferController::class, 'destroy'])->name('ofertas.destroy');
     });
 
     Route::get('/home', [JobOfferController::class, 'index'])->name('home');

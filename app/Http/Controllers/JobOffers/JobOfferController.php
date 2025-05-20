@@ -266,6 +266,20 @@ class JobOfferController extends Controller
         return redirect()->route('ofertas.index');
     }
 
+    public function destroy($id)
+    {
+        $jobOffer = JobOffer::findOrFail($id);
+        
+      
+        if (auth()->user()->company->id !== $jobOffer->company_id) {
+            return redirect()->back()->with('error', 'No tienes permiso para eliminar esta oferta');
+        }
+        
+        $jobOffer->delete();
+        
+         return Inertia::location(route('home'));
+    }
+
   
 
 }
