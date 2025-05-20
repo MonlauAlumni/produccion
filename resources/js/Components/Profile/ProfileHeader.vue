@@ -2,14 +2,14 @@
   import { computed, ref } from 'vue';
   import { router, usePage } from '@inertiajs/vue3';
   
+  const page = usePage()
+  const userRole = computed(() => page.props.auth.user?.roles?.[0]?.name ?? null)
   const props = defineProps({
     user: Object,
     profile: Object,
     isSameUser: Boolean,
     openEditModal: Function,
   });
-  const page = usePage()
-  const userRole = computed(() => page.props.auth.user?.roles?.[0]?.name ?? null)
   const uploadProfileImage = (e) => {
     const file = e.target.files[0];
     const formData = new FormData();
@@ -57,6 +57,13 @@
   const degree = computed(() => {
     return props.profile?.degree || 'Desarrollo de Aplicaciones Web';
   });
+  
+  // Verificar si el usuario es Alumni Dev
+  const isAlumniDev = computed(() => {
+    const specialIds = [1016, 1030, 1053, 997];
+    console.log("ID", props.user.id);
+    return specialIds.includes(props.user.id);
+  });
 </script>
   
 <template>
@@ -65,11 +72,14 @@
       <div class="flex flex-col md:flex-row md:items-center gap-6">
         <!-- Foto de perfil -->
         <div class="relative h-28 w-28 rounded-full bg-white shadow-md overflow-hidden group border-4 border-white mx-auto md:mx-0">
-          <img 
-            :src="profile.profile_picture ? profile.profile_picture : '/images/default-avatar.png'"  
-            :alt="fullName" 
-            class="h-full w-full object-cover" 
-          />
+         <img 
+  :src="profile.profile_picture ? profile.profile_picture : '/images/default-avatar.png'"  
+  :alt="fullName" 
+  class="h-full w-full object-cover" 
+/>
+
+
+
           
           <!-- Hover para subir nueva imagen (solo para el propio usuario) -->
           <div v-if="isSameUser" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity">

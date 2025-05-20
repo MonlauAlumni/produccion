@@ -221,14 +221,29 @@ class ProfileController extends Controller
     {
 
         $user = User::with('profile')->get()->filter(function ($user) use ($slang) {
-            return $user->profile && $user->profile->slang === $slang;
-        })->first();
+        return $user->profile && $user->profile->slang === $slang;
+    })->first();
 
-        $path = $request->file('banner_url')->store('banners', 'public');
-        $user->profile->update(['banner_url' => '/storage/' . $path]);
+    // Verifica si llega el archivo
+    $file = $request->file('banner_url');
 
-        return redirect()->route('perfil.show', ['slang' => $user->profile->slang]);
+
+    if (!$file) {
+        return back()->withErrors(['banner_url' => 'No se recibió el archivo']);
     }
+
+    $path = $file->store('banners', 'public');
+    
+    if (!$path) {
+        return back()->withErrors(['banner_url' => 'Error al guardar el archivo']);
+    }
+
+    $user->profile->update(['banner_url' => '/storage/' . $path]);
+
+      return Inertia::location(route('perfil.show', ['slang' => $user->profile->slang]))
+        ;
+    }
+
 
     public function updateCV(Request $request, $slang)
     {
@@ -245,15 +260,16 @@ class ProfileController extends Controller
 
     public function updateProfilePicture(Request $request, $slang)
     {
+       
         $user = User::with('profile')->get()->filter(function ($user) use ($slang) {
             return $user->profile && $user->profile->slang === $slang;
         })->first();
-
-
+    
         $path = '/storage/'.$request->file('profile_picture')->store('profile_picture', 'public');
+       
         $user->profile->update(['profile_picture' => $path]);
 
-        return redirect()->route('perfil.show', ['slang' => $user->profile->slang]);
+        return Inertia::location(route('perfil.show', ['slang' => $user->profile->slang]));
     }
 
     public function downloadCV($slang)
