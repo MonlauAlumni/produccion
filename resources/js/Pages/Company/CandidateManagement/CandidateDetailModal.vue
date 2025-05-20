@@ -1,9 +1,7 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
 
-// Props
 const props = defineProps({
   isOpen: {
     type: Boolean,
@@ -15,17 +13,13 @@ const props = defineProps({
   }
 });
 
-// Determine authenticated user's role
 const page = usePage();
 const userRole = computed(() => page.props.auth.user?.roles?.[0]?.name ?? null);
 
-// Emits
 const emit = defineEmits(['close', 'update-status', 'message', 'view-personal-profile', 'download-cv']);
 
-// State
 const activeTab = ref('profile');
 
-// Methods
 const closeModal = () => {
   emit('close');
 };
@@ -47,7 +41,6 @@ const downloadCV = () => {
 };
 
 const formatDate = (date) => {
-  // Implementation for date formatting
   if (!date) return 'Fecha desconocida';
   return new Date(date).toLocaleDateString('es-ES', {
     year: 'numeric',
@@ -57,7 +50,6 @@ const formatDate = (date) => {
 };
 
 const getStatusInfo = (status) => {
-  // Implementation to get status information
   const statusMap = {
     pending: { text: 'Pendiente', icon: 'bx-time', color: 'bg-yellow-100 text-yellow-800' },
     in_process: { text: 'En proceso', icon: 'bx-loader', color: 'bg-blue-100 text-blue-800' },
@@ -81,24 +73,25 @@ const getStatusClass = (status) => {
   return statusClasses[status] || 'bg-gray-500 text-white';
 };
 </script>
+
 <template>
   <div v-if="isOpen" class="fixed inset-0 z-50 overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-      <!-- Backdrop with blur effect -->
-      <div class="fixed inset-0 transition-opacity bg-black/70 backdrop-blur-sm" @click="closeModal"></div>
+      <!-- Backdrop -->
+      <div class="fixed inset-0 transition-opacity bg-black/70 dark:bg-black/80 backdrop-blur-sm" @click="closeModal"></div>
 
       <!-- Modal Panel -->
       <div
-        class="inline-block w-full max-w-4xl overflow-hidden text-left align-bottom transition-all transform bg-white rounded-xl shadow-2xl sm:my-8 sm:align-middle">
-        <!-- Header with gradient background -->
-        <div class="relative bg-[#193CB8]  text-white p-6">
+        class="inline-block w-full max-w-4xl overflow-hidden text-left align-bottom transition-all transform bg-white dark:bg-gray-800 rounded-xl shadow-2xl sm:my-8 sm:align-middle border border-gray-200 dark:border-gray-700">
+        <!-- Header -->
+        <div class="relative bg-[#193CB8] dark:bg-blue-700 text-white p-6">
           <button @click="closeModal"
             class="absolute top-4 right-4 text-white/80 hover:text-white focus:outline-none transition-colors">
             <i class='bx bx-x text-2xl'></i>
           </button>
 
           <div v-if="candidate" class="flex items-start gap-5">
-            <!-- Candidate Avatar with border -->
+            <!-- Candidate Avatar -->
             <div
               class="w-24 h-24 rounded-full flex items-center justify-center shrink-0 border-4 border-white/30 overflow-hidden bg-white/10">
               <img v-if="candidate.student && candidate.student.profile && candidate.student.profile.profile_picture"
@@ -106,69 +99,41 @@ const getStatusClass = (status) => {
                 class="w-full h-full object-cover" />
               <i v-else class='bx bx-user text-4xl'></i>
             </div>
-            <div
-              :class="['px-4 py-2 rounded-full text-sm font-medium flex absolute right-15 items-center shadow-lg', getStatusClass(candidate.status)]">
-              <i :class="['bx mr-1', getStatusInfo(candidate.status).icon]"></i>
-              {{ getStatusInfo(candidate.status).text }}
-            </div>
+
             <!-- Candidate Info -->
             <div class="flex-1">
-              <div class="flex items-start justify-between">
-                <div>
-                  <h2 class="text-2xl font-bold">
-                    {{ candidate.student ? `${candidate.student.name} ${candidate.student.last_name_1 || ''}` :
-                    'Candidato' }}
-                  </h2>
-                  <!-- Status Badge with glow effect -->
-
-                  <p class="text-white/80 text-lg">
-                    {{ candidate.student && candidate.student.profile ? candidate.student.profile.job_title || 'Sin título profesional' : 'Sin información' }}
-                  </p>
-                  <div class="flex justify-between w-full gap-4">
-                    <!-- Información del candidato -->
-                    <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm ">
-                      <div class="flex items-center text-white/90">
-                        <i class='bx bx-map-pin mr-1'></i>
-                        {{ candidate.student && candidate.student.profile ? candidate.student.profile.location || 'Sin ubicación' : 'Sin ubicación' }}
-                      </div>
-                      <div class="flex items-center text-white/90">
-                        <i class='bx bx-envelope mr-1'></i>
-                        {{ candidate.student ? candidate.student.email : 'Sin email' }}
-                      </div>
-                      <div class="flex items-center text-white/90">
-                        <i class='bx bx-phone mr-1'></i>
-                        {{ candidate.student && candidate.student.profile ? candidate.student.profile.phone || 'Sin teléfono' : 'Sin teléfono' }}
-                      </div>
-                    </div>
-
-                    <!-- El botón alineado a la derecha -->
-                    <div class="flex justify-end ">
-                      <button
-                        @click="viewFullProfile"
-                        class="bg-white text-blue-800 border-blue-600 cursor-pointer px-4 ml-auto py-2 rounded-lg hover:bg-blue-100 transition">
-                        Ver Perfil Completo
-                      </button>
-                    </div>
-                  </div>
-
-
+              <h2 class="text-2xl font-bold">
+                {{ candidate.student ? `${candidate.student.name} ${candidate.student.last_name_1 || ''}` : 'Candidato' }}
+              </h2>
+              <p class="text-white/80 text-lg">
+                {{ candidate.student && candidate.student.profile ? candidate.student.profile.job_title || 'Sin título profesional' : 'Sin información' }}
+              </p>
+              <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-white/90">
+                <div class="flex items-center">
+                  <i class='bx bx-map-pin mr-1'></i>
+                  {{ candidate.student && candidate.student.profile ? candidate.student.profile.location || 'Sin ubicación' : 'Sin ubicación' }}
                 </div>
-
-
+                <div class="flex items-center">
+                  <i class='bx bx-envelope mr-1'></i>
+                  {{ candidate.student ? candidate.student.email : 'Sin email' }}
+                </div>
+                <div class="flex items-center">
+                  <i class='bx bx-phone mr-1'></i>
+                  {{ candidate.student && candidate.student.profile ? candidate.student.profile.phone || 'Sin teléfono' : 'Sin teléfono' }}
+                </div>
               </div>
             </div>
           </div>
-
         </div>
 
-        <!-- Tabs with pill style -->
-        <div class="bg-gray-50 px-6 py-3 border-b border-gray-200">
+        <!-- Tabs -->
+        <div class="bg-gray-50 dark:bg-gray-900 px-6 py-3 border-b border-gray-200 dark:border-gray-700">
           <div class="flex gap-2">
             <button @click="activeTab = 'profile'" :class="[
               'py-2 px-4 text-sm font-medium cursor-pointer rounded-full transition-colors',
               activeTab === 'profile'
-                ? 'bg-[#193CB8] text-white shadow-md'
-                : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-100'
+                ? 'bg-[#193CB8] dark:bg-blue-700 text-white shadow-md'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
             ]">
               <i class='bx bx-user mr-1'></i>
               Perfil
@@ -176,8 +141,8 @@ const getStatusClass = (status) => {
             <button @click="activeTab = 'application'" :class="[
               'py-2 px-4 text-sm font-medium cursor-pointer rounded-full transition-colors',
               activeTab === 'application'
-                ? 'bg-[#193CB8] text-white shadow-md'
-                : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-100'
+                ? 'bg-[#193CB8] dark:bg-blue-700 text-white shadow-md'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
             ]">
               <i class='bx bx-file mr-1'></i>
               Aplicación
@@ -185,8 +150,8 @@ const getStatusClass = (status) => {
             <button @click="activeTab = 'timeline'" :class="[
               'py-2 px-4 text-sm font-medium cursor-pointer rounded-full transition-colors',
               activeTab === 'timeline'
-                ? 'bg-[#193CB8] text-white shadow-md'
-                : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-100'
+                ? 'bg-[#193CB8] dark:bg-blue-700 text-white shadow-md'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
             ]">
               <i class='bx bx-history mr-1'></i>
               Historial
@@ -194,26 +159,26 @@ const getStatusClass = (status) => {
           </div>
         </div>
 
-        <!-- Tab Content with custom scrollbar -->
-        <div class="max-h-[60vh] overflow-y-auto p-6 custom-scrollbar">
+        <!-- Tab Content -->
+        <div class="max-h-[60vh] overflow-y-auto p-6 custom-scrollbar bg-white dark:bg-gray-800">
           <!-- Profile Tab -->
           <div v-if="activeTab === 'profile'" class="space-y-8">
-            <!-- Skills with animated hover -->
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <i class='bx bx-bulb text-[#193CB8] mr-2 text-xl'></i>
+            <!-- Skills -->
+            <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-200 mb-4 flex items-center">
+                <i class='bx bx-bulb text-[#193CB8] dark:text-blue-400 mr-2 text-xl'></i>
                 Habilidades
               </h3>
               <div class="flex flex-wrap gap-2">
                 <span
                   v-for="(skill, index) in candidate.student && candidate.student.profile ? candidate.student.profile.skills || [] : []"
                   :key="index"
-                  class="px-3 py-1.5 bg-[#193CB8]/10 text-[#193CB8] rounded-full text-sm font-medium transition-transform hover:scale-105 hover:shadow-md cursor-default">
+                  class="px-3 py-1.5 bg-[#193CB8]/10 dark:bg-blue-900/20 text-[#193CB8] dark:text-blue-400 rounded-full text-sm font-medium">
                   {{ skill }}
                 </span>
                 <span
                   v-if="!candidate.student || !candidate.student.profile || !candidate.student.profile.skills || candidate.student.profile.skills.length === 0"
-                  class="text-gray-500">
+                  class="text-gray-500 dark:text-gray-400">
                   No hay habilidades registradas
                 </span>
               </div>
@@ -396,23 +361,21 @@ const getStatusClass = (status) => {
           </div>
         </div>
 
-        <!-- Actions with gradient buttons -->
-        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex flex-wrap gap-3">
+        <!-- Actions -->
+        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex flex-wrap gap-3">
           <button @click="updateStatus"
             class="flex-1 bg-gradient-to-r from-[#193CB8] to-[#4361ee] text-white font-medium py-3 rounded-lg hover:shadow-lg transition-all flex items-center justify-center">
             <i class='bx bx-edit mr-2'></i>
             Cambiar estado
           </button>
-
           <button 
             v-if="userRole === 'company'" 
             @click="messageCandidate"
-            class="flex-1 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:shadow-md font-medium py-3 rounded-lg transition-all flex items-center justify-center"
+            class="flex-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium py-3 rounded-lg transition-all flex items-center justify-center"
           >
             <i class='bx bx-envelope mr-2'></i>
             Contactar
           </button>
-
           <button @click="downloadCV"
             class="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-lg font-medium py-3 rounded-lg transition-all flex items-center justify-center">
             <i class='bx bx-download mr-2'></i>
@@ -423,8 +386,6 @@ const getStatusClass = (status) => {
     </div>
   </div>
 </template>
-
-
 
 <style scoped>
 .custom-scrollbar {

@@ -200,53 +200,52 @@ onMounted(() => {
 
 <template>
   <Layout>
-    <div class="bg-gray-50 min-h-screen py-8">
+    <div class="bg-gray-50 dark:bg-gray-900 min-h-screen py-8">
       <div class="container mx-auto px-4">
         <!-- Cabecera -->
         <div class="mb-8 text-center">
-          <h1 class="text-3xl font-bold text-gray-800 mb-2">Directorio de Talento</h1>
-          <p class="text-gray-600 max-w-2xl mx-auto">
+          <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2">Directorio de Talento</h1>
+          <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             Encuentra el talento ideal para tu empresa entre nuestros alumnos y exalumnos cualificados
           </p>
         </div>
         
         <!-- Filtros y búsqueda mejorados -->
-        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8 border border-gray-200 dark:border-gray-700">
           <form @submit.prevent="applyFilters" class="space-y-6">
-            
             <!-- Fila 1: Búsqueda rápida -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
-                <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Buscar por nombre</label>
+                <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Buscar por nombre</label>
                 <div class="relative">
                   <input
                     type="text"
                     id="search"
                     v-model="filters.search"
                     placeholder="Nombre del alumno..."
-                    class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-[#193CB8] focus:border-[#193CB8] focus:outline-none"
+                    class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-[#193CB8] dark:focus:ring-blue-400 focus:border-[#193CB8] dark:focus:border-blue-400 focus:outline-none"
                   />
-                  <i class='bx bx-search absolute right-3 top-2.5 text-gray-400'></i>
+                  <i class='bx bx-search absolute right-3 top-2.5 text-gray-400 dark:text-gray-500'></i>
                 </div>
               </div>
               <div>
-                <label for="job_title" class="block text-sm font-medium text-gray-700 mb-1">Puesto de trabajo</label>
+                <label for="job_title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Puesto de trabajo</label>
                 <input
                   type="text"
                   id="job_title"
                   v-model="filters.job_title"
                   placeholder="Desarrollador, Diseñador..."
-                  class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-[#193CB8] focus:border-[#193CB8] focus:outline-none"
+                  class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-[#193CB8] dark:focus:ring-blue-400 focus:border-[#193CB8] dark:focus:border-blue-400 focus:outline-none"
                 />
               </div>
               <div>
-                <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
+                <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ubicación</label>
                 <input
                   type="text"
                   id="location"
                   v-model="filters.location"
                   placeholder="Ciudad, provincia o país..."
-                  class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-[#193CB8] focus:border-[#193CB8] focus:outline-none"
+                  class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-[#193CB8] dark:focus:ring-blue-400 focus:border-[#193CB8] dark:focus:border-blue-400 focus:outline-none"
                 />
               </div>
             </div>
@@ -254,22 +253,22 @@ onMounted(() => {
             <!-- Fila 2: Filtros avanzados -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
-                <label for="degree" class="block text-sm font-medium text-gray-700 mb-1">Titulación</label>
+                <label for="degree" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Titulación</label>
                 <select
                   id="degree"
                   v-model="filters.degree"
-                  class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-[#193CB8] focus:border-[#193CB8] focus:outline-none"
+                  class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-[#193CB8] dark:focus:ring-blue-400 focus:border-[#193CB8] dark:focus:border-blue-400 focus:outline-none"
                 >
                   <option value="all">Todas las titulaciones</option>
                   <option v-for="degree in degreeOptions" :key="degree" :value="degree">{{ degree }}</option>
                 </select>
               </div>
               <div>
-                <label for="availability" class="block text-sm font-medium text-gray-700 mb-1">Disponibilidad</label>
+                <label for="availability" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Disponibilidad</label>
                 <select
                   id="availability"
                   v-model="filters.availability"
-                  class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-[#193CB8] focus:border-[#193CB8] focus:outline-none"
+                  class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-[#193CB8] dark:focus:ring-blue-400 focus:border-[#193CB8] dark:focus:border-blue-400 focus:outline-none"
                 >
                   <option value="all">Cualquier disponibilidad</option>
                   <option value="available">Disponible</option>
@@ -279,11 +278,11 @@ onMounted(() => {
                 </select>
               </div>
               <div>
-                <label for="graduation_year" class="block text-sm font-medium text-gray-700 mb-1">Año de graduación</label>
+                <label for="graduation_year" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Año de graduación</label>
                 <select
                   id="graduation_year"
                   v-model="filters.graduation_year"
-                  class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-[#193CB8] focus:border-[#193CB8] focus:outline-none"
+                  class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-[#193CB8] dark:focus:ring-blue-400 focus:border-[#193CB8] dark:focus:border-blue-400 focus:outline-none"
                 >
                   <option value="all">Todos los años</option>
                   <option v-for="year in graduationYears" :key="year" :value="year">
@@ -298,13 +297,13 @@ onMounted(() => {
               <button
                 type="button"
                 @click="resetFilters"
-                class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition"
+                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
               >
                 Limpiar filtros
               </button>
               <button
                 type="submit"
-                class="px-4 py-2 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition"
+                class="px-4 py-2 bg-[#193CB8] dark:bg-blue-700 text-white rounded-lg hover:bg-[#142d8c] dark:hover:bg-blue-800 transition"
                 :disabled="loading"
               >
                 <span v-if="loading" class="flex items-center">
@@ -322,13 +321,13 @@ onMounted(() => {
         
         <!-- Estado de carga -->
         <div v-if="loading" class="flex justify-center items-center py-12">
-          <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#193CB8]"></div>
+          <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#193CB8] dark:border-blue-400"></div>
         </div>
         
         <!-- Lista de alumnos -->
         <div v-else-if="filteredAlumni.length > 0">
           <!-- Contador de resultados -->
-          <div class="mb-4 text-sm text-gray-600">
+          <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
             Se encontraron <span class="font-semibold">{{ filteredAlumni.length }}</span> resultados
           </div>
           
@@ -354,14 +353,14 @@ onMounted(() => {
         </div>
         
         <!-- Estado vacío -->
-        <div v-else class="bg-white rounded-lg shadow-md p-8 text-center">
+        <div v-else class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center border border-gray-200 dark:border-gray-700">
           <div class="flex flex-col items-center">
-            <i class='bx bx-user-x text-6xl text-gray-300 mb-4'></i>
-            <h3 class="text-xl font-semibold text-gray-700 mb-2">No se encontraron alumnos</h3>
-            <p class="text-gray-500 mb-4">Prueba con otros filtros o términos de búsqueda</p>
+            <i class='bx bx-user-x text-6xl text-gray-300 dark:text-gray-600 mb-4'></i>
+            <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2">No se encontraron alumnos</h3>
+            <p class="text-gray-500 dark:text-gray-400 mb-4">Prueba con otros filtros o términos de búsqueda</p>
             <button
               @click="resetFilters"
-              class="px-4 py-2 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors"
+              class="px-4 py-2 bg-[#193CB8] dark:bg-blue-700 text-white rounded-lg hover:bg-[#142d8c] dark:hover:bg-blue-800 transition-colors"
             >
               Ver todos los alumnos
             </button>

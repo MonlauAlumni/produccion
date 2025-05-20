@@ -233,5 +233,8 @@ Route::get('logout', function () {
 
 // Página de bloqueo para usuarios bloqueados
 Route::get('/bloqueado', function () {
-    return Inertia::render('BlockedPage');
+    if (auth()->check() && auth()->user()->status === 'blocked') {
+        return Inertia::render('BlockedPage');
+    }
+    return redirect('/home');
 })->name('blocked');
