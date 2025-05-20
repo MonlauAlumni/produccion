@@ -414,7 +414,7 @@
   <Layout>
     <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       <!-- Hero Section -->
-      <div class="bg-[#193CB8] text-white py-8">
+      <div class="bg-[#193CB8] dark:bg-[#142d8c] text-white py-8">
         <div class="max-w-6xl mx-auto px-4">
           <div class="flex flex-col md:flex-row items-center mx-auto justify-between">
             <div class="mb-6 md:mb-0 md:mr-8">

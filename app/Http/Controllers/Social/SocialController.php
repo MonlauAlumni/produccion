@@ -85,9 +85,9 @@ class SocialController extends Controller
                     $subquery->select('connection_id')
                             ->from('connections')
                             ->where('user_id', $request->user()->id)
-                            ->where('status', 'accepted');
+                            ->where('connections.status', 'accepted');
                 })
-                ->where('status', 'accepted');
+                ->where('connections.status', 'accepted');
             })
             ->inRandomOrder()
             ->limit(5)
