@@ -176,7 +176,7 @@
     </script>
     
     <template>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200 transition-all duration-300 hover:shadow-xl">
+        <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-xl">
             <!-- Status Banner - Prominente en la parte superior -->
             <div v-if="application && application.status" 
                 :class="[
@@ -223,22 +223,22 @@
                 <div class="flex items-start gap-4">
                     <!-- Company Logo -->
                     <div
-                        class="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center shrink-0 border border-gray-200">
+                        class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center shrink-0 border border-gray-200 dark:border-gray-600">
                         <img v-if="jobOffer.company && jobOffer.company.profile_picture"
                             :src="`${jobOffer.company.profile_picture}`" :alt="jobOffer.company.name || ''"
                             class="w-13 h-13 rounded-lg" />
-                        <i v-else class='bx bx-building text-2xl text-gray-400'></i>
+                        <i v-else class='bx bx-building text-2xl text-gray-400 dark:text-gray-500'></i>
                     </div>
     
                     <!-- Job Info -->
                     <div class="flex-1">
                         <div class="flex items-start justify-between">
                             <div>
-                                <h2 class="font-bold text-lg text-[#193CB8] hover:underline cursor-pointer"
+                                <h2 class="font-bold text-lg text-[#4A6EDB] hover:underline cursor-pointer"
                                     @click="viewJobOffer">
                                     {{ jobOffer.title }}
                                 </h2>
-                                <div class="text-gray-700">
+                                <div class="text-gray-700 dark:text-gray-300">
                                     {{ jobOffer.company ? jobOffer.company.company_name : '' }}
                                 </div>
                             </div>
@@ -253,20 +253,20 @@
     
                         <!-- Job Details -->
                         <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm mt-3">
-                            <div class="flex items-center text-gray-600">
-                                <i class='bx bx-map-pin mr-1 text-[#193CB8]'></i>
+                            <div class="flex items-center text-gray-600 dark:text-gray-400">
+                                <i class='bx bx-map-pin mr-1 text-[#4A6EDB]'></i>
                                 {{ jobOffer.location }}
                             </div>
-                            <div class="flex items-center text-gray-600">
-                                <i class='bx bx-time-five mr-1 text-[#193CB8]'></i>
+                            <div class="flex items-center text-gray-600 dark:text-gray-400">
+                                <i class='bx bx-time-five mr-1 text-[#4A6EDB]'></i>
                                 {{ getJobTypeLabel(jobOffer.work_mode) }}
                             </div>
-                            <div class="flex items-center text-gray-600">
-                                <i class='bx bx-money mr-1 text-[#193CB8]'></i>
+                            <div class="flex items-center text-gray-600 dark:text-gray-400">
+                                <i class='bx bx-money mr-1 text-[#4A6EDB]'></i>
                                 {{ formatSalaryRange(jobOffer.minimum_salary, jobOffer.maximum_salary) }}
                             </div>
-                            <div v-if="jobOffer.category" class="flex items-center text-gray-600">
-                                <i :class="getIconClass(jobOffer.category)" class="mr-1 text-[#193CB8]"></i>
+                            <div v-if="jobOffer.category" class="flex items-center text-gray-600 dark:text-gray-400">
+                                <i :class="getIconClass(jobOffer.category)" class="mr-1 text-[#4A6EDB]"></i>
                                 {{ getCategoryLabel(jobOffer.category) }}
                             </div>
                         </div>
@@ -274,14 +274,14 @@
                 </div>
     
                 <!-- Description -->
-                 <div class="mt-4">
+                 <div class="mt-4 text-gray-600 dark:text-gray-400 text-sm line-clamp-3">
 
-                    <p class="text-gray-600 text-sm line-clamp-3">{{ jobOffer.description }}</p>
+                    <p class="">{{ jobOffer.description }}</p>
                 </div>
     
                 <!-- Stats & Engagement -->
-                <div class="flex flex-wrap items-center justify-between mt-4 pt-4 border-t border-gray-100">
-                    <div class="flex items-center space-x-4 text-sm text-gray-500">
+                <div class="flex flex-wrap items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                    <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                         <div class="flex items-center">
                             <i class='bx bx-calendar mr-1'></i>
                             {{ getTimeAgo(jobOffer.created_at) }}
@@ -311,25 +311,25 @@
                 <!-- Action Buttons -->
                 <div class="mt-4 flex ">
                     <button @click.stop="viewJobOffer"
-                        class="flex-1 bg-white border cursor-pointer border-[#193CB8] text-[#193CB8] hover:bg-blue-100 font-medium py-2 rounded-l-lg hover:bg-[#193CB8]/5 transition-colors">
+                        class="flex-1 bg-white dark:bg-gray-800 border cursor-pointer border-[#4A6EDB] text-[#4A6EDB] hover:bg-blue-100 dark:hover:bg-[#4A6EDB]/10 font-medium py-2 rounded-l-lg transition-colors">
                         Ver detalles
                     </button>
                     
                     <!-- Botón contextual según el estado -->
                     <button v-if="!application || application.status === 'rejected'"
                         @click.stop="applyToJob"
-                        class="flex-1 bg-red-700 cursor-pointer text-white font-medium py-2 rounded-r-lg hover:bg-red-800 transition-colors">
+                        class="flex-1 bg-red-700 dark:bg-red-800 cursor-pointer text-white font-medium py-2 rounded-r-lg hover:bg-red-800 dark:hover:bg-red-900 transition-colors">
                         Eliminar
                     </button>
                     
                     <button v-else-if="application.status === 'accepted'"
-                        class="flex-1 bg-green-600 cursor-pointer text-white rounded-r-lg font-medium py-2 hover:bg-green-700 transition-colors">
+                        class="flex-1 bg-green-600 dark:bg-green-700 cursor-pointer text-white rounded-r-lg font-medium py-2 hover:bg-green-700 dark:hover:bg-green-800 transition-colors">
                         <i class='bx bx-envelope mr-1'></i>
                         Contactar empresa
                     </button>
                     
                     <button v-else
-                        class="flex-1 bg-gray-200 cursor-not-allowed text-gray-600 font-medium py-2 rounded-r-lg">
+                        class="flex-1 bg-gray-200 dark:bg-gray-700 cursor-not-allowed text-gray-600 dark:text-gray-400 font-medium py-2 rounded-r-lg">
                         {{ application.status === 'pending' ? 'Pendiente de respuesta' : 'En proceso' }}
                     </button>
                 </div>

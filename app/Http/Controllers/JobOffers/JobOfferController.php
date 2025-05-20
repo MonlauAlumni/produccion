@@ -100,10 +100,19 @@ class JobOfferController extends Controller
     public function show($id)
     {
         $jobOffer = JobOffer::with(['company', 'skills', 'applicants'])->findOrFail($id);
+        $skills = Skill::all();
 
-     
+        $user = Auth::user();
+
+        $isJobOfferOwner = false;
+        if ($user) {
+            $isJobOfferOwner = $user->company->id === $jobOffer->company_id;
+        }
+         
         return Inertia::render('JobOffers/SingleJobOffer', [
-            'jobOffer' => $jobOffer
+            'jobOffer' => $jobOffer,
+            'isJobOfferOwner' => $isJobOfferOwner,
+            'skills' => $skills
         ]);
     }
 
@@ -150,11 +159,59 @@ class JobOfferController extends Controller
             $jobOffer->save();
         }
          if ($request->filled('skills')) {
-      $skillIds = collect($request->skills)->pluck('id')->toArray();
-$jobOffer->skills()->sync($skillIds);
+            $skillIds = collect($request->skills)->pluck('id')->toArray();
+            $jobOffer->skills()->sync($skillIds);
          }
     
         return redirect()->route('home');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $jobOffer = JobOffer::findOrFail($id);
+        
+        // Check if the authenticated user is the owner of the job offer
+        if (auth()->user()->company->id !== $jobOffer->company_id) {
+            return redirect()->back()->with('error', 'No tienes permiso para editar esta oferta');
+        }
+        
+        $jobOffer->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'requirements' => $request->requirements,
+            'experience' => $request->experience,
+            'responsibilities' => $request->responsibilities,
+            'location' => $request->location,
+            'benefits' => $request->benefits,
+            'min_experience' => $request->min_experience,
+            'min_studies' => $request->min_studies,
+            'vacancies' => $request->vacancies,
+            'minimum_salary' => $request->minimum_salary,
+            'maximum_salary' => $request->maximum_salary,
+            'work_mode' => $request->work_mode,
+            'deadline' => $request->deadline,
+            'category' => $request->category,
+            'contract_type' => $request->job_type,
+        ]);
+        
+        // Si se sube un archivo, manejarlo
+        if ($request->hasFile('file')) {
+            $filePath = $request->file('file')->store('job_offers', 'public');
+            $jobOffer->file = $filePath;
+            $jobOffer->save();
+        }
+        
+        // Sincronizar habilidades
+        if ($request->filled('skills')) {
+            $skillIds = collect($request->skills)->pluck('id')->toArray();
+            $jobOffer->skills()->sync($skillIds);
+        }
+        
+        // Reload the job offer with its relationships
+        $jobOffer = $jobOffer->fresh(['company', 'skills', 'applicants']);
+        
+        // Return a JSON response for Inertia
+        return Inertia::location(route('ofertas.show', $jobOffer->id));
     }
 
 
@@ -191,6 +248,8 @@ $jobOffer->skills()->sync($skillIds);
             'activeStatus' => $status ?? 'all'
         ]);
     }
+
+
 
     public function toggleSave(Request $request, $id)
     {

@@ -101,7 +101,7 @@ Route::middleware(['auth', \App\Http\Middleware\BlockIfUserIsBlocked::class])->g
         Route::post('/gestion-candidatos/{applicationId}/change-status', [JobApplicationController::class, 'changeStatus'])->name('job-applications.changeStatus');
 
         Route::delete('/gestion-candidatos/{applicationId}', [JobApplicationController::class, 'destroy'])->name('job-applications.destroy');
-
+        Route::post('/ofertas/{id}/editar', [JobOfferController::class, 'update'])->name('ofertas.edit');
         Route::get('/alumnos', [StudentController::class, 'index'])->name('student.show');
     });
 
@@ -113,7 +113,7 @@ Route::middleware(['auth', \App\Http\Middleware\BlockIfUserIsBlocked::class])->g
     Route::get('/empresa/{slang}', [CompanyController::class, 'show'])->name('empresa.show');
 
     Route::get('/ofertas', [JobOfferController::class, 'index'])->name('ofertas.index');
-    Route::get('/ofertas/{id}', [JobOfferController::class, 'show'])->name('job-offers.show');
+    Route::get('/ofertas/{id}', [JobOfferController::class, 'show'])->name('ofertas.show');
 
     Route::get('/notificaciones', [NotificationController::class, 'show'])->name('notificaciones.show');
 

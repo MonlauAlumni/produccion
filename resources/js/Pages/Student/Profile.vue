@@ -59,7 +59,7 @@
   
   <template>
     <Layout>
-      <div class="min-h-screen bg-gray-50 flex flex-col">
+      <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
         <!-- Student Banner -->
         <div class="relative w-full h-64 md:h-80 bg-gradient-to-r from-[#193CB8] to-[#2748c6] overflow-hidden">
           <img v-if="profile.banner_url"
@@ -74,8 +74,8 @@
           <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
           
           <!-- Banner upload button for user's own profile -->
-          <div v-if="isSameUser"  class="absolute z-20 bottom-4 right-4">
-            <label class="cursor-pointer bg-white/90 hover:bg-white text-[#193CB8] px-3 py-2 rounded-md shadow-md flex items-center gap-2 transition-all">
+          <div v-if="isSameUser" class="absolute z-20 bottom-4 right-4">
+            <label class="cursor-pointer bg-white/90 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 text-[#193CB8] dark:text-blue-200 px-3 py-2 rounded-md shadow-md flex items-center gap-2 transition-all">
               <i class='bx bx-image-add'></i>
               <span class="text-sm font-medium">Cambiar Banner</span>
               <input type="file" @change="uploadBanner" class="hidden" accept="image/*">
@@ -125,61 +125,58 @@
                 />
                 
                 <!-- Contact Information -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                  <h2 class="text-xl font-semibold mb-4">Contacto</h2>
-                  <hr class="border-t border-[#193CB8] mb-4" />
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                  <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Contacto</h2>
+                  <hr class="border-t border-[#193CB8] dark:border-blue-700 mb-4" />
                   
                   <div class="space-y-4">
                     <div class="flex items-center gap-3">
-                      <div class="bg-blue-50 p-2 rounded-full">
-                        <i class='bx bx-envelope text-[#193CB8] text-xl'></i>
+                      <div class="bg-blue-50 dark:bg-blue-900 p-2 rounded-full">
+                        <i class='bx bx-envelope text-[#193CB8] dark:text-blue-200 text-xl'></i>
                       </div>
                       <div>
-                        <p class="text-sm text-gray-500">Email</p>
-                        <p class="text-gray-700 text-sm">{{ user.email || 'No disponible' }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Email</p>
+                        <p class="text-gray-700 dark:text-gray-300 text-sm">{{ user.email || 'No disponible' }}</p>
                       </div>
                     </div>
                     
                     <div class="flex items-center gap-3">
-                      <div class="bg-blue-50 p-2 rounded-full">
-                        <i class='bx bx-phone text-[#193CB8] text-xl'></i>
+                      <div class="bg-blue-50 dark:bg-blue-900 p-2 rounded-full">
+                        <i class='bx bx-phone text-[#193CB8] dark:text-blue-200 text-xl'></i>
                       </div>
                       <div>
-                        <p class="text-sm text-gray-500">Teléfono</p>
-                        <p class="text-gray-700">{{ profile?.phone || 'No disponible' }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Teléfono</p>
+                        <p class="text-gray-700 dark:text-gray-300">{{ profile?.phone || 'No disponible' }}</p>
                       </div>
                     </div>
                     
                     <div class="flex items-center gap-3">
-                      <div class="bg-blue-50 p-2 rounded-full">
-                        <i class='bx bx-map text-[#193CB8] text-xl'></i>
+                      <div class="bg-blue-50 dark:bg-blue-900 p-2 rounded-full">
+                        <i class='bx bx-map text-[#193CB8] dark:text-blue-200 text-xl'></i>
                       </div>
                       <div>
-                        <p class="text-sm text-gray-500">Ubicación</p>
-                        <p class="text-gray-700">{{ profile?.location || 'No disponible' }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Ubicación</p>
+                        <p class="text-gray-700 dark:text-gray-300">{{ profile?.location || 'No disponible' }}</p>
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                
                 <!-- Availability Status -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                  <h2 class="text-xl font-semibold mb-4">Disponibilidad</h2>
-                  <hr class="border-t border-[#193CB8] mb-4" />
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                  <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Disponibilidad</h2>
+                  <hr class="border-t border-[#193CB8] dark:border-blue-700 mb-4" />
                   
                   <div class="flex flex-col items-start gap-2">
-                    <span class="text-gray-700">Estado actual:</span>
-                    
-      
-                  <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                    {{ profile?.availability || 'Disponible para ofertas' }}
-                  </span>
-                </div>
+                    <span class="text-gray-700 dark:text-gray-300">Estado actual:</span>
+                    <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 px-3 py-1 rounded-full text-sm font-medium">
+                      {{ profile?.availability || 'Disponible para ofertas' }}
+                    </span>
+                  </div>
                   
-                  <div class="mt-4 pt-4 border-t border-gray-100">
-                    <div class="flex items-center gap-2 text-gray-700">
-                      <i class='bx bx-time-five text-[#193CB8]'></i>
+                  <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 dark:text-gray-100">
+                    <div class="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                      <i class='bx bx-time-five text-[#193CB8] dark:text-blue-200'></i>
                       <span>Última actualización: </span>
                     </div>
                     {{ formatDate(profile?.updated_at) || 'Recientemente' }}

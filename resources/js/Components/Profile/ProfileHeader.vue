@@ -67,11 +67,11 @@
 </script>
   
 <template>
-  <div class="bg-white rounded-lg shadow-md border border-gray-200 w-full">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 w-full">
     <div class="p-6">
       <div class="flex flex-col md:flex-row md:items-center gap-6">
         <!-- Foto de perfil -->
-        <div class="relative h-28 w-28 rounded-full bg-white shadow-md overflow-hidden group border-4 border-white mx-auto md:mx-0">
+        <div class="relative h-28 w-28 rounded-full bg-white dark:bg-gray-700 shadow-md overflow-hidden group border-4 border-white dark:border-gray-600 mx-auto md:mx-0">
           <img 
             :src="profile.profile_picture ? profile.profile_picture : '/images/default-avatar.png'"  
             :alt="fullName" 
@@ -80,7 +80,7 @@
           
           <!-- Hover para subir nueva imagen (solo para el propio usuario) -->
           <div v-if="isSameUser" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity">
-            <label class="cursor-pointer text-white bg-[#193CB8] hover:bg-[#2748c6] px-3 py-1.5 rounded-md text-sm font-medium transition-colors">
+            <label class="cursor-pointer text-white bg-[#193CB8] dark:bg-blue-900 hover:bg-[#2748c6] dark:hover:bg-blue-800 px-3 py-1.5 rounded-md text-sm font-medium transition-colors">
               <i class="bx bx-upload mr-1"></i> Cambiar
               <input type="file" class="hidden" @change="uploadProfileImage" accept="image/*">
             </label>
@@ -98,7 +98,7 @@
           <div class="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
               <div class="flex items-center justify-center md:justify-start flex-wrap gap-2">
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-800">{{ fullName }}</h1>
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-200">{{ fullName }}</h1>
                 
                 <!-- Etiqueta Alumni Dev (si corresponde) -->
                 <span v-if="isAlumniDev" class="ml-4 inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium bg-gradient-to-r from-amber-500 to-yellow-300 text-white shadow-sm">
@@ -107,20 +107,20 @@
                 </span>
               </div>
               
-              <p class="text-lg text-[#193CB8] font-medium mt-1">{{ jobTitle }}</p>
-              <div class="flex flex-wrap items-center gap-3 mt-2 text-gray-600 justify-center md:justify-start">
+              <p class="text-lg text-[#193CB8] dark:text-blue-200 font-medium mt-1">{{ jobTitle }}</p>
+              <div class="flex flex-wrap items-center gap-3 mt-2 text-gray-600 dark:text-gray-400 justify-center md:justify-start">
                 <div class="flex items-center gap-1">
-                  <i class='bx bx-graduation text-[#193CB8]'></i>
+                  <i class='bx bx-graduation text-[#193CB8] dark:text-blue-200'></i>
                   <span>{{ degree }}</span>
                 </div>
-                <div class="w-1 h-1 bg-gray-300 rounded-full hidden md:block"></div>
+                <div class="w-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-full hidden md:block"></div>
                 <div class="flex items-center gap-1">
-                  <i class='bx bx-calendar text-[#193CB8]'></i>
+                  <i class='bx bx-calendar text-[#193CB8] dark:text-blue-200'></i>
                   <span>{{ graduationYear }}</span>
                 </div>
-                <div class="w-1 h-1 bg-gray-300 rounded-full hidden md:block"></div>
+                <div class="w-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-full hidden md:block"></div>
                 <div class="flex items-center gap-1">
-                  <i class='bx bx-map-pin text-[#193CB8]'></i>
+                  <i class='bx bx-map-pin text-[#193CB8] dark:text-blue-200'></i>
                   <span>{{ profile?.location || 'Ubicación no especificada' }}</span>
                 </div>
               </div>
@@ -129,7 +129,7 @@
             <!-- Botones de acción -->
             <div class="flex items-center gap-3 mt-4 md:mt-0 justify-center md:justify-end">
               <button v-if="isSameUser" @click="props.openEditModal" 
-                class="flex items-center cursor-pointer gap-1.5 bg-[#193CB8] hover:bg-[#2748c6] text-white px-3 py-2 rounded-md transition-colors">
+                class="flex items-center cursor-pointer gap-1.5 bg-[#193CB8] dark:bg-blue-900 hover:bg-[#2748c6] dark:hover:bg-blue-800 text-white px-3 py-2 rounded-md transition-colors">
                 <div class="flex justify-center items-center w-30 gap-3">
                 <i class='bx bx-pencil text-x'></i>
                 <span>Editar Perfil</span>
@@ -139,13 +139,13 @@
               <button v-else
                 @click="contactUser"
                 v-if="userRole === 'empresa'"
-                class="flex items-center gap-1.5 bg-[#193CB8] hover:bg-[#2748c6] text-white px-4 py-2 rounded-md transition-colors">
+                class="flex items-center gap-1.5 bg-[#193CB8] dark:bg-blue-900 hover:bg-[#2748c6] dark:hover:bg-blue-800 text-white px-4 py-2 rounded-md transition-colors">
                 <i class='bx bx-envelope'></i>
                 <span>Contactar</span>
               </button>
               
               <button v-if="profile.cv_path" @click="downloadCV" 
-              class="flex items-center gap-1.5 cursor-pointer bg-white hover:bg-blue-100 md:w-40 text-gray-700 border border-gray-300 px-4 py-2 rounded-md transition-colors">
+              class="flex items-center gap-1.5 cursor-pointer bg-white dark:bg-gray-700 hover:bg-blue-100 dark:hover:bg-gray-600 md:w-40 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 px-4 py-2 rounded-md transition-colors">
               <i class='bx bx-file text-xl'></i>
               <span class="sm:inline">Descargar CV</span>
             </button>
@@ -155,13 +155,13 @@
           
           <!-- Redes sociales -->
           <div class="mt-4 flex items-center gap-3 justify-center md:justify-start">
-            <a v-if="user.profile.linkedin" :href="user.profile.linkedin" class="bg-blue-50 hover:bg-blue-100 cursor-pointer p-2 flex rounded-full text-[#193CB8] transition-colors">
+            <a v-if="user.profile.linkedin" :href="user.profile.linkedin" class="bg-blue-50 dark:bg-blue-900 hover:bg-blue-100 dark:hover:bg-blue-800 cursor-pointer p-2 flex rounded-full text-[#193CB8] dark:text-blue-200 transition-colors">
               <i class='bx bxl-linkedin text-xl'></i>
             </a>
-            <a v-if="user.profile.github" :href="user.profile.github" class="bg-blue-50 hover:bg-blue-100 cursor-pointer p-2 flex rounded-full text-[#193CB8] transition-colors">
+            <a v-if="user.profile.github" :href="user.profile.github" class="bg-blue-50 dark:bg-blue-900 hover:bg-blue-100 dark:hover:bg-blue-800 cursor-pointer p-2 flex rounded-full text-[#193CB8] dark:text-blue-200 transition-colors">
               <i class='bx bxl-github text-xl'></i>
             </a>
-            <a v-if="user.profile.website" :href="user.profile.website" class="bg-blue-50 hover:bg-blue-100 cursor-pointer p-2 flex rounded-full text-[#193CB8] transition-colors">
+            <a v-if="user.profile.website" :href="user.profile.website" class="bg-blue-50 dark:bg-blue-900 hover:bg-blue-100 dark:hover:bg-blue-800 cursor-pointer p-2 flex rounded-full text-[#193CB8] dark:text-blue-200 transition-colors">
               <i class='bx bx-globe text-xl'></i>
             </a>
             
