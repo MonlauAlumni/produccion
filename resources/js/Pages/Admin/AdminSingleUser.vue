@@ -43,14 +43,15 @@ function blockUser() {
         });
 }
 </script>
+
 <template>
     <AdminLayout title="Editar usuario">
         <div class="h-full p-6">
             <box-icon name='arrow-back' color="#2563EB" class="cursor-pointer" size="md" @click="router.get('/admin/users')"></box-icon>
-            <form @submit="updateUser" class="bg-white p-6 rounded shadow space-y-6 mt-2">
+            <form @submit="updateUser" class="bg-white dark:bg-gray-800 p-6 rounded shadow space-y-6 mt-2 border border-gray-200 dark:border-gray-700">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-gray-700 font-bold mb-1" for="name">Nombre</label>
+                        <label class="block text-gray-700 dark:text-gray-300 font-bold mb-1" for="name">Nombre</label>
                         <InputWithIcon
                             v-model="formUser.name"
                             type="text"
@@ -60,7 +61,7 @@ function blockUser() {
                         />
                     </div>
                     <div>
-                        <label class="block text-gray-700 font-bold mb-1" for="last_name_1">Primer apellido</label>
+                        <label class="block text-gray-700 dark:text-gray-300 font-bold mb-1" for="last_name_1">Primer apellido</label>
                         <InputWithIcon
                             v-model="formUser.last_name_1"
                             type="text"
@@ -70,7 +71,7 @@ function blockUser() {
                         />
                     </div>
                     <div>
-                        <label class="block text-gray-700 font-bold mb-1" for="last_name_2">Segundo apellido</label>
+                        <label class="block text-gray-700 dark:text-gray-300 font-bold mb-1" for="last_name_2">Segundo apellido</label>
                         <InputWithIcon
                             v-model="formUser.last_name_2"
                             type="text"
@@ -80,7 +81,7 @@ function blockUser() {
                         />
                     </div>
                     <div>
-                        <label class="block text-gray-700 font-bold mb-1" for="email">Email</label>
+                        <label class="block text-gray-700 dark:text-gray-300 font-bold mb-1" for="email">Email</label>
                         <InputWithIcon
                             v-model="formUser.email"
                             type="email"
@@ -90,12 +91,12 @@ function blockUser() {
                         />
                     </div>
                     <div class="md:col-span-2 relative">
-                        <label class="block text-gray-700 font-bold mb-1" for="training_area">Área Formativa</label>
-                        <i class="bx bx-book absolute left-3 top-10 text-gray-800 text-xl"></i>
+                        <label class="block text-gray-700 dark:text-gray-300 font-bold mb-1" for="training_area">Área Formativa</label>
+                        <i class="bx bx-book absolute left-3 top-10 text-gray-800 dark:text-gray-300 text-xl"></i>
                         <select
                             id="training_area"
                             v-model="formUser.training_area"
-                            class="w-full h-12 pl-10 p-2 border border-gray-600 rounded-lg outline-none"
+                            class="w-full h-12 pl-10 p-2 border border-gray-600 dark:border-gray-500 rounded-lg outline-none bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-300"
                         >
                             <option value="">Área formativa</option>
                             <option value="Informatica">Informática</option>
@@ -105,12 +106,12 @@ function blockUser() {
                     </div>
                 </div>
                 <div>
-                    <button type="submit" class="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
+                    <button type="submit" class="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition-colors">
                         Guardar cambios
                     </button>
                 </div>
                 <div>
-                    <button type="button" @click="blockUser" class="w-full cursor-pointer bg-red-600 hover:bg-red-700 text-white py-2 rounded mt-2">
+                    <button type="button" @click="blockUser" class="w-full cursor-pointer bg-red-600 hover:bg-red-700 text-white py-2 rounded mt-2 transition-colors">
                         Bloquear usuario
                     </button>
                 </div>
@@ -118,6 +119,7 @@ function blockUser() {
         </div>
     </AdminLayout>
 </template>
-<style scoped>
 
+<style scoped>
+/* No additional styles needed */
 </style>

@@ -144,16 +144,16 @@ function blockUser() {
 <template>
     <AdminLayout title="Gestión de Usuarios">
         <!-- Header Section -->
-        <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl shadow-sm p-8 mb-6 border border-gray-200">
+        <div class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-xl shadow-sm p-8 mb-6 border border-gray-200 dark:border-gray-700">
             <div class="flex items-center space-x-4">
-                <div class="p-3 bg-white rounded-lg shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-800">Gestión de Usuarios</h1>
-                    <p class="mt-1 text-gray-600">
+                    <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">Gestión de Usuarios</h1>
+                    <p class="mt-1 text-gray-600 dark:text-gray-400">
                         Módulo para la gestión de usuarios de Alumni.
                     </p>
                 </div>
@@ -161,16 +161,16 @@ function blockUser() {
         </div>
 
         <!-- Filters Section -->
-        <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-200">
-            <div class="flex items-center justify-between mb-5 pb-4 border-b border-gray-100">
-                <h2 class="text-lg font-semibold text-gray-800 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-6 border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between mb-5 pb-4 border-b border-gray-100 dark:border-gray-700">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                     </svg>
                     Filtros de búsqueda
                 </h2>
                 <button @click="clearFilters"
-                    class="bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center border border-gray-200 shadow-sm">
+                    class="bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center border border-gray-200 dark:border-gray-600 shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
@@ -260,21 +260,21 @@ function blockUser() {
         </div>
 
         <!-- Table Section -->
-        <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-200">
-            <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-100">
-                <h2 class="text-lg font-semibold text-gray-800 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-6 border border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-100 dark:border-gray-700">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                     Listado de Usuarios
                 </h2>
                 <div class="flex items-center">
-                    <div class="flex items-center justify-center h-8 w-8 rounded-full bg-gray-100 mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="flex items-center justify-center h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-700 mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <span class="text-sm text-gray-500 font-medium">
+                    <span class="text-sm text-gray-500 dark:text-gray-400 font-medium">
                         Mostrando {{ (page.props.pagination?.current_page || 1 - 1) * (page.props.pagination?.per_page || 10) + 1 }} - {{
                             (page.props.pagination?.current_page || 1 - 1) * (page.props.pagination?.per_page || 10) + (page.props.users?.length || 0) }}
                         de {{ page.props.pagination?.total || 0 }} usuarios
@@ -365,11 +365,11 @@ function blockUser() {
 
             <!-- Pagination -->
             <div class="mt-6 flex justify-center">
-                <nav class="inline-flex items-center rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <nav class="inline-flex items-center rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <button 
                         @click="changePage(page.props.pagination?.current_page - 1)" 
                         :disabled="!page.props.pagination || page.props.pagination.current_page === 1"
-                        class="px-3 py-2 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed border-r border-gray-200 transition-colors duration-150">
+                        class="px-3 py-2 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed border-r border-gray-200 dark:border-gray-700 transition-colors duration-150">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                         </svg>
@@ -379,9 +379,9 @@ function blockUser() {
                             @click="pageNum !== '...' ? changePage(pageNum) : null" 
                             class="px-4 py-2 text-sm font-medium transition-colors duration-150" 
                             :class="{
-                                'bg-gray-800 text-white': pageNum === (page.props.pagination ? page.props.pagination.current_page : null),
-                                'text-gray-500 cursor-not-allowed': pageNum === '...',
-                                'bg-white text-gray-700 hover:bg-gray-50 border-r border-gray-200': pageNum !== '...' && pageNum !== (page.props.pagination ? page.props.pagination.current_page : null)
+                                'bg-gray-800 dark:bg-gray-700 text-white': pageNum === (page.props.pagination ? page.props.pagination.current_page : null),
+                                'text-gray-500 dark:text-gray-400 cursor-not-allowed': pageNum === '...',
+                                'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border-r border-gray-200 dark:border-gray-700': pageNum !== '...' && pageNum !== (page.props.pagination ? page.props.pagination.current_page : null)
                             }" 
                             :disabled="pageNum === '...'">
                             {{ pageNum }}
@@ -390,7 +390,7 @@ function blockUser() {
                     <button 
                         @click="changePage(page.props.pagination?.current_page + 1)" 
                         :disabled="!page.props.pagination || page.props.pagination.current_page === page.props.pagination.last_page"
-                        class="px-3 py-2 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150">
+                        class="px-3 py-2 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                         </svg>
@@ -402,18 +402,18 @@ function blockUser() {
         <!-- Modals -->
         <BaseModal :show="modalDeleteUser" title="Eliminar Usuario"
             message="¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer."
-            icon="trash-alt" iconColor="#ef4444" iconBgClass="bg-red-100" confirmText="Eliminar"
+            icon="trash-alt" iconColor="#ef4444" iconBgClass="bg-red-100 dark:bg-red-800" confirmText="Eliminar"
             confirmButtonClass="bg-red-600 text-white hover:bg-red-700" @close="modalDeleteUser = false"
             @confirm="deleteUser" />
 
         <BaseModal v-if="String(selectedUser.status).trim().toLowerCase() !== 'blocked'" :show="modalBlockUser" title="Bloquear Usuario"
             message="¿Estás seguro de que deseas bloquear este usuario? Podrá ser desbloqueado más tarde." icon="block"
-            iconColor="#6b7280" iconBgClass="bg-gray-300" confirmText="Bloquear"
+            iconColor="#6b7280" iconBgClass="bg-gray-300 dark:bg-gray-700" confirmText="Bloquear"
             confirmButtonClass="bg-gray-600 text-white hover:bg-gray-700" @close="modalBlockUser = false"
             @confirm="blockUser" />
         <BaseModal v-else :show="modalBlockUser" title="Desbloquear Usuario"
             message="¿Estás seguro de que deseas desbloquear este usuario? Podrá ser bloqueado más tarde." icon="check"
-            iconColor="#4ade80" iconBgClass="bg-green-100" confirmText="Desbloquear"
+            iconColor="#4ade80" iconBgClass="bg-green-100 dark:bg-green-800" confirmText="Desbloquear"
             confirmButtonClass="bg-green-600 text-white hover:bg-green-700" @close="modalBlockUser = false"
             @confirm="blockUser" />
     </AdminLayout>

@@ -118,18 +118,18 @@ const pendingCounts = [
 
 <template>
   <AdminLayout>
-    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <div class="p-6 md:p-8 space-y-8 max-w-7xl mx-auto">
         <!-- Header with actions -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
           <div class="relative">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 tracking-tight">Analytics Dashboard</h1>
-            <p class="text-gray-500 mt-2 font-medium">Welcome back, Admin</p>
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-200 tracking-tight">Analytics Dashboard</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-2 font-medium">Welcome back, Admin</p>
             <div class="absolute -bottom-2 left-0 w-20 h-1 bg-violet-600 rounded-full"></div>
           </div>
           
           <div class="flex items-center gap-4">
-            <div class="flex items-center text-sm text-gray-500 bg-white py-2 px-4 rounded-full shadow-sm border border-gray-200">
+            <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 py-2 px-4 rounded-full shadow-sm border border-gray-200 dark:border-gray-700">
               <i class="bx bx-time-five mr-2 text-violet-500"></i>
               <span>{{ lastUpdated }}</span>
             </div>
@@ -141,7 +141,7 @@ const pendingCounts = [
           <div
             v-for="(stat, i) in stats"
             :key="i"
-            class="rounded-2xl shadow-sm bg-white transition-all duration-300 hover:shadow-lg overflow-hidden cursor-pointer group relative"
+            class="rounded-2xl shadow-sm bg-white dark:bg-gray-800 transition-all duration-300 hover:shadow-lg overflow-hidden cursor-pointer group relative"
             :class="{'translate-y-0 opacity-100': isLoaded, 'translate-y-4 opacity-0': !isLoaded}"
             :style="{transitionDelay: `${i * 100}ms`}"
             @click="toggleCardExpansion(i)"
@@ -152,24 +152,24 @@ const pendingCounts = [
                 <div :class="`p-3 rounded-xl ${stat.color} shadow-md`">
                   <i :class="`bx ${stat.icon} text-xl`"></i>
                 </div>
-                <button class="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity">
                   <i class="bx bx-dots-vertical-rounded"></i>
                 </button>
               </div>
               <div>
-                <p class="text-gray-500 text-sm font-medium">{{ stat.title }}</p>
-                <p class="text-3xl font-bold text-gray-800 mt-2">{{ formatNumber(stat.value) }}</p>
+                <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">{{ stat.title }}</p>
+                <p class="text-3xl font-bold text-gray-800 dark:text-gray-200 mt-2">{{ formatNumber(stat.value) }}</p>
               </div>
             </div>
             
             <!-- Expandable content -->
             <div 
               v-if="expandedCard === i"
-              class="bg-gray-50 p-5 border-t border-gray-100 text-sm text-gray-600 animate-fadeIn"
+              class="bg-gray-50 dark:bg-gray-900 p-5 border-t border-gray-100 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-300 animate-fadeIn"
             >
               <p>{{ stat.description }}</p>
               <div class="mt-4 flex justify-end">
-                <button class="text-violet-600 hover:text-violet-700 text-xs font-medium flex items-center bg-violet-50 hover:bg-violet-100 py-2 px-3 rounded-lg transition-colors">
+                <button class="text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-500 text-xs font-medium flex items-center bg-violet-50 dark:bg-violet-900 hover:bg-violet-100 dark:hover:bg-violet-800 py-2 px-3 rounded-lg transition-colors">
                   View Details
                   <i class="bx bx-right-arrow-alt ml-1"></i>
                 </button>
@@ -179,15 +179,15 @@ const pendingCounts = [
         </div>
 
         <!-- Tab Navigation -->
-        <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div class="border-b border-gray-100">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
+          <div class="border-b border-gray-100 dark:border-gray-700">
             <nav class="flex px-6">
               <button 
                 v-for="tab in tabs" 
                 :key="tab"
                 @click="activeTab = tab"
                 class="py-5 px-4 text-sm font-medium border-b-2 transition-colors relative mr-6"
-                :class="activeTab === tab ? 'border-violet-600 text-violet-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                :class="activeTab === tab ? 'border-violet-600 text-violet-600 dark:text-violet-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'"
               >
                 {{ tab }}
               </button>
@@ -197,27 +197,27 @@ const pendingCounts = [
 
         <!-- Command Center -->
         <div 
-          class="bg-white rounded-2xl shadow-sm overflow-hidden"
+          class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden"
           :class="{'translate-y-0 opacity-100': isLoaded, 'translate-y-4 opacity-0': !isLoaded}"
           style="transition: all 0.5s ease; transition-delay: 300ms;"
         >
-          <div class="border-b border-gray-100">
+          <div class="border-b border-gray-100 dark:border-gray-700">
             <div class="flex items-center justify-between p-6">
               <div class="flex items-center">
-                <div class="bg-violet-100 text-violet-600 p-3 rounded-xl mr-4 shadow-sm">
+                <div class="bg-violet-100 dark:bg-violet-900 text-violet-600 dark:text-violet-400 p-3 rounded-xl mr-4 shadow-sm">
                   <i class="bx bx-command text-xl"></i>
                 </div>
                 <div>
-                  <h2 class="text-xl font-semibold text-gray-800">Centro de comandos</h2>
-                  <p class="text-xs text-gray-500 mt-1">Acciones rápidas y estado del sistema</p>
+                  <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Centro de comandos</h2>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Acciones rápidas y estado del sistema</p>
                 </div>
               </div>
               <div class="flex items-center gap-3">
-                <span class="text-xs px-3 py-1.5 bg-green-100 text-green-700 rounded-full flex items-center shadow-sm">
-                  <span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+                <span class="text-xs px-3 py-1.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-400 rounded-full flex items-center shadow-sm">
+                  <span class="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full mr-2 animate-pulse"></span>
                   All Systems Operational
                 </span>
-                <button class="text-gray-400 hover:text-gray-600 p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <button class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
                   <i class="bx bx-dots-horizontal-rounded text-xl"></i>
                 </button>
               </div>
@@ -230,13 +230,13 @@ const pendingCounts = [
               <button 
                 v-for="(action, i) in quickActions" 
                 :key="i"
-                class="flex flex-col items-center justify-center p-5 rounded-xl border border-gray-100 hover:bg-gray-50 transition-all hover:shadow-md hover:-translate-y-1"
+                class="flex flex-col items-center justify-center p-5 rounded-xl border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all hover:shadow-md hover:-translate-y-1"
                 @click="action.route ? navigateTo(action.route) : null"
               >
                 <div :class="`p-4 rounded-xl ${action.color} text-white mb-3 shadow-md`">
                   <i :class="`bx ${action.icon} text-xl`"></i>
                 </div>
-                <span class="text-sm font-medium text-gray-700">{{ action.name }}</span>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ action.name }}</span>
               </button>
             </div>
           </div>
@@ -248,18 +248,18 @@ const pendingCounts = [
           :class="{'translate-y-0 opacity-100': isLoaded, 'translate-y-4 opacity-0': !isLoaded}"
           style="transition: all 0.5s ease; transition-delay: 400ms;"
         >
-          <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <div class="border-b border-gray-100 px-6 py-5">
+          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
+            <div class="border-b border-gray-100 dark:border-gray-700 px-6 py-5">
               <div class="flex justify-between items-center">
                 <div>
-                  <h2 class="text-xl font-semibold text-gray-800">Usuarios por area de aprendizaje</h2>
-                  <p class="text-sm text-gray-500 mt-1">Distribución de usuarios según su área de formación</p>
+                  <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Usuarios por área de aprendizaje</h2>
+                  <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Distribución de usuarios según su área de formación</p>
                 </div>
                 <div class="flex items-center space-x-2">
-                  <button class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors">
+                  <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
                     <i class="bx bx-refresh"></i>
                   </button>
-                  <button class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors">
+                  <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
                     <i class="bx bx-dots-horizontal-rounded"></i>
                   </button>
                 </div>
@@ -270,18 +270,18 @@ const pendingCounts = [
             </div>
           </div>
           
-          <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <div class="border-b border-gray-100 px-6 py-5">
+          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
+            <div class="border-b border-gray-100 dark:border-gray-700 px-6 py-5">
               <div class="flex justify-between items-center">
                 <div>
-                  <h2 class="text-xl font-semibold text-gray-800">Empresas por sector</h2>
-                  <p class="text-sm text-gray-500 mt-1">Distribución de empresas según su sector industrial</p>
+                  <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Empresas por sector</h2>
+                  <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Distribución de empresas según su sector industrial</p>
                 </div>
                 <div class="flex items-center space-x-2">
-                  <button class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors">
+                  <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
                     <i class="bx bx-refresh"></i>
                   </button>
-                  <button class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors">
+                  <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
                     <i class="bx bx-dots-horizontal-rounded"></i>
                   </button>
                 </div>
