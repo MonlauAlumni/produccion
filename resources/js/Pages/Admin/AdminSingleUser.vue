@@ -31,6 +31,17 @@ function updateUser(event) {
             console.error(error);
         });
 }
+
+function blockUser() {
+    axios.put(`/admin/user/${props.user.id}`, { status: 'blocked' })
+        .then(response => {
+            formUser.value.status = 'blocked';
+            alert('Usuario bloqueado');
+        })
+        .catch(error => {
+            alert('Error al bloquear usuario');
+        });
+}
 </script>
 <template>
     <AdminLayout title="Editar usuario">
@@ -96,6 +107,11 @@ function updateUser(event) {
                 <div>
                     <button type="submit" class="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
                         Guardar cambios
+                    </button>
+                </div>
+                <div>
+                    <button type="button" @click="blockUser" class="w-full cursor-pointer bg-red-600 hover:bg-red-700 text-white py-2 rounded mt-2">
+                        Bloquear usuario
                     </button>
                 </div>
             </form>
