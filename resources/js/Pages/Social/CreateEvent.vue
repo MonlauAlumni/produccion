@@ -28,7 +28,7 @@ const form = ref({
 const errors = ref({});
 const photosPreviews = ref([]);
 const isUploading = ref(false);
-const acceptedResponsibility = ref(false); // Nueva variable para el checkbox de responsabilidad
+const acceptedResponsibility = ref(false); 
 
 const descriptionLength = computed(() => form.value.description.length);
 const maxDescriptionLength = 500;
@@ -92,7 +92,6 @@ const submitForm = () => {
         errors.value.group_id = 'Selecciona un grupo para el evento privado';
     }
     
-    // Validación para el checkbox de responsabilidad
     if (!acceptedResponsibility.value) {
         errors.value.responsibility = 'Debes aceptar los términos de responsabilidad para crear el evento';
     }
@@ -107,7 +106,6 @@ const submitForm = () => {
 
     isUploading.value = true;
 
-    // Combine date and time
     const dateTime = new Date(`${form.value.event_date}T${form.value.event_time}`);
     
     const formData = new FormData();
@@ -129,7 +127,6 @@ const submitForm = () => {
 
     router.post('/eventos/nuevo', formData, {
         onSuccess: () => {
-            // Success handling is done by redirect in controller
         },
         onError: (newErrors) => {
             isUploading.value = false;
@@ -148,8 +145,8 @@ const cancelAndReturn = () => {
 
 <template>
     <Layout :auth="auth">
-        <div class="min-h-screen bg-gray-50 flex flex-col">
-            <div class="bg-[#193CB8] text-white py-6">
+        <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+            <div class="bg-[#193CB8] dark:bg-[#142d8c] text-white py-6">
                 <div class="max-w-4xl mx-auto px-4">
                     <div class="flex items-center">
                         <button @click="cancelAndReturn"
@@ -164,18 +161,18 @@ const cancelAndReturn = () => {
             <!-- Contenido principal -->
             <div class="flex-1 py-8">
                 <div class="max-w-4xl mx-auto px-4">
-                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
                         <div class="p-6">
-                            <h2 class="text-xl font-bold text-gray-800 mb-6">Información del evento</h2>
+                            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6">Información del evento</h2>
 
                             <form @submit.prevent="submitForm" class="space-y-6">
                                 <!-- Título del evento -->
                                 <div>
-                                    <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
+                                    <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Título del evento <span class="text-red-500">*</span>
                                     </label>
                                     <input id="title" v-model="form.title" type="text"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] outline-none transition-colors"
+                                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 outline-none transition-colors"
                                         placeholder="Ej: Workshop de Desarrollo Web"
                                         :class="{ 'border-red-500': errors.title }" />
                                     <p v-if="errors.title" class="mt-1 text-sm text-red-500 error-message">{{ errors.title }}</p>
@@ -183,28 +180,28 @@ const cancelAndReturn = () => {
 
                                 <!-- Descripción -->
                                 <div>
-                                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+                                    <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Descripción <span class="text-red-500">*</span>
                                     </label>
                                     <textarea id="description" v-model="form.description" rows="4"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] outline-none transition-colors resize-none"
+                                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 outline-none transition-colors resize-none"
                                         placeholder="Describe los detalles del evento, qué pueden esperar los asistentes..."
                                         :class="{ 'border-red-500': errors.description }"
                                         :maxlength="maxDescriptionLength"></textarea>
                                     <div class="flex justify-between mt-1">
                                         <p v-if="errors.description" class="text-sm text-red-500 error-message">
                                             {{ errors.description }}</p>
-                                        <p class="text-xs text-gray-500">{{ descriptionLength }}/{{ maxDescriptionLength }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ descriptionLength }}/{{ maxDescriptionLength }}</p>
                                     </div>
                                 </div>
 
                                 <!-- Ubicación -->
                                 <div>
-                                    <label for="location" class="block text-sm font-medium text-gray-700 mb-1">
+                                    <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Ubicación <span class="text-red-500">*</span>
                                     </label>
                                     <input id="location" v-model="form.location" type="text"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] outline-none transition-colors"
+                                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 outline-none transition-colors"
                                         placeholder="Ej: Campus Monlau, Aula 302"
                                         :class="{ 'border-red-500': errors.location }" />
                                     <p v-if="errors.location" class="mt-1 text-sm text-red-500 error-message">{{ errors.location }}</p>
@@ -213,20 +210,20 @@ const cancelAndReturn = () => {
                                 <!-- Fecha y Hora -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label for="event_date" class="block text-sm font-medium text-gray-700 mb-1">
+                                        <label for="event_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Fecha <span class="text-red-500">*</span>
                                         </label>
                                         <input id="event_date" v-model="form.event_date" type="date"
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] outline-none transition-colors"
+                                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 outline-none transition-colors"
                                             :class="{ 'border-red-500': errors.event_date }" />
                                         <p v-if="errors.event_date" class="mt-1 text-sm text-red-500 error-message">{{ errors.event_date }}</p>
                                     </div>
                                     <div>
-                                        <label for="event_time" class="block text-sm font-medium text-gray-700 mb-1">
+                                        <label for="event_time" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Hora <span class="text-red-500">*</span>
                                         </label>
                                         <input id="event_time" v-model="form.event_time" type="time"
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] outline-none transition-colors"
+                                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 outline-none transition-colors"
                                             :class="{ 'border-red-500': errors.event_time }" />
                                         <p v-if="errors.event_time" class="mt-1 text-sm text-red-500 error-message">{{ errors.event_time }}</p>
                                     </div>
@@ -234,22 +231,22 @@ const cancelAndReturn = () => {
 
                                 <!-- Privacidad -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Privacidad</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Privacidad</label>
                                     <div class="flex flex-col space-y-3">
                                         <label class="inline-flex items-center cursor-pointer">
                                             <input type="radio" v-model="form.is_private" :value="false"
                                                 class="form-radio h-5 w-5 text-[#193CB8]" />
                                             <div class="ml-3">
-                                                <span class="text-gray-800 font-medium">Público</span>
-                                                <p class="text-gray-500 text-sm">Cualquier persona puede ver y asistir al evento</p>
+                                                <span class="text-gray-800 dark:text-gray-200 font-medium">Público</span>
+                                                <p class="text-gray-500 dark:text-gray-400 text-sm">Cualquier persona puede ver y asistir al evento</p>
                                             </div>
                                         </label>
                                         <label class="inline-flex items-center cursor-pointer">
                                             <input type="radio" v-model="form.is_private" :value="true"
                                                 class="form-radio h-5 w-5 text-[#193CB8]" />
                                             <div class="ml-3">
-                                                <span class="text-gray-800 font-medium">Privado</span>
-                                                <p class="text-gray-500 text-sm">Solo miembros del grupo seleccionado pueden ver y asistir al evento</p>
+                                                <span class="text-gray-800 dark:text-gray-200 font-medium">Privado</span>
+                                                <p class="text-gray-500 dark:text-gray-400 text-sm">Solo miembros del grupo seleccionado pueden ver y asistir al evento</p>
                                             </div>
                                         </label>
                                     </div>
@@ -257,11 +254,11 @@ const cancelAndReturn = () => {
 
                                 <!-- Grupo (solo si es privado) -->
                                 <div v-if="form.is_private">
-                                    <label for="group_id" class="block text-sm font-medium text-gray-700 mb-1">
+                                    <label for="group_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Grupo <span class="text-red-500">*</span>
                                     </label>
                                     <select id="group_id" v-model="form.group_id"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] outline-none transition-colors"
+                                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] dark:bg-gray-700 dark:text-gray-100 outline-none transition-colors"
                                         :class="{ 'border-red-500': errors.group_id }">
                                         <option value="" disabled selected>Selecciona un grupo</option>
                                         <option v-for="group in userGroups" :key="group.id" :value="group.id">
@@ -277,12 +274,12 @@ const cancelAndReturn = () => {
 
                                 <!-- Fotos del evento -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Fotos del evento
                                     </label>
 
                                     <div v-if="photosPreviews.length === 0"
-                                        class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                                        class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
                                         <div class="flex flex-col items-center">
                                             <i class='bx bx-image-add text-4xl text-gray-400 mb-2'></i>
                                             <p class="text-gray-500 mb-4">Añade fotos para tu evento</p>
@@ -306,7 +303,7 @@ const cancelAndReturn = () => {
                                             </button>
                                         </div>
                                         <div
-                                            class="border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center h-40">
+                                            class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center h-40">
                                             <label class="cursor-pointer flex flex-col items-center">
                                                 <i class='bx bx-plus text-2xl text-gray-400'></i>
                                                 <span class="text-sm text-gray-500">Añadir más</span>
@@ -321,14 +318,14 @@ const cancelAndReturn = () => {
                                 </div>
 
                                 <!-- Vista previa del evento -->
-                                <div v-if="form.title || form.description || photosPreviews.length > 0" class="border border-gray-200 rounded-xl overflow-hidden">
-                                    <div class="bg-gray-50 p-4 border-b border-gray-200">
-                                        <h3 class="font-bold text-gray-800">Vista previa del evento</h3>
+                                <div v-if="form.title || form.description || photosPreviews.length > 0" class="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+                                    <div class="bg-gray-50 dark:bg-gray-800 p-4 border-b border-gray-200 dark:border-gray-700">
+                                        <h3 class="font-bold text-gray-800 dark:text-gray-200">Vista previa del evento</h3>
                                     </div>
                                     
                                     <div class="relative">
                                         <!-- Banner -->
-                                        <div class="h-48 bg-gradient-to-r from-[#193CB8]/20 to-[#2748c6]/20 relative">
+                                        <div class="h-48 bg-gradient-to-r from-[#193CB8]/20 to-[#2748c6]/20 dark:from-[#193CB8]/40 dark:to-[#2748c6]/40 relative">
                                             <img 
                                                 v-if="photosPreviews.length > 0" 
                                                 :src="photosPreviews[0]" 
@@ -338,10 +335,10 @@ const cancelAndReturn = () => {
                                         </div>
                                         
                                         <!-- Información del evento -->
-                                        <div class="p-6">
-                                            <h2 class="text-2xl font-bold text-gray-800">{{ form.title || 'Título del evento' }}</h2>
+                                        <div class="p-6 bg-white dark:bg-gray-900">
+                                            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">{{ form.title || 'Título del evento' }}</h2>
                                             
-                                            <div class="flex flex-wrap items-center text-gray-500 text-sm mt-3 gap-4">
+                                            <div class="flex flex-wrap items-center text-gray-500 dark:text-gray-400 text-sm mt-3 gap-4">
                                                 <span v-if="form.event_date" class="flex items-center">
                                                     <i class='bx bx-calendar mr-1'></i> {{ form.event_date }}
                                                     <span v-if="form.event_time" class="ml-1">{{ form.event_time }}</span>
@@ -359,11 +356,11 @@ const cancelAndReturn = () => {
                                                 </span>
                                             </div>
                                             
-                                            <p class="text-gray-600 mt-4">{{ form.description || 'Descripción del evento...' }}</p>
+                                            <p class="text-gray-600 dark:text-gray-300 mt-4">{{ form.description || 'Descripción del evento...' }}</p>
                                             
                                             <!-- Galería de fotos -->
                                             <div v-if="photosPreviews.length > 1" class="mt-6">
-                                                <h4 class="font-medium text-gray-700 mb-2">Galería de fotos</h4>
+                                                <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Galería de fotos</h4>
                                                 <div class="grid grid-cols-4 gap-2">
                                                     <img 
                                                         v-for="(preview, index) in photosPreviews.slice(1, 5)" 
@@ -373,7 +370,7 @@ const cancelAndReturn = () => {
                                                         class="w-full h-20 object-cover rounded-lg"
                                                     />
                                                 </div>
-                                                <p v-if="photosPreviews.length > 5" class="text-sm text-gray-500 mt-2">
+                                                <p v-if="photosPreviews.length > 5" class="text-sm text-gray-500 dark:text-gray-400 mt-2">
                                                     +{{ photosPreviews.length - 5 }} fotos más
                                                 </p>
                                             </div>
@@ -382,15 +379,15 @@ const cancelAndReturn = () => {
                                 </div>
 
                                 <!-- Aviso de responsabilidad -->
-                                <div class="bg-blue-50 border border-blue-100 rounded-lg p-5">
+                                <div class="bg-blue-50 dark:bg-blue-900 border border-blue-100 dark:border-blue-800 rounded-lg p-5">
                                     <div class="flex items-start">
-                                        <i class='bx bx-info-circle text-[#193CB8] text-xl mt-0.5 mr-3'></i>
+                                        <i class='bx bx-info-circle text-[#193CB8] dark:text-blue-200 text-xl mt-0.5 mr-3'></i>
                                         <div>
-                                            <h4 class="font-semibold text-gray-800 mb-2">Términos de responsabilidad</h4>
-                                            <p class="text-sm text-gray-700 mb-3">
+                                            <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-2">Términos de responsabilidad</h4>
+                                            <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">
                                                 Al crear este evento, confirmas que:
                                             </p>
-                                            <ul class="list-disc pl-5 mb-4 text-sm text-gray-700 space-y-1">
+                                            <ul class="list-disc pl-5 mb-4 text-sm text-gray-700 dark:text-gray-300 space-y-1">
                                                 <li>Te responsabilizas completamente del contenido y la organización del evento</li>
                                                 <li>La información proporcionada es precisa y veraz</li>
                                                 <li>El evento cumple con las leyes y normativas aplicables</li>
@@ -404,12 +401,12 @@ const cancelAndReturn = () => {
                                                         id="responsibility" 
                                                         v-model="acceptedResponsibility"
                                                         type="checkbox" 
-                                                        class="h-4 w-4 rounded border-gray-300 text-[#193CB8] focus:ring-[#193CB8]"
+                                                        class="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-[#193CB8] focus:ring-[#193CB8] dark:focus:ring-blue-200"
                                                         :class="{ 'border-red-500': errors.responsibility }"
                                                     />
                                                 </div>
                                                 <div class="ml-3 text-sm">
-                                                    <label for="responsibility" class="font-medium text-gray-700">
+                                                    <label for="responsibility" class="font-medium text-gray-700 dark:text-gray-300">
                                                         He leído y acepto los términos de responsabilidad
                                                     </label>
                                                 </div>
@@ -422,9 +419,9 @@ const cancelAndReturn = () => {
                                 </div>
 
                                 <!-- Botones de acción -->
-                                <div class="flex justify-end space-x-4 pt-4 border-t border-gray-100">
+                                <div class="flex justify-end space-x-4 pt-4 border-t border-gray-100 dark:border-gray-700">
                                     <button type="button" @click="cancelAndReturn"
-                                        class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                                        class="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                                         Cancelar
                                     </button>
                                     <button type="submit"
@@ -443,29 +440,29 @@ const cancelAndReturn = () => {
                     </div>
 
                     <!-- Consejos para crear un evento exitoso -->
-                    <div class="bg-[#193CB8]/5 rounded-xl p-6 mt-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
-                            <i class='bx bx-bulb text-[#193CB8] mr-2'></i> Consejos para crear un evento exitoso
+                    <div class="bg-[#193CB8]/5 dark:bg-[#193CB8]/10 rounded-xl p-6 mt-6">
+                        <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3 flex items-center">
+                            <i class='bx bx-bulb text-[#193CB8] dark:text-blue-200 mr-2'></i> Consejos para crear un evento exitoso
                         </h3>
-                        <ul class="space-y-2 text-gray-700">
+                        <ul class="space-y-2 text-gray-700 dark:text-gray-300">
                             <li class="flex items-start">
-                                <i class='bx bx-check-circle text-[#193CB8] mt-1 mr-2'></i>
+                                <i class='bx bx-check-circle text-[#193CB8] dark:text-blue-200 mt-1 mr-2'></i>
                                 <span>Define claramente el propósito y los objetivos del evento</span>
                             </li>
                             <li class="flex items-start">
-                                <i class='bx bx-check-circle text-[#193CB8] mt-1 mr-2'></i>
+                                <i class='bx bx-check-circle text-[#193CB8] dark:text-blue-200 mt-1 mr-2'></i>
                                 <span>Elige un título atractivo y descriptivo</span>
                             </li>
                             <li class="flex items-start">
-                                <i class='bx bx-check-circle text-[#193CB8] mt-1 mr-2'></i>
+                                <i class='bx bx-check-circle text-[#193CB8] dark:text-blue-200 mt-1 mr-2'></i>
                                 <span>Añade fotos representativas para captar la atención</span>
                             </li>
                             <li class="flex items-start">
-                                <i class='bx bx-check-circle text-[#193CB8] mt-1 mr-2'></i>
+                                <i class='bx bx-check-circle text-[#193CB8] dark:text-blue-200 mt-1 mr-2'></i>
                                 <span>Proporciona información detallada sobre la ubicación y cómo llegar</span>
                             </li>
                             <li class="flex items-start">
-                                <i class='bx bx-check-circle text-[#193CB8] mt-1 mr-2'></i>
+                                <i class='bx bx-check-circle text-[#193CB8] dark:text-blue-200 mt-1 mr-2'></i>
                                 <span>Invita a otros alumni para comenzar a construir tu lista de asistentes</span>
                             </li>
                         </ul>

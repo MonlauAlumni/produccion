@@ -111,7 +111,7 @@ watch(() => props.group, (newGroup) => {
 </script>
 <template>
     <Layout :auth="auth">
-        <div class="min-h-screen bg-gray-50 flex flex-col relative">
+        <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col relative">
             <div class="relative w-full h-64 md:h-80 bg-gradient-to-r from-[#193CB8] to-[#2748c6] overflow-hidden">
                 <div v-if="isAdmin" class="absolute bottom-4 right-4 z-11">
                     <label for="bannerUpload"
@@ -137,102 +137,114 @@ watch(() => props.group, (newGroup) => {
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
                         <div class="md:col-span-2 space-y-6">
-                            <GroupPostTab v-if="activeTab === 'publicaciones'" :auth="auth" :isMember="isMember"
-                                :group="group" />
+                            <GroupPostTab
+                                v-if="activeTab === 'publicaciones'"
+                                :auth="auth"
+                                :isMember="isMember"
+                                :group="group"
+                            />
 
-                            <GroupMembersTab v-if="activeTab === 'miembros'" :activeTab="activeTab"
-                                :adminMembers="adminMembers" :regularMembers="regularMembers" :isAdmin="isAdmin" />
+                            <GroupMembersTab
+                                v-if="activeTab === 'miembros'"
+                                :activeTab="activeTab"
+                                :adminMembers="adminMembers"
+                                :regularMembers="regularMembers"
+                                :isAdmin="isAdmin"
+                            />
 
-                            <div v-if="activeTab === 'eventos'"
-                                class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <div
+                                v-if="activeTab === 'eventos'"
+                                class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+                            >
                                 <div class="flex items-center justify-between mb-4">
-                                    <h2 class="text-xl font-semibold">Eventos del grupo</h2>
-
-                                    <button v-if="isAdmin || isMember" @click="router.get('/eventos/nuevo')"
-                                        class="px-3 py-1.5 bg-[#193CB8] cursor-pointer text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm flex items-center">
+                                    <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Eventos del grupo</h2>
+                                    <button
+                                        v-if="isAdmin || isMember"
+                                        @click="router.get('/eventos/nuevo')"
+                                        class="px-3 py-1.5 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm flex items-center"
+                                    >
                                         <i class='bx bx-plus mr-1'></i> Crear evento
                                     </button>
                                 </div>
 
                                 <div v-if="group.events && group.events.length > 0" class="space-y-4">
-                                    <div v-for="event in group.events.filter(e => new Date(e.event_date) >= new Date()).slice(0, 3)"
-                                        :key="event.id" @click="router.visit(`/eventos/${event.slug}`)"
-                                        class="flex gap-3 p-2 hover:bg-gray-100 rounded-lg cursor-pointer">
+                                    <div
+                                        v-for="event in group.events.filter(e => new Date(e.event_date) >= new Date()).slice(0, 3)"
+                                        :key="event.id"
+                                        @click="router.visit(`/eventos/${event.slug}`)"
+                                        class="flex gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer transition-colors"
+                                    >
                                         <div
-                                            class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-[#193CB8] flex-shrink-0">
+                                            class="w-12 h-12 bg-blue-50 dark:bg-blue-900 rounded-lg flex items-center justify-center text-[#193CB8] dark:text-blue-200 flex-shrink-0"
+                                        >
                                             <i class='bx bx-calendar-event text-xl'></i>
                                         </div>
                                         <div>
-                                            <h4 class="font-medium text-gray-800 line-clamp-1">{{ event.title }}
-                                            </h4>
-                                            <div class="flex items-center text-gray-500 text-xs">
+                                            <h4 class="font-medium text-gray-800 dark:text-gray-100 line-clamp-1">{{ event.title }}</h4>
+                                            <div class="flex items-center text-gray-500 dark:text-gray-400 text-xs">
                                                 <i class='bx bx-calendar mr-1'></i>
-                                                {{ new Date(event.event_date).toLocaleDateString('es-ES', {
-                                                    day: 'numeric',
-                                                    month: 'short'
-                                                }) }}
+                                                {{ new Date(event.event_date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) }}
                                                 <span class="mx-1">·</span>
                                                 <i class='bx bx-time mr-1'></i>
-                                                {{ new Date(event.event_date).toLocaleTimeString('es-ES', {
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
-                                                }) }}
+                                                {{ new Date(event.event_date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) }}
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div v-if="group.events.filter(e => new Date(e.event_date) >= new Date()).length > 3"
-                                        class="text-center mt-2">
-                                        <button @click="activeTab = 'eventos'"
-                                            class="text-sm text-[#193CB8] hover:underline">
+                                    <div
+                                        v-if="group.events.filter(e => new Date(e.event_date) >= new Date()).length > 3"
+                                        class="text-center mt-2"
+                                    >
+                                        <button
+                                            @click="activeTab = 'eventos'"
+                                            class="text-sm text-[#193CB8] dark:text-blue-200 hover:underline"
+                                        >
                                             Ver todos los eventos
                                         </button>
                                     </div>
                                 </div>
 
                                 <div v-else class="text-center py-8">
-                                    <i class='bx bx-calendar-event text-5xl text-gray-300 mb-2'></i>
-                                    <h3 class="text-lg font-medium text-gray-700 mb-1">No hay eventos programados
-                                    </h3>
-                                    <p class="text-gray-500">Los eventos del grupo aparecerán aquí</p>
+                                    <i class='bx bx-calendar-event text-5xl text-gray-300 dark:text-gray-600 mb-2'></i>
+                                    <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-1">No hay eventos programados</h3>
+                                    <p class="text-gray-500 dark:text-gray-400">Los eventos del grupo aparecerán aquí</p>
                                 </div>
                             </div>
-               
                         </div>
 
                         <div class="space-y-6">
-                            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                                <h2 class="text-xl font-semibold mb-4">Información</h2>
-                                <hr class="border-t border-[#193CB8] mb-4" />
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                                <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Información</h2>
+                                <hr class="border-t border-blue-200 mb-4" />
 
                                 <div class="space-y-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="bg-blue-50 p-2 rounded-full">
+                                        <div class="bg-blue-50 dark:bg-blue-200 p-2 rounded-full">
                                             <i class='bx bx-category-alt text-[#193CB8] text-xl'></i>
                                         </div>
                                         <div>
-                                            <p class="text-sm text-gray-500">Categoría</p>
-                                            <p class="text-gray-700">{{ group.category }}</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Categoría</p>
+                                            <p class="text-gray-700 dark:text-gray-300">{{ group.category }}</p>
                                         </div>
                                     </div>
 
                                     <div class="flex items-center gap-3">
-                                        <div class="bg-blue-50 p-2 rounded-full">
+                                        <div class="bg-blue-50 dark:bg-blue-200 p-2 rounded-full">
                                             <i class='bx bx-calendar text-[#193CB8] text-xl'></i>
                                         </div>
                                         <div>
-                                            <p class="text-sm text-gray-500">Creado</p>
-                                            <p class="text-gray-700">{{ formatDate(group.created_at) }}</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Creado</p>
+                                            <p class="text-gray-700 dark:text-gray-300">{{ formatDate(group.created_at) }}</p>
                                         </div>
                                     </div>
 
                                     <div class="flex items-center gap-3">
-                                        <div class="bg-blue-50 p-2 rounded-full">
+                                        <div class="bg-blue-50 dark:bg-blue-200 p-2 rounded-full">
                                             <i class='bx bx-user-check text-[#193CB8] text-xl'></i>
                                         </div>
                                         <div>
-                                            <p class="text-sm text-gray-500">Miembros</p>
-                                            <p class="text-gray-700">{{ group.members ? group.members.length : 0 }}
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Miembros</p>
+                                            <p class="text-gray-700 dark:text-gray-300">{{ group.members ? group.members.length : 0 }}
                                                 {{ group.members && group.members.length === 1 ? 'miembro' : 'miembros'
                                                 }}</p>
                                         </div>
@@ -240,34 +252,33 @@ watch(() => props.group, (newGroup) => {
                                 </div>
                             </div>
 
-                            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                                <h2 class="text-xl font-semibold mb-4">Miembros destacados</h2>
-                                <hr class="border-t border-[#193CB8] mb-4" />
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                                <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Miembros destacados</h2>
+                                <hr class="border-t border-blue-200 mb-4" />
 
                                 <div class="space-y-3">
                                     <div v-for="member in adminMembers.slice(0, 3)" :key="member.id"
-                                        class="flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer"
+                                        class="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                                         @click="router.get('/perfil/' + member.user.profile.slang)">
                                         <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
                                             <img v-if="member.user.profile.profile_picture"
                                                 :src="member.user.profile.profile_picture || '/images/default-avatar.jpg'"
                                                 :alt="member.user.name" class="w-full h-full object-cover" />
                                             <div v-else
-                                                class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
+                                                class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2  border-white dark:text-blue-400 dark:border-gray-800">
                                                 <i class='bx bxs-user text-xl'></i>
                                             </div>
                                         </div>
                                         <div>
-                                            <h4 class="font-medium text-gray-800">{{ member.user.name + ' ' +
-                                                member.user.last_name_1 + ' ' + member.user.last_name_2 ?? null }}</h4>
-                                            <p class="text-xs text-gray-500">Administrador</p>
+                                            <h4 class="font-medium text-gray-800 dark:text-gray-200">{{ member.user.name }}</h4>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Administrador</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="mt-4 text-center">
                                     <button @click="activeTab = 'miembros'"
-                                        class="text-sm text-[#193CB8] hover:underline cursor-pointer">
+                                        class="text-sm text-blue-200 hover:underline cursor-pointer">
                                         Ver todos los miembros
                                     </button>
                                 </div>
@@ -316,44 +327,44 @@ watch(() => props.group, (newGroup) => {
         </div>
 
         <div v-show="showInviteModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-xl shadow-xl max-w-md w-full">
-                <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-                    <h3 class="font-bold text-gray-800">Invitar a nuevos miembros</h3>
-                    <button @click="showInviteModal = false" class="text-gray-500 hover:text-gray-700">
-                        <i class='bx bx-x text-2xl'></i>
-                    </button>
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-xl max-w-md w-full">
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <h3 class="font-bold text-gray-800 dark:text-gray-100">Invitar a nuevos miembros</h3>
+                <button @click="showInviteModal = false" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                <i class='bx bx-x text-2xl'></i>
+                </button>
+            </div>
+
+            <div class="p-6">
+                <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Email del invitado
+                </label>
+                <input v-model="inviteEmail" type="email"
+                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] outline-none transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                    placeholder="ejemplo@email.com" />
                 </div>
 
-                <div class="p-6">
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Email del invitado
-                        </label>
-                        <input v-model="inviteEmail" type="email"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] outline-none transition-colors"
-                            placeholder="ejemplo@email.com" />
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Mensaje (opcional)
-                        </label>
-                        <textarea rows="3"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] outline-none transition-colors resize-none"
-                            placeholder="Añade un mensaje personal a la invitación..."></textarea>
-                    </div>
-
-                    <div class="flex justify-end space-x-3">
-                        <button @click="showInviteModal = false"
-                            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-                            Cancelar
-                        </button>
-                        <button @click="inviteMember"
-                            class="px-4 py-2 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors">
-                            Enviar invitación
-                        </button>
-                    </div>
+                <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Mensaje (opcional)
+                </label>
+                <textarea rows="3"
+                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#193CB8] focus:border-[#193CB8] outline-none transition-colors resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                    placeholder="Añade un mensaje personal a la invitación..."></textarea>
                 </div>
+
+                <div class="flex justify-end space-x-3">
+                <button @click="showInviteModal = false"
+                    class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    Cancelar
+                </button>
+                <button @click="inviteMember"
+                    class="px-4 py-2 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors">
+                    Enviar invitación
+                </button>
+                </div>
+            </div>
             </div>
         </div>
     </Layout>

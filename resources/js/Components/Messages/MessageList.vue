@@ -1,18 +1,18 @@
 <template>
   <div 
     ref="messagesContainer"
-    class="flex-1 p-4 overflow-y-auto flex flex-col-reverse"
+    class="flex-1 p-4 overflow-y-auto flex flex-col-reverse bg-gray-50 dark:bg-gray-900"
   >
     <!-- Loader para cargar más mensajes -->
     <div v-if="loading" class="py-4 text-center">
-      <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-[#193CB8]"></div>
+      <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-[#193CB8] dark:border-blue-400"></div>
     </div>
     
     <!-- Botón para cargar más mensajes -->
     <div v-if="hasMoreMessages && !loading" class="text-center py-2">
       <button 
         @click="$emit('load-more')"
-        class="px-4 py-1 text-sm text-[#193CB8] hover:bg-blue-50 rounded-full"
+        class="px-4 py-1 text-sm text-[#193CB8] dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-full"
       >
         Cargar mensajes anteriores
       </button>
@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUpdated, watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import MessageItem from './MessageItem.vue';
 
 const props = defineProps({
@@ -97,11 +97,6 @@ onMounted(() => {
     messagesContainer.value.scrollTop = 0;
   }
 });
-
-onUpdated(() => {
-  // Si se cargan mensajes anteriores, mantener la posición de scroll
-  // Si se añaden nuevos mensajes, scroll al final
-});
 </script>
 
 <style scoped>
@@ -121,5 +116,18 @@ onUpdated(() => {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
 }
 </style>

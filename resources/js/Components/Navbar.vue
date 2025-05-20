@@ -1,5 +1,5 @@
 <template>
-  <nav class="bg-[#193CB8] w-full py-2   px-4 ">
+  <nav class="bg-[#193CB8] w-full py-2   px-4 dark:bg-[#142d8c]">
     <div class=" flex justify-between items-center">
       <div class="relative flex ml-12 md:ml-0 z-0 md:z-50 items-center ">
         <a href="/" class=" text-white font-bold flex items-center gap-3"> 

@@ -8,8 +8,8 @@
           :class="[
             'relative inline-flex items-center px-3 py-2 rounded-l-md border',
             currentPage === 1 
-              ? 'border-gray-300 bg-white text-gray-300 cursor-not-allowed' 
-              : 'border-gray-300 bg-white text-gray-500 hover:bg-gray-50'
+              ? 'border-gray-300 bg-white text-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed' 
+              : 'border-gray-300 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
           ]"
         >
           <i class='bx bx-chevron-left'></i>
@@ -24,8 +24,8 @@
           :class="[
             'relative inline-flex items-center px-4 py-2 border',
             currentPage === page 
-              ? 'z-10 border-[#193CB8] bg-[#193CB8] text-white' 
-              : 'border-gray-300 bg-white text-gray-500 hover:bg-gray-50'
+              ? 'z-10 border-[#193CB8] bg-[#193CB8] text-white dark:border-blue-400 dark:bg-blue-700' 
+              : 'border-gray-300 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
           ]"
         >
           {{ page }}
@@ -38,8 +38,8 @@
           :class="[
             'relative inline-flex items-center px-3 py-2 rounded-r-md border',
             currentPage === totalPages 
-              ? 'border-gray-300 bg-white text-gray-300 cursor-not-allowed' 
-              : 'border-gray-300 bg-white text-gray-500 hover:bg-gray-50'
+              ? 'border-gray-300 bg-white text-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed' 
+              : 'border-gray-300 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
           ]"
         >
           <i class='bx bx-chevron-right'></i>

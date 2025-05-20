@@ -94,8 +94,10 @@ const loadMorePosts = () => {
 
 <template>
     <Layout>
-        <div class="min-h-screen bg-gray-50 flex flex-col">
-            <div class="bg-[#193CB8] text-white py-10">
+        <!-- Outer container actualizado para dark mode -->
+        <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+            <!-- Header modificado para dark mode -->
+            <div class="bg-[#193CB8] dark:bg-[#142d8c] text-white py-10">
                 <div class="max-w-6xl mx-auto px-4">
                     <div class="flex flex-col items-center text-center mb-8">
                         <h1 class="text-4xl font-bold mb-3">Alumni Connect</h1>
@@ -149,38 +151,38 @@ const loadMorePosts = () => {
 
             <div class="flex-1 py-8">
                 <div class="max-w-6xl mx-auto px-4">
+                    <!-- Se actualizan las secciones para dark mode -->
                     <div v-if="activeTab === 'descubrir'" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="lg:col-span-2 space-y-6">
-                            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                                <div class="p-4 border-b border-gray-100">
-                                    <h2 class="text-xl font-bold text-gray-800">Historias Destacadas</h2>
+                            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+                                <div class="p-4 border-b border-gray-100 dark:border-gray-700">
+                                    <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">Historias Destacadas</h2>
                                 </div>
                                 <div class="p-4">
                                     <div class="flex overflow-x-auto pb-4 space-x-4">
                                         <div v-for="story in featuredStories" :key="story.id"
-                                            class="flex-shrink-0 w-64 bg-gradient-to-br from-[#193CB8]/5 to-[#2748c6]/10 rounded-lg overflow-hidden border border-[#193CB8]/20 cursor-pointer hover:shadow-md transition-shadow">
+                                            class="flex-shrink-0 w-64 bg-gradient-to-br from-[#193CB8]/5 to-[#2748c6]/10 dark:from-[#193CB8]/10 dark:to-[#2748c6]/20 rounded-lg overflow-hidden border border-gray-100 dark:border-[#193CB8]/20 cursor-pointer hover:shadow-md transition-shadow">
                                             <div class="p-4">
                                                 <div class="flex items-center mb-3 gap-2">
                                                     <img v-if="story.user.profile && story.user.profile.profile_picture"
                                                         :src="story.user.profile.profile_picture || '/images/default-avatar.jpg'"
-                                                        :alt="story.user.name" class="w-8 h-8 object-cover" />
+                                                        :alt="story.user.name" class="w-8 h-8 object-cover rounded-full border-2 border-white dark:border-gray-700" />
                                                     <div v-else
-                                                        class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8] shadow-sm border-2 border-white">
+                                                        class="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-[#193CB8] dark:text-blue-300 shadow-sm border-2 border-white dark:border-gray-700">
                                                         <i class='bx bxs-user text-xl'></i>
                                                     </div>
-                                                    <span class="text-sm font-medium text-gray-800">{{ story.user.name +
-                                                        ' ' + story.user.last_name_1 + ' ' + story.user.last_name_2 ??
-                                                        null }}</span>
+                                                    <span class="text-sm font-medium text-gray-800 dark:text-gray-200">
+                                                        {{ story.user.name + ' ' + story.user.last_name_1 + ' ' + story.user.last_name_2 ?? null }}
+                                                    </span>
                                                 </div>
-                                                <p class="text-gray-600 text-sm mb-3 line-clamp-2"
+                                                <p class="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2"
                                                     v-html="story.content"></p>
-                                                <div class="flex items-center text-gray-500 text-xs">
+                                                <div class="flex items-center text-gray-500 dark:text-gray-400 text-xs">
                                                     <span class="flex items-center mr-3">
                                                         <i class='bx bx-heart mr-1'></i> {{ story.likes_count }}
                                                     </span>
                                                     <span class="flex items-center">
-                                                        <i class='bx bx-message-rounded mr-1'></i> {{
-                                                            story.comments_count }}
+                                                        <i class='bx bx-message-rounded mr-1'></i> {{ story.comments_count }}
                                                     </span>
                                                 </div>
                                             </div>
@@ -201,7 +203,7 @@ const loadMorePosts = () => {
                             </div>
 
                             <div class="space-y-6">
-                                <h2 class="text-xl font-bold text-gray-800 px-2">Publicaciones Recientes</h2>
+                                <h2 class="text-xl font-bold text-gray-800 px-2 dark:text-gray-200">Publicaciones Recientes</h2>
 
                                 <PostCard v-for="post in recentPosts" :key="post.id" :post="post"
                                     :formatDate="formatDate" :auth="auth" :data-post-id="post.id" :isMember="true" />
@@ -215,7 +217,7 @@ const loadMorePosts = () => {
                                     <div v-else-if="loading"
                                         class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#193CB8] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]">
                                     </div>
-                                    <div v-else class="text-[#193CB8] text-lg font-semibold">
+                                    <div v-else class="text-[#193CB8] text-lg font-semibold dark:text-blue-400">
                                         ¡Has llegado al final!
                                     </div>
                                     </p>
@@ -263,55 +265,55 @@ const loadMorePosts = () => {
                                 </div>
                             </div>
 
-                            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                                <div class="p-4 border-b border-gray-100 flex justify-between items-center">
-                                    <h2 class="text-lg font-bold text-gray-800">Grupos Populares</h2>
+                            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+                                <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+                                    <h2 class="text-lg font-bold text-gray-800 dark:text-gray-200">Grupos Populares</h2>
                                     <a @click="activeTab = 'grupos'"
-                                        class="text-[#193CB8] text-sm hover:underline cursor-pointer">Ver todos</a>
+                                        class="text-[#193CB8] dark:text-blue-400 text-sm hover:underline cursor-pointer">Ver todos</a>
                                 </div>
                                 <div class="p-4">
                                     <div v-for="group in popularGroups" :key="group.id"
-                                        @click="router.get('/grupos/' + group.slug)"
-                                        class="flex items-center gap-3 py-3 border-b border-gray-100 cursor-pointer hover:bg-gray-100 last:border-0 ">
+                                         @click="router.get('/grupos/' + group.slug)"
+                                         class="flex items-center gap-3 py-3 border-b border-gray-100 dark:border-gray-700 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 last:border-0 transition-colors">
                                         <img v-if="group.group_logo" :src="group.group_logo" :alt="group.name"
-                                            class="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
-
+                                             class="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
                                         <div v-else
-                                            class="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center text-gray-500">
+                                             class="w-12 h-12 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-300">
                                             <i class='bx bx-group text-xl'></i>
                                         </div>
                                         <div class="flex-1">
-                                            <h3 class="font-bold text-gray-800">{{ group.name }}</h3>
-                                            <div class="flex items-center justify-between text-gray-500 text-sm mt-1">
-                                                <span>{{ group.members_count }} {{ group.members_count == 1 ? 'miembro'
-                                                    : 'miembros' }}</span>
-                                                <span
-                                                    class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">
+                                            <h3 class="font-bold text-gray-800 dark:text-gray-200">{{ group.name }}</h3>
+                                            <div class="flex items-center justify-between text-gray-500 dark:text-gray-400 text-sm mt-1">
+                                                <span>{{ group.members_count }} {{ group.members_count == 1 ? 'miembro' : 'miembros' }}</span>
+                                                <span class="px-2 py-0.5 bg-blue-100 dark:bg-[#193CB8]/20 text-blue-700 dark:text-blue-300 rounded-full text-xs">
                                                     {{ group.category }}
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="p-4 border-t border-gray-100">
+                                <div class="p-4 border-t border-gray-100 dark:border-gray-700">
                                     <button @click="router.get('/grupos/nuevo')"
-                                        class="w-full cursor-pointer py-2 bg-[#193CB8]/10 text-[#193CB8] rounded-lg hover:bg-[#193CB8]/20 transition-colors font-medium">
+                                            class="w-full cursor-pointer py-2 bg-[#193CB8]/10 text-[#193CB8] dark:text-blue-400 rounded-lg hover:bg-[#193CB8]/20 transition-colors font-medium">
                                         <i class='bx bx-plus-circle mr-1'></i> Crear un grupo
                                     </button>
                                 </div>
                             </div>
 
-                            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                                <div class="p-4 border-b border-gray-100">
-                                    <h2 class="text-lg font-bold text-gray-800">Tendencias</h2>
+                            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+                                <div class="p-4 border-b border-gray-100 dark:border-gray-700">
+                                    <h2 class="text-lg font-bold text-gray-800 dark:text-gray-200">Tendencias</h2>
                                 </div>
                                 <div class="p-4">
                                     <div class="flex flex-wrap gap-2">
-                                        <span v-for="topic in trendingTopics" :key="topic.word"
+                                        <span
+                                            v-for="topic in trendingTopics"
+                                            :key="topic.word"
                                             @click="router.get('/connect/search?q=' + topic.word)"
-                                            class="px-3 py-1.5 bg-[#193CB8]/10 text-[#193CB8] rounded-full text-sm flex items-center cursor-pointer hover:bg-[#193CB8]/20 transition-colors">
-                                            #{{ topic.word }}
-                                            <span class="ml-1 text-xs bg-[#193CB8] text-white rounded-full px-1.5">
+                                            class="px-3 py-1.5 bg-[#193CB8]/10 dark:bg-[#193CB8]/20 text-[#193CB8] dark:text-blue-300 rounded-full text-sm flex items-center cursor-pointer hover:bg-[#193CB8]/20 dark:hover:bg-[#193CB8]/30 transition-colors"
+                                        >
+                                            #{{ topic.word.length > 10 ? topic.word.slice(0, 10) + '...' : topic.word }}
+                                            <span class="ml-1 text-xs bg-[#193CB8] dark:bg-blue-400 text-white rounded-full px-1.5">
                                                 {{ topic.count }}
                                             </span>
                                         </span>
@@ -319,11 +321,11 @@ const loadMorePosts = () => {
                                 </div>
                             </div>
 
-                            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                            <div class="bg-white rounded-xl shadow-sm overflow-hidden" v-if="suggestedConnections.length > 0">
                                 <div class="p-4 border-b border-gray-100">
                                     <h2 class="text-lg font-bold text-gray-800">Personas que quizás conozcas</h2>
                                 </div>
-                                <div class="p-4 space-y-4">
+                                <div class="p-4 space-y-4" >
                                     <div v-for="connection in suggestedConnections" :key="connection.id"
                                         class="flex items-center gap-3 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
                                         <img :src="connection.profile?.profile_picture" :alt="connection.name"
@@ -383,7 +385,7 @@ const loadMorePosts = () => {
             </div>
 
             <button
-                class="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-[#193CB8] text-white shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300 z-50">
+                class="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-[#193CB8] dark:bg-[#142d8c] text-white shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300 z-50">
                 <i class='bx bx-plus text-2xl'></i>
             </button>
         </div>

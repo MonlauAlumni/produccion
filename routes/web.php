@@ -33,7 +33,12 @@ Route::fallback(function () {
     return Inertia::render('404_page');
 });
 
-Route::get('/', [LandingController::class, 'index'])->name('landing');
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect('/home');
+    }
+    return app(LandingController::class)->index();
+})->name('landing');
 
 Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/admin/{page}', [AdminController::class, 'show'])->name('admin.page');
@@ -55,7 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', \App\Http\Middleware\BlockIfUserIsBlocked::class])->group(function () {
 
     Route::group(['middleware' => ['role:alumne|admin']], function () {
 
@@ -96,8 +101,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/gestion-candidatos/{applicationId}/change-status', [JobApplicationController::class, 'changeStatus'])->name('job-applications.changeStatus');
 
         Route::delete('/gestion-candidatos/{applicationId}', [JobApplicationController::class, 'destroy'])->name('job-applications.destroy');
-
+        Route::post('/ofertas/{id}/editar', [JobOfferController::class, 'update'])->name('ofertas.edit');
         Route::get('/alumnos', [StudentController::class, 'index'])->name('student.show');
+
+        Route::delete('/ofertas/{id}', [JobOfferController::class, 'destroy'])->name('ofertas.destroy');
     });
 
     Route::get('/home', [JobOfferController::class, 'index'])->name('home');
@@ -108,7 +115,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/empresa/{slang}', [CompanyController::class, 'show'])->name('empresa.show');
 
     Route::get('/ofertas', [JobOfferController::class, 'index'])->name('ofertas.index');
-    Route::get('/ofertas/{id}', [JobOfferController::class, 'show'])->name('job-offers.show');
+    Route::get('/ofertas/{id}', [JobOfferController::class, 'show'])->name('ofertas.show');
 
     Route::get('/notificaciones', [NotificationController::class, 'show'])->name('notificaciones.show');
 
@@ -126,6 +133,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/connect', [SocialController::class, 'show'])->name('connect.show');
     Route::get('/connect/search', [SocialController::class, 'showSearch'])->name('connect.search');
 
+    Route::post('/connect/{id}/send-request', [SocialController::class, 'sendConnectionRequest'])->name('connect.send-request');
+    Route::post('/connect/{id}/accept', [SocialController::class, 'acceptConnection'])->name('connect.accept');
+
     Route::get('/grupos', [App\Http\Controllers\Social\GroupController::class, 'index'])->name('groups.index');
     Route::get('/grupos/nuevo', [GroupController::class, 'showCreateGroup'])->name('create-group.show');
     Route::get('/grupos/{slug}', [App\Http\Controllers\Social\GroupController::class, 'show'])->name('groups.show');
@@ -138,6 +148,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/grupos/{groupId}/posts/{postId}/comment', [PostController::class, 'addCommentInGroup'])->name('group.postComment');
 
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
     Route::post('/posts/{post}/comment', [PostController::class, 'addComment'])->name('posts.comment');
     Route::post('/posts/{post}/like', [PostController::class, 'toggleLike'])->name('posts.like');
     Route::post('/posts/group/{groupId}', [PostController::class, 'storeInGroup'])->name('group.storePost');
@@ -221,3 +232,11 @@ Route::get('logout', function () {
     Auth::logout();
     return redirect('/');
 });
+
+// Página de bloqueo para usuarios bloqueados
+Route::get('/bloqueado', function () {
+    if (auth()->check() && auth()->user()->status === 'blocked') {
+        return Inertia::render('BlockedPage');
+    }
+    return redirect('/home');
+})->name('blocked');

@@ -293,12 +293,11 @@ onUnmounted(() => {
         <i class='bx bx-chevron-up text-xl'></i>
     </button>
     <div class="tab-content">
-
         <PostCreator v-if="isMember"
-         :auth="auth" 
-         :group="group" 
-         @postCreated="handlePostCreated" 
-         />
+            :auth="auth" 
+            :group="group" 
+            @postCreated="handlePostCreated" 
+        />
 
         <div v-if="displayedPosts.length > 0" class="space-y-4 mt-4">
             <PostCard v-for="post in displayedPosts" :key="post.id" :post="post" :formatDate="formatDate"
@@ -313,20 +312,20 @@ onUnmounted(() => {
             <div ref="loadMoreTrigger" class="h-10"></div>
 
             <div v-if="!hasMorePosts && displayedPosts.length > 0" class="text-center pb-4">
-                <p class="text-gray-500 text-lg font-semibold">
+                <p class="text-gray-500 dark:text-gray-400 text-lg font-semibold">
                     No hay más publicaciones.
-                    <span @click="scrollToTop" class="text-[#193CB8] underline cursor-pointer">
+                    <span @click="scrollToTop" class="text-[#193CB8] dark:text-blue-400 underline cursor-pointer">
                         ¡Publica algo!
                     </span>
                 </p>
             </div>
         </div>
 
-        <div v-else class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center mt-4">
+        <div v-else class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 text-center mt-4">
             <div class="py-8">
-                <i class="bx bx-message-square-detail text-5xl text-gray-300 mb-2"></i>
-                <h3 class="text-lg font-medium text-gray-700 mb-1">No hay publicaciones aún</h3>
-                <p class="text-gray-500">Sé el primero en compartir algo con el grupo</p>
+                <i class="bx bx-message-square-detail text-5xl text-gray-300 dark:text-gray-600 mb-2"></i>
+                <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-1">No hay publicaciones aún</h3>
+                <p class="text-gray-500 dark:text-gray-400">Sé el primero en compartir algo con el grupo</p>
             </div>
         </div>
     </div>

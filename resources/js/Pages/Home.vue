@@ -412,9 +412,9 @@
 
 <template>
   <Layout>
-    <div class="min-h-screen bg-gray-50 flex flex-col">
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       <!-- Hero Section -->
-      <div class="bg-[#193CB8] text-white py-8">
+      <div class="bg-[#193CB8] dark:bg-[#142d8c] text-white py-8">
         <div class="max-w-6xl mx-auto px-4">
           <div class="flex flex-col md:flex-row items-center mx-auto justify-between">
             <div class="mb-6 md:mb-0 md:mr-8">
@@ -425,10 +425,10 @@
               <div class="relative max-w-xl">
                 <div class="flex">
                   <input v-model="searchQuery" type="text" placeholder="Buscar por título, empresa o ubicación..."
-                    class="w-full px-4 py-3 rounded-l-lg text-gray-700 bg-white focus:outline-none focus:ring-2 placeholder-gray-500 focus:ring-blue-300 border-1 border-white"
+                    class="w-full px-4 py-3 rounded-l-lg text-gray-700 bg-white dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-blue-300 border-1 border-white dark:border-gray-600"
                     @keyup.enter="searchJobs" />
                   <button @click="searchJobs"
-                    class="bg-white hover:bg-gray-100 px-4 py-3 rounded-r-lg border-1 border-white flex items-center justify-center transition-colors text-[#193CB8]">
+                    class="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-3 rounded-r-lg border-1 border-white dark:border-gray-600 flex items-center justify-center transition-colors text-[#193CB8] dark:text-blue-400">
                     <i class='bx bx-search text-xl'></i>
                   </button>
                 </div>
@@ -436,7 +436,7 @@
                 <!-- Botón para mostrar filtros en móvil -->
                 <button 
                   @click="toggleFilterDrawer"
-                  class="md:hidden absolute right-16 top-1/2 transform -translate-y-1/2 text-gray-700 bg-white hover:bg-gray-100 p-2 rounded-full"
+                  class="md:hidden absolute right-16 top-1/2 transform -translate-y-1/2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-full"
                   aria-label="Mostrar filtros"
                 >
                   <i class='bx bx-filter text-xl'></i>
@@ -445,9 +445,9 @@
             </div>
 
             <!-- Stats -->
-            <div class="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20 text-center">
+            <div class="bg-white/10 dark:bg-gray-800/50 backdrop-blur-sm p-4 rounded-lg border border-white/20 dark:border-gray-700 text-center">
               <div class="text-3xl font-bold">{{ formatNumber(pagination.total || 0) }}</div>
-              <div class="text-blue-100">Ofertas disponibles</div>
+              <div class="text-blue-100 dark:text-blue-300">Ofertas disponibles</div>
             </div>
           </div>
         </div>
@@ -461,13 +461,13 @@
             <div class="flex-1">
               <!-- Filtros activos -->
               <div v-if="activeCategory.length > 0 || activeJobType.length > 0 || searchQuery" class="mb-4 flex flex-wrap gap-2">
-                <div class="text-sm font-medium text-gray-700 mr-2 flex items-center">Filtros activos:</div>
+                <div class="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2 flex items-center">Filtros activos:</div>
                 
                 <div v-for="cat in activeCategory" :key="`cat-${cat}`" 
-                     class="bg-[#193CB8]/10 text-[#193CB8] px-3 py-1 rounded-full text-sm flex items-center">
+                   class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-full text-sm flex items-center">
                   {{ featuredCategories.find(c => c.id === cat)?.name || cat }}
-                  <button @click="toggleCategory(cat)" class="ml-2 text-[#193CB8] hover:text-[#142d8c]">
-                    <i class='bx bx-x'></i>
+                  <button @click="toggleCategory(cat)" class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                  <i class='bx bx-x'></i>
                   </button>
                 </div>
                 
@@ -496,7 +496,7 @@
                 </div>
                 
                 <button @click="clearAllFilters" 
-                        class="text-gray-500 hover:text-gray-700 text-sm underline">
+                        class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 text-sm underline">
                   Limpiar todos
                 </button>
               </div>
@@ -505,7 +505,7 @@
               <div class="md:hidden mb-4">
                 <button 
                   @click="toggleFilterDrawer"
-                  class="w-full bg-white border border-gray-200 rounded-lg py-3 px-4 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+                  class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg py-3 px-4 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm"
                 >
                   <i class='bx bx-filter-alt mr-2'></i>
                   Filtrar resultados
@@ -515,9 +515,9 @@
               <!-- Loading Indicator para filtros -->
               <div v-if="isLoading" class="mb-4 flex justify-center">
                 <div class="animate-pulse flex space-x-2">
-                  <div class="w-2 h-2 bg-[#193CB8] rounded-full"></div>
-                  <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-200"></div>
-                  <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-400"></div>
+                  <div class="w-2 h-2 bg-[#193CB8] dark:bg-blue-400 rounded-full"></div>
+                  <div class="w-2 h-2 bg-[#193CB8] dark:bg-blue-400 rounded-full animation-delay-200"></div>
+                  <div class="w-2 h-2 bg-[#193CB8] dark:bg-blue-400 rounded-full animation-delay-400"></div>
                 </div>
               </div>
               
@@ -530,11 +530,11 @@
 
                 <!-- No Results -->
                 <div v-if="jobOffersList.length === 0 && !isLoading" class="text-center py-8">
-                  <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class='bx bx-search-alt text-3xl text-[#193CB8]'></i>
+                  <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class='bx bx-search-alt text-3xl text-[#193CB8] dark:text-blue-400'></i>
                   </div>
-                  <h3 class="text-lg font-medium text-gray-800 mb-2">No se encontraron ofertas</h3>
-                  <p class="text-gray-500 mb-4">Prueba con otros filtros o vuelve más tarde</p>
+                  <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">No se encontraron ofertas</h3>
+                  <p class="text-gray-500 dark:text-gray-400 mb-4">Prueba con otros filtros o vuelve más tarde</p>
                 </div>
               </div>
               
@@ -593,25 +593,25 @@
               <!-- Loading Indicator para paginación -->
               <div v-if="isLoading" class="flex justify-center py-4 mt-4">
                 <div class="animate-pulse flex space-x-2">
-                  <div class="w-2 h-2 bg-[#193CB8] rounded-full"></div>
-                  <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-200"></div>
-                  <div class="w-2 h-2 bg-[#193CB8] rounded-full animation-delay-400"></div>
+                  <div class="w-2 h-2 bg-[#193CB8] dark:bg-blue-400 rounded-full"></div>
+                  <div class="w-2 h-2 bg-[#193CB8] dark:bg-blue-400 rounded-full animation-delay-200"></div>
+                  <div class="w-2 h-2 bg-[#193CB8] dark:bg-blue-400 rounded-full animation-delay-400"></div>
                 </div>
               </div>
             </div>
 
             <!-- Sidebar (Desktop) -->
             <div class="hidden md:block w-80 shrink-0">
-              <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-200 sticky top-20">
-                <h2 class="text-lg font-bold text-gray-800 mb-3">Categorías</h2>
+              <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-200 dark:border-gray-700 sticky top-20">
+                <h2 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3">Categorías</h2>
 
                 <div class="space-y-2">
                   <button v-for="category in featuredCategories" :key="category.id" @click="toggleCategory(category.id)"
                     :class="[
                         'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
                         activeCategory.includes(category.id)
-                          ? 'bg-[#193CB8]/10 text-[#193CB8]'
-                          : 'hover:bg-gray-100 text-gray-700'
+                          ? 'bg-[#193CB8]/10 text-[#193CB8] dark:bg-blue-900/20 dark:text-blue-400'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
                       ]">
                     <i :class="['bx mr-2', category.icon]" :style="{ color: category.color }"></i>
                     {{ category.name }}
@@ -620,30 +620,30 @@
 
                 <div class="border-t border-gray-200 my-4"></div>
 
-                <h2 class="text-lg font-bold text-gray-800 mb-3">Modalidad</h2>
+                <h2 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3">Modalidad</h2>
 
                 <div class="space-y-2">
                   <button v-for="type in jobTypes" :key="type.id" @click="toggleJobType(type.id)" 
                     :class="[
                       'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
                       activeJobType.includes(type.id)
-                        ? 'bg-[#193CB8]/10 text-[#193CB8]'
-                        : 'hover:bg-gray-100 text-gray-700'
+                        ? 'bg-[#193CB8]/10 text-[#193CB8] dark:bg-blue-900/20 dark:text-blue-400'
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
                     ]">
                     {{ type.name }}
                   </button>
                 </div>
                 <div class="border-t border-gray-200 my-4"></div>
 
-                <h2 class="text-lg font-bold text-gray-800 mb-3">Tipo de contrato</h2>
+                <h2 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3">Tipo de contrato</h2>
 
                 <div class="space-y-2">
                   <button v-for="type in contractType" :key="type.id" @click="toggleContractType(type.id)" 
                     :class="[
                       'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
                       activeContractType.includes(type.id)
-                        ? 'bg-[#193CB8]/10 text-[#193CB8]'
-                        : 'hover:bg-gray-100 text-gray-700'
+                        ? 'bg-[#193CB8]/10 text-[#193CB8] dark:bg-blue-900/20 dark:text-blue-400'
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
                     ]">
                     {{ type.name }}
                   </button>
@@ -656,32 +656,32 @@
 
       <!-- Drawer de filtros para móvil -->
       <div v-if="isFilterDrawerOpen" 
-           class="fixed inset-0 bg-black/50 z-50 md:hidden transition-opacity duration-300"
+           class="fixed inset-0 bg-black/50 dark:bg-black/80 z-50 md:hidden transition-opacity duration-300"
            @click="toggleFilterDrawer">
       </div>
       
       <div :class="[
-        'fixed inset-y-0 right-0 w-4/5 max-w-xs bg-white z-50 transform transition-transform duration-300 ease-in-out shadow-xl md:hidden',
+        'fixed inset-y-0 right-0 w-4/5 max-w-xs bg-white dark:bg-gray-800 z-50 transform transition-transform duration-300 ease-in-out shadow-xl md:hidden',
         isFilterDrawerOpen ? 'translate-x-0' : 'translate-x-full'
       ]">
         <div class="flex flex-col h-full">
-          <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-            <h2 class="text-lg font-bold text-gray-800">Filtros</h2>
-            <button @click="toggleFilterDrawer" class="text-gray-500 hover:text-gray-700">
+          <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+            <h2 class="text-lg font-bold text-gray-800 dark:text-gray-200">Filtros</h2>
+            <button @click="toggleFilterDrawer" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
               <i class='bx bx-x text-2xl'></i>
             </button>
           </div>
           
           <div class="flex-1 overflow-y-auto p-4">
             <div class="mb-6">
-              <h3 class="text-md font-bold text-gray-800 mb-3">Categorías</h3>
+              <h3 class="text-md font-bold text-gray-800 dark:text-gray-200 mb-3">Categorías</h3>
               <div class="space-y-2">
                 <button v-for="category in featuredCategories" :key="category.id" @click="toggleCategory(category.id)"
                   :class="[
                     'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
                     activeCategory.includes(category.id)
-                      ? 'bg-[#193CB8]/10 text-[#193CB8]'
-                      : 'hover:bg-gray-100 text-gray-700'
+                      ? 'bg-[#193CB8]/10 text-[#193CB8] dark:bg-blue-900/20 dark:text-blue-400'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
                   ]">
                   <i :class="['bx mr-2', category.icon]" :style="{ color: category.color }"></i>
                   {{ category.name }}
@@ -692,14 +692,14 @@
             <div class="border-t border-gray-200 my-4"></div>
             
             <div>
-              <h3 class="text-md font-bold text-gray-800 mb-3">Modalidad</h3>
+              <h3 class="text-md font-bold text-gray-800 dark:text-gray-200 mb-3">Modalidad</h3>
               <div class="space-y-2">
                 <button v-for="type in jobTypes" :key="type.id" @click="toggleJobType(type.id)" 
                   :class="[
                     'w-full flex cursor-pointer items-center px-3 py-2 rounded-lg text-left transition-colors',
                     activeJobType.includes(type.id)
-                      ? 'bg-[#193CB8]/10 text-[#193CB8]'
-                      : 'hover:bg-gray-100 text-gray-700'
+                      ? 'bg-[#193CB8]/10 text-[#193CB8] dark:bg-blue-900/20 dark:text-blue-400'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
                   ]">
                   {{ type.name }}
                 </button>
@@ -707,13 +707,13 @@
             </div>
           </div>
           
-          <div class="p-4 border-t border-gray-200">
+          <div class="p-4 border-t border-gray-200 dark:border-gray-700">
             <button @click="clearAllFilters" 
-                    class="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+                    class="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
               Limpiar filtros
             </button>
             <button @click="toggleFilterDrawer" 
-                    class="w-full bg-[#193CB8] text-white py-2 px-4 rounded-lg mt-2 hover:bg-[#142d8c] transition-colors">
+                    class="w-full bg-[#193CB8] dark:bg-blue-700 text-white py-2 px-4 rounded-lg mt-2 hover:bg-[#142d8c] dark:hover:bg-blue-800 transition-colors">
               Aplicar filtros
             </button>
           </div>
@@ -722,14 +722,14 @@
 
       <!-- Scroll to Top Button -->
       <button v-show="showScrollTopButton" @click="scrollToTop"
-        class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#193CB8] text-white shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300 z-40 animate-fade-in">
+        class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#193CB8] dark:bg-blue-700 text-white shadow-lg flex items-center justify-center hover:bg-[#142d8c] dark:hover:bg-blue-800 transition-all duration-300 z-40 animate-fade-in">
         <i class='bx bx-chevron-up text-xl'></i>
       </button>
 
       <!-- Floating Action Button (Mobile) -->
       <div class="md:hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40">
         <button @click="router.get('/ofertas/crear')"
-          class="bg-[#193CB8] text-white px-6 py-3 rounded-full shadow-lg flex items-center justify-center hover:bg-[#142d8c] transition-all duration-300">
+          class="bg-[#193CB8] dark:bg-blue-700 text-white px-6 py-3 rounded-full shadow-lg flex items-center justify-center hover:bg-[#142d8c] dark:hover:bg-blue-800 transition-all duration-300">
           <i class='bx bx-plus-circle mr-2'></i>
           Publicar oferta
         </button>

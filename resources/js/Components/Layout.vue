@@ -3,7 +3,7 @@
     <!-- Navbar (Header siempre arriba, fijo en la parte superior) -->
     <Navbar  :auth="auth" class="w-full z-50 fixed" />
 
-    <div class="flex flex-1"> 
+    <div class="flex flex-1 bg-gray-50 dark:bg-gray-900"> 
 
       <Sidebar 
         :username="auth?.user?.name || 'Usuario Alumni'" 
@@ -11,7 +11,7 @@
       />
 
       <!-- Main Content -->
-      <main class="flex-1 md:ml-64  mt-14 bg-gray-50">
+      <main class="flex-1 md:ml-64  mt-14 bg-gray-50 dark:bg-gray-900">
         <slot></slot>
       </main>
     </div>

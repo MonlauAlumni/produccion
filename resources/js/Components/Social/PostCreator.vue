@@ -4,7 +4,7 @@ import { router } from '@inertiajs/vue3';
 import { QuillEditor, Quill } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import DOMPurify from "dompurify";
-import ResponsabilidadModal from './ResponsabilidadModal.vue'; // Importa el componente del modal
+import ResponsabilidadModal from './ResponsabilidadModal.vue';
 
 const props = defineProps({
     auth: Object,
@@ -19,6 +19,7 @@ const content = ref("");
 const images = ref([]);
 const imagePreviews = ref([]);
 const showConfirmModal = ref(false);
+const charCount = ref(0);
 
 onMounted(() => {
     const Link = Quill.import('formats/link');
@@ -32,6 +33,16 @@ onMounted(() => {
         }
     }
     Quill.register('formats/link', CustomLink, true);
+    
+    // Configurar el comportamiento de desplazamiento del editor
+    if (quillEditorRef.value) {
+        const editor = quillEditorRef.value.getQuill();
+        editor.root.setAttribute('data-gramm', 'false'); // Desactivar Grammarly que puede causar problemas
+        
+        // Asegurarse de que el editor no crezca indefinidamente
+        editor.root.style.overflow = 'auto';
+        editor.root.style.maxHeight = '200px'; // Altura máxima antes de mostrar scroll
+    }
 });
 
 const editorOptions = {
@@ -44,7 +55,35 @@ const editorOptions = {
     placeholder: props.group && props.group.id
         ? 'Comparte algo con el grupo..'
         : '¿Qué quieres compartir hoy?',
-    theme: 'snow'
+    theme: 'snow',
+    bounds: '.quill-editor-container' // Limitar el editor al contenedor
+};
+
+// Limitar el contenido a 1000 caracteres (sin etiquetas HTML)
+const handleEditorChange = (newContent) => {
+    // Elimina etiquetas HTML para contar solo texto plano
+    const plainText = newContent.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+    charCount.value = plainText.length;
+    
+    if (plainText.length > 2000) {
+        // Si supera el límite, recorta el texto y actualiza el contenido
+        const truncated = plainText.slice(0, 2000);
+        // Actualiza el contenido del editor solo con el texto permitido
+        if (quillEditorRef.value) {
+            const editor = quillEditorRef.value.getQuill();
+            const currentSelection = editor.getSelection();
+            editor.setText(truncated);
+            
+            // Restaurar la selección si es posible
+            if (currentSelection) {
+                editor.setSelection(Math.min(currentSelection.index, truncated.length));
+            }
+        }
+        content.value = truncated;
+        charCount.value = 2000;
+    } else {
+        content.value = newContent;
+    }
 };
 
 const handleFileChange = (event) => {
@@ -99,6 +138,7 @@ const resetForm = () => {
     content.value = '';
     images.value = [];
     imagePreviews.value = [];
+    charCount.value = 0;
     if (fileInputRef.value) {
         fileInputRef.value.value = '';
     }
@@ -109,21 +149,30 @@ const resetForm = () => {
 </script>
 
 <template>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 quill-editor-container">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 quill-editor-container">
         <div class="flex items-start gap-3">
             <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
                 <img v-if="auth.user.profile && auth.user.profile.profile_picture"
                     :src="auth.user.profile.profile_picture || '/images/default-avatar.jpg'" alt="Tu avatar"
                     class="w-full h-full object-cover" />
                 <div v-else
-                    class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-[#193CB8]">
+                    class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-[#193CB8] dark:text-[#8fa2f7]">
                     <i class='bx bx-user'></i>
                 </div>
             </div>
-            <div class="flex-1">
-                <div class="mb-3">
-                    <QuillEditor ref="quillEditorRef" v-model:content="content" :options="editorOptions"
-                        contentType="html" />
+            <div class="flex-1 editor-wrapper">
+                <div class="mb-3 quill-wrapper">
+                    <QuillEditor
+                        ref="quillEditorRef"
+                        v-model:content="content"
+                        :options="editorOptions"
+                        contentType="html"
+                        @update:content="handleEditorChange"
+                        class="quill-fixed-height"
+                    />
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 text-right">
+                        {{ charCount }} / 1000 caracteres
+                    </div>
                 </div>
                 
                 <div v-if="imagePreviews.length > 0" class="mt-3 mb-3">
@@ -131,7 +180,7 @@ const resetForm = () => {
                         <div v-for="(preview, index) in imagePreviews" :key="preview.id" class="image-preview-item">
                             <img :src="preview.src" alt="Vista previa" class="rounded-lg object-cover w-full h-full" />
                             <button @click="removeImage(index)"
-                                class="absolute top-2 right-2 bg-gray-800/70 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-gray-900/70 transition-colors">
+                                class="absolute top-2 right-2 bg-gray-800/70 dark:bg-gray-900/80 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-gray-900/70 transition-colors">
                                 <i class="bx bx-x"></i>
                             </button>
                         </div>
@@ -141,25 +190,24 @@ const resetForm = () => {
                 <div class="flex justify-between items-center mt-3">
                     <div class="flex gap-3">
                         <label
-                            class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                            class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors">
                             <i class='bx bx-image-alt mr-1 text-blue-500'></i> Foto
                             <input type="file" class="hidden" ref="fileInputRef" @change="handleFileChange"
                                 accept="image/*" multiple />
                         </label>
                         <label
-                            class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                            <i class='bx bx-video mr-1 text-green-500'></i> Video
+                            class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors">
                             <input type="file" class="hidden" @change="handleFileChange" accept="video/*" />
                         </label>
                         <button @click="router.get('/eventos/nuevo')"
-                            class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                            class="flex-1 py-1 flex items-center justify-center cursor-pointer text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors">
                             <i class='bx bx-calendar-event mr-1 text-orange-500'></i> Evento
                         </button>
                     </div>
 
                     <button @click="openConfirmModal" :disabled="!content && imagePreviews.length === 0"
                         :class="{ 'opacity-50 cursor-not-allowed': !content && imagePreviews.length === 0 }"
-                        class="px-4 py-1.5 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors text-sm">
+                        class="px-4 py-1.5 bg-[#193CB8] dark:bg-[#2536a7] text-white rounded-lg hover:bg-[#142d8c] dark:hover:bg-[#1a255e] transition-colors text-sm">
                         Publicar
                     </button>
                 </div>
@@ -182,20 +230,60 @@ const resetForm = () => {
 </template>
 
 <style scoped>
+/* Contenedor principal del editor */
+.editor-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* Contenedor del editor Quill */
+.quill-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* Estilos para el editor Quill */
 :deep(.ql-editor) {
     min-height: 100px;
+    max-height: 200px;
+    overflow-y: auto !important;
+    word-break: break-word;
+    background-color: #ffffff; /* Light mode background */
+    color: #000000; /* Light mode text */
+}
+
+.dark :deep(.ql-editor) {
+    background-color: #181a20; /* Dark mode background */
+    color: #e4e4e7; /* Dark mode text */
+}
+
+:deep(.ql-container) {
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    border-color: #d1d5db;
 }
 
 :deep(.ql-toolbar) {
     border-top-left-radius: 0.5rem;
     border-top-right-radius: 0.5rem;
     border-color: #d1d5db;
+    z-index: 10;
+    border: 1px solid #d1d5db;
+    background-color: #f9fafb;
 }
 
-:deep(.ql-container) {
-    border-bottom-left-radius: 0.5rem;
-    border-bottom-right-radius: 0.5rem;
-    border-color: #d1d5db;
+.dark :deep(.ql-toolbar) {
+    border-color: #4b5563;
+    background-color: #2a2f38;
+}
+
+/* Evitar que el editor crezca indefinidamente */
+.quill-fixed-height {
+    display: flex;
+    flex-direction: column;
 }
 
 :deep(.ql-toolbar .ql-stroke) {

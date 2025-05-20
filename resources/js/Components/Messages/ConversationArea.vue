@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 flex flex-col">
+  <div class="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900">
     <!-- Encabezado de la conversación -->
     <ConversationHeader 
       :conversation="conversation"
