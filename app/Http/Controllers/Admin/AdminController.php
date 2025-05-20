@@ -157,13 +157,16 @@ class AdminController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'last_name_1' => 'required|string|max:255',
-            'last_name_2' => 'nullable|string|max:255',
-            'email' => "required|email|unique:users,email,{$id}",
-            'training_area' => 'required|string|max:255',
-        ]);
+        // All fields are optional for partial update
+        $rules = [
+            'name' => 'sometimes|string|max:255',
+            'last_name_1' => 'sometimes|string|max:255',
+            'last_name_2' => 'sometimes|nullable|string|max:255',
+            'email' => "sometimes|email|unique:users,email,{$id}",
+            'training_area' => 'sometimes|string|max:255',
+            'status' => 'sometimes|in:online,offline,blocked',
+        ];
+        $validated = $request->validate($rules);
 
         $user->update($validated);
         return redirect()->back()->with('success', 'Usuario actualizado exitosamente.');

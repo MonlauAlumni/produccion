@@ -60,7 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', \App\Http\Middleware\BlockIfUserIsBlocked::class])->group(function () {
 
     Route::group(['middleware' => ['role:alumne|admin']], function () {
 
@@ -230,3 +230,8 @@ Route::get('logout', function () {
     Auth::logout();
     return redirect('/');
 });
+
+// Página de bloqueo para usuarios bloqueados
+Route::get('/bloqueado', function () {
+    return Inertia::render('BlockedPage');
+})->name('blocked');
