@@ -11,6 +11,7 @@
   const props = defineProps({
     company: Object,
     isAdmin: Boolean,
+    isSameUser: Boolean,
   });
   
   const editModal = ref(null);
@@ -62,7 +63,7 @@
           <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
           
        
-          <div class="absolute bottom-4 cursor-pointer z-40 right-4">
+          <div v-if="isSameUser || isAdmin" class="absolute bottom-4 cursor-pointer z-40 right-4">
             <label class="cursor-pointer bg-white/90 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 text-[#193CB8] dark:text-blue-200 px-3 py-2 rounded-md shadow-md flex items-center gap-2 transition-all">
               <i class='bx bx-image-add'></i>
               <span class="text-sm font-medium">Cambiar Banner</span>
