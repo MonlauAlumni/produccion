@@ -166,27 +166,6 @@ const { auth, appName } = usePage().props;
                             </a>
                         </li>
                         <li>
-                            <a href="/admin/roles"
-                                class="flex items-center gap-4 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition duration-300">
-                                <i class="bx bx-shield text-2xl" style="color: #2563EB;"></i>
-                                Roles
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/admin/permissions"
-                                class="flex items-center gap-4 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition duration-300">
-                                <i class="bx bx-key text-2xl" style="color: #2563EB;"></i>
-                                Permisos
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/admin/activities"
-                                class="flex items-center gap-4 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition duration-300">
-                                <i class="bx bx-calendar text-2xl" style="color: #2563EB;"></i>
-                                Actividades
-                            </a>
-                        </li>
-                        <li>
                             <a href="/admin/notifications"
                                 class="flex items-center gap-4 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition duration-300">
                                 <i class="bx bx-bell text-2xl" style="color: #2563EB;"></i>
