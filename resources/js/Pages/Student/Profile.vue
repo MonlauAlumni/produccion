@@ -91,6 +91,7 @@ const defaultBanner = "/public/images/default-banner.jpg";
             <input type="file" @change="uploadBanner" class="hidden" accept="image/*">
           </label>
         </div>
+<<<<<<< HEAD
       </div>
 
       <main class="flex flex-col items-center justify-center -mt-16 relative z-10 px-4">
@@ -115,6 +116,80 @@ const defaultBanner = "/public/images/default-banner.jpg";
 
               <!-- Contact Information -->
                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+=======
+  
+        <main class="flex flex-col items-center justify-center -mt-16 relative z-10 px-4">
+          <div class="flex flex-col space-y-6 w-full max-w-5xl">
+            <!-- Profile Header (positioned to overlap with banner) -->
+            <ProfileHeader 
+              :user="user" 
+              :isSameUser="isSameUser" 
+              :profile="profile" 
+              :openEditModal="openEditModal" 
+            />
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="md:col-span-2 space-y-6">
+                <AboutSection :profile="profile" />
+                <ExperienceSection 
+                  title="Experiencia Laboral" 
+                  :isSameUser="isSameUser" 
+                  :items="workExperiences" 
+                  :slang="slang" 
+                  :type="'work'" 
+                 
+                />
+                <ExperienceSection 
+                  title="Formación Académica" 
+                  :isSameUser="isSameUser" 
+                  :items="educations" 
+                  :user="user" 
+                  :slang="slang"
+                  :type="'education'" 
+                />
+
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                  <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 flex items-center justify-between">
+                    Publicaciones Recientes
+                    <a
+                      :href="`/connect/search?q=${encodeURIComponent(user.name + ' ' + (user.last_name_1 || '') + ' ' + (user.last_name_2 || ''))}`"
+                      class="text-[#193CB8] dark:text-blue-300 text-sm font-medium hover:underline ml-4"
+                    >
+                      Ver todas
+                    </a>
+                  </h2>
+                  <hr class="border-t border-[#193CB8] dark:border-blue-700 mb-4" />
+
+                  <div v-if="recentPosts && recentPosts.length > 0" class="space-y-4">
+                    <PostCard
+                      v-for="post in recentPosts"
+                      :key="post.id"
+                      :post="post"
+                      :formatDate="formatDate"
+                      :auth="{ auth_user }"
+                      :data-post-id="post.id"
+                      :isMember="true"
+                    />
+                  </div>
+                  <div v-else class="text-center text-gray-500 dark:text-gray-400">
+                    <p>No hay publicaciones recientes.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Right Column -->
+              <div class="space-y-6">
+                <!-- Skills Card -->
+                <SkillsSection 
+                  :skills="skills || []" 
+                  :isSameUser="isSameUser"
+                  :slang="slang"
+                  :allSkills="allSkills || []"
+                />
+                
+                <!-- Contact Information -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+>>>>>>> c6bdc4bfe9395379a0e5b27cf7371c3b0efeab4b
                   <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Contacto</h2>
                   <hr class="border-t border-[#193CB8] dark:border-blue-700 mb-4" />
                   

@@ -20,7 +20,9 @@ class ProfileController extends Controller
     {
         $user = User::whereHas('profile', function ($query) use ($slang) {
             $query->where('slang', $slang);
-        })->with('profile')->first();
+        })
+            ->with(['profile', 'workExperiences', 'educations']) // Load all relationships at once
+            ->first();
 
         if (!$user) {
             return Inertia::render('404_page');
@@ -42,11 +44,23 @@ class ProfileController extends Controller
 
         // Obtener todas las skills según la categoría mapeada
         $allSkills = [];
-        
+
         if ($mappedArea) {
             $allSkills = Skill::where('category', $mappedArea)->get(['id', 'name']);
         }
-        
+
+        $recentPosts = $user->posts()
+            ->with(['user.profile', 'images']) // Ensure necessary relationships are loaded
+            ->with([
+                'comments' => function ($query) {
+                    $query->with('user.profile')->limit(3);
+                }
+            ])
+            ->whereNull('group_id')
+            ->latest()
+            ->take(5)
+            ->get();
+
 
         return Inertia::render('Student/Profile', [
             'user' => $user,
@@ -57,16 +71,18 @@ class ProfileController extends Controller
             'slang' => $slang,
             'skills' => $user->profile->skills,
             'allSkills' => $allSkills,
+            'recentPosts' => $recentPosts,
 
         ]);
     }
 
     public function updateSkills(Request $request, $slang)
     {
-        $request->validate([ 'skillId' => 'required|integer|exists:skills,id' ]);
+        $request->validate(['skillId' => 'required|integer|exists:skills,id']);
         $user = User::whereHas('profile', fn($q) => $q->where('slang', $slang))->with('profile')->first();
-         
-        if (!$user) return abort(404);
+
+        if (!$user)
+            return abort(404);
         $profile = $user->profile;
         $profile->skills()->syncWithoutDetaching([$request->skillId]);
         $skill = Skill::find($request->skillId);
@@ -76,7 +92,8 @@ class ProfileController extends Controller
     public function removeSkill(Request $request, $slang, $skillId)
     {
         $user = User::whereHas('profile', fn($q) => $q->where('slang', $slang))->with('profile')->first();
-        if (!$user) return abort(404);
+        if (!$user)
+            return abort(404);
         $user->profile->skills()->detach($skillId);
         return response()->json(['removed' => $skillId]);
     }
@@ -162,7 +179,7 @@ class ProfileController extends Controller
         $user->settings()->create();
         $user->profile()->create();
         $user->profile()->update(['profile_picture' => $microsoftUser['profile_photo_path'] ? $microsoftUser['profile_photo_path'] : null,]);
-    
+
         $request->session()->regenerate();
 
         // Limpiar los datos de la sesión

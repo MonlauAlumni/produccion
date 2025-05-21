@@ -123,8 +123,8 @@ const { auth, appName } = usePage().props;
                             Administrador
                         </a>
                     </div>
-                    <box-icon name='x' color="#fff" size="md" class="hover:cursor-pointer"
-                        @click.stop="toggleSidebar"></box-icon>
+                    <i name='x' color="#fff" size="md" class="hover:cursor-pointer"
+                        @click.stop="toggleSidebar"></i>
                 </div>
                 <div class="p-4">
                     <h3 class="text-gray-600 dark:text-gray-300 text-lg font-semibold">Panel de control</h3>
@@ -132,21 +132,21 @@ const { auth, appName } = usePage().props;
                         <li>
                             <a href="/admin/dashboard"
                                 class="flex items-center gap-4 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition duration-300">
-                                <box-icon name='grid-alt' color="#2563EB"></box-icon>
+                                <i class="bx bx-grid-alt text-2xl" style="color: #2563EB;"></i>
                                 Inicio
                             </a>
                         </li>
                         <li>
                             <a href="/admin/users"
                                 class="flex items-center gap-4 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition duration-300">
-                                <box-icon name='user' color="#2563EB"></box-icon>
+                                <i class="bx bx-user text-2xl" style="color: #2563EB;"></i>
                                 Usuarios
                             </a>
                         </li>
                         <li>
                             <a href="/admin/companies"
                                 class="flex items-center gap-4 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition duration-300">
-                                <box-icon name='briefcase' color="#2563EB"></box-icon>
+                                <i class="bx bx-briefcase text-2xl" style="color: #2563EB;"></i>
                                 Empresas
                             </a>
                         </li>
@@ -154,7 +154,7 @@ const { auth, appName } = usePage().props;
                         <li>
                             <a href="/admin/notifications"
                                 class="flex items-center gap-4 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition duration-300">
-                                <box-icon name='bell' color="#2563EB"></box-icon>
+                                <i class="bx bx-bell text-2xl" style="color: #2563EB;"></i>
                                 Notificaciones
                             </a>
                         </li>

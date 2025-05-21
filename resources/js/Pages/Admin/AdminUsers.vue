@@ -142,7 +142,7 @@ function blockUser() {
 </script>
 
 <template>
-    <AdminLayout title="Gestión de Usuarios">
+    <AdminLayout>
         <!-- Header Section -->
         <div class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-xl shadow-sm p-8 mb-6 border border-gray-200 dark:border-gray-700">
             <div class="flex items-center space-x-4">
@@ -283,77 +283,80 @@ function blockUser() {
             </div>
 
             <div class="overflow-x-auto">
-                <Table :headers="['#', 'Nombre', 'Email', 'Acciones']">
+                <Table :headers="['#', 'Nombre', 'Email', 'Área formativa','Acciones']">
                     <tr v-if="!page.props.users || page.props.users.length === 0">
                         <td class="py-12 px-4" colspan="4">
-                            <div class="flex flex-col items-center justify-center text-gray-500">
-                                <div class="bg-gray-50 p-4 rounded-full mb-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+                                <div class="bg-gray-50 dark:bg-gray-900 p-4 rounded-full mb-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </div>
-                                <p class="text-lg font-medium text-gray-700">No se encontraron usuarios</p>
-                                <p class="text-sm mt-1 max-w-sm text-center">No hay resultados que coincidan con los criterios de búsqueda. Intente con otros filtros o reinicie la búsqueda.</p>
-                                <button @click="clearFilters" class="mt-4 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition duration-200">
+                                <p class="text-lg font-medium text-gray-700 dark:text-gray-200">No se encontraron usuarios</p>
+                                <p class="text-sm mt-1 max-w-sm text-center text-gray-500 dark:text-gray-400">No hay resultados que coincidan con los criterios de búsqueda. Intente con otros filtros o reinicie la búsqueda.</p>
+                                <button @click="clearFilters" class="mt-4 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-sm font-medium rounded-lg transition duration-200">
                                     Reiniciar filtros
                                 </button>
                             </div>
                         </td>
                     </tr>
                     <tr v-else v-for="user in page.props.users" :key="user.id"
-                        class="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150">
+                        class="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors duration-150">
                         <td class="py-4 px-4">
-                            <span class="font-medium text-gray-700 bg-gray-100 py-1 px-2.5 rounded-md">{{ user.id }}</span>
+                            <span class="font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 py-1 px-2.5 rounded-md">{{ user.id }}</span>
                         </td>
                         <td class="py-4 px-4">
                             <div class="flex items-center">
-                                <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-medium mr-2">
+                                <div class="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-200 font-medium mr-2">
                                     {{ user.name?.charAt(0) || '?' }}{{ user.last_name_1?.charAt(0) || '' }}
                                 </div>
                                 <div>
-                                    <div class="text-sm font-medium">{{ user.name }} {{ user.last_name_1 }}</div>
-                                    <div class="text-xs text-gray-500">{{ user.last_name_2 }}</div>
+                                    <div class="text-sm font-medium text-gray-800 dark:text-gray-100">{{ user.name }} {{ user.last_name_1 }}</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ user.last_name_2 }}</div>
                                 </div>
                             </div>
                         </td>
                         <td class="py-4 px-4">
                             <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 dark:text-gray-400 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                 </svg>
-                                <span class="text-sm truncate max-w-[150px]">{{ user.email }}</span>
+                                <span class="text-sm truncate max-w-[150px] text-gray-700 dark:text-gray-200">{{ user.email }}</span>
                             </div>
+                        </td>
+                        <td>
+                            <span class="text-sm text-gray-700 dark:text-gray-200">{{ user.training_area || '-' }}</span>
                         </td>
                         <td class="py-4 px-4">
                             <div class="flex items-center space-x-1">
-                                <button class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-150" @click="singleUser(user.id)" title="Editar">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <button class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150" @click="singleUser(user.id)" title="Editar">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
                                 </button>
-                                <button class="p-1.5 rounded-lg hover:bg-red-50 transition-colors duration-150" @click="confirmDelete(user.id)" title="Eliminar">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <button class="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900 transition-colors duration-150" @click="confirmDelete(user.id)" title="Eliminar">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
                                 </button>
                                 <button
                                     v-if="String(user.status).trim().toLowerCase() === 'blocked'"
-                                    class="p-1.5 rounded-lg hover:bg-green-50 transition-colors duration-150"
+                                    class="p-1.5 rounded-lg hover:bg-green-50 dark:hover:bg-green-900 transition-colors duration-150"
                                     @click="confirmBlock(user.id)"
                                     title="Desbloquear"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2l4 -4" />
                                         <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none" />
                                     </svg>
                                 </button>
                                 <button
                                     v-else
-                                    class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-150"
+                                    class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
                                     @click="confirmBlock(user.id)"
                                     title="Bloquear"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                                     </svg>
                                 </button>

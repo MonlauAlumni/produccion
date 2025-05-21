@@ -15,7 +15,7 @@
   });
   
   const editModal = ref(null);
-  
+  const userRole = page.props.auth?.user?.roles[0]?.name
   const openEditModal = () => {
     if (editModal.value) {
       editModal.value.openModal();
