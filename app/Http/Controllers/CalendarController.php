@@ -16,7 +16,7 @@ class CalendarController extends Controller
      */
     public function index()
     {
-        $events = DB::table('events')->get();
+        $events = DB::table('calendar_events')->get();
 
         return inertia('Calendar', [
             'events' => $events,
@@ -34,13 +34,29 @@ class CalendarController extends Controller
         $validated = $request->validate([
             'title' => 'required|string',
             'start' => 'required|date',
+            'description' => 'sometimes|string|nullable',
         ]);
 
-        $validated['user_id'] = Auth::id() ?? null;
+        // Prepare data for calendar_events table
+        $data = [
+            'user_id'    => Auth::id(),
+            'title'      => $validated['title'],
+            'description'=> $validated['description'] ?? null,
+            'start_date' => $validated['start'],
+            'end_date'   => $validated['start'],
+            'all_day'    => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+        // Insert and return slug or id
+        $id = DB::table('calendar_events')->insertGetId($data);
+        $event = DB::table('calendar_events')->where('id', $id)->first();
+        // If AJAX/json request, return JSON
+        if ($request->expectsJson()) {
+            return response()->json(['event' => $event]);
+        }
 
-        DB::table('events')->insert($validated);
-
-        return redirect()->route('calendar'); // Esto actualizará los eventos en Inertia
+        return redirect()->route('calendar.index');
     }
 
     /**
@@ -53,17 +69,36 @@ class CalendarController extends Controller
     public function update(Request $request, $eventId)
     {
         $validated = $request->validate([
-            'title' => 'sometimes|required|string',
-            'start' => 'sometimes|required|date',
+            'title'       => 'sometimes|required|string',
+            'start'       => 'sometimes|required|date',
+            'description' => 'sometimes|string|nullable',
         ]);
 
-        DB::table('events')->where('id', $eventId)->update($validated);
+        // Build update payload for calendar_events
+        $data = [];
+        if (isset($validated['title'])) {
+            $data['title'] = $validated['title'];
+        }
+        if (array_key_exists('description', $validated)) {
+            $data['description'] = $validated['description'];
+        }
+        if (isset($validated['start'])) {
+            $data['start_date'] = $validated['start'];
+            $data['end_date']   = $validated['start'];
+        }
+        $data['updated_at'] = now();
 
-        $event = DB::table('events')->where('id', $eventId)->first();
+        DB::table('calendar_events')->where('id', $eventId)->update($data);
 
+        $event = DB::table('calendar_events')->where('id', $eventId)->first();
+
+        // Return redirect for Inertia requests
+        if ($request->header('X-Inertia')) {
+            return redirect()->route('calendar.index');
+        }
         return response()->json([
             'message' => 'Evento actualizado con éxito.',
-            'event' => $event,
+            'event'   => $event,
         ]);
     }
 
@@ -73,12 +108,10 @@ class CalendarController extends Controller
      * @param int $eventId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($eventId)
+    public function destroy(Request $request, $eventId)
     {
-        DB::table('events')->where('id', $eventId)->delete();
-
-        return response()->json([
-            'message' => 'Evento eliminado con éxito.',
-        ]);
+        DB::table('calendar_events')->where('id', $eventId)->delete();
+        // Always return JSON for AJAX delete
+        return response()->json(['message' => 'Evento eliminado con éxito.']);
     }
 }

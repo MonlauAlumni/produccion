@@ -5,10 +5,12 @@
   import ExperienceSection from "@/Components/Profile/ExperienceSection.vue";
   import SkillsSection from "@/Components/Profile/SkillsSection.vue";
   import EditModalStudent from "@/Pages/Student/EditModalStudent.vue";
+  import PostCard from "../../Components/Social/PostCard.vue";
   import Layout from "@/Components/Layout.vue";
   import { ref } from "vue";
   import { router } from "@inertiajs/vue3";
-  
+      import { usePage } from '@inertiajs/vue3';
+  import { computed } from "vue";
   const props = defineProps({
     user: Object,
     profile: Object,
@@ -18,10 +20,13 @@
     isSameUser: Boolean,
     slang: String,
     allSkills: Array,
+    recentPosts: Array,
   });
 
 
-  
+      const page = usePage();
+          const auth_user = computed(() => page.props.auth.user);
+
   const editModal = ref(null);
   
   const openEditModal = () => {
@@ -112,6 +117,34 @@
                   :slang="slang"
                   :type="'education'" 
                 />
+
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                  <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 flex items-center justify-between">
+                    Publicaciones Recientes
+                    <a
+                      :href="`/connect/search?q=${encodeURIComponent(user.name + ' ' + (user.last_name_1 || '') + ' ' + (user.last_name_2 || ''))}`"
+                      class="text-[#193CB8] dark:text-blue-300 text-sm font-medium hover:underline ml-4"
+                    >
+                      Ver todas
+                    </a>
+                  </h2>
+                  <hr class="border-t border-[#193CB8] dark:border-blue-700 mb-4" />
+
+                  <div v-if="recentPosts && recentPosts.length > 0" class="space-y-4">
+                    <PostCard
+                      v-for="post in recentPosts"
+                      :key="post.id"
+                      :post="post"
+                      :formatDate="formatDate"
+                      :auth="{ auth_user }"
+                      :data-post-id="post.id"
+                      :isMember="true"
+                    />
+                  </div>
+                  <div v-else class="text-center text-gray-500 dark:text-gray-400">
+                    <p>No hay publicaciones recientes.</p>
+                  </div>
+                </div>
               </div>
               
               <!-- Right Column -->

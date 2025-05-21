@@ -66,6 +66,10 @@ class AdminController extends Controller
                         $query->where('training_area', 'like', '%' . $request->area . '%');
                     })
                     ->with('roles')
+                    ->whereHas('roles', function ($q) {
+                        $q->whereIn('model_has_roles.role_id', [2, 3]);
+                    })
+                    
                     ->orderBy('id', 'desc')
                     ->paginate($request->pagination ?? 10);
 
@@ -133,6 +137,12 @@ class AdminController extends Controller
                 ]);
                 break;
 
+            case "notifications":
+                return Inertia::render('Admin/AdminNotifications', [
+                ]);
+
+                break;
+
             default:
                 abort(404);
         }
@@ -143,6 +153,14 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
         return redirect()->back()->with('success', 'Usuario eliminado exitosamente.');
+    }
+
+    public function deleteCompany($id)
+    {
+        $company = Company::findOrFail($id);
+        $company->user()->delete();
+        $company->delete();
+        return redirect()->back()->with('success', 'Empresa eliminada exitosamente.');
     }
 
     public function singleUser($id)

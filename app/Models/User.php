@@ -101,6 +101,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Connection::class, 'connection_id');
     }
+    
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
 
     public function notifications()
     {
