@@ -72,8 +72,8 @@ const lastUpdated = new Date().toLocaleString('es-ES', {
   weekday: 'short',
   month: 'short',
   day: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit'
+  year: 'numeric',
+
 });
 
 // Trigger animations after component mounts
@@ -123,8 +123,8 @@ const pendingCounts = [
         <!-- Header with actions -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
           <div class="relative">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-200 tracking-tight">Analytics Dashboard</h1>
-            <p class="text-gray-500 dark:text-gray-400 mt-2 font-medium">Welcome back, Admin</p>
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-200 tracking-tight">Dashboard</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-2 font-medium">Bienvenido de vuelta, Admin</p>
             <div class="absolute -bottom-2 left-0 w-20 h-1 bg-violet-600 rounded-full"></div>
           </div>
           
@@ -213,10 +213,7 @@ const pendingCounts = [
                 </div>
               </div>
               <div class="flex items-center gap-3">
-                <span class="text-xs px-3 py-1.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-400 rounded-full flex items-center shadow-sm">
-                  <span class="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full mr-2 animate-pulse"></span>
-                  All Systems Operational
-                </span>
+                
                 <button class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
                   <i class="bx bx-dots-horizontal-rounded text-xl"></i>
                 </button>
@@ -255,14 +252,7 @@ const pendingCounts = [
                   <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Usuarios por área de aprendizaje</h2>
                   <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Distribución de usuarios según su área de formación</p>
                 </div>
-                <div class="flex items-center space-x-2">
-                  <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
-                    <i class="bx bx-refresh"></i>
-                  </button>
-                  <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
-                    <i class="bx bx-dots-horizontal-rounded"></i>
-                  </button>
-                </div>
+               
               </div>
             </div>
             <div class="p-6">
@@ -277,14 +267,7 @@ const pendingCounts = [
                   <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Empresas por sector</h2>
                   <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Distribución de empresas según su sector industrial</p>
                 </div>
-                <div class="flex items-center space-x-2">
-                  <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
-                    <i class="bx bx-refresh"></i>
-                  </button>
-                  <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
-                    <i class="bx bx-dots-horizontal-rounded"></i>
-                  </button>
-                </div>
+                
               </div>
             </div>
             <div class="p-6">

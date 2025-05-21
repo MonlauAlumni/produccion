@@ -404,7 +404,8 @@ function blockUser() {
             message="¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer."
             icon="trash-alt" iconColor="#ef4444" iconBgClass="bg-red-100 dark:bg-red-800" confirmText="Eliminar"
             confirmButtonClass="bg-red-600 text-white hover:bg-red-700" @close="modalDeleteUser = false"
-            @confirm="deleteUser" />
+            @confirm="deleteUser" 
+            class="z-[9999]"/>
 
         <BaseModal v-if="String(selectedUser.status).trim().toLowerCase() !== 'blocked'" :show="modalBlockUser" title="Bloquear Usuario"
             message="¿Estás seguro de que deseas bloquear este usuario? Podrá ser desbloqueado más tarde." icon="block"

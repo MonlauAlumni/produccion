@@ -726,14 +726,7 @@
         <i class='bx bx-chevron-up text-xl'></i>
       </button>
 
-      <!-- Floating Action Button (Mobile) -->
-      <div class="md:hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40">
-        <button @click="router.get('/ofertas/crear')"
-          class="bg-[#193CB8] dark:bg-blue-700 text-white px-6 py-3 rounded-full shadow-lg flex items-center justify-center hover:bg-[#142d8c] dark:hover:bg-blue-800 transition-all duration-300">
-          <i class='bx bx-plus-circle mr-2'></i>
-          Publicar oferta
-        </button>
-      </div>
+      
     </div>
     <JobConfirmationModal v-model="isJobConfirmationModalOpen" @close="closeJobConfirmationModal"
       :is-open="isJobConfirmationModalOpen"

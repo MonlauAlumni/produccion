@@ -49,8 +49,8 @@ Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/admin/company/{id}', [AdminController::class, 'singleCompany'])->name('admin.company');
     Route::put('/admin/company/{id}', [AdminController::class, 'updateCompany'])->name('admin.company.update');
     Route::delete('/admin/company/{id}', [AdminController::class, 'deleteCompany'])->name('admin.company.delete');
-});
 
+});
 
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -210,8 +210,7 @@ Route::middleware(['guest'])->group(function () {
 
     Route::get('/register-company', [RegisterCompanyController::class, 'create'])->name('register-company');
     Route::post('/register-company', [RegisterCompanyController::class, 'store']);
-    Route::get('/register', [RegisterController::class, 'create'])->name('register');
-    Route::post('/register', [RegisterController::class, 'store']);
+   
 
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);

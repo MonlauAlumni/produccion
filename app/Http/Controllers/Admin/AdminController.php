@@ -142,7 +142,7 @@ class AdminController extends Controller
     {
         $user = User::findOrFail($id);
         $user->delete();
-        return redirect()->back()->with('success', 'Usuario eliminado exitosamente.');
+        return Inertia::location('/admin/users/users');
     }
 
     public function singleUser($id)

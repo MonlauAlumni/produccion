@@ -32,9 +32,9 @@ export default {
 </script>
 
 <template>
-    <div v-if="show" class="fixed inset-0 flex items-center justify-center z-50">
+    <div v-if="show" class="fixed  inset-0 flex items-center justify-center ">
       <div class="bg-black/60 bg-opacity-50 absolute inset-0" @click="closeModal"></div>
-      <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
+      <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all z-[9999] sm:max-w-lg sm:w-full">
         <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
           <div class="sm:flex sm:items-start">
             <div
@@ -75,3 +75,8 @@ export default {
       </div>
     </div>
   </template>
+<style scoped>
+.modal {
+  z-index: 9999;
+}
+</style>
