@@ -2,8 +2,8 @@
 import 'boxicons';
 import { ref, computed, onMounted } from 'vue';
 import AdminLayout from './Layouts/AdminLayout.vue';
-import UsersByTrainingAreaChart from '@/components/Admin/UserByTrainingAreaChart.vue';
-import CompaniesBySectorChart from '@/components/Admin/CompaniesBySectorChart.vue';
+import UsersByTrainingAreaChart from '../../Components/Admin/UserByTrainingAreaChart.vue';
+import CompaniesBySectorChart from '../../Components/Admin/CompaniesBySectorChart.vue';
 import { router } from '@inertiajs/vue3';
 
 // Define props with proper types
