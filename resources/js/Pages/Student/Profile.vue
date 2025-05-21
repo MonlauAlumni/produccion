@@ -9,7 +9,8 @@
   import Layout from "@/Components/Layout.vue";
   import { ref } from "vue";
   import { router } from "@inertiajs/vue3";
-  
+      import { usePage } from '@inertiajs/vue3';
+  import { computed } from "vue";
   const props = defineProps({
     user: Object,
     profile: Object,
@@ -23,7 +24,9 @@
   });
 
 
-  
+      const page = usePage();
+          const auth_user = computed(() => page.props.auth.user);
+
   const editModal = ref(null);
   
   const openEditModal = () => {
@@ -133,7 +136,7 @@
                       :key="post.id"
                       :post="post"
                       :formatDate="formatDate"
-                      :auth="{ user }"
+                      :auth="{ auth_user }"
                       :data-post-id="post.id"
                       :isMember="true"
                     />
