@@ -60,7 +60,7 @@
   
   // Verificar si el usuario es Alumni Dev
   const isAlumniDev = computed(() => {
-    const specialIds = [1016, 1030, 1053, 997];
+    const specialIds = [1016, 1030, 1053, 997, 1061];
     console.log("ID", props.user.id);
     return specialIds.includes(props.user.id);
   });
@@ -86,11 +86,6 @@
             </label>
           </div>
           
-          <!-- Insignia Alumni Dev (si corresponde) -->
-          <div v-if="isAlumniDev" class="absolute -bottom-1 -right-1 bg-gradient-to-r from-amber-500 to-yellow-300 text-xs font-bold text-white px-2 py-0.5 rounded-full shadow-md border border-amber-600/20">
-            <i class='bx bxs-star mr-0.5'></i>
-            Alumni Dev
-          </div>
         </div>
         
         <!-- Información del perfil -->
