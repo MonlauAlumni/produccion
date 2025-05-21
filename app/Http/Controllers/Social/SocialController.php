@@ -177,7 +177,12 @@ class SocialController extends Controller
                 })
                 ->paginate(10)->items();  
 
-            $posts = Post::where('content', 'like', "%{$query}%")
+            $posts = Post::where(function ($q) use ($query) {
+                    $q->where('content', 'like', "%{$query}%")
+                      ->orWhereHas('user', function ($userQ) use ($query) {
+                          $userQ->whereRaw("CONCAT(name, ' ', last_name_1, ' ', last_name_2) = ?", [$query]);
+                      });
+                })
                 ->whereNull('group_id')
                 ->with(['user.profile', 'images', 'comments' => function ($query) {
                     $query->with('user.profile')->limit(3);
