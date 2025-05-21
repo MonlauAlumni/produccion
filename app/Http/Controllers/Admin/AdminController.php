@@ -69,7 +69,7 @@ class AdminController extends Controller
                     ->whereHas('roles', function ($q) {
                         $q->whereIn('model_has_roles.role_id', [2, 3]);
                     })
-                    
+
                     ->orderBy('id', 'desc')
                     ->paginate($request->pagination ?? 10);
 
@@ -88,15 +88,15 @@ class AdminController extends Controller
                 $totalOpenApplications = Application::where('status', 'open')->count();
 
                 $query = Company::select([
-                        'id',
-                        'company_name',
-                        'company_phone',
-                        'fiscal_id',
-                        'user_id',
-                        'address',
-                        'zip_code',
-                        'population'
-                    ])
+                    'id',
+                    'company_name',
+                    'company_phone',
+                    'fiscal_id',
+                    'user_id',
+                    'address',
+                    'zip_code',
+                    'population'
+                ])
                     ->with('user:id,email,name,last_name_1,last_name_2')
                     ->when($request->filled('id'), fn($query) => $query->where('id', $request->id))
                     ->when($request->filled('company_name'), function ($query) use ($request) {
@@ -135,6 +135,9 @@ class AdminController extends Controller
                     'totalOpenApplications' => $totalOpenApplications,
                     'filters' => $request->all(),
                 ]);
+                break;
+            case 'notifications':
+                return Inertia::render('Admin/AdminNotifications');
                 break;
 
             default:
