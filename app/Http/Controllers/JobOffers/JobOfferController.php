@@ -105,7 +105,7 @@ class JobOfferController extends Controller
         $user = Auth::user();
 
         $isJobOfferOwner = false;
-        if ($user) {
+        if ($user && $user->company) {
             $isJobOfferOwner = $user->company->id === $jobOffer->company_id;
         }
          
