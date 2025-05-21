@@ -168,6 +168,11 @@ Route::middleware(['auth', \App\Http\Middleware\BlockIfUserIsBlocked::class])->g
 
     Route::get('/calendario', [CalendarController::class, 'index'])->name('calendar.index');
 
+    // Calendar event CRUD
+    Route::post('/calendario', [CalendarController::class, 'store'])->name('calendar.store');
+    Route::put('/calendario/{eventId}', [CalendarController::class, 'update'])->name('calendar.update');
+    Route::delete('/calendario/{eventId}', [CalendarController::class, 'destroy'])->name('calendar.destroy');
+
     Route::get('/configuracion', [SettingsController::class, 'show'])->name('settings.show');
     Route::get('/configuracion/cambiar-contraseña', [SettingsController::class, 'changePassword'])->name('change.password');
     Route::put('/settings/update-appearance', [SettingsController::class, 'updateAppearance'])->name('update.appearance');
