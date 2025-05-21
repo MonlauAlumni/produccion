@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Company;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Inertia\Inertia;
-use App\Models\User;    
+use App\Models\User;   
+use Illuminate\Support\Facades\Auth; 
 use App\Models\Company;
 
 class CompanyController extends Controller
@@ -22,11 +23,16 @@ class CompanyController extends Controller
         $isAdmin = ($userId === $company->user_id);
         
         $company->jobOffers = $company->jobOffers->toArray();
+        $authUserId = auth()->user()->id;
 
+        $authUser = Auth::user();
+      
+        $isSameUser = $authUser && $authUser->id === $company->user->id;
         
         return Inertia::render('Company/SingleCompany', [
             'company' => $company,
-            'isAdmin' => $isAdmin
+            'isAdmin' => $isAdmin,
+            'isSameUser' => $isSameUser,
         ]);
     }
 

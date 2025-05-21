@@ -94,11 +94,7 @@
                 </div>
                 </button>
                 
-                <button v-else
-                  class="flex items-center gap-1.5 bg-[#193CB8] dark:bg-blue-900 hover:bg-[#2748c6] dark:hover:bg-blue-800 text-white px-4 py-2 rounded-md transition-colors">
-                  <i class='bx bx-envelope'></i>
-                  <span>Contactar</span>
-                </button>
+               
               </div>
             </div>
             
