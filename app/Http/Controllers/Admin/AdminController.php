@@ -137,6 +137,12 @@ class AdminController extends Controller
                 ]);
                 break;
 
+            case "notifications":
+                return Inertia::render('Admin/AdminNotifications', [
+                ]);
+
+                break;
+
             default:
                 abort(404);
         }

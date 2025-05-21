@@ -228,8 +228,8 @@
 </script>
 
 <template>
-  <Layout>
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+  <Layout> 
+    <div class="min-h-full bg-gray-50 dark:bg-gray-900 flex flex-col">
       <!-- Hero Section -->
       <div class="bg-[#193CB8] dark:bg-[#142d8c] text-white py-6">
         <div class="w-full max-w-[95%] mx-auto px-2">
