@@ -195,11 +195,11 @@ const submit = () => {
   <div v-if="isOpen" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
       <!-- Background overlay -->
-      <div class="fixed inset-0 z-40 bg-gray-500/75 dark:bg-black/75 transition-opacity backdrop-blur-sm" aria-hidden="true" @click="closeModal"></div>
+      <div class="fixed inset-0 z-[-10] bg-gray-500/75 dark:bg-black/75 transition-opacity backdrop-blur-sm" aria-hidden="true" @click="closeModal"></div>
 
 
       <!-- Modal panel -->
-      <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+      <div class="inline-block z-50 align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
         <div class="bg-[#193CB8] dark:bg-[#142d8c] px-6 py-4 flex justify-between items-center">
           <h3 class="text-xl font-bold text-white flex items-center">
             <i class='bx bx-edit mr-2'></i>
@@ -637,10 +637,10 @@ const submit = () => {
         </div>
 
         <!-- Delete Confirmation Modal -->
-        <div v-if="showDeleteConfirmation" class="fixed inset-0 z-[60] overflow-y-auto" aria-labelledby="delete-modal-title" role="dialog" aria-modal="true">
+        <div v-if="showDeleteConfirmation" class="fixed inset-0  z-[999999] overflow-y-auto" aria-labelledby="delete-modal-title" role="dialog" aria-modal="true">
           <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <!-- Background overlay -->
-            <div class="fixed inset-0 bg-gray-600/75 dark:bg-gray-800/75 transition-opacity" aria-hidden="true"></div>
+            <div class="fixed inset-0 z-[-10] bg-gray-600/75 dark:bg-gray-800/75 transition-opacity" aria-hidden="true"></div>
 
             <!-- Modal panel -->
             <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">

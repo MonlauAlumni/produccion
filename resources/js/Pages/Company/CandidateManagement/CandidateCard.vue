@@ -188,19 +188,7 @@ const downloadCV = () => {
 
       <!-- Skills & Experience -->
       <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Habilidades</h3>
-        <div class="flex flex-wrap gap-2 mb-3">
-          <span 
-            v-for="(skill, index) in application.student && application.student.profile ? application.student.profile.skills || [] : []" 
-            :key="index"
-            class="px-2 py-1 bg-[#193CB8]/10 dark:bg-blue-900/20 text-[#193CB8] dark:text-blue-400 rounded-md text-xs font-medium"
-          >
-            {{ skill }}
-          </span>
-          <span v-if="!application.student || !application.student.profile || !application.student.profile.skills || application.student.profile.skills.length === 0" class="text-gray-500 dark:text-gray-400 text-sm">
-            No hay habilidades registradas
-          </span>
-        </div>
+        
         
         <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Carta de presentación</h3>
         <p class="text-gray-700 dark:text-gray-300 text-sm bg-gray-50 dark:bg-gray-700 p-2 whitespace-pre-line rounded-md">

@@ -29,12 +29,13 @@ class JobApplicationController extends Controller
             return redirect()->back()->with('error', 'La oferta ha expirado');
         }
    
-
+        
 
         JobApplication::create([
             'job_offer_id' => $jobOfferId,
             'user_id' => auth()->user()->id,
             'status' => 'pending',
+            'cover_letter' => request('cover_letter'),
         ]);
 
       

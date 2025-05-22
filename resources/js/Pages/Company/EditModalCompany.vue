@@ -172,7 +172,7 @@
       <!-- Contenido del modal con animación de slide -->
       <transition name="slide-up">
         <div v-if="isOpen" 
-             class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+             class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl z-[999] max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col"
              @click.stop>
           
           <!-- Cabecera del modal con diseño mejorado -->
@@ -286,7 +286,7 @@
             <form @submit.prevent="saveChanges" class="space-y-6">
               <!-- Información básica -->
               <div v-show="activeTab === 'basic'">
-                <div class="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 mb-6 border border-blue-100 dark:border-blue-800 flex items-start gap-3">
+                <div class="bg-blue-50 dark:bg-blue-900/30  rounded-lg p-4 mb-6 border border-blue-100 dark:border-blue-800 flex items-start gap-3">
                   <i class='bx bx-info-circle text-[#193CB8] dark:text-blue-400 text-xl mt-0.5'></i>
                   <p class="text-sm text-gray-700 dark:text-gray-300">
                     La información básica de tu empresa es fundamental para que los candidatos puedan conocerte mejor.
@@ -295,7 +295,7 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div class="group md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 group-focus-within:text-[#193CB8] dark:group-focus-within:text-blue-400">
+                    <label class="block text-sm font-  text-gray-700 dark:text-gray-300 mb-1 group-focus-within:text-[#193CB8] dark:group-focus-within:text-blue-400">
                       Nombre de la Empresa <span class="text-red-500 dark:text-red-400">*</span>
                     </label>
                     <div class="relative">

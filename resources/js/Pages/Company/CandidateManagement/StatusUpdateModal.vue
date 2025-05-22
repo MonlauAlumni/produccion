@@ -63,7 +63,7 @@ const getCandidateName = () => {
  <div v-if="isOpen" class="fixed inset-0 z-50 overflow-y-auto">
   <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
     <!-- Overlay -->
-    <div class="fixed inset-0 transition-opacity bg-black/70 dark:bg-black/80 backdrop-blur-sm" @click="closeModal"></div>
+    <div class="fixed inset-0 z-[-10] transition-opacity bg-black/70 dark:bg-black/80 backdrop-blur-sm" @click="closeModal"></div>
 
     <!-- Modal Panel -->
     <div class="inline-block w-full max-w-md px-4 pt-5 pb-4 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 rounded-lg shadow-xl sm:my-8 sm:align-middle sm:p-6 border border-gray-200 dark:border-gray-700">
@@ -86,7 +86,7 @@ const getCandidateName = () => {
         <hr class="border-t border-gray-200 dark:border-gray-700 mb-5">
         
         <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
-          Selecciona el nuevo estado para esta aplicación y añade un feedback opcional para el candidato.
+          Selecciona el nuevo estado para esta aplicación.
         </p>
         
         <!-- Status Selection -->
@@ -110,16 +110,7 @@ const getCandidateName = () => {
           </div>
         </div>
         
-        <!-- Feedback -->
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Feedback (opcional)</label>
-          <textarea 
-            v-model="feedbackText" 
-            rows="4" 
-            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#193CB8] dark:focus:ring-blue-400 focus:border-[#193CB8] dark:focus:border-blue-400 outline-none transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            placeholder="Añade un mensaje para el candidato..."
-          ></textarea>
-        </div>
+       
         
         <!-- Actions -->
         <div class="flex justify-end gap-3">

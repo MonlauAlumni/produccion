@@ -78,11 +78,11 @@ const getStatusClass = (status) => {
   <div v-if="isOpen" class="fixed inset-0 z-50 overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
       <!-- Backdrop -->
-      <div class="fixed inset-0 transition-opacity bg-black/70 dark:bg-black/80 backdrop-blur-sm" @click="closeModal"></div>
+      <div class="fixed inset-0 z-[-10] transition-opacity bg-black/70 dark:bg-black/80 backdrop-blur-sm" @click="closeModal"></div>
 
       <!-- Modal Panel -->
       <div
-        class="inline-block w-full max-w-4xl overflow-hidden text-left align-bottom transition-all transform bg-white dark:bg-gray-800 rounded-xl shadow-2xl sm:my-8 sm:align-middle border border-gray-200 dark:border-gray-700">
+        class="inline-block w-full max-w-4xl z-[999] overflow-hidden text-left align-bottom transition-all transform bg-white dark:bg-gray-800 rounded-xl shadow-2xl sm:my-8 sm:align-middle border border-gray-200 dark:border-gray-700">
         <!-- Header -->
         <div class="relative bg-[#193CB8] dark:bg-blue-700 text-white p-6">
           <button @click="closeModal"

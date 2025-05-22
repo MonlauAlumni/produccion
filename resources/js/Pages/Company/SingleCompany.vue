@@ -6,14 +6,14 @@
   import EditModalCompany from "@/Pages/Company/EditModalCompany.vue";
   import Layout from "@/Components/Layout.vue";
   import { ref } from "vue";
-  import { router } from "@inertiajs/vue3";
+  import { router, usePage } from "@inertiajs/vue3";
   
   const props = defineProps({
     company: Object,
     isAdmin: Boolean,
     isSameUser: Boolean,
   });
-  
+  const page = usePage()
   const editModal = ref(null);
   const userRole = page.props.auth?.user?.roles[0]?.name
   const openEditModal = () => {
@@ -109,24 +109,12 @@
                         <i class='bx bx-briefcase text-[#193CB8] dark:text-blue-200 text-xl'></i>
                         <span class="text-gray-600 dark:text-gray-400">Ofertas Activas</span>
                       </div>
-                      <span class="font-semibold text-gray-800 dark:text-gray-200">{{ jobListings?.length || 0 }}</span>
+                      <span class="font-semibold text-gray-800 dark:text-gray-200">{{ company.jobOffers?.length || 0 }}</span>
                     </div>
                     
-                    <div class="flex items-center justify-between">
-                      <div class="flex items-center gap-2">
-                        <i class='bx bx-user-check text-[#193CB8] dark:text-blue-200 text-xl'></i>
-                        <span class="text-gray-600 dark:text-gray-400">Contrataciones</span>
-                      </div>
-                      <span class="font-semibold text-gray-800 dark:text-gray-200">{{ company.hires || 0 }}</span>
-                    </div>
                     
-                    <div class="flex items-center justify-between">
-                      <div class="flex items-center gap-2">
-                        <i class='bx bx-calendar text-[#193CB8] dark:text-blue-200 text-xl'></i>
-                        <span class="text-gray-600 dark:text-gray-400">Miembro desde</span>
-                      </div>
-                      <span class="font-semibold text-gray-800 dark:text-gray-200">{{ company.joined_date || 'N/A' }}</span>
-                    </div>
+                    
+                    
                   </div>
                 </div>
                 

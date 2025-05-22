@@ -281,18 +281,7 @@
     
                 <!-- Stats & Engagement -->
                 <div class="flex flex-wrap items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                    <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                        <div class="flex items-center">
-                            <i class='bx bx-calendar mr-1'></i>
-                            {{ getTimeAgo(jobOffer.created_at) }}
-                        </div>
-                        
-                        <!-- Mostrar si hay más candidatos (solo para aplicaciones) -->
-                        <div v-if="application && jobOffer.applications_count" class="flex items-center">
-                            <i class='bx bx-group mr-1'></i>
-                            {{ jobOffer.applications_count }} candidatos
-                        </div>
-                    </div>
+                   
     
                     <!-- Action Buttons -->
                     <div class="flex items-center space-x-2 mt-3 sm:mt-0">
@@ -322,11 +311,7 @@
                         Eliminar
                     </button>
                     
-                    <button v-else-if="application.status === 'accepted'"
-                        class="flex-1 bg-green-600 dark:bg-green-700 cursor-pointer text-white rounded-r-lg font-medium py-2 hover:bg-green-700 dark:hover:bg-green-800 transition-colors">
-                        <i class='bx bx-envelope mr-1'></i>
-                        Contactar empresa
-                    </button>
+                   
                     
                     <button v-else
                         class="flex-1 bg-gray-200 dark:bg-gray-700 cursor-not-allowed text-gray-600 dark:text-gray-400 font-medium py-2 rounded-r-lg">
@@ -336,22 +321,7 @@
             </div>
             
             <!-- Cover Letter Preview (si existe) -->
-            <div v-if="application && application.cover_letter" class="px-5 py-4 border-t border-gray-100 bg-gray-50">
-                <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-medium text-gray-700 flex items-center">
-                        <i class='bx bx-envelope mr-2 text-[#193CB8]'></i>
-                        Tu carta de presentación
-                    </h4>
-                    <button class="text-[#193CB8] hover:text-[#142d8c] text-sm">
-                        <i class='bx bx-edit'></i>
-                        Editar
-                    </button>
-                </div>
-                <p class="text-gray-600 text-sm line-clamp-3">{{ application.cover_letter }}</p>
-                <button v-if="application.cover_letter.length > 200" class="text-[#193CB8] text-sm mt-2 hover:underline">
-                    Ver completa
-                </button>
-            </div>
+            
         </div>
     </template>
     

@@ -13,7 +13,7 @@
   });
 
   const page = usePage();
-
+    const userRole = page.props.auth?.user?.roles[0]?.name ?? null;
   // Default filtering by user's training_area
   const userTrainingArea = computed(() => page.props.auth.user?.training_area ?? null);
   const normalizeText = (text) => {
@@ -57,7 +57,7 @@
   if (initialActiveCategoryValue.length === 0 && userTrainingArea.value) {
     const normArea = normalizeText(userTrainingArea.value);
     const mappedCategory = areaToCategoryMap[normArea];
-    if (mappedCategory) {
+    if (mappedCategory && userRole === 'alumne') {
       initialActiveCategoryValue.push(mappedCategory);
     }
   }
@@ -419,6 +419,7 @@
           <div class="flex flex-col md:flex-row items-center mx-auto justify-between">
             <div class="mb-6 md:mb-0 md:mr-8">
               <h1 class="text-3xl font-bold mb-2">Encuentra tu próxima oportunidad</h1>
+           
               <p class="text-blue-100 mb-4">Explora las mejores ofertas de trabajo adaptadas a tu perfil</p>
 
               <!-- Search Bar -->
