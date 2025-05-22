@@ -5,10 +5,12 @@
   import ExperienceSection from "@/Components/Profile/ExperienceSection.vue";
   import SkillsSection from "@/Components/Profile/SkillsSection.vue";
   import EditModalStudent from "@/Pages/Student/EditModalStudent.vue";
+  import PostCard from "../../Components/Social/PostCard.vue";
   import Layout from "@/Components/Layout.vue";
   import { ref } from "vue";
   import { router } from "@inertiajs/vue3";
-  
+      import { usePage } from '@inertiajs/vue3';
+  import { computed } from "vue";
   const props = defineProps({
     user: Object,
     profile: Object,
@@ -18,10 +20,13 @@
     isSameUser: Boolean,
     slang: String,
     allSkills: Array,
+    recentPosts: Array,
   });
 
 
-  
+      const page = usePage();
+          const auth_user = computed(() => page.props.auth.user);
+
   const editModal = ref(null);
   
   const openEditModal = () => {
@@ -74,13 +79,13 @@
           <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
           
           <!-- Banner upload button for user's own profile -->
-          <div v-if="isSameUser" class="absolute z-20 bottom-4 right-4">
+            <div v-if="isSameUser" class="absolute z-20 right-4 top-4 2xl:top-auto 2xl:bottom-4">
             <label class="cursor-pointer bg-white/90 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 text-[#193CB8] dark:text-blue-200 px-3 py-2 rounded-md shadow-md flex items-center gap-2 transition-all">
               <i class='bx bx-image-add'></i>
               <span class="text-sm font-medium">Cambiar Banner</span>
               <input type="file" @change="uploadBanner" class="hidden" accept="image/*">
             </label>
-          </div>
+            </div>
         </div>
   
         <main class="flex flex-col items-center justify-center -mt-16 relative z-10 px-4">
@@ -112,6 +117,34 @@
                   :slang="slang"
                   :type="'education'" 
                 />
+
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                  <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 flex items-center justify-between">
+                    Publicaciones Recientes
+                    <a
+                      :href="`/connect/search?q=${encodeURIComponent(user.name + ' ' + (user.last_name_1 || '') + ' ' + (user.last_name_2 || ''))}`"
+                      class="text-[#193CB8] dark:text-blue-300 text-sm font-medium hover:underline ml-4"
+                    >
+                      Ver todas
+                    </a>
+                  </h2>
+                  <hr class="border-t border-[#193CB8] dark:border-blue-700 mb-4" />
+
+                  <div v-if="recentPosts && recentPosts.length > 0" class="space-y-4">
+                    <PostCard
+                      v-for="post in recentPosts"
+                      :key="post.id"
+                      :post="post"
+                      :formatDate="formatDate"
+                      :auth="{ auth_user }"
+                      :data-post-id="post.id"
+                      :isMember="true"
+                    />
+                  </div>
+                  <div v-else class="text-center text-gray-500 dark:text-gray-400">
+                    <p>No hay publicaciones recientes.</p>
+                  </div>
+                </div>
               </div>
               
               <!-- Right Column -->

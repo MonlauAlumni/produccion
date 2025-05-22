@@ -66,6 +66,10 @@ class AdminController extends Controller
                         $query->where('training_area', 'like', '%' . $request->area . '%');
                     })
                     ->with('roles')
+                    ->whereHas('roles', function ($q) {
+                        $q->whereIn('model_has_roles.role_id', [2, 3]);
+                    })
+
                     ->orderBy('id', 'desc')
                     ->paginate($request->pagination ?? 10);
 
@@ -84,15 +88,15 @@ class AdminController extends Controller
                 $totalOpenApplications = Application::where('status', 'open')->count();
 
                 $query = Company::select([
-                        'id',
-                        'company_name',
-                        'company_phone',
-                        'fiscal_id',
-                        'user_id',
-                        'address',
-                        'zip_code',
-                        'population'
-                    ])
+                    'id',
+                    'company_name',
+                    'company_phone',
+                    'fiscal_id',
+                    'user_id',
+                    'address',
+                    'zip_code',
+                    'population'
+                ])
                     ->with('user:id,email,name,last_name_1,last_name_2')
                     ->when($request->filled('id'), fn($query) => $query->where('id', $request->id))
                     ->when($request->filled('company_name'), function ($query) use ($request) {
@@ -132,10 +136,43 @@ class AdminController extends Controller
                     'filters' => $request->all(),
                 ]);
                 break;
+            case 'notifications':
+                $users = User::with('roles')->get();
+                return Inertia::render('Admin/AdminNotifications', [
+                    'users' => $users,
+                ]);
+                break;
+
+            case "notifications":
+                return Inertia::render('Admin/AdminNotifications', [
+                ]);
+
+                break;
 
             default:
                 abort(404);
         }
+    }
+
+    public function sendNotification(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|string',
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'integer|exists:users,id',
+            'content' => 'nullable|string',
+        ]);
+
+        foreach ($request->user_ids as $userId) {
+            $notification = new \App\Models\Notification();
+            $notification->user_id = $userId;
+            $notification->type = $request->type;
+            $notification->message = $request->content;
+            $notification->is_read = false;
+            $notification->save();
+        }
+
+        return redirect()->back()->with('success', 'Notificaciones enviadas exitosamente.');
     }
 
     public function deleteUser($id)
@@ -143,6 +180,14 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
         return redirect()->back()->with('success', 'Usuario eliminado exitosamente.');
+    }
+
+    public function deleteCompany($id)
+    {
+        $company = Company::findOrFail($id);
+        $company->user()->delete();
+        $company->delete();
+        return redirect()->back()->with('success', 'Empresa eliminada exitosamente.');
     }
 
     public function singleUser($id)

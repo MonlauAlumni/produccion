@@ -48,7 +48,9 @@ Route::group(['middleware' => ['role:admin']], function () {
 
     Route::get('/admin/company/{id}', [AdminController::class, 'singleCompany'])->name('admin.company');
     Route::put('/admin/company/{id}', [AdminController::class, 'updateCompany'])->name('admin.company.update');
-    Route::delete('/admin/company/{id}', [AdminController::class, 'deleteCompany'])->name('admin.company.delete');
+    Route::delete('/admin/companies/{id}', [AdminController::class, 'deleteCompany'])->name('admin.company.delete');
+
+    Route::post('/admin/notifications', [AdminController::class, 'sendNotification'])->name('admin.notifications.send');
 });
 
 
@@ -167,6 +169,11 @@ Route::middleware(['auth', \App\Http\Middleware\BlockIfUserIsBlocked::class])->g
 
 
     Route::get('/calendario', [CalendarController::class, 'index'])->name('calendar.index');
+
+    // Calendar event CRUD
+    Route::post('/calendario', [CalendarController::class, 'store'])->name('calendar.store');
+    Route::put('/calendario/{eventId}', [CalendarController::class, 'update'])->name('calendar.update');
+    Route::delete('/calendario/{eventId}', [CalendarController::class, 'destroy'])->name('calendar.destroy');
 
     Route::get('/configuracion', [SettingsController::class, 'show'])->name('settings.show');
     Route::get('/configuracion/cambiar-contraseña', [SettingsController::class, 'changePassword'])->name('change.password');

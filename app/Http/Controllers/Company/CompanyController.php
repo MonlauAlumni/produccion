@@ -104,7 +104,7 @@ class CompanyController extends Controller
         })
         ->paginate(12)
         ->withQueryString();
-   
+  
     // Obtener ubicaciones populares para el filtro
     $locations = Company::select('location')
         ->distinct()
