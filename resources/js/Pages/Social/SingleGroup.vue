@@ -113,7 +113,7 @@ watch(() => props.group, (newGroup) => {
     <Layout :auth="auth">
         <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col relative">
             <div class="relative w-full h-64 md:h-80 bg-gradient-to-r from-[#193CB8] to-[#2748c6] overflow-hidden">
-                <div v-if="isAdmin" class="absolute bottom-4 right-4 z-11">
+                <div v-if="isAdmin" class="absolute z-20 right-4 top-4 2xl:top-auto 2xl:bottom-4">
                     <label for="bannerUpload"
                         class="bg-white/90 cursor-pointer hover:bg-gray-100 text-[#193CB8] px-3 py-2 rounded-md shadow-md flex items-center gap-2 transition-all">
                         <i class='bx bx-image-add'></i>

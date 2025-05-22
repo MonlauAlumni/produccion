@@ -79,13 +79,13 @@
           <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
           
           <!-- Banner upload button for user's own profile -->
-          <div v-if="isSameUser" class="absolute z-20 bottom-4 right-4">
+            <div v-if="isSameUser" class="absolute z-20 right-4 top-4 2xl:top-auto 2xl:bottom-4">
             <label class="cursor-pointer bg-white/90 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 text-[#193CB8] dark:text-blue-200 px-3 py-2 rounded-md shadow-md flex items-center gap-2 transition-all">
               <i class='bx bx-image-add'></i>
               <span class="text-sm font-medium">Cambiar Banner</span>
               <input type="file" @change="uploadBanner" class="hidden" accept="image/*">
             </label>
-          </div>
+            </div>
         </div>
   
         <main class="flex flex-col items-center justify-center -mt-16 relative z-10 px-4">
