@@ -314,13 +314,7 @@ watch(activeConversationId, (newId) => {
                 <i class='bx bx-message-square-dots text-6xl text-gray-300 dark:text-gray-600 mb-4'></i>
                 <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2">No hay conversación seleccionada</h3>
                 <p class="text-gray-500 dark:text-gray-400 mb-6">Selecciona una conversación o inicia una nueva</p>
-                <button 
-                  @click="showNewConversationModal = true"
-                  class="px-4 py-2 bg-[#193CB8] text-white rounded-lg hover:bg-[#142d8c] transition-colors"
-                >
-                  <i class='bx bx-plus mr-2'></i>
-                  Nueva conversación
-                </button>
+               
               </div>
             </div>
           </div>
