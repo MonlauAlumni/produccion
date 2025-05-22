@@ -1,8 +1,7 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import Layout from '@/Components/Layout.vue';
-import { watch } from 'vue';
 
 const props = defineProps({
   notifications: {
@@ -38,20 +37,29 @@ const pagination = computed(() => ({
 const notificationTabs = [
   { id: 'all', name: 'Todas', icon: 'bx-bell' },
   { id: 'unread', name: 'No leídas', icon: 'bx-envelope' },
-  // { id: 'mentions', name: 'Menciones', icon: 'bx-at' },
-  // { id: 'events', name: 'Eventos', icon: 'bx-calendar-event' },
+  { id: 'system', name: 'Sistema', icon: 'bx-info-circle' },
   { id: 'jobs', name: 'Ofertas', icon: 'bx-briefcase' }
 ];
+
+const isSystemNotification = (notification) => {
+  return ['info', 'success', 'warning', 'error'].includes(notification.type);
+};
+
+const systemNotifications = computed(() => {
+  return allNotifications.value.filter(notification => isSystemNotification(notification));
+});
+
+const systemNotificationsCount = computed(() => {
+  return systemNotifications.value.filter(notification => !notification.is_read).length;
+});
 
 const filteredNotifications = computed(() => {
   if (activeTab.value === 'all') {
     return allNotifications.value;
   } else if (activeTab.value === 'unread') {
     return allNotifications.value.filter(notification => !notification.is_read);
-  } else if (activeTab.value === 'mentions') {
-    return allNotifications.value.filter(notification => notification.type === 'mention');
-  } else if (activeTab.value === 'events') {
-    return allNotifications.value.filter(notification => notification.type === 'event');
+  } else if (activeTab.value === 'system') {
+    return allNotifications.value.filter(notification => isSystemNotification(notification));
   } else if (activeTab.value === 'jobs') {
     return allNotifications.value.filter(notification => notification.type === 'job');
   }
@@ -128,25 +136,45 @@ const markAsRead = (notificationId) => {
 };
 
 const deleteAllNotifications = () => {
-  router.delete('/notificaciones', {}, {
+  const notificationIds = filteredNotifications.value.map(n => n.id);
+  
+  if (notificationIds.length === 0) return;
+  
+  router.delete('/notificaciones', {
+    ids: notificationIds
+  }, {
     preserveScroll: true,
-    preserveState: true, 
+    preserveState: true,
     onSuccess: () => {
-      allNotifications.value = [];
+      allNotifications.value = allNotifications.value.filter(
+        notification => !notificationIds.includes(notification.id)
+      );
     }
   });
 };
 
 const markAllAsRead = () => {
-  router.put('/notificaciones/mark-all-as-read', {}, {
+  const unreadNotifications = filteredNotifications.value.filter(n => !n.is_read);
+  const notificationIds = unreadNotifications.map(n => n.id);
+  
+  if (notificationIds.length === 0) return;
+  
+  router.put('/notificaciones/mark-all-as-read', {
+    ids: notificationIds
+  }, {
     preserveScroll: true,
-    preserveState: true,  
+    preserveState: true,
     onSuccess: () => {
-      allNotifications.value = allNotifications.value.map(notification => ({
-        ...notification,
-        is_read: true,
-        read_at: notification.read_at || new Date().toISOString()
-      }));
+      allNotifications.value = allNotifications.value.map(notification => {
+        if (notificationIds.includes(notification.id)) {
+          return {
+            ...notification,
+            is_read: true,
+            read_at: notification.read_at || new Date().toISOString()
+          };
+        }
+        return notification;
+      });
     }
   });
 };
@@ -209,6 +237,14 @@ const getNotificationIcon = (type) => {
       return 'bx-group';
     case 'message':
       return 'bx-envelope';
+    case 'info':
+      return 'bx-info-circle';
+    case 'success':
+      return 'bx-check-circle';
+    case 'warning':
+      return 'bx-error';
+    case 'error':
+      return 'bx-x-circle';
     default:
       return 'bx-bell';
   }
@@ -232,8 +268,31 @@ const getNotificationColor = (type) => {
       return 'bg-teal-500';
     case 'message':
       return 'bg-blue-500';
+    case 'info':
+      return 'bg-blue-500';
+    case 'success':
+      return 'bg-green-500';
+    case 'warning':
+      return 'bg-amber-500';
+    case 'error':
+      return 'bg-red-500';
     default:
       return 'bg-gray-500';
+  }
+};
+
+const getSystemNotificationClass = (type) => {
+  switch (type) {
+    case 'info':
+      return 'border-l-blue-500 bg-blue-50 dark:bg-blue-900/20';
+    case 'success':
+      return 'border-l-green-500 bg-green-50 dark:bg-green-900/20';
+    case 'warning':
+      return 'border-l-amber-500 bg-amber-50 dark:bg-amber-900/20';
+    case 'error':
+      return 'border-l-red-500 bg-red-50 dark:bg-red-900/20';
+    default:
+      return '';
   }
 };
 
@@ -269,9 +328,17 @@ onMounted(() => {
               <p class="text-blue-100 mb-4">Mantente al día con todas tus actualizaciones</p>
             </div>
 
-            <div class="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20 text-center">
-              <div class="text-3xl font-bold">{{ unreadNotificationsCount }}</div>
-              <div class="text-blue-100">No leídas</div>
+            <div class="flex gap-4">
+              <div class="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20 text-center">
+                <div class="text-3xl font-bold">{{ unreadNotificationsCount }}</div>
+                <div class="text-blue-100">No leídas</div>
+              </div>
+
+              <div v-if="systemNotificationsCount > 0"
+                class="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20 text-center">
+                <div class="text-3xl font-bold">{{ systemNotificationsCount }}</div>
+                <div class="text-blue-100">Sistema</div>
+              </div>
             </div>
           </div>
         </div>
@@ -293,6 +360,10 @@ onMounted(() => {
                   class="ml-2 bg-[#193CB8] dark:bg-blue-200 text-white dark:text-gray-900 text-xs rounded-full px-2 py-0.5">
                   {{ unreadNotificationsCount }}
                 </span>
+                <span v-if="tab.id === 'system' && systemNotificationsCount > 0"
+                  class="ml-2 bg-[#193CB8] dark:bg-blue-200 text-white dark:text-gray-900 text-xs rounded-full px-2 py-0.5">
+                  {{ systemNotificationsCount }}
+                </span>
               </button>
             </div>
           </div>
@@ -301,16 +372,16 @@ onMounted(() => {
             <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">
               {{ activeTab === 'all' ? 'Todas las notificaciones' :
                 activeTab === 'unread' ? 'Notificaciones no leídas' :
-                  activeTab === 'mentions' ? 'Menciones' :
-                    activeTab === 'events' ? 'Eventos' : 'Ofertas de trabajo' }}
+                  activeTab === 'system' ? 'Notificaciones del sistema' :
+                    activeTab === 'jobs' ? 'Ofertas de trabajo' : 'Notificaciones' }}
             </h2>
             <div class="flex items-center space-x-4">
-              <button @click="markAllAsRead"
+              <button @click="markAllAsRead" v-if="filteredNotifications.some(n => !n.is_read)"
                 class="text-[#193CB8] dark:text-blue-200 hover:text-[#142d8c] dark:hover:text-blue-300 text-sm font-medium flex items-center cursor-pointer">
                 <i class='bx bx-check-double mr-1'></i>
                 Marcar todas como leídas
               </button>
-              <button @click="deleteAllNotifications"
+              <button @click="deleteAllNotifications" v-if="filteredNotifications.length > 0"
                 class="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-500 text-sm font-medium flex items-center cursor-pointer">
                 <i class="bx bx-trash mr-1"></i>
                 Borrar todas
@@ -318,10 +389,12 @@ onMounted(() => {
             </div>
           </div>
 
+          <!-- Lista de notificaciones filtradas -->
           <div class="space-y-3">
             <div v-for="notification in filteredNotifications" :key="notification.id" :class="[
               'bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden transition-all duration-300 border border-gray-200 dark:border-gray-700',
-              !notification.is_read ? 'border-l-4 border-l-[#193CB8] dark:border-l-blue-200' : ''
+              !notification.is_read ? 'border-l-4 border-l-[#193CB8] dark:border-l-blue-200' : '',
+              !notification.is_read && isSystemNotification(notification) ? `border-l-4 ${getSystemNotificationClass(notification.type)}` : ''
             ]">
               <div class="p-4 flex">
                 <div :class="[
@@ -333,9 +406,24 @@ onMounted(() => {
 
                 <div class="flex-1">
                   <div class="flex justify-between items-start">
-                    <p class="text-gray-800 dark:text-gray-200 font-medium">{{ notification.message }}</p>
+                    <div>
+                      <!-- Para notificaciones del sistema -->
+                      <template v-if="isSystemNotification(notification)">
+                        <h3 class="font-medium text-gray-800 dark:text-gray-200">
+                          {{ notification.title || notification.message }}
+                        </h3>
+                        <p v-if="notification.content" class="text-gray-600 dark:text-gray-400 mt-1">
+                          {{ notification.content }}
+                        </p>
+                      </template>
+                      <!-- Para notificaciones normales -->
+                      <template v-else>
+                        <p class="text-gray-800 dark:text-gray-200 font-medium">{{ notification.message }}</p>
+                      </template>
+                    </div>
                     <div class="flex items-center space-x-2 ml-2">
-                      <span class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(notification.created_at) }}</span>
+                      <span class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(notification.created_at)
+                        }}</span>
                       <div class="flex space-x-1">
                         <button v-if="!notification.is_read" @click="markAsRead(notification.id)"
                           class="text-gray-400 dark:text-gray-500 hover:text-[#193CB8] dark:hover:text-blue-200 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -343,7 +431,8 @@ onMounted(() => {
                           <i class='bx bx-check text-lg'></i>
                         </button>
                         <button @click="deleteNotification(notification.id)"
-                          class="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" title="Eliminar">
+                          class="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+                          title="Eliminar">
                           <i class='bx bx-x text-lg'></i>
                         </button>
                       </div>
@@ -370,10 +459,12 @@ onMounted(() => {
 
             <div v-if="pagination.currentPage >= pagination.lastPage && !isLoading && filteredNotifications.length > 0"
               class="text-center py-8">
-              <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div
+                class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i class='bx bx-check-circle text-3xl text-[#193CB8] dark:text-blue-200'></i>
               </div>
-              <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">¡Has visto todas las notificaciones!</h3>
+              <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">¡Has visto todas las notificaciones!
+              </h3>
               <p class="text-gray-500 dark:text-gray-400 mb-4">Estás al día con todas tus actualizaciones</p>
               <button @click="scrollToTop"
                 class="text-[#193CB8] dark:text-blue-200 font-medium hover:underline flex items-center justify-center mx-auto">
@@ -383,7 +474,8 @@ onMounted(() => {
             </div>
 
             <div v-if="filteredNotifications.length === 0 && !isLoading" class="text-center py-8">
-              <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div
+                class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i class='bx bx-bell-off text-3xl text-[#193CB8] dark:text-blue-200'></i>
               </div>
               <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">No hay notificaciones</h3>
