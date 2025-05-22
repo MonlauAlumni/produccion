@@ -137,12 +137,36 @@ class AdminController extends Controller
                 ]);
                 break;
             case 'notifications':
-                return Inertia::render('Admin/AdminNotifications');
+                $users = User::with('roles')->get();
+                return Inertia::render('Admin/AdminNotifications', [
+                    'users' => $users,
+                ]);
                 break;
 
             default:
                 abort(404);
         }
+    }
+
+    public function sendNotification(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|string',
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'integer|exists:users,id',
+            'content' => 'nullable|string',
+        ]);
+
+        foreach ($request->user_ids as $userId) {
+            $notification = new \App\Models\Notification();
+            $notification->user_id = $userId;
+            $notification->type = $request->type;
+            $notification->message = $request->content;
+            $notification->is_read = false;
+            $notification->save();
+        }
+
+        return redirect()->back()->with('success', 'Notificaciones enviadas exitosamente.');
     }
 
     public function deleteUser($id)
