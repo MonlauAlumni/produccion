@@ -386,15 +386,14 @@ const terminateAllSessions = () => {
 
 <template>
     <Layout :auth="auth">
-
-        <div class="grid grid-cols-2 gap-4 p-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
             <div class="p-6 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg shadow-xl space-y-6 transition-colors duration-300">
                 <div class="flex flex-col md:flex-row md:justify-between md:items-center">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">CUENTA</h1>
                         <p class="text-gray-600 dark:text-gray-400">Administre la información de tu cuenta.</p>
                     </div>
-                    <div class="flex space-x-2 mt-4 md:mt-0">
+                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-4 md:mt-0">
                         <button @click="updateUserInfo" :disabled="isUpdating"
                             class="bg-gradient-to-r from-[#193CB8] to-[#2748c6] px-4 py-2 rounded hover:bg-blue-600 cursor-pointer text-white transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
                             {{ isUpdating ? 'Actualizando...' : 'Actualizar Información' }}
@@ -417,12 +416,12 @@ const terminateAllSessions = () => {
                 </div>
 
                 <div class="flex flex-col gap-4">
-                    <div class="flex items-center">
+                    <div class="flex flex-col sm:flex-row items-center">
                         <label for="username"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mr-4 w-1/3">
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 sm:mr-4 sm:w-1/3">
                             Nombre de usuario
                         </label>
-                        <div class="relative w-2/3">
+                        <div class="relative w-full sm:w-2/3">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="bx bx-user text-gray-500 dark:text-gray-400"></i>
                             </div>
@@ -449,7 +448,7 @@ const terminateAllSessions = () => {
                 </div>
 
                 <!-- Profile Picture Section -->
-                <div class="flex items-center mt-4">
+                <div class="flex flex-col sm:flex-row items-center mt-4">
                     <div class="relative">
                         <img v-if="pfp" :src="pfp"
                             class="w-16 h-16 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600 transition-colors duration-300" alt="Profile Picture" />
@@ -463,7 +462,7 @@ const terminateAllSessions = () => {
                         </div>
                     </div>
                     <input type="file" ref="fileInputRef" @change="uploadProfilePicture" class="hidden" />
-                    <div class="ml-4">
+                    <div class="mt-4 sm:mt-0 sm:ml-4">
                         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Foto de Perfil</h2>
                         <p class="text-gray-600 dark:text-gray-400">Personaliza tu foto de perfil.</p>
                     </div>
@@ -509,7 +508,7 @@ const terminateAllSessions = () => {
                         Explora opciones adicionales para configurar tu interfaz, como la selección de colores de acento
                         y ajustes de fuente para mejorar la legibilidad.
                     </p>
-                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Color de
                                 Acento</label>
@@ -575,7 +574,7 @@ const terminateAllSessions = () => {
         <!-- SECURITY SECTION -->
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-6 px-4 border-t pt-4 dark:border-gray-700">SEGURIDAD</h1>
         <p class="px-4 mt-4 text-gray-700 dark:text-gray-300">Añade una capa extra de seguridad a tu cuenta.</p>
-        <div class="p-4 grid grid-cols-2 gap-4">
+        <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div
                 class="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 shadow-xl transition-colors duration-300">
                 <p class="text-xl font-bold text-gray-800 dark:text-gray-100">Autenticación de Dos Factores (2FA)</p>
@@ -589,7 +588,7 @@ const terminateAllSessions = () => {
                     que inicies sesión. Puedes usar una aplicación de autenticación para completar este proceso.
                 </p>
                 <button @click="handle2FAButtonClick()" :class="[
-                    'w-1/2',
+                    'w-full sm:w-1/2',
                     'text-white',
                     'font-semibold',
                     'p-3',
